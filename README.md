@@ -6,7 +6,7 @@ Mit diesem [Homebridge](https://github.com/nfarina/homebridge) Plugin kann man d
 
 Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenson/miio) Version 0.15.6 oder neuer, nicht wie viele andere Plugins Version 0.14.1. Damit gehören Timeouts, API-Fehler vorerst der _Vergangenheit_ an!
 
-<img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/rockrobo.vacuum.v1.jpg?raw=true" style="border:1px solid lightgray" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" borderwidth="300">&nbsp;&nbsp;&nbsp;<img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/roborock.vacuum.s5.jpg?raw=true" style="border:1px solid lightgray" alt="Xiaomi Roborock S50 2nd Generation (Roborock Vacuum S5)" width="300">
+<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/rockrobo.vacuum.v1.jpg" style="border:1px solid lightgray" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s5.jpg" style="border:1px solid lightgray" alt="Xiaomi Roborock S50 2nd Generation (Roborock Vacuum S5)" width="300">
 
 
 ## Features
