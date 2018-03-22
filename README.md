@@ -6,7 +6,7 @@ Mit diesem [Homebridge](https://github.com/nfarina/homebridge) Plugin kann man d
 
 Dieses Plugin nutzt, glücklicherweiese, die neue [miio](https://github.com/aholstenson/miio) Version 0.15.6 oder neuer, nicht wie alle anderen Plugins auf Version 0.14.1. Damit gehören Timeout, API-Fehler vorerst der Vergangenheit an!
 
-<img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/rockrobo.vacuum.v1.jpg" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300"><img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/roborock.vacuum.s5.jpg" alt="Xiaomi Roborock S50 2nd Generation (Roborock Vacuum S5)" width="300">
+<center><img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/rockrobo.vacuum.v1.jpg?raw=true" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300"><img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/roborock.vacuum.s5.jpg?raw=true" alt="Xiaomi Roborock S50 2nd Generation (Roborock Vacuum S5)" width="300"></center>
 
 ## Features
 
@@ -27,48 +27,47 @@ Dieses Plugin nutzt, glücklicherweiese, die neue [miio](https://github.com/ahol
 
 1. Installation:
 
-   `npm install -g homebridge-xiaomi-mi-robot-vacuum --unsafe-perm`
+`npm install -g homebridge-xiaomi-mi-robot-vacuum --unsafe-perm`
 
 2. Homebridge Konfiguration `config.json` anpassen:
 
-  ```
-  "accessories": [
-    {
-      "accessory": "XiaomiRoborockVacuum",
-      "name": "Xiaomi Mi Robot Vaccum 1st Generation",
-      "ip": "192.168.1.150",
-      "token": "abcdef1234567890abcdef1234567890",
-      "pause": false,
-      "dock": true
-    },
-  ],
-  ```
+```
+"accessories": [
+ {
+  "accessory": "XiaomiRoborockVacuum",
+  "name": "Xiaomi Mi Robot Vaccum 1st Generation",
+  "ip": "192.168.1.150",
+  "token": "abcdef1234567890abcdef1234567890",
+  "pause": false,
+  "dock": true
+ },
+],
+```
 
 2.1. Bei zwei oder mehr Saugrobotern einfach einen weitren Block einfügen: 
 
-  ```
-  "accessories": [
-    {
-      "accessory": "XiaomiRoborockVacuum",
-      "name": "Xiaomi Mi Robot Vaccum 1st Generation",
-      "ip": "192.168.1.150",
-      "token": "abcdef1234567890abcdef1234567890",
-      "pause": true,
-      "dock": true
-    },
-    {
-      "accessory": "XiaomiRoborockVacuum",
-      "name": "Xiaomi Roborock S50 Vaccum 2nd Generation",
-      "ip": "192.168.1.151",
-      "token": "1234567890abcdef1234567890abcdef",
-      "pause": true,
-      "dock": true
-    }
-  ],
-  ```    ​
+```
+"accessories": [
+ {
+  "accessory": "XiaomiRoborockVacuum",
+  "name": "Xiaomi Mi Robot Vaccum 1st Generation",
+  "ip": "192.168.1.150",
+  "token": "abcdef1234567890abcdef1234567890",
+  "pause": false,
+  "dock": true
+ },
+ {
+  "accessory": "XiaomiRoborockVacuum",
+  "name": "Xiaomi Roborock S50 Vaccum 2nd Generation",
+  "ip": "192.168.1.151",
+  "token": "1234567890abcdef1234567890abcdef",
+  "pause": false,
+  "dock": true
+ }
+],
+```
 
 3. Homebridge neustarten
-
 
 ## Optionale Parameter
 
@@ -80,11 +79,11 @@ Dieses Plugin nutzt, glücklicherweiese, die neue [miio](https://github.com/ahol
 
 ## Xiaomi Token
 
-Um das Plugin nutzen zu können, müsst ihr für euren Xiaomi Saugrobter zwingend den sogenannten "Token" auslesen.
+Um das Plugin nutzen zu können, müsst ihr von euren Xiaomi Saugrobter zwingend den sogenannten "Token" auslesen.
 Hier ein paar ausführliche Anleitungen:
-[Apple HomeKit Forum - HomeKit.Community](https://forum.smartapfel.de/forum/thread/370-xiaomi-token-auslesen/)
-[MiRobot2Lox Token extrahieren](http://www.loxwiki.eu/display/LOXBERRY/Token+extrahieren)
-[Homematic-Guru.de](https://homematic-guru.de/xiaomi-vacuum-staubsauger-roboter-mit-homematic-steuern)
+- [Apple HomeKit Forum - HomeKit.Community](https://forum.smartapfel.de/forum/thread/370-xiaomi-token-auslesen/)
+- [MiRobot2Lox Token extrahieren](http://www.loxwiki.eu/display/LOXBERRY/Token+extrahieren)
+- [Homematic-Guru.de](https://homematic-guru.de/xiaomi-vacuum-staubsauger-roboter-mit-homematic-steuern)
 
 
 ## Lizenz
