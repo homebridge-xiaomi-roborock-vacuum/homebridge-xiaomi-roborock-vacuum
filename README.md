@@ -2,11 +2,12 @@
 
 ## Homebridge Plugin für Xiaomi Roborock's 
 
-Mit diesem [Homebridge](https://github.com/nfarina/homebridge) Plugin kann man die Xiaomi Vacuum Cleaner (Roborock) in Apple HomeKit, als **Ventilator/Lüfter** einbinden. 
+Mit diesem [Homebridge](https://github.com/nfarina/homebridge) Plugin kann man die Xiaomi Saugroboter (Roborock) in Apple HomeKit, als **Ventilator/Lüfter** einbinden. 
 
-Dieses Plugin nutzt, glücklicherweiese, die neue [miio](https://github.com/aholstenson/miio) Version 0.15.6 oder neuer, nicht wie alle anderen Plugins auf Version 0.14.1. Damit gehören Timeout, API-Fehler vorerst der Vergangenheit an!
+Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenson/miio) Version 0.15.6 oder neuer, nicht wie viele andere Plugins Version 0.14.1. Damit gehören Timeouts, API-Fehler vorerst der _Vergangenheit_ an!
 
-<center><img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/rockrobo.vacuum.v1.jpg?raw=true" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300"><img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/roborock.vacuum.s5.jpg?raw=true" alt="Xiaomi Roborock S50 2nd Generation (Roborock Vacuum S5)" width="300"></center>
+<img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/rockrobo.vacuum.v1.jpg?raw=true" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300"><img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/roborock.vacuum.s5.jpg?raw=true" alt="Xiaomi Roborock S50 2nd Generation (Roborock Vacuum S5)" width="300">
+
 
 ## Features
 
@@ -17,11 +18,12 @@ Dieses Plugin nutzt, glücklicherweiese, die neue [miio](https://github.com/ahol
   - Balanced (39-60%)
   - Turbo (61-77%)
   - Max Speed (78-100%)
-* Batteriestatus und Zustand in den Gerätedetails sichtbar, Warnung bei niedrigem Batteriestand.
-* Schalter für Pause (Optional)
-* Belegesensor (ähnlich Bewegungssensor) für Dockstatus (Optional)
+* Batteriestatus und Zustand in den Gerätedetails. Warnung bei niedrigem Batteriestand.
+* Schalter für Pause (Optional).
+* Belegesensor (ähnlich Bewegungssensor) für Dockstatus (Optional).
 
-!!SCREENSHOTS!!
+<img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/screenshot.jpg?raw=true" alt="Screenshot Apple HomeKit with homebridge-xiaomi-roborock-vacuum" width="350">
+
 
 ## Anleitung
 
@@ -44,7 +46,7 @@ Dieses Plugin nutzt, glücklicherweiese, die neue [miio](https://github.com/ahol
 ],
 ```
 
-2.1. Bei zwei oder mehr Saugrobotern einfach einen weitren Block einfügen: 
+2.1. Bei zwei oder mehr Saugrobotern jeweils einen weiteren "accessory" Block hinzufügen: 
 
 ```
 "accessories": [
@@ -69,6 +71,7 @@ Dieses Plugin nutzt, glücklicherweiese, die neue [miio](https://github.com/ahol
 
 3. Homebridge neustarten
 
+
 ## Optionale Parameter
 
 | Parameter | Standard  | Erklärung |
@@ -79,8 +82,7 @@ Dieses Plugin nutzt, glücklicherweiese, die neue [miio](https://github.com/ahol
 
 ## Xiaomi Token
 
-Um das Plugin nutzen zu können, müsst ihr von euren Xiaomi Saugrobter zwingend den sogenannten "Token" auslesen.
-Hier ein paar ausführliche Anleitungen:
+Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi Saugrobters auslesen. Hier ein paar ausführliche Anleitungen:
 - [Apple HomeKit Forum - HomeKit.Community](https://forum.smartapfel.de/forum/thread/370-xiaomi-token-auslesen/)
 - [MiRobot2Lox Token extrahieren](http://www.loxwiki.eu/display/LOXBERRY/Token+extrahieren)
 - [Homematic-Guru.de](https://homematic-guru.de/xiaomi-vacuum-staubsauger-roboter-mit-homematic-steuern)
