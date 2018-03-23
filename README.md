@@ -29,7 +29,7 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
 
 1. Installation:
 
-`npm install -g homebridge-xiaomi-mi-robot-vacuum --unsafe-perm`
+`npm install -g homebridge-xiaomi-roborock-vacuum --unsafe-perm`
 
 2. Homebridge Konfiguration `config.json` anpassen:
 
@@ -46,7 +46,7 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
 ],
 ```
 
-2.1. Bei zwei oder mehr Saugrobotern jeweils einen weiteren "accessory" Block hinzufügen: 
+⋅⋅⋅Bei zwei oder mehr Saugrobotern jeweils einen weiteren "accessory" Block hinzufügen: 
 
 ```
 "accessories": [
