@@ -1,6 +1,7 @@
 var miio = require('miio');
 var Accessory, Service, Characteristic, UUIDGen;
 
+
 module.exports = function(homebridge) {
     Accessory = homebridge.platformAccessory;
     Service = homebridge.hap.Service;
@@ -10,77 +11,76 @@ module.exports = function(homebridge) {
     homebridge.registerAccessory('homebridge-xiaomi-roborock-vacuum', 'XiaomiRoborockVacuum', XiaomiRoborockVacuum);
 }
 
+
 function XiaomiRoborockVacuum(log, config) {
     var that = this;
 
-    this.services = [];
-    this.log = log;
-    this.name = config.name || 'Roborock vacuum cleaner';
-    this.ip = config.ip;
-    this.token = config.token;
-    this.pause = config.pause;
-    this.dock = config.dock;
-    this.device = null;
-    this.startup = true;
+    that.services = [];
+    that.log = log;
+    that.name = config.name || 'Roborock vacuum cleaner';
+    that.ip = config.ip;
+    that.token = config.token;
+    that.pause = config.pause;
+    that.dock = config.dock;
+    that.device = null;
+    that.startup = true;
 
-    if(!this.ip)
+    if(!that.ip)
         throw new Error('You must provide an ip address of the vacuum cleaner.');
 
-    if(!this.token)
+    if(!that.token)
         throw new Error('You must provide a token of the vacuum cleaner.');
 
-    this.serviceInfo = new Service.AccessoryInformation();
-        this.serviceInfo
+    that.serviceInfo = new Service.AccessoryInformation();
+        that.serviceInfo
             .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi')
             .setCharacteristic(Characteristic.Model, 'Roborock')
-            .setCharacteristic(Characteristic.SerialNumber, 'Undefined')
-            .setCharacteristic(Characteristic.FirmwareRevision, 'Undefined')
-        this.services.push(this.serviceInfo);
+        that.services.push(that.serviceInfo);
 
-    this.fanService = new Service.Fan(this.name);
-        this.fanService
+    that.fanService = new Service.Fan(that.name);
+        that.fanService
             .getCharacteristic(Characteristic.On)
-            .on('get', this.getState.bind(this))
-            .on('set', this.setState.bind(this));
-        this.fanService
+            .on('get', that.getState.bind(that))
+            .on('set', that.setState.bind(that));
+        that.fanService
             .getCharacteristic(Characteristic.RotationSpeed)
-            .on('get', this.getSpeed.bind(this))
-            .on('set', this.setSpeed.bind(this));
-        this.services.push(this.fanService);
+            .on('get', that.getSpeed.bind(that))
+            .on('set', that.setSpeed.bind(that));
+        that.services.push(that.fanService);
 
-    this.batteryService = new Service.BatteryService(this.name + ' Battery');
-        this.batteryService
+    that.batteryService = new Service.BatteryService(that.name + ' Battery');
+        that.batteryService
             .getCharacteristic(Characteristic.BatteryLevel)
-            .on('get', this.getBState.bind(this));
-        this.batteryService
+            .on('get', that.getBState.bind(that));
+        that.batteryService
             .getCharacteristic(Characteristic.ChargingState)
-            .on('get', this.getCState.bind(this));
-        this.batteryService
+            .on('get', that.getCState.bind(that));
+        that.batteryService
             .getCharacteristic(Characteristic.StatusLowBattery)
-            .on('get', this.getBStateLow.bind(this));
-        this.services.push(this.batteryService);
+            .on('get', that.getBStateLow.bind(that));
+        that.services.push(that.batteryService);
 
-    if(this.pause){
-        this.pauseService = new Service.Switch(this.name + ' Pause');
-            this.pauseService
+    if(that.pause){
+        that.pauseService = new Service.Switch(that.name + ' Pause');
+            that.pauseService
                 .getCharacteristic(Characteristic.On)
-                .on('get', this.getPState.bind(this))
-                .on('set', this.setPState.bind(this));
-            this.services.push(this.pauseService);
+                .on('get', that.getPState.bind(that))
+                .on('set', that.setPState.bind(that));
+            that.services.push(that.pauseService);
     }
 
-    if(this.dock){
-        this.dockService = new Service.OccupancySensor(this.name + ' Dock');
-            this.dockService
+    if(that.dock){
+        that.dockService = new Service.OccupancySensor(that.name + ' Dock');
+            that.dockService
                 .getCharacteristic(Characteristic.OccupancyDetected)
-                .on('get', this.getDState.bind(this));
-            this.services.push(this.dockService);
+                .on('get', that.getDState.bind(that));
+            that.services.push(that.dockService);
     }
 
-    this.getDevice();
-    this.watch();
-
+    that.getDevice();
+    that.watch();
 }
+
 
 XiaomiRoborockVacuum.prototype = {
 
@@ -91,7 +91,8 @@ XiaomiRoborockVacuum.prototype = {
         setInterval(function() {
             that.device = null; // Clear cache
             
-            that.getDevice().then(result => {
+            that.getDevice()
+            .then(result => {
 
                 ///////////
                 /* State */
@@ -155,13 +156,11 @@ XiaomiRoborockVacuum.prototype = {
                 log.debug('WATCH | DockState: ' + result.property("state"));
                 that.dockService.getCharacteristic(Characteristic.OccupancyDetected).updateValue((result.property("state") == 'charging') ? 1 : 0);
 
-
-            },
-            err => {
+            })
+            .catch(err => {
                 log.debug('No vacuum cleaner is discovered.');
             });
         }, 30000);
-
     },
 
 
@@ -187,15 +186,17 @@ XiaomiRoborockVacuum.prototype = {
                 if (result.matches('type:vaccuum')) {
                     if (that.startup) {
 
+                        infomodel = result.miioModel;
                         log.info('Connected to: %s', that.ip);
-                        log.info('Model: ' + result.miioModel);
+                        log.info('Model: ' + infomodel);
                         log.info('State: ' + result.property("state"));
                         log.info('BatteryLevel: ' + result.property("batteryLevel"));
                         log.info('FanSpeed: ' + result.property("fanSpeed"));
 
                         ///////////////////
                         /* Serial number */
-                        that.getDevice().then(serialjson => {
+                        that.getDevice()
+                        .then(serialjson => {
                             return result.call("get_serial_number");
                         })
                         .then(serial => {
@@ -203,11 +204,27 @@ XiaomiRoborockVacuum.prototype = {
                             serialvalid = JSON.stringify(serial); // Convert in valid JSON
                             serialvalidparse = JSON.parse(serialvalid);
                             log.info('Serialnumber: ' + serialvalidparse[0].serial_number);
+                            infoserial = serialvalidparse[0].serial_number;
+                        });
+
+                        //////////////////////
+                        /* Firmware version */
+                        that.getDevice()
+                        .then(firmware => {
+                            return result.call("miIO.info");
+                        })
+                        .then(firmware => {
+                            //console.log(firmware)
+                            firmwarevalid = JSON.stringify(firmware); // Convert in valid JSON
+                            firmwarevalidparse = JSON.parse(firmwarevalid);
+                            log.info('Firmwareversion: ' + firmwarevalidparse.fw_ver);
+                            infofirmware = firmwarevalidparse.fw_ver;
                         });
 
                         //////////////////////////////////////////
                         /* Number of state (Debug? 100 = Full?) */
-                        that.getDevice().then(numberofstate => {
+                        that.getDevice()
+                        .then(numberofstate => {
                             return result.call("get_status");
                         })
                         .then(numberofstate => {
@@ -215,6 +232,7 @@ XiaomiRoborockVacuum.prototype = {
                             numberofstatevalid = JSON.stringify(numberofstate); // Convert in valid JSON
                             numberofstatevalidparse = JSON.parse(numberofstatevalid);
                             log.info('Number of state: ' + numberofstatevalidparse[0].state);
+                            infonumbstate = numberofstatevalidparse[0].state;
                         });
 
                         that.startup = false;
@@ -228,12 +246,11 @@ XiaomiRoborockVacuum.prototype = {
                     log.info('%s is not a vacuum cleaner!', that.ip);
                     reject();
                 }
-            },
-            err => {
+            })
+            .catch(err => {
                 log.debug('No correct API answer from xiaomi/roborock for "%s"', that.ip);
                 reject();
             });
-
         });
     },
 
@@ -242,7 +259,8 @@ XiaomiRoborockVacuum.prototype = {
         var that = this;
         var log = that.log;
 
-        that.getDevice().then(result => {
+        that.getDevice()
+        .then(result => {
             log.debug('getState | State: ' + result.property("state"));
             switch(result.property("state")){
                 case 'cleaning':
@@ -255,8 +273,8 @@ XiaomiRoborockVacuum.prototype = {
                 default:
                     callback(null, false);
             }
-        },
-        err => {
+        })
+        .catch(err => {
             log.debug('No vacuum cleaner is discovered.');
             callback(new Error('No vacuum cleaner is discovered.'));
         });
@@ -281,7 +299,6 @@ XiaomiRoborockVacuum.prototype = {
             log.info('Stop cleaning and go to charge.');
             that.device.activateCharging(); // Charging works for 1st, not for 2nd
         }
-
         callback();
     },
 
@@ -290,11 +307,12 @@ XiaomiRoborockVacuum.prototype = {
         var that = this;
         var log = that.log;
 
-        that.getDevice().then(result => {
+        that.getDevice()
+        .then(result => {
             log.debug('getSpeed | FanSpeed: ' + result.property("fanSpeed"));
             callback(null, result.property("fanSpeed"));
-        },
-        err => {
+        })
+        .catch(err => {
             log.debug('No vacuum cleaner is discovered.');
             callback(new Error('No vacuum cleaner is discovered.'));
         });
@@ -344,7 +362,8 @@ XiaomiRoborockVacuum.prototype = {
         var that = this;
         var log = that.log;
 
-        that.getDevice().then(result => {
+        that.getDevice()
+        .then(result => {
             log.debug('getPState | State: ' + result.property("state"));
             switch(result.property("state")){
                 case 'paused':
@@ -355,8 +374,8 @@ XiaomiRoborockVacuum.prototype = {
                 default:
                     callback(null, false);
             }
-        },
-        err => {
+        })
+        .catch(err => {
             log.debug('No vacuum cleaner is discovered.');
             callback(new Error('No vacuum cleaner is discovered.'));
         });
@@ -367,7 +386,8 @@ XiaomiRoborockVacuum.prototype = {
         var that = this;
         var log = that.log;
 
-        that.getDevice().then(result => {
+        that.getDevice()
+        .then(result => {
             log.debug('setPState | State: ' + result.property("state"));
 
             if(state){
@@ -389,11 +409,9 @@ XiaomiRoborockVacuum.prototype = {
                     break;
                 }
             }
-
             callback();
-
-        },
-        err => {
+        })
+        .catch(err => {
             log.debug('No vacuum cleaner is discovered.');
             callback(new Error('No vacuum cleaner is discovered.'));
         });
@@ -404,12 +422,13 @@ XiaomiRoborockVacuum.prototype = {
         var that = this;
         var log = that.log;
 
-        that.getDevice().then(result => {
+        that.getDevice()
+        .then(result => {
             log.debug('getBState | BatteryLevel: ' + result.property("batteryLevel"));
 
             callback(null, result.property("batteryLevel"));
-        },
-        err => {
+        })
+        .catch(err => {
             log.debug('No vacuum cleaner is discovered.');
             callback(new Error('No vacuum cleaner is discovered.'));
         });
@@ -420,12 +439,13 @@ XiaomiRoborockVacuum.prototype = {
         var that = this;
         var log = that.log;
 
-        that.getDevice().then(result => {
+        that.getDevice()
+        .then(result => {
             log.debug('getBStateLow | BatteryLevel: ' + result.property("batteryLevel"));
 
             callback(null, (result.property("batteryLevel") < 20) ? Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
-        },
-        err => {
+        })
+        .catch(err => {
             log.debug('No vacuum cleaner is discovered.');
             callback(new Error('No vacuum cleaner is discovered.'));
         });
@@ -436,7 +456,8 @@ XiaomiRoborockVacuum.prototype = {
         var that = this;
         var log = that.log;
 
-        that.getDevice().then(result => {
+        that.getDevice()
+        .then(result => {
             log.debug('getCState | State: ' + result.property("state"));
 
             switch(result.property("state")){
@@ -449,8 +470,8 @@ XiaomiRoborockVacuum.prototype = {
                 default:
                     callback(null, Characteristic.ChargingState.NOT_CHARGING);
             }
-        },
-        err => {
+        })
+        .catch(err => {
             log.debug('No vacuum cleaner is discovered.');
             callback(new Error('No vacuum cleaner is discovered.'));
         });
@@ -461,12 +482,13 @@ XiaomiRoborockVacuum.prototype = {
         var that = this;
         var log = that.log;
 
-        that.getDevice().then(result => {
+        that.getDevice()
+        .then(result => {
             log.debug('getDState | State: ' + result.property("state"));
 
             callback(null, (result.property("state") == 'charging') ? 1 : 0);
-        },
-        err => {
+        })
+        .catch(err => {
             log.debug('No vacuum cleaner is discovered.');
             callback(new Error('No vacuum cleaner is discovered.'));
         });
@@ -477,17 +499,17 @@ XiaomiRoborockVacuum.prototype = {
         var that = this;
         var log = that.log;
 
-        that.getDevice().then(result => {
+        that.getDevice()
+        .then(result => {
             log.debug('identify | say findme');
 
             log.info('Find me - Hello!');
             that.device.find();
-        },
-        err => {
+        })
+        .catch(err => {
             log.debug('No vacuum cleaner is discovered.');
             callback(new Error('No vacuum cleaner is discovered.'));
         });
-
         callback();
     },
 

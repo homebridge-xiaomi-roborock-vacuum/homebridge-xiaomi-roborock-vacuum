@@ -27,11 +27,11 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
 
 ## Anleitung
 
-1. Installation:
+1. Plugin installieren mit `npm install -g homebridge-xiaomi-roborock-vacuum --unsafe-perm`.
+2. Homebridge Konfiguration `config.json` anpassen.
+3.  Homebridge neustarten, ggf. `service homebridge restart`.
 
-`npm install -g homebridge-xiaomi-roborock-vacuum --unsafe-perm`
-
-2. Homebridge Konfiguration `config.json` anpassen:
+- Beispiel `config.json` mit einem Saugroboter:
 
 ```
 "accessories": [
@@ -42,11 +42,11 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
   "token": "abcdef1234567890abcdef1234567890",
   "pause": false,
   "dock": true
- },
+ }
 ],
 ```
 
-- Bei zwei oder mehr Saugrobotern jeweils einen weiteren "accessory" Block hinzufügen: 
+- Beispiel `config.json` mit zwei Saugrobotern:
 
 ```
 "accessories": [
@@ -69,8 +69,6 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
 ],
 ```
 
-3. Homebridge neustarten
-
 
 ## Optionale Parameter
 
@@ -87,6 +85,19 @@ Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi 
 - [MiRobot2Lox Token extrahieren](http://www.loxwiki.eu/display/LOXBERRY/Token+extrahieren)
 - [Homematic-Guru.de](https://homematic-guru.de/xiaomi-vacuum-staubsauger-roboter-mit-homematic-steuern)
 
+
+## Versionsverlauf
+
+#### 0.1.2
+Fix für "UnhandledPromiseRejectionWarning"
+Geräteinformationen (Model, Seriennummer und Firmwareversion) werden beim Start angezeigt
+README angepasst 
+
+#### 0.1.1
+README korrigiert 
+
+#### 0.1.0
+Plugin veröffentlicht
 
 ## Lizenz
 
