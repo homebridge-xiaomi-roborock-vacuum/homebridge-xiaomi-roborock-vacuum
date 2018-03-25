@@ -158,7 +158,7 @@ XiaomiRoborockVacuum.prototype = {
 
             })
             .catch(err => {
-                log.debug('No vacuum cleaner is discovered.');
+                log.info('ERROR, Watch | No vacuum cleaner is discovered.');
             });
         }, 30000);
     },
@@ -169,7 +169,7 @@ XiaomiRoborockVacuum.prototype = {
         var log = that.log;
 
         if (that.startup) {
-            log.debug('Discovering vacuum cleaner at "%s"', that.ip);
+            log.debug('Discovering vacuum cleaner');
         }
 
         return new Promise((resolve, reject) => {
@@ -186,9 +186,9 @@ XiaomiRoborockVacuum.prototype = {
                 if (result.matches('type:vaccuum')) {
                     if (that.startup) {
 
-                        infomodel = result.miioModel;
+                        that.infomodel = result.miioModel;
                         log.info('Connected to: %s', that.ip);
-                        log.info('Model: ' + infomodel);
+                        log.info('Model: ' + that.infomodel);
                         log.info('State: ' + result.property("state"));
                         log.info('BatteryLevel: ' + result.property("batteryLevel"));
                         log.info('FanSpeed: ' + result.property("fanSpeed"));
@@ -204,7 +204,10 @@ XiaomiRoborockVacuum.prototype = {
                             serialvalid = JSON.stringify(serial); // Convert in valid JSON
                             serialvalidparse = JSON.parse(serialvalid);
                             log.info('Serialnumber: ' + serialvalidparse[0].serial_number);
-                            infoserial = serialvalidparse[0].serial_number;
+                            that.infoserial = serialvalidparse[0].serial_number;
+                        })
+                        .catch(err => {
+                            log.info('ERORR GetDevice, Serialnumber | No correct API answer from xiaomi/roborock');
                         });
 
                         //////////////////////
@@ -218,7 +221,10 @@ XiaomiRoborockVacuum.prototype = {
                             firmwarevalid = JSON.stringify(firmware); // Convert in valid JSON
                             firmwarevalidparse = JSON.parse(firmwarevalid);
                             log.info('Firmwareversion: ' + firmwarevalidparse.fw_ver);
-                            infofirmware = firmwarevalidparse.fw_ver;
+                            that.infofirmware = firmwarevalidparse.fw_ver;
+                        })
+                        .catch(err => {
+                            log.info('ERORR GetDevice, Firmware | No correct API answer from xiaomi/roborock');
                         });
 
                         //////////////////////////////////////////
@@ -232,7 +238,23 @@ XiaomiRoborockVacuum.prototype = {
                             numberofstatevalid = JSON.stringify(numberofstate); // Convert in valid JSON
                             numberofstatevalidparse = JSON.parse(numberofstatevalid);
                             log.info('Number of state: ' + numberofstatevalidparse[0].state);
-                            infonumbstate = numberofstatevalidparse[0].state;
+                            that.infonumbstate = numberofstatevalidparse[0].state;
+                        })
+                        .catch(err => {
+                            log.info('ERORR GetDevice, Statenumber | No correct API answer from xiaomi/roborock');
+                        });
+
+                        /////////////////
+                        /* Consumables */
+                        that.getDevice()
+                        .then(consumables => {
+                            return result.call("get_consumable");
+                        })
+                        .then(consumables => {
+                            //console.log(consumables)
+                        })
+                        .catch(err => {
+                            log.info('ERORR GetDevice, Consumables | No correct API answer from xiaomi/roborock');
                         });
 
                         that.startup = false;
@@ -243,12 +265,12 @@ XiaomiRoborockVacuum.prototype = {
 
                 } else {
                     log.debug(result);
-                    log.info('%s is not a vacuum cleaner!', that.ip);
+                    log.info('ERORR GetDevice | Is not a vacuum cleaner!');
                     reject();
                 }
             })
             .catch(err => {
-                log.debug('No correct API answer from xiaomi/roborock for "%s"', that.ip);
+                log.info('ERORR GetDevice | No correct API answer from xiaomi/roborock');
                 reject();
             });
         });
@@ -262,6 +284,7 @@ XiaomiRoborockVacuum.prototype = {
         that.getDevice()
         .then(result => {
             log.debug('getState | State: ' + result.property("state"));
+            log.info('Current state: ' + result.property("state"));
             switch(result.property("state")){
                 case 'cleaning':
                 //case 'returning':
@@ -275,8 +298,8 @@ XiaomiRoborockVacuum.prototype = {
             }
         })
         .catch(err => {
-            log.debug('No vacuum cleaner is discovered.');
-            callback(new Error('No vacuum cleaner is discovered.'));
+            log.info('ERROR, getState | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, getState | No vacuum cleaner is discovered.'));
         });
     },
 
@@ -286,17 +309,17 @@ XiaomiRoborockVacuum.prototype = {
         var log = that.log;
 
         if(!that.device){
-            log.debug('No vacuum cleaner is discovered.');
-            callback(new Error('No vacuum cleaner is discovered.'));
+            log.info('ERROR, setState | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, setState | No vacuum cleaner is discovered.'));
             return;
         }
 
         if(state){
-            log.info('Start cleaning.');
+            log.info('ACTION | Start cleaning.');
             that.device.activateCleaning();
             that.dockService.getCharacteristic(Characteristic.OccupancyDetected).updateValue(0); // Cleaning => leaves dock
         } else {
-            log.info('Stop cleaning and go to charge.');
+            log.info('ACTION | Stop cleaning and go to charge.');
             that.device.activateCharging(); // Charging works for 1st, not for 2nd
         }
         callback();
@@ -310,11 +333,12 @@ XiaomiRoborockVacuum.prototype = {
         that.getDevice()
         .then(result => {
             log.debug('getSpeed | FanSpeed: ' + result.property("fanSpeed"));
+            log.info('Current fanspeed: ' + result.property("fanSpeed") + '%')
             callback(null, result.property("fanSpeed"));
         })
         .catch(err => {
-            log.debug('No vacuum cleaner is discovered.');
-            callback(new Error('No vacuum cleaner is discovered.'));
+            log.info('ERROR, getSpeed | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, getSpeed | No vacuum cleaner is discovered.'));
         });
     },
 
@@ -324,8 +348,8 @@ XiaomiRoborockVacuum.prototype = {
         var log = that.log;
 
         if(!that.device){
-            log.debug('No vacuum cleaner is discovered.');
-            callback(new Error('No vacuum cleaner is discovered.'));
+            log.info('ERROR, setSpeed | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, setSpeed | No vacuum cleaner is discovered.'));
             return;
         }
 
@@ -337,18 +361,18 @@ XiaomiRoborockVacuum.prototype = {
             90  // 78-100%  = Max Speed
         ];
 
-        log.info('FanSpeed %s% over HomeKit > cleanup.', speed);
+        log.debug('ACTION | FanSpeed %s% over HomeKit > cleanup.', speed);
         for(var cleanupmode of cleanupmodes) {
             if(speed <= cleanupmode){
                 speed = cleanupmode;
-                log.info('FanSpeed set to "%s"%.', speed);
+                log.info('ACTION | FanSpeed set to "%s"%.', speed);
                 that.device.changeFanSpeed(parseInt(speed));
                 that.fanService.getCharacteristic(Characteristic.RotationSpeed).updateValue(speed); // Speed cleaned => set it in HomeKit
                 break;
             } 
             if(speed > 90){
                 speed = 90;
-                log.info('FanSpeed set to "%s"%.', speed);
+                log.info('ACTION | FanSpeed set to "%s"%.', speed);
                 that.device.changeFanSpeed(parseInt(speed));
                 that.fanService.getCharacteristic(Characteristic.RotationSpeed).updateValue(speed); // Speed cleaned => set it in HomeKit
                 break;
@@ -376,8 +400,8 @@ XiaomiRoborockVacuum.prototype = {
             }
         })
         .catch(err => {
-            log.debug('No vacuum cleaner is discovered.');
-            callback(new Error('No vacuum cleaner is discovered.'));
+            log.info('ERROR, getPState | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, getPState | No vacuum cleaner is discovered.'));
         });
     },
 
@@ -395,7 +419,7 @@ XiaomiRoborockVacuum.prototype = {
                     case 'cleaning':
                     case 'returning':
                     case 'spot-cleaning':
-                        log.info('Pause.');
+                        log.info('ACTION | Pause.');
                         that.device.pause();
                         that.device = null; // Clear cache, refreshDelay in miio
                     break;
@@ -404,7 +428,7 @@ XiaomiRoborockVacuum.prototype = {
                 switch(result.property("state")){
                     case 'paused':
                     case 'waiting':
-                        log.info('Resume cleaning.');
+                        log.info('ACTION | Resume cleaning.');
                         that.device.activateCleaning();
                     break;
                 }
@@ -412,8 +436,8 @@ XiaomiRoborockVacuum.prototype = {
             callback();
         })
         .catch(err => {
-            log.debug('No vacuum cleaner is discovered.');
-            callback(new Error('No vacuum cleaner is discovered.'));
+            log.info('ERROR, setPState | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, setPState | No vacuum cleaner is discovered.'));
         });
     },
 
@@ -424,13 +448,13 @@ XiaomiRoborockVacuum.prototype = {
 
         that.getDevice()
         .then(result => {
-            log.debug('getBState | BatteryLevel: ' + result.property("batteryLevel"));
+            log.info('getBState | BatteryLevel: ' + result.property("batteryLevel"));
 
             callback(null, result.property("batteryLevel"));
         })
         .catch(err => {
-            log.debug('No vacuum cleaner is discovered.');
-            callback(new Error('No vacuum cleaner is discovered.'));
+            log.info('ERROR, getBState | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, getBState | No vacuum cleaner is discovered.'));
         });
     },
 
@@ -446,8 +470,8 @@ XiaomiRoborockVacuum.prototype = {
             callback(null, (result.property("batteryLevel") < 20) ? Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW : Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL);
         })
         .catch(err => {
-            log.debug('No vacuum cleaner is discovered.');
-            callback(new Error('No vacuum cleaner is discovered.'));
+            log.info('ERROR, getBStateLow | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, getBStateLow | No vacuum cleaner is discovered.'));
         });
     },
 
@@ -472,8 +496,8 @@ XiaomiRoborockVacuum.prototype = {
             }
         })
         .catch(err => {
-            log.debug('No vacuum cleaner is discovered.');
-            callback(new Error('No vacuum cleaner is discovered.'));
+            log.info('ERROR, getCState | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, getCState | No vacuum cleaner is discovered.'));
         });
     },
 
@@ -489,8 +513,8 @@ XiaomiRoborockVacuum.prototype = {
             callback(null, (result.property("state") == 'charging') ? 1 : 0);
         })
         .catch(err => {
-            log.debug('No vacuum cleaner is discovered.');
-            callback(new Error('No vacuum cleaner is discovered.'));
+            log.info('ERROR, getDState | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, getDState | No vacuum cleaner is discovered.'));
         });
     },
 
@@ -501,14 +525,12 @@ XiaomiRoborockVacuum.prototype = {
 
         that.getDevice()
         .then(result => {
-            log.debug('identify | say findme');
-
-            log.info('Find me - Hello!');
+            log.info('ACTION | Find me - Hello!');
             that.device.find();
         })
         .catch(err => {
-            log.debug('No vacuum cleaner is discovered.');
-            callback(new Error('No vacuum cleaner is discovered.'));
+            log.info('ERROR, identify | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, identify | No vacuum cleaner is discovered.'));
         });
         callback();
     },

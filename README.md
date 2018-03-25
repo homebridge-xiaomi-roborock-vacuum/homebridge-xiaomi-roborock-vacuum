@@ -88,6 +88,11 @@ Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi 
 
 ## Versionsverlauf
 
+#### 0.1.3
+Statusausgaben hinzugefügt (Homebridge-Log)
+zweiter Fix für "UnhandledPromiseRejectionWarning"
+README ergänzt
+
 #### 0.1.2
 Fix für "UnhandledPromiseRejectionWarning"
 Geräteinformationen (Model, Seriennummer und Firmwareversion) werden beim Start angezeigt
