@@ -114,19 +114,6 @@ XiaomiRoborockVacuum.prototype = {
                 log.debug('WATCH | FanSpeed: ' + result.property("fanSpeed"));
                 that.fanService.getCharacteristic(Characteristic.RotationSpeed).updateValue(result.property("fanSpeed"));
 
-                /////////////////
-                /* Pause state */
-                log.debug('WATCH | PauseState: ' + result.property("state"));
-                switch(result.property("state")){
-                    case 'paused':
-                    case 'waiting':
-                    //case 'charger-offline':
-                        that.pauseService.getCharacteristic(Characteristic.On).updateValue(true);
-                        break;
-                    default:
-                        that.pauseService.getCharacteristic(Characteristic.On).updateValue(false);
-                }
-
                 ///////////////////
                 /* Battery level */
                 log.debug('WATCH | BatteryLevel: ' + result.property("batteryLevel"));
@@ -151,13 +138,31 @@ XiaomiRoborockVacuum.prototype = {
                         that.batteryService.getCharacteristic(Characteristic.ChargingState).updateValue(Characteristic.ChargingState.NOT_CHARGING);
                 }
 
+                /////////////////
+                /* Pause state */
+                if(that.pause){
+                    log.debug('WATCH | PauseState: ' + result.property("state"));
+                    switch(result.property("state")){
+                        case 'paused':
+                        case 'waiting':
+                        //case 'charger-offline':
+                            that.pauseService.getCharacteristic(Characteristic.On).updateValue(true);
+                            break;
+                        default:
+                            that.pauseService.getCharacteristic(Characteristic.On).updateValue(false);
+                    }
+                }
+
                 ////////////////
                 /* Dock state */
-                log.debug('WATCH | DockState: ' + result.property("state"));
-                that.dockService.getCharacteristic(Characteristic.OccupancyDetected).updateValue((result.property("state") == 'charging') ? 1 : 0);
+                if(that.dock){
+                    log.debug('WATCH | DockState: ' + result.property("state"));
+                    that.dockService.getCharacteristic(Characteristic.OccupancyDetected).updateValue((result.property("state") == 'charging') ? 1 : 0);
+                }
 
             })
             .catch(err => {
+                //log.debug(err)
                 log.info('ERROR, Watch | No vacuum cleaner is discovered.');
             });
         }, 30000);
@@ -264,7 +269,7 @@ XiaomiRoborockVacuum.prototype = {
                     resolve(that.device);
 
                 } else {
-                    log.debug(result);
+                    //log.debug(result);
                     log.info('ERORR GetDevice | Is not a vacuum cleaner!');
                     reject();
                 }

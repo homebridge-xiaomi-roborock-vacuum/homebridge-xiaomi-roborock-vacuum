@@ -88,6 +88,9 @@ Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi 
 
 ## Versionsverlauf
 
+#### 0.1.4
+Fix wenn "pause" / "dock" deaktiviert für "cannot read property getCharacteristic of undefined"
+
 #### 0.1.3
 Statusausgaben hinzugefügt (Homebridge-Log)
 zweiter Fix für "UnhandledPromiseRejectionWarning"
