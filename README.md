@@ -88,6 +88,9 @@ Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi 
 
 ## Versionsverlauf
 
+#### 0.1.5
+ERROR-Meldungen der miio-API hinzugefügt.
+
 #### 0.1.4
 Fix wenn "pause" / "dock" deaktiviert für "cannot read property getCharacteristic of undefined"
 
