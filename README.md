@@ -4,8 +4,7 @@
 
 # homebridge-xiaomi-roborock-vacuum
 
-## Homebridge Plugin für Xiaomi Roborock's 
-
+## Homebridge Plugin für Xiaomi Roborock's
 Mit diesem [Homebridge](https://github.com/nfarina/homebridge) Plugin kann man die Xiaomi Saugroboter (Roborock) in Apple HomeKit, als **Ventilator/Lüfter** einbinden. 
 
 Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenson/miio) Version 0.15.6 oder neuer, nicht wie viele andere Plugins Version 0.14.1. Damit gehören Timeouts, API-Fehler vorerst der _Vergangenheit_ an!
@@ -14,7 +13,6 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
 
 
 ## Features
-
 * **Ventilator/Lüfter** als Ein-/Aus-Schalter. Beim Ausschalten, direkt zurück zur Ladestation.
 * Geschwindigkeitsstufen per 3D-Touch / Force-Touch einstellbar.
   - Off (0%)
@@ -30,7 +28,6 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
 
 
 ## Anleitung
-
 1. Plugin installieren mit `npm install -g homebridge-xiaomi-roborock-vacuum --unsafe-perm`.
 2. Homebridge Konfiguration `config.json` anpassen.
 3.  Homebridge neustarten, ggf. `service homebridge restart`.
@@ -75,7 +72,6 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
 
 
 ## Optionale Parameter
-
 | Parameter | Standard  | Erklärung |
 |---|---|---|
 | `pause` | false | Zeigt einen zusätzlichen Schalter für "Pause" an |
@@ -83,7 +79,6 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
 
 
 ## Xiaomi Token
-
 Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi Saugrobters auslesen. Hier ein paar ausführliche Anleitungen:
 - [Apple HomeKit Forum - HomeKit.Community](https://forum.smartapfel.de/forum/thread/370-xiaomi-token-auslesen/)
 - [MiRobot2Lox Token extrahieren](http://www.loxwiki.eu/display/LOXBERRY/Token+extrahieren)
@@ -91,36 +86,35 @@ Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi 
 
 
 ## Versionsverlauf
-
 #### 0.2.0
-Plugin komplett überarbeitet, Logik verändert
-Verbindungsaufbau über miio-API sauberer abgebildet
-Fix für "UnhandledPromiseRejectionWarning"
+- Plugin komplett überarbeitet, Logik verändert.
+- Verbindungsaufbau über miio-API sauberer abgebildet.
+- Fix für `UnhandledPromiseRejectionWarning`.
 
 #### 0.1.5
-ERROR-Meldungen der miio-API hinzugefügt.
+- ERROR-Meldungen der miio-API hinzugefügt.
 
 #### 0.1.4
-Fix wenn "pause" / "dock" deaktiviert für "cannot read property getCharacteristic of undefined"
+- Fix wenn `pause` / `dock` in `config.json` aktiviert .
+- Fix für "cannot read property getCharacteristic of undefined".
 
 #### 0.1.3
-Statusausgaben hinzugefügt (Homebridge-Log)
-zweiter Fix für "UnhandledPromiseRejectionWarning"
-README ergänzt
+- Statusausgaben hinzugefügt (Homebridge-Log).
+- zweiter Fix für `UnhandledPromiseRejectionWarning`.
+- README ergänzt.
 
 #### 0.1.2
-Fix für "UnhandledPromiseRejectionWarning"
-Geräteinformationen (Model, Seriennummer und Firmwareversion) werden beim Start angezeigt
-README angepasst 
+- Fix für `UnhandledPromiseRejectionWarning`.
+- Geräteinformationen (Model, Seriennummer und Firmwareversion) werden beim Start angezeigt.
+- README angepasst.
 
 #### 0.1.1
-README korrigiert 
+- README korrigiert.
 
 #### 0.1.0
-Plugin veröffentlicht
+- Plugin veröffentlicht.
 
 ## Lizenz
-
 The MIT License (MIT)
 
 Copyright (c) 2018 Nico Hartung
