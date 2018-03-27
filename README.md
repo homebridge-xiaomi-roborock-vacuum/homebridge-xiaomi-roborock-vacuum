@@ -93,7 +93,7 @@ Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi 
 ## Versionsverlauf
 
 #### 0.2.0
-Plugin komplett überarbeitet | Logik verändert
+Plugin komplett überarbeitet, Logik verändert
 Verbindungsaufbau über miio-API sauberer abgebildet
 Fix für "UnhandledPromiseRejectionWarning"
 
