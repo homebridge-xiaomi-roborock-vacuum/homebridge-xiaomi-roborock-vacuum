@@ -37,7 +37,7 @@ function XiaomiRoborockVacuum(log, config) {
         that.lastrobotpausecharging = true;
     that.docked = true;
 
-    var speedmodes = [
+    that.speedmodes = [
         0,  // 00%      = Off
         38, // 01-38%   = Quiet
         60, // 39-60%   = Balanced
@@ -124,7 +124,7 @@ function XiaomiRoborockVacuum(log, config) {
             log.info('MONITOR | FanSpeed has changed, is now ' + speed + '%');
             that.lastspeed = speed;
 
-            for(var speedmode of speedmodes) {
+            for(var speedmode of that.speedmodes) {
                 if(speed <= speedmode) {
                     that.speed = speedmode;
                     log.info('INFO | Speed was changed to ' + that.speed + '%');
@@ -401,7 +401,7 @@ XiaomiRoborockVacuum.prototype = {
         }
 
         log.debug('ACTION | Speed got %s% over HomeKit > CLEANUP.', speed);
-        for(var speedmode of speedmodes) {
+        for(var speedmode of that.speedmodes) {
             if(speed <= speedmode) {
                 that.speed = speedmode;
                 log.info('ACTION | FanSpeed set to %s%.', that.speed);
