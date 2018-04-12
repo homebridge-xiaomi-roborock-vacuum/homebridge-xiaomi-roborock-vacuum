@@ -86,6 +86,9 @@ Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi 
 
 
 ## Versionsverlauf
+#### 0.2.2
+- Eigener Fork von "miio" mit Bugfix für #5, #6 und #7
+
 #### 0.2.1
 - Problem bei Änderung der Robotergeschwindigkeit (FanSpeed) über HomeKit behoben.
 
