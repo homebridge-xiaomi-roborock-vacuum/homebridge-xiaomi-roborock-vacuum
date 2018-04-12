@@ -20,7 +20,7 @@
   "homepage": "https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum",
   "engines": {
     "node": ">=6.0.0",
-    "homebridge": ">=0.4.1",
+    "homebridge": ">=0.4.1"
   },
   "dependencies": {
     "miio": "git+https://github.com/nicoh88/miio.git"
