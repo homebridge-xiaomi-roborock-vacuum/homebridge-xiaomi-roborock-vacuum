@@ -1,6 +1,6 @@
 {
   "name": "homebridge-xiaomi-roborock-vacuum",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Xiaomi Vacuum Cleaner, 1st (Mi Robot) and 2nd (Roborock S50), plugin for Homebridge.",
   "license": "MIT",
   "keywords": [
@@ -23,6 +23,6 @@
     "homebridge": ">=0.4.1"
   },
   "dependencies": {
-    "miio": "git+https://github.com/nicoh88/miio.git"
+    "miio": "git://github.com/nicoh88/miio.git#master"
   }
 }

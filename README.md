@@ -24,7 +24,8 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
 * Schalter für Pause (Optional).
 * Belegesensor (ähnlich Bewegungssensor) für Dockstatus (Optional).
 
-<img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/screenshot.jpg?raw=true" alt="Screenshot Apple HomeKit with homebridge-xiaomi-roborock-vacuum" width="350">
+<img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/screenshot1.jpg?raw=true" alt="Screenshot Apple HomeKit with homebridge-xiaomi-roborock-vacuum" width="350">
+<img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/screenshot2.jpg?raw=true" alt="Screenshot Elgato Eve App with homebridge-xiaomi-roborock-vacuum" width="350">
 
 
 ## Anleitung
@@ -86,6 +87,9 @@ Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi 
 
 
 ## Versionsverlauf
+#### 0.3.0
+- Zusätzliche Characteristicen (4) zur Verschleißanzeige der Sensoren, Seitenbürste, Hauptbürste und des Filters hinzugefügt. (Eve App)
+
 #### 0.2.2
 - Eigener Fork von "miio" mit Bugfix für #5, #6 und #7
 

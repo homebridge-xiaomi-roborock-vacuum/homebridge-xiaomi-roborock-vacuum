@@ -1,4 +1,5 @@
 var miio = require('miio');
+var util = require('util');
 var Accessory, Service, Characteristic, UUIDGen;
 
 
@@ -99,6 +100,82 @@ function XiaomiRoborockVacuum(log, config) {
             that.services.push(that.dockService);
     }
 
+
+    // ADDITIONAL HOMEKIT SERVICES
+    Characteristic.CareSensors = function() {
+        Characteristic.call(this, 'Care indicator sensors', '00000101-0000-0000-0000-000000000000');
+        this.setProps({
+            format: Characteristic.Formats.FLOAT,
+            unit: '%',
+            perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+        });
+        this.value = this.getDefaultValue();
+    };
+    util.inherits(Characteristic.CareSensors, Characteristic);
+    Characteristic.CareSensors.UUID = '00000101-0000-0000-0000-000000000000';
+
+    Characteristic.CareFilter = function() {
+        Characteristic.call(this, 'Care indicator filter', '00000102-0000-0000-0000-000000000000');
+        this.setProps({
+            format: Characteristic.Formats.FLOAT,
+            unit: '%',
+            perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+        });
+        this.value = this.getDefaultValue();
+    };
+    util.inherits(Characteristic.CareFilter, Characteristic);
+    Characteristic.CareFilter.UUID = '00000102-0000-0000-0000-000000000000';
+
+    Characteristic.CareSideBrush = function() {
+        Characteristic.call(this, 'Care indicator side brush', '00000103-0000-0000-0000-000000000000');
+        this.setProps({
+            format: Characteristic.Formats.FLOAT,
+            unit: '%',
+            perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+        });
+        this.value = this.getDefaultValue();
+    };
+    util.inherits(Characteristic.CareSideBrush, Characteristic);
+    Characteristic.CareSideBrush.UUID = '00000103-0000-0000-0000-000000000000';
+
+    Characteristic.CareMainBrush = function() {
+        Characteristic.call(this, 'Care indicator main brush', '00000104-0000-0000-0000-000000000000');
+        this.setProps({
+            format: Characteristic.Formats.FLOAT,
+            unit: '%',
+            perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY]
+        });
+        this.value = this.getDefaultValue();
+    };
+    util.inherits(Characteristic.CareMainBrush, Characteristic);
+    Characteristic.CareMainBrush.UUID = '00000104-0000-0000-0000-000000000000';
+
+    Service.Care = function(displayName, subtype) {
+        Service.call(this, displayName, '00000111-0000-0000-0000-000000000000', subtype);
+        this.addCharacteristic(Characteristic.CareSensors);
+        this.addCharacteristic(Characteristic.CareFilter);
+        this.addCharacteristic(Characteristic.CareSideBrush);
+        this.addCharacteristic(Characteristic.CareMainBrush);
+    };
+    util.inherits(Service.Care, Service);
+    Service.Care.UUID = '00000111-0000-0000-0000-000000000000';
+
+    that.Care = new Service.Care(that.name + ' Care')
+        that.Care
+            .getCharacteristic(Characteristic.CareSensors)
+            .on('get', that.getCareSensors.bind(that));
+        that.Care
+            .getCharacteristic(Characteristic.CareFilter)
+            .on('get', that.getCareFilter.bind(that));
+        that.Care
+            .getCharacteristic(Characteristic.CareSideBrush)
+            .on('get', that.getCareSideBrush.bind(that));
+        that.Care
+            .getCharacteristic(Characteristic.CareMainBrush)
+            .on('get', that.getCareMainBrush.bind(that));
+    that.services.push(that.Care);
+
+
     // HOMEKIT SERVICES CHANGES
     this.changedCleaning = function(robotcleaning) {
         log.debug('changedCleaning | CleaningState ' + robotcleaning);
@@ -198,7 +275,6 @@ function XiaomiRoborockVacuum(log, config) {
     }
 
     that.getDevice();
-    //that.getConsumable();
 }
 
 
@@ -301,8 +377,6 @@ XiaomiRoborockVacuum.prototype = {
 
                 that.device = result;
 
-                //that.getConsumable();
-
             } else {
                 log.info('Is not a vacuum cleaner!');
                 log.debug(result);
@@ -315,19 +389,6 @@ XiaomiRoborockVacuum.prototype = {
             setTimeout(function() {that.getDevice() }, 120000); // No response from device over miio, wait 120 seconds for next try.
         });
     },
-
-    getConsumable: function() {
-        var that = this;
-        var log = that.log;
-
-        console.log(that.device)
-        console.log(that.device.sensorDirtyTime)
-        console.log(that.device.mainBrushWorkTime)
-        log.info('Sensors worktime: ' + that.device.property("sensorDirtyTime"));
-        log.info('Filter worktime: ' + that.device.property("filterWorkTime"));
-        log.info('Side brush worktime: ' + that.device.property("sideBrushWorkTime"));
-        log.info('Main brush worktime: ' + that.device.property("mainBrushWorkTime"));
-    },    
 
     getCleaning: function(callback) {
         var that = this;
@@ -532,5 +593,83 @@ XiaomiRoborockVacuum.prototype = {
         var log = that.log;
 
         return that.services;
-    }
+    },
+
+
+    // CONSUMABLE / CARE
+    getCareSensors: function(callback) {
+        // 30h = sensor_dirty_time
+
+        var that = this;
+        var log = that.log;
+
+        if(!that.device) {
+            log.info('ERROR, getCareSensors | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, getCareSensors | No vacuum cleaner is discovered.'));
+            return;
+        }
+        
+        lifetime = 108000;
+        lifetimepercent = that.device.property("sensorDirtyTime") / lifetime * 100;
+        log.info('Sensors dirtytime are ' + that.device.property("sensorDirtyTime") + ' seconds / ' + lifetimepercent.toFixed(2) + '%.')
+
+        callback(null, lifetimepercent);
+    },
+
+    getCareFilter: function(callback) {
+        // 150h = filter_work_time
+
+        var that = this;
+        var log = that.log;
+
+        if(!that.device) {
+            log.info('ERROR, getCareFilter | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, getCareFilter | No vacuum cleaner is discovered.'));
+            return;
+        }
+
+        lifetime = 540000;
+        lifetimepercent = that.device.property("filterWorkTime") / lifetime * 100;
+        log.info('Filter worktime is ' + that.device.property("filterWorkTime") + ' seconds / ' + lifetimepercent.toFixed(2) + '%.')
+
+        callback(null, lifetimepercent);
+    },
+
+    getCareSideBrush: function(callback) {
+        // 200h = side_brush_work_time
+
+        var that = this;
+        var log = that.log;
+
+        if(!that.device) {
+            log.info('ERROR, getCareSideBrush | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, getCareSideBrush | No vacuum cleaner is discovered.'));
+            return;
+        }
+
+        lifetime = 720000;
+        lifetimepercent = that.device.property("sideBrushWorkTime") / lifetime * 100;
+        log.info('Sidebrush worktime is ' + that.device.property("sideBrushWorkTime") + ' seconds / ' + lifetimepercent.toFixed(2) + '%.')
+
+        callback(null, lifetimepercent);
+    },
+
+    getCareMainBrush: function(callback) {
+        // 300h = main_brush_work_time
+
+        var that = this;
+        var log = that.log;
+
+        if(!that.device) {
+            log.info('ERROR, getCareMainBrush | No vacuum cleaner is discovered.');
+            callback(new Error('ERROR, getCareMainBrush | No vacuum cleaner is discovered.'));
+            return;
+        }
+
+        lifetime = 1080000;
+        lifetimepercent = that.device.property("mainBrushWorkTime") / lifetime * 100;
+        log.info('Mainbrush worktime is ' + that.device.property("mainBrushWorkTime") + ' seconds / ' + lifetimepercent.toFixed(2) + '%.')
+
+        callback(null, lifetimepercent);
+    },
 };
