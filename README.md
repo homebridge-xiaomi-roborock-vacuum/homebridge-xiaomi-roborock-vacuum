@@ -29,7 +29,7 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
 
 
 ## Anleitung
-1. Plugin installieren mit `npm install -g homebridge-xiaomi-roborock-vacuum --unsafe-perm`.
+1. Plugin als `root` (`sudo su -`) installieren mit `npm install -g homebridge-xiaomi-roborock-vacuum --unsafe-perm`.
 2. Homebridge Konfiguration `config.json` anpassen.
 3.  Homebridge neustarten, ggf. `service homebridge restart`.
 
