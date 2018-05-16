@@ -87,6 +87,9 @@ Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi 
 
 
 ## Versionsverlauf
+#### 0.3.1
+- README ergänzt. (`root` mit `sudo su -`)
+
 #### 0.3.0
 - Zusätzliche Characteristicen (4) zur Verschleißanzeige der Sensoren, Seitenbürste, Hauptbürste und des Filters hinzugefügt. (Eve App)
 
