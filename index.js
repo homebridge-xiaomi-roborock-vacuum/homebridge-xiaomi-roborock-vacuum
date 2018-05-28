@@ -46,6 +46,32 @@ function XiaomiRoborockVacuum(log, config) {
         90  // 78-100%  = Max Speed
     ];
 
+    that.errors = {
+        id1: { description: 'Try turning the orange laserhead to make sure it isnt blocked.' },
+        id2: { description: 'Clean and tap the bumpers lightly.' },
+        id3: { description: 'Try moving the vacuum to a different place.' },
+        id4: { description: 'Wipe the cliff sensor clean and move the vacuum to a different place.' },
+        id5: { description: 'Remove and clean the main brush.' },
+        id6: { description: 'Remove and clean the sidebrushes.' },
+        id7: { description: 'Make sure the wheels arent blocked. Move the vacuum to a different place and try again.' },
+        id8: { description: 'Make sure there are no obstacles around the vacuum.' },
+        id9: { description: 'Install the dustbin and the filter.' },
+        id10: { description: 'Make sure the filter has been tried or clean the filter.' },
+        id11: { description: 'Strong magnetic field detected. Move the device away from the virtual wall and try again' },
+        id12: { description: 'Battery is low, charge your vacuum.' },
+        id13: { description: 'Couldnt charge properly. Make sure the charging surfaces are clean.' },
+        id14: { description: 'Battery malfunctioned.' },
+        id15: { description: 'Wipe the wall sensor clean.' },
+        id16: { description: 'Use the vacuum on a flat horizontal surface.' },
+        id17: { description: 'Sidebrushes malfunctioned. Reboot the system.' },
+        id18: { description: 'Fan malfunctioned. Reboot the system.' },
+        id19: { description: 'The docking station is not connected to power.' },
+        id20: { description: 'unkown' },
+        id21: { description: 'Please make sure that the top cover of the laser distance sensor is not pinned.' },
+        id22: { description: 'Please wipe the dock sensor.' },
+        id23: { description: 'Make sure the signal emission area of dock is clean.' }
+    };
+
     if(!that.ip)
         throw new Error('You must provide an ip address of the vacuum cleaner.');
 
@@ -176,7 +202,21 @@ function XiaomiRoborockVacuum(log, config) {
     that.services.push(that.Care);
 
 
-    // HOMEKIT SERVICES CHANGES
+    // (HOMEKIT) SERVICES CHANGES
+    this.changedError = function(roboterror) {
+        log.debug('changedError | ErrorID: ' + roboterror.id + ', ErrorDescription: ' + roboterror.description);
+        if (!roboterror.description.toLowerCase().startsWith("unknown")) {
+            roboterrortxt = roboterror.description;
+        } else {
+            if (that.errors.hasOwnProperty('id' + roboterror.id)) {
+                roboterrortxt = that.errors['id' + roboterror.id].description; //roboterrortxt = that.errors.id2.description;
+            } else {
+                roboterrortxt = 'Unkown error, errorid cant be mapped. (' + roboterror.id + ')';
+            }
+        }
+        log.info('INFO | Robot has an ERROR - ' + roboterror.id + ', ' + roboterrortxt);
+    }
+
     this.changedCleaning = function(robotcleaning) {
         log.debug('changedCleaning | CleaningState ' + robotcleaning);
         if(robotcleaning !== that.lastrobotcleaning) {
@@ -207,7 +247,7 @@ function XiaomiRoborockVacuum(log, config) {
                     log.info('INFO | Speed was changed to ' + that.speed + '%');
                     that.fanService.getCharacteristic(Characteristic.RotationSpeed).updateValue(that.speed);
                     break;
-                } 
+                }
                 if(speed > 90) {
                     that.speed = 90;
                     log.info('INFO | Speed was changed to ' + that.speed + '%');
@@ -294,7 +334,7 @@ XiaomiRoborockVacuum.prototype = {
         })
         .then(result => {
             if (result.matches('type:vaccuum')) {
-                
+
                 // INFO AT STARTUP
                 if (that.startup) {
                     log.info('Connected to: %s', that.ip);
@@ -325,16 +365,12 @@ XiaomiRoborockVacuum.prototype = {
                 }
 
                 // STATE
-                result.state().then(state => {                    
+                result.state().then(state => {
                     state = JSON.parse(JSON.stringify(state)); // Convert in valid JSON
 
                     if (state.error !== undefined) {
-                        // { id: 'charger-offline', description: 'Charger is offline' }
-                        // { id: '3', description: 'unkown error' }
-                        console.log(state.error)
-                        roboterror = state.error.id;
-                        roboterrortxt = state.error.description;
-                        log.debug('Robot has an ERROR: ' + roboterror + ', ' + roboterrortxt);
+                        //console.log(state.error)
+                        that.changedError(state.error);
                     }
 
                     that.changedCleaning(state.cleaning);
@@ -344,28 +380,28 @@ XiaomiRoborockVacuum.prototype = {
                     that.changedPause(state.cleaning, state.charging);
 
                     result.on('errorChanged', error => {
-                        console.log(error)
-                        roboterror = error.id;
-                        roboterrortxt = error.description;
-                        log.debug('Robot has an ERROR: ' + roboterror + ', ' + roboterrortxt);
+                        error = JSON.parse(JSON.stringify(error)); // Convert in valid JSON
+
+                        //console.log(error)
+                        that.changedError(error);
                     })
 
                     result.on('stateChanged', state => {
                         state = JSON.parse(JSON.stringify(state)); // Convert in valid JSON
 
                         if (state['key'] == "cleaning") {
-                            that.changedCleaning(state['value']) 
+                            that.changedCleaning(state['value'])
                             that.changedPause(state['value'], that.charging)
                         }
                         if (state['key'] == "charging") {
                             that.changedCharging(state['value'])
                             that.changedPause(that.cleaning, state['value'])
                         }
-                        if (state['key'] == "fanSpeed") { 
-                            that.changedSpeed(state['value']) 
+                        if (state['key'] == "fanSpeed") {
+                            that.changedSpeed(state['value'])
                         }
                         if (state['key'] == "batteryLevel") {
-                            that.changedBattery(state['value']) 
+                            that.changedBattery(state['value'])
                         }
                     });
 
@@ -419,12 +455,12 @@ XiaomiRoborockVacuum.prototype = {
             that.device.activateCleaning();
             that.cleaning = true
             // Cleaning => leaves dock
-            if (that.dock) { 
+            if (that.dock) {
                 that.docked = false;
                 that.dockService.getCharacteristic(Characteristic.OccupancyDetected).updateValue(that.docked);
             }
             // Cleaning => pausing possible
-            if (that.pause) { 
+            if (that.pause) {
                 that.pausepossible = true;
                 that.pauseService.getCharacteristic(Characteristic.On).updateValue(that.pausepossible);
             }
@@ -470,7 +506,7 @@ XiaomiRoborockVacuum.prototype = {
                 that.fanService.getCharacteristic(Characteristic.RotationSpeed).updateValue(that.speed); // Speed cleaned => set it in HomeKit
                 callback(null, that.speed);
                 break;
-            } 
+            }
             if(speed > 90) {
                 that.speed = 90;
                 log.info('ACTION | FanSpeed set to %s%.', that.speed);
@@ -608,7 +644,7 @@ XiaomiRoborockVacuum.prototype = {
             callback(new Error('ERROR, getCareSensors | No vacuum cleaner is discovered.'));
             return;
         }
-        
+
         lifetime = 108000;
         lifetimepercent = that.device.property("sensorDirtyTime") / lifetime * 100;
         log.info('Sensors dirtytime are ' + that.device.property("sensorDirtyTime") + ' seconds / ' + lifetimepercent.toFixed(2) + '%.')

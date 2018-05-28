@@ -87,14 +87,17 @@ Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi 
 
 
 ## Versionsverlauf
+#### 0.3.2
+- Bekannte "Unknown error" werden nun im Log mit einer aussagekräftigen Felermeldung dargestellt.
+
 #### 0.3.1
-- README ergänzt. (`root` mit `sudo su -`)
+- README ergänzt. (`root` mit `sudo su -`).
 
 #### 0.3.0
-- Zusätzliche Characteristicen (4) zur Verschleißanzeige der Sensoren, Seitenbürste, Hauptbürste und des Filters hinzugefügt. (Eve App)
+- Zusätzliche Characteristicen (4) zur Verschleißanzeige der Sensoren, Seitenbürste, Hauptbürste und des Filters hinzugefügt. (Eve App).
 
 #### 0.2.2
-- Eigener Fork von "miio" mit Bugfix für #5, #6 und #7
+- Eigener Fork von "miio" mit Bugfix für #5, #6 und #7.
 
 #### 0.2.1
 - Problem bei Änderung der Robotergeschwindigkeit (FanSpeed) über HomeKit behoben.
