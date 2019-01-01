@@ -1,40 +1,49 @@
 [![PayPal Donate](https://img.shields.io/badge/PayPal-Donate-blue.svg)](https://www.paypal.me/nh88)
+[![GitHub last commit](https://img.shields.io/github/last-commit/nicoh88/homebridge-xiaomi-roborock-vacuum.svg)](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum)
 [![npm](https://img.shields.io/npm/dt/homebridge-xiaomi-roborock-vacuum.svg)](https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum)
 [![npm version](https://badge.fury.io/js/homebridge-xiaomi-roborock-vacuum.svg)](https://badge.fury.io/js/homebridge-xiaomi-roborock-vacuum)
 [![dependencies Status](https://david-dm.org/nicoh88/homebridge-xiaomi-roborock-vacuum/status.svg)](https://david-dm.org/nicoh88/homebridge-xiaomi-roborock-vacuum)
 
 # homebridge-xiaomi-roborock-vacuum
 
-## Homebridge Plugin für Xiaomi Roborock's
-Mit diesem [Homebridge](https://github.com/nfarina/homebridge) Plugin kann man die Xiaomi Saugroboter (Roborock) in Apple HomeKit, als **Ventilator/Lüfter** einbinden. 
+## Homebridge plugin for Xiaomi Roborock's
+With this [homebridge](https://github.com/nfarina/homebridge) plugin can you control the xiaomi vacuum robots as fan in your Apple Home App (HomeKit).
 
-Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenson/miio) Version 0.15.6 oder neuer, nicht wie viele andere Plugins Version 0.14.1. Damit gehören Timeouts, API-Fehler vorerst der _Vergangenheit_ an!
+Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15.6 or newer, not like the old ones 0.14.1. Timeouts and API errors are a thing of the past!
 
 <img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/rockrobo.vacuum.v1.jpg" style="border:1px solid lightgray" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s5.jpg" style="border:1px solid lightgray" alt="Xiaomi Roborock S50 2nd Generation (Roborock Vacuum S5)" width="300">
 
 
 ## Features
-* **Ventilator/Lüfter** als Ein-/Aus-Schalter. Beim Ausschalten, direkt zurück zur Ladestation.
-* Geschwindigkeitsstufen per 3D-Touch / Force-Touch einstellbar.
-  - Off (0%)
-  - Quiet (1-38%)
-  - Balanced (39-60%)
-  - Turbo (61-77%)
-  - Max Speed (78-100%)
-* Batteriestatus und Zustand in den Gerätedetails. Warnung bei niedrigem Batteriestand.
-* Schalter für Pause (Optional).
-* Belegesensor (ähnlich Bewegungssensor) für Dockstatus (Optional).
+* **Fan** as On-/Off-Switch. When switching off, directly back to the charging station.
+* Fanspeed levels adjustable via 3D Touch / Force Touch.
+  * Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)
+    * Off (0%)
+    * Quiet (1-38%)
+    * Balanced (39-60%)
+    * Turbo (61-77%)
+    * Max Speed (78-100%)
+  * Xiaomi Roborock S50 2nd Generation (Roborock Vacuum S5)
+    * Off (0%)
+    * Mopping (1-15%) 
+    * Quiet (16-38%)
+    * Balanced (39-60%)
+    * Turbo (61-75%)
+    * Max Speed (76-100%)
+* Battery status and condition in the device details. Low battery alert.
+* Pause switch (optional).
+* Occupancy sensor (similar to motion sensor) for dock status (optional).
 
 <img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/screenshot1.jpg?raw=true" alt="Screenshot Apple HomeKit with homebridge-xiaomi-roborock-vacuum" width="350">
 <img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/screenshot2.jpg?raw=true" alt="Screenshot Elgato Eve App with homebridge-xiaomi-roborock-vacuum" width="350">
 
 
 ## Anleitung
-1. Plugin als `root` (`sudo su -`) installieren mit `npm install -g homebridge-xiaomi-roborock-vacuum --unsafe-perm`.
-2. Homebridge Konfiguration `config.json` anpassen.
-3.  Homebridge neustarten, ggf. `service homebridge restart`.
+1. Install the plugin as `root` (`sudo su -`) with `npm install -g homebridge-xiaomi-roborock-vacuum@latest --unsafe-perm`.
+2. Customize you homebridge configuration `config.json`.
+3. Restart homebridge, ggf. `service homebridge restart`.
 
-- Beispiel `config.json` mit einem Saugroboter:
+- Example `config.json` with one vacuum:
 
 ```
 "accessories": [
@@ -49,7 +58,7 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
 ],
 ```
 
-- Beispiel `config.json` mit zwei Saugrobotern:
+- Example `config.json` with two vacuums:
 
 ```
 "accessories": [
@@ -73,84 +82,67 @@ Dieses Plugin nutzt, glücklicherweise, die [miio](https://github.com/aholstenso
 ```
 
 
-## Optionale Parameter
-| Parameter | Standard  | Erklärung |
+## Optional parameters
+| Name of parameter | Default value | Notes |
 |---|---|---|
-| `pause` | false | Zeigt einen zusätzlichen Schalter für "Pause" an |
-| `dock` | false | Zeigt einen Belegesensor für den Dockstatus an |
+| `pause` | false | when set to true, HomeKit shows an additional switch for "pause" - switch is on, when pause is possible |
+| `dock` | false |  when set to true, HomeKit shows an occupancy sensor, if robot is in the charging dock |
 
 
 ## Xiaomi Token
-Um dieses Plugin nutzen zu können, muss man den sogenannten "Token" des Xiaomi Saugrobters auslesen. Hier ein paar ausführliche Anleitungen:
-- [Apple HomeKit Forum - HomeKit.Community](https://forum.smartapfel.de/forum/thread/370-xiaomi-token-auslesen/)
-- [MiRobot2Lox Token extrahieren](http://www.loxwiki.eu/display/LOXBERRY/Token+extrahieren)
-- [Homematic-Guru.de](https://homematic-guru.de/xiaomi-vacuum-staubsauger-roboter-mit-homematic-steuern)
+To use this plugin, you have to read the "token" of the xiaomi vacuum robots. Here are some detailed instructions:
+- :us::gb: - [python-miio - Getting started](https://python-miio.readthedocs.io/en/latest/discovery.html)
+- :de: - [Apple HomeKit Forum - HomeKit.Community](https://forum.smartapfel.de/forum/thread/370-xiaomi-token-auslesen/)
+- :de: - [Homematic-Guru.de](https://homematic-guru.de/xiaomi-vacuum-staubsauger-roboter-mit-homematic-steuern)
 
 
-## Versionsverlauf
+## Changes
+#### 0.4.0
+- Feature: Mopping is now supported. #31
+- Feature: Slightly different Speedmodes between Gen1 and Gen2 considered.
+- Bugfix: Initializing status values to variables at startup, there were problems when the robot was not docked when starting homebridge. #15 & #30
+- Bugfix: `pause` functionality improved. #15 & #30
+- Bugfix: Logging improved.
+
 #### 0.3.2
-- Bekannte "Unknown error" werden nun im Log mit einer aussagekräftigen Felermeldung dargestellt.
+- Bugfix: "Unknown error" with meaningful error message.
 
 #### 0.3.1
-- README ergänzt. (`root` mit `sudo su -`).
+- README customized (`root` with `sudo su -`).
 
 #### 0.3.0
-- Zusätzliche Characteristicen (4) zur Verschleißanzeige der Sensoren, Seitenbürste, Hauptbürste und des Filters hinzugefügt. (Eve App).
+- Feature: Additional characteristics (4) for care indicator of sensors, side brush, main brush and filter added (Eve App).
 
 #### 0.2.2
-- Eigener Fork von "miio" mit Bugfix für #5, #6 und #7.
+- Bugfix: Own Fork from "miio" with fixed for #5, #6 and #7.
 
 #### 0.2.1
-- Problem bei Änderung der Robotergeschwindigkeit (FanSpeed) über HomeKit behoben.
+- Bugfix: Fanspeed levels over HomeKit improved.
 
 #### 0.2.0
-- Plugin komplett überarbeitet, Logik verändert.
-- Verbindungsaufbau über miio-API sauberer abgebildet.
-- Fix für `UnhandledPromiseRejectionWarning`.
+- Rewrite plugin, changed logic.
+- Bugfix: Connection establishment improved.
+- Bugfix: `UnhandledPromiseRejectionWarning`
 
 #### 0.1.5
-- ERROR-Meldungen der miio-API hinzugefügt.
+- Feature: ERRORs from miio-API added.
 
 #### 0.1.4
-- Fix wenn `pause` / `dock` in `config.json` aktiviert .
-- Fix für "cannot read property getCharacteristic of undefined".
+- Bugfix: If `pause` / `dock` in `config.json` enabled.
+- Bugfix: `cannot read property getCharacteristic of undefined`.
 
 #### 0.1.3
-- Statusausgaben hinzugefügt (Homebridge-Log).
-- zweiter Fix für `UnhandledPromiseRejectionWarning`.
-- README ergänzt.
+- Feature: Logging added.
+- Bugfix: `UnhandledPromiseRejectionWarning`.
+- README customized.
 
 #### 0.1.2
-- Fix für `UnhandledPromiseRejectionWarning`.
-- Geräteinformationen (Model, Seriennummer und Firmwareversion) werden beim Start angezeigt.
-- README angepasst.
+- Feature: Deviceinfos (model, serial and firmware version) shows at startup.
+- Bugfix: `UnhandledPromiseRejectionWarning`.
+- README customized.
 
 #### 0.1.1
-- README korrigiert.
+- README typo.
 
 #### 0.1.0
-- Plugin veröffentlicht.
-
-## Lizenz
-The MIT License (MIT)
-
-Copyright (c) 2018 Nico Hartung
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
+- First version.
