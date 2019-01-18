@@ -25,7 +25,7 @@ Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
     * Max Speed (78-100%)
   * Xiaomi Roborock S50 2nd Generation (Roborock Vacuum S5)
     * Off (0%)
-    * Mopping (1-15%) 
+    * Mopping (1-15%)
     * Quiet (16-38%)
     * Balanced (39-60%)
     * Turbo (61-75%)
@@ -97,11 +97,14 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
+#### 0.4.1
+- Update engine versions from homebridge and node
+
 #### 0.4.0
-- Feature: Mopping is now supported. #31
+- Feature: Mopping is now supported. [#31](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/31)
 - Feature: Slightly different Speedmodes between Gen1 and Gen2 considered.
-- Bugfix: Initializing status values to variables at startup, there were problems when the robot was not docked when starting homebridge. #15 & #30
-- Bugfix: `pause` functionality improved. #15 & #30
+- Bugfix: Initializing status values to variables at startup, there were problems when the robot was not docked when starting homebridge. [#15](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/15) & [#30](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/30)
+- Bugfix: `pause` functionality improved. [#15](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/15) & [#30](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/30)
 - Bugfix: Logging improved.
 
 #### 0.3.2
@@ -114,7 +117,7 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 - Feature: Additional characteristics (4) for care indicator of sensors, side brush, main brush and filter added (Eve App).
 
 #### 0.2.2
-- Bugfix: Own Fork from "miio" with fixed for #5, #6 and #7.
+- Bugfix: Own Fork from "miio" with fixed for [#5](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/5), [#6](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/6) and [#7](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/7).
 
 #### 0.2.1
 - Bugfix: Fanspeed levels over HomeKit improved.
