@@ -1,0 +1,38 @@
+{
+  "pluginAlias": "XiaomiRoborockVacuum",
+  "pluginType": "accessory",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "default": "Xiaomi Mi Robot Vaccum 1st Generation",
+        "minLength": 1,
+        "required": true
+      },
+      "ip": {
+        "title": "IP",
+        "type": "string",
+        "required": true
+      },
+      "token": {
+        "title": "Token",
+        "type": "string",
+        "required": true
+      },
+      "pause": {
+        "title": "Show switch for \"pause\"",
+        "type": "boolean",
+        "default": false,
+        "required": true
+      },
+      "dock": {
+        "title": "Show Dock sensor",
+        "type": "boolean",
+        "default": true,
+        "required": true
+      }
+    }
+  }
+}
