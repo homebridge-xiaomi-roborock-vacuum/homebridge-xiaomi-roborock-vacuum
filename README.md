@@ -97,6 +97,9 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
+#### 0.4.2
+- Feature: Add support for homebridge-config-ui-x - thx @pisikaki
+
 #### 0.4.1
 - Update engine versions from homebridge and node
 
