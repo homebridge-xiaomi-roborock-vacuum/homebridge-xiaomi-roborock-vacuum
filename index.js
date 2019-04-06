@@ -224,10 +224,23 @@ function XiaomiRoborockVacuum(log, config) {
                 log.info('INF changedCleaning | ' + that.model + ' | Cleaning was started.');
                 that.cleaning = true;
                 that.fanService.getCharacteristic(Characteristic.On).updateValue(that.cleaning);
+                // Cleaning => pausing possible
+                if (that.pause) {
+                    that.pausepossible = true;
+                    that.lastrobotpausecleaning = that.pausepossible;
+                    that.pauseService.getCharacteristic(Characteristic.On).updateValue(that.pausepossible);
+                    log.info('ACT setCleaning - pause | ' + that.model + ' | PausePossible set to %s.', that.pausepossible);
+                }
             } else {
                 log.info('INF changedCleaning | ' + that.model + ' | Cleaning was stopped.');
                 that.cleaning = false;
                 that.fanService.getCharacteristic(Characteristic.On).updateValue(that.cleaning);
+                // Cleaning stoped => pausing not possible
+                if (that.pause) {
+                    that.pausepossible = false
+                    that.lastrobotpausecleaning = that.pausepossible;
+                    that.pauseService.getCharacteristic(Characteristic.On).updateValue(that.pausepossible);
+                }
             }
         }
     }
@@ -326,6 +339,34 @@ XiaomiRoborockVacuum.prototype = {
         .then(result => {
             if (result.matches('type:vaccuum')) {
 
+                that.device = result;
+
+                // Initialise listeners to this device
+                result.on('errorChanged', error => {
+                    error = JSON.parse(JSON.stringify(error)); // Convert in valid JSON
+
+                    //console.log(error)
+                    that.changedError(error);
+                })
+
+                result.on('stateChanged', state => {
+                    state = JSON.parse(JSON.stringify(state)); // Convert in valid JSON
+
+                    if (state['key'] == "cleaning") {
+                        that.changedCleaning(state['value'])
+                        that.changedPause(state['value'])
+                    }
+                    if (state['key'] == "charging") {
+                        that.changedCharging(state['value'])
+                    }
+                    if (state['key'] == "fanSpeed") {
+                        that.changedSpeed(state['value'])
+                    }
+                    if (state['key'] == "batteryLevel") {
+                        that.changedBattery(state['value'])
+                    }
+                });
+
                 // INFO AT STARTUP
                 if (that.startup) {
                     log.info('STA getDevice | Connected to: %s', that.ip);
@@ -357,69 +398,24 @@ XiaomiRoborockVacuum.prototype = {
                 }
 
                 // STATE
-                result.state().then(state => {
-                    state = JSON.parse(JSON.stringify(state)); // Convert in valid JSON
+                log.debug('DEB getDevice | Initializing status values to variables');
+                that.cleaning = state.cleaning;
+                that.charging = state.charging;
+                that.docked = state.charging;
+                that.speed = state.fanSpeed;
+                that.battery = state.batteryLevel;
+                if(state.cleaning == true) {
+                    that.pausepossible = true;
+                } else {
+                    that.pausepossible = false;
+                }
+                that.lastrobotcleaning = undefined;
+                that.lastrobotcharging = undefined;
+                that.lastspeed = undefined;
+                that.lastrobotpausecleaning = undefined;
+                //that.lastrobotpausecharging = undefined;
 
-                    if (state.error !== undefined) {
-                        //console.log(state.error)
-                        that.changedError(state.error);
-                    }
-
-                    log.debug('DEB getDevice | Initializing status values to variables');
-                        that.cleaning = state.cleaning;
-                        that.charging = state.charging;
-                        that.docked = state.charging;
-                        that.speed = state.fanSpeed;
-                        that.battery = state.batteryLevel;
-                        if(state.cleaning == true) {
-                            that.pausepossible = true;
-                        } else {
-                            that.pausepossible = false;
-                        }
-                        that.lastrobotcleaning = undefined;
-                        that.lastrobotcharging = undefined;
-                        that.lastspeed = undefined;
-                        that.lastrobotpausecleaning = undefined;
-                        //that.lastrobotpausecharging = undefined;
-
-                    that.changedCleaning(state.cleaning);
-                    that.changedCharging(state.charging);
-                    that.changedSpeed(state.fanSpeed);
-                    that.changedBattery(state.batteryLevel);
-                    that.changedPause(state.cleaning);
-
-                    result.on('errorChanged', error => {
-                        error = JSON.parse(JSON.stringify(error)); // Convert in valid JSON
-
-                        //console.log(error)
-                        that.changedError(error);
-                    })
-
-                    result.on('stateChanged', state => {
-                        state = JSON.parse(JSON.stringify(state)); // Convert in valid JSON
-
-                        if (state['key'] == "cleaning") {
-                            that.changedCleaning(state['value'])
-                            that.changedPause(state['value'])
-                        }
-                        if (state['key'] == "charging") {
-                            that.changedCharging(state['value'])
-                        }
-                        if (state['key'] == "fanSpeed") {
-                            that.changedSpeed(state['value'])
-                        }
-                        if (state['key'] == "batteryLevel") {
-                            that.changedBattery(state['value'])
-                        }
-                    });
-
-
-
-                }).catch(err => {
-                    log.error('ERR getDevice | result.state | ' + err)
-                })
-
-                that.device = result;
+                that.getState();
 
             } else {
                 log.error('ERR getDevice | Is not a vacuum cleaner!');
@@ -434,6 +430,29 @@ XiaomiRoborockVacuum.prototype = {
         });
     },
 
+    getState: function() {
+        var that = this;
+        var log = that.log;
+
+        return that.device.state().then(state => {
+            state = JSON.parse(JSON.stringify(state)); // Convert in valid JSON
+
+            if (state.error !== undefined) {
+                //console.log(state.error)
+                that.changedError(state.error);
+            }
+
+            that.changedCleaning(state.cleaning);
+            that.changedCharging(state.charging);
+            that.changedSpeed(state.fanSpeed);
+            that.changedBattery(state.batteryLevel);
+            that.changedPause(state.cleaning);
+
+        }).catch(err => {
+            log.error('ERR getState | result.state | ' + err);
+        });
+    },
+
     getCleaning: function(callback) {
         var that = this;
         var log = that.log;
@@ -444,8 +463,18 @@ XiaomiRoborockVacuum.prototype = {
             return;
         }
 
-        log.info('INF getCleaning | ' + that.model + ' | Cleaning is ' + that.lastrobotcleaning + '.')
-        callback(null, that.lastrobotcleaning);
+        // From https://github.com/aholstenson/miio/blob/master/docs/devices/vacuum.md#check-if-cleaning
+        that.device.cleaning()
+            .then(isCleaning => {
+                that.cleaning = isCleaning;
+                that.lastrobotcleaning = that.cleaning;
+                log.info('INF getCleaning | ' + that.model + ' | Cleaning is ' + isCleaning + '.')
+                callback(null, isCleaning)
+            })
+            .catch(err => {
+                log.error('ERR getCleaning | Failed getting the cleaning status.' + err);
+                callback(err);
+            });
     },
 
     setCleaning: function(state, callback) {
@@ -458,50 +487,57 @@ XiaomiRoborockVacuum.prototype = {
             return;
         }
 
-        log.debug('DEB setCleaning | ' + that.model + ' | Cleaning set it to ' + state + '.');
-        if(state) {
-            if(!that.cleaning) {
+        that.device.cleaning().then((isCleaning) => {
+            that.cleaning = isCleaning;
+            if (state && !that.cleaning) { // Start cleaning
                 log.info('ACT setCleaning | ' + that.model + ' | Start cleaning, not charging.');
-                that.device.activateCleaning();
-                that.cleaning = true
-                that.lastrobotcleaning = that.cleaning;
-                that.charging = false;
-                that.lastrobotcharging = that.charging;
-                that.batteryService.getCharacteristic(Characteristic.ChargingState).updateValue(Characteristic.ChargingState.NOT_CHARGING);
+                return that.device.activateCleaning()
+                    // IS THIS REALLY NEEDED?
+                    // .then(() => {
+                        // that.cleaning = true
+                        // that.lastrobotcleaning = that.cleaning;
+                        // that.charging = false;
+                        // that.lastrobotcharging = that.charging;
+                        // that.batteryService.getCharacteristic(Characteristic.ChargingState).updateValue(Characteristic.ChargingState.NOT_CHARGING);
 
-                // Cleaning => leaves dock
-                if (that.dock) {
-                    that.docked = false;
-                    that.dockService.getCharacteristic(Characteristic.OccupancyDetected).updateValue(that.docked);
-                    log.info('ACT setCleaning - dock | ' + that.model + ' | Docked set to %s.', that.docked);
-                }
+                        // Cleaning => leaves dock
+                        // if (that.dock) {
+                            // that.docked = false;
+                            // that.dockService.getCharacteristic(Characteristic.OccupancyDetected).updateValue(that.docked);
+                            // log.info('ACT setCleaning - dock | ' + that.model + ' | Docked set to %s.', that.docked);
+                        // }
 
-                // Cleaning => pausing possible
-                if (that.pause) {
-                    that.pausepossible = true;
-                    that.lastrobotpausecleaning = that.pausepossible;
-                    that.pauseService.getCharacteristic(Characteristic.On).updateValue(that.pausepossible);
-                    log.info('ACT setCleaning - pause | ' + that.model + ' | PausePossible set to %s.', that.pausepossible);
-                }
-            } else {
-               log.debug('DEB setCleaning | ' + that.model + ' | Start cleaning not necessary, cleaning already running.');
+                        // Cleaning => pausing possible
+                        // if (that.pause) {
+                        //     that.pausepossible = true;
+                        //     that.lastrobotpausecleaning = that.pausepossible;
+                        //     that.pauseService.getCharacteristic(Characteristic.On).updateValue(that.pausepossible);
+                        //     log.info('ACT setCleaning - pause | ' + that.model + ' | PausePossible set to %s.', that.pausepossible);
+                        // }
+                    // });
+            } else if (!state) { // Stop cleaning
+                log.info('ACT setCleaning | ' + that.model + ' | Stop cleaning and go to charge.');
+                return that.device.activateCharging() // Charging works for 1st, not for 2nd
+                // IS THIS REALLY NEEDED?
+                // .then(() => {
+                    // that.cleaning = false
+                    // that.lastrobotcleaning = that.cleaning;
+
+                    // // Cleaning stoped => pausing not possible
+                    // if (that.pause) {
+                    //     that.pausepossible = false
+                    //     that.lastrobotpausecleaning = that.pausepossible;
+                    //     that.pauseService.getCharacteristic(Characteristic.On).updateValue(that.pausepossible);
+                    // }
+                // });
             }
-
-        } else {
-            log.info('ACT setCleaning | ' + that.model + ' | Stop cleaning and go to charge.');
-            that.device.activateCharging(); // Charging works for 1st, not for 2nd
-            that.cleaning = false
-            that.lastrobotcleaning = that.cleaning;
-
-            // Cleaning stoped => pausing not possible
-            if (that.pause) {
-                that.pausepossible = false
-                that.lastrobotpausecleaning = that.pausepossible;
-                that.pauseService.getCharacteristic(Characteristic.On).updateValue(that.pausepossible);
-            }
-
-        }
-        callback();
+        })
+        .then(() => callback())
+        .catch((err) => {
+            // SHOULD WE RECONNECT AND RETRY?
+            log.error(`ERR setCleaning | ${that.model} | Failed to set cleaning to ${state}`, err);
+            callback(err);
+        });
     },
 
     getSpeed: function(callback) {
