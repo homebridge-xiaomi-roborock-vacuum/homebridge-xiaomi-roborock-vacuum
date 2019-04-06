@@ -399,16 +399,6 @@ XiaomiRoborockVacuum.prototype = {
 
                 // STATE
                 log.debug('DEB getDevice | Initializing status values to variables');
-                that.cleaning = state.cleaning;
-                that.charging = state.charging;
-                that.docked = state.charging;
-                that.speed = state.fanSpeed;
-                that.battery = state.batteryLevel;
-                if(state.cleaning == true) {
-                    that.pausepossible = true;
-                } else {
-                    that.pausepossible = false;
-                }
                 that.lastrobotcleaning = undefined;
                 that.lastrobotcharging = undefined;
                 that.lastspeed = undefined;
@@ -433,6 +423,12 @@ XiaomiRoborockVacuum.prototype = {
     getState: function() {
         var that = this;
         var log = that.log;
+
+        if (!that.device) {
+            log.error('ERR getState | No vacuum cleaner is discovered.');
+            callback(new Error('ERR getState | No vacuum cleaner is discovered.'));
+            return;
+        }
 
         return that.device.state().then(state => {
             state = JSON.parse(JSON.stringify(state)); // Convert in valid JSON
