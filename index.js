@@ -363,8 +363,6 @@ class XiaomiRoborockVacuum {
       this.changedPause(state.cleaning);
     } catch (err) {
       this.log.error(`ERR getState | this.device.state | ${err}`);
-    } finally {
-      setTimeout(() => this.getState(), 5 * 60 * 1000); // Refresh the state every 5 minutes
     }
   }
 
