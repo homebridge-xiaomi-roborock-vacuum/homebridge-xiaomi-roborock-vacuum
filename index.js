@@ -33,6 +33,13 @@ class XiaomiRoborockVacuum {
     100 // 76-100%  = Mi Home > "Full Speed / Max Speed / MAX" > 100
   ];
 
+  // From https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L128
+  static cleaningStatuses = [
+    'cleaning',
+    'spot-cleaning',
+    'zone-cleaning'
+  ];
+
   static errors = {
     id1: { description: 'Try turning the orange laserhead to make sure it isnt blocked.' },
     id2: { description: 'Clean and tap the bumpers lightly.' },
@@ -361,6 +368,11 @@ class XiaomiRoborockVacuum {
     }
   }
 
+  get isCleaning() {
+    const status = this.device.property('status');
+    return XiaomiRoborockVacuum.cleaningStatuses.includes(status);
+  }
+
   async getCleaning() {
     if (!this.device) {
       const errMsg = 'ERR getCleaning | No vacuum cleaner is discovered.';
@@ -369,7 +381,7 @@ class XiaomiRoborockVacuum {
     }
 
     try {
-      const isCleaning = await this.device.cleaning();
+      const isCleaning = this.isCleaning
       this.log.info(`INF getCleaning | ${this.model} | Cleaning is ${isCleaning}`);
 
       return isCleaning;
@@ -387,8 +399,7 @@ class XiaomiRoborockVacuum {
     }
 
     try {
-      const isCleaning = await this.device.cleaning();
-      if (state && !isCleaning) { // Start cleaning
+      if (state && !this.isCleaning) { // Start cleaning
         this.log.info(`ACT setCleaning | ${this.model} | Start cleaning, not charging.`);
         await this.device.activateCleaning();
       } else if (!state) { // Stop cleaning
@@ -451,7 +462,7 @@ class XiaomiRoborockVacuum {
     }
 
     try {
-      const isCleaning = await this.device.cleaning();
+      const isCleaning = this.isCleaning
       this.log.info(`INF getPauseState | ${this.model} | Pause possible is ${isCleaning}`);
       return isCleaning;
     } catch (err) {
@@ -467,8 +478,7 @@ class XiaomiRoborockVacuum {
     }
 
     try {
-      const isCleaning = await this.device.cleaning();
-      if (state && !isCleaning) {
+      if (state && !this.isCleaning) {
         await this.device.activateCleaning();
       } else if (!state) {
         await this.device.pause();
