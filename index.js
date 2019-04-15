@@ -210,7 +210,7 @@ class XiaomiRoborockVacuum {
     util.inherits(Service.Care, Service);
     Service.Care.UUID = '00000111-0000-0000-0000-000000000000';
 
-    this.services.Care = new Service.Care(`${this.name} Care`)
+    this.services.Care = new Service.Care(`${this.config.name} Care`)
     this.services.Care
       .getCharacteristic(Characteristic.CareSensors)
       .on('get', (cb) => callbackify(() => this.getCareSensors(), cb));
@@ -287,8 +287,8 @@ class XiaomiRoborockVacuum {
       }
 
       const device = await miio.device({
-        address: this.ip,
-        token: this.token,
+        address: this.config.ip,
+        token: this.config.token,
       });
 
       if (device.matches('type:vaccuum')) {
