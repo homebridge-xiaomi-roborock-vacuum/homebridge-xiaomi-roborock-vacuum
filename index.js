@@ -16,56 +16,63 @@ module.exports = function (homebridge) {
 }
 
 class XiaomiRoborockVacuum {
-  static speedmodes_gen1 = [
-    0,  // 0%       = Off
-    38, // 1-38%    = Mi Home > "Quiet / Leise" > 38
-    60, // 39-60%   = Mi Home > "Balanced / Standard" > 60
-    77, // 61-77%   = Mi Home > "Turbo / Stark" > 77
-    90  // 78-100%   = Mi Home > "Full Speed / Max Speed / MAX" > 90
-  ];
+  static get speedmodes_gen1() {
+    return [
+      0,  // 0%       = Off
+      38, // 1-38%    = Mi Home > "Quiet / Leise" > 38
+      60, // 39-60%   = Mi Home > "Balanced / Standard" > 60
+      77, // 61-77%   = Mi Home > "Turbo / Stark" > 77
+      90  // 78-100%   = Mi Home > "Full Speed / Max Speed / MAX" > 90
+    ];
+  }
 
-  static speedmodes_gen2 = [
-    0,  // 0%       = Off
-    15, // 1-15%    = Mi Home > "Mop / Mopping / Nur wischen" > 105
-    38, // 16-38%   = Mi Home > "Quiet / Leise" > 38
-    60, // 39-60%   = Mi Home > "Balanced / Standard" > 60
-    75, // 61-75%   = Mi Home > "Turbo / Stark" > 75
-    100 // 76-100%  = Mi Home > "Full Speed / Max Speed / MAX" > 100
-  ];
+  static get speedmodes_gen2() {
+    return [
+      0,  // 0%       = Off
+      15, // 1-15%    = Mi Home > "Mop / Mopping / Nur wischen" > 105
+      38, // 16-38%   = Mi Home > "Quiet / Leise" > 38
+      60, // 39-60%   = Mi Home > "Balanced / Standard" > 60
+      75, // 61-75%   = Mi Home > "Turbo / Stark" > 75
+      100 // 76-100%  = Mi Home > "Full Speed / Max Speed / MAX" > 100
+    ];
+  }
 
   // From https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L128
-  static cleaningStatuses = [
-    'cleaning',
-    'spot-cleaning',
-    'zone-cleaning'
-  ];
+  static get cleaningStatuses() {
+    return [
+      'cleaning',
+      'spot-cleaning',
+      'zone-cleaning'
+    ];
+  }
 
-  static errors = {
-    id1: { description: 'Try turning the orange laserhead to make sure it isnt blocked.' },
-    id2: { description: 'Clean and tap the bumpers lightly.' },
-    id3: { description: 'Try moving the vacuum to a different place.' },
-    id4: { description: 'Wipe the cliff sensor clean and move the vacuum to a different place.' },
-    id5: { description: 'Remove and clean the main brush.' },
-    id6: { description: 'Remove and clean the sidebrushes.' },
-    id7: { description: 'Make sure the wheels arent blocked. Move the vacuum to a different place and try again.' },
-    id8: { description: 'Make sure there are no obstacles around the vacuum.' },
-    id9: { description: 'Install the dustbin and the filter.' },
-    id10: { description: 'Make sure the filter has been tried or clean the filter.' },
-    id11: { description: 'Strong magnetic field detected. Move the device away from the virtual wall and try again' },
-    id12: { description: 'Battery is low, charge your vacuum.' },
-    id13: { description: 'Couldnt charge properly. Make sure the charging surfaces are clean.' },
-    id14: { description: 'Battery malfunctioned.' },
-    id15: { description: 'Wipe the wall sensor clean.' },
-    id16: { description: 'Use the vacuum on a flat horizontal surface.' },
-    id17: { description: 'Sidebrushes malfunctioned. Reboot the system.' },
-    id18: { description: 'Fan malfunctioned. Reboot the system.' },
-    id19: { description: 'The docking station is not connected to power.' },
-    id20: { description: 'unkown' },
-    id21: { description: 'Please make sure that the top cover of the laser distance sensor is not pinned.' },
-    id22: { description: 'Please wipe the dock sensor.' },
-    id23: { description: 'Make sure the signal emission area of dock is clean.' }
-  };
-
+  static get errors() {
+    return {
+      id1: { description: 'Try turning the orange laserhead to make sure it isnt blocked.' },
+      id2: { description: 'Clean and tap the bumpers lightly.' },
+      id3: { description: 'Try moving the vacuum to a different place.' },
+      id4: { description: 'Wipe the cliff sensor clean and move the vacuum to a different place.' },
+      id5: { description: 'Remove and clean the main brush.' },
+      id6: { description: 'Remove and clean the sidebrushes.' },
+      id7: { description: 'Make sure the wheels arent blocked. Move the vacuum to a different place and try again.' },
+      id8: { description: 'Make sure there are no obstacles around the vacuum.' },
+      id9: { description: 'Install the dustbin and the filter.' },
+      id10: { description: 'Make sure the filter has been tried or clean the filter.' },
+      id11: { description: 'Strong magnetic field detected. Move the device away from the virtual wall and try again' },
+      id12: { description: 'Battery is low, charge your vacuum.' },
+      id13: { description: 'Couldnt charge properly. Make sure the charging surfaces are clean.' },
+      id14: { description: 'Battery malfunctioned.' },
+      id15: { description: 'Wipe the wall sensor clean.' },
+      id16: { description: 'Use the vacuum on a flat horizontal surface.' },
+      id17: { description: 'Sidebrushes malfunctioned. Reboot the system.' },
+      id18: { description: 'Fan malfunctioned. Reboot the system.' },
+      id19: { description: 'The docking station is not connected to power.' },
+      id20: { description: 'unkown' },
+      id21: { description: 'Please make sure that the top cover of the laser distance sensor is not pinned.' },
+      id22: { description: 'Please wipe the dock sensor.' },
+      id23: { description: 'Make sure the signal emission area of dock is clean.' }
+    };
+  }
 
   constructor(log, config) {
     this.log = log;
