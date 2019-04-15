@@ -116,7 +116,7 @@ class XiaomiRoborockVacuum {
     this.services.fan
       .getCharacteristic(Characteristic.RotationSpeed)
       .on('get', (cb) => callbackify(() => this.getSpeed(), cb))
-      .on('get', (newState, cb) => callbackify(() => this.setSpeed(newState), cb))
+      .on('set', (newState, cb) => callbackify(() => this.setSpeed(newState), cb))
 
     this.services.battery = new Service.BatteryService(`${this.config.name} Battery`);
     this.services.battery
