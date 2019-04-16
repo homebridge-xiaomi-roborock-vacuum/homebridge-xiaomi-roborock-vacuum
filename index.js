@@ -426,8 +426,8 @@ class XiaomiRoborockVacuum {
       throw new Error(errMsg);
     }
 
-    this.log.info(`INF getSpeed | ${this.model} | Fanspeed is ${this.device.fanSpeed}`)
-    const speed = this.device.fanSpeed;
+    this.log.info(`INF getSpeed | ${this.model} | Fanspeed is ${this.device.property('fanSpeed')}`)
+    const speed = this.device.property('fanSpeed');
 
     if (speed === 105) { // Mopping mode
       return 15;
