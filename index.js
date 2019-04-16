@@ -376,7 +376,7 @@ class XiaomiRoborockVacuum {
   }
 
   get isCleaning() {
-    const status = this.device.property('status');
+    const status = this.device.property('state');
     return XiaomiRoborockVacuum.cleaningStatuses.includes(status);
   }
 
@@ -503,7 +503,7 @@ class XiaomiRoborockVacuum {
     }
 
     // From https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L65
-    const status = this.device.property('status');
+    const status = this.device.property('state');
     this.log.info(`INF getCharging | ${this.model} | Charging is ${status === "charging"} (Status is ${status})`);
 
     return (status === "charging") ? Characteristic.ChargingState.CHARGING : Characteristic.ChargingState.NOT_CHARGING;
@@ -517,7 +517,7 @@ class XiaomiRoborockVacuum {
     }
 
     // From https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L65
-    const status = this.device.property('status');
+    const status = this.device.property('state');
     this.log.info(`INF getDocked | ${this.model} | Robot Docked is ${status === 'charging'} (Status is ${status})`);
 
     return status === "charging";
