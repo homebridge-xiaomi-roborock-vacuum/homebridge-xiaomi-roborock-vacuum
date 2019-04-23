@@ -311,6 +311,7 @@ class XiaomiRoborockVacuum {
 
         if (this.startup) {
           this.model = this.device.miioModel;
+          this.services.info.getCharacteristic(Characteristic.Model).on('get', (cb) => cb(this.model));
           this.services.info.getCharacteristic(Characteristic.Model).updateValue(this.model);
 
           this.log.info('STA getDevice | Connected to: %s', this.config.ip);
@@ -322,6 +323,7 @@ class XiaomiRoborockVacuum {
           try {
             const serial = await this.device.call('get_serial_number');
             this.log.info(`STA getDevice | Serialnumber: ${serial[0].serial_number}`);
+            this.services.info.getCharacteristic(Characteristic.SerialNumber).on('get', (cb) => cb(serial[0].serial_number));
             this.services.info.getCharacteristic(Characteristic.SerialNumber).updateValue(serial[0].serial_number);
           } catch (err) {
             this.log.error(`ERR getDevice | get_serial_number | ${err}`);
@@ -330,6 +332,7 @@ class XiaomiRoborockVacuum {
           try {
             const firmware = await this.device.call('miIO.info');
             this.log.info(`STA getDevice | Firmwareversion: ${firmware.fw_ver}`);
+            this.services.info.getCharacteristic(Characteristic.FirmwareRevision).on('get', (cb) => cb(firmware.fw_ver));
             this.services.info.getCharacteristic(Characteristic.FirmwareRevision).updateValue(firmware.fw_ver);
           } catch (err) {
             this.log.error(`ERR getDevice | miIO.info | ${err}`);
