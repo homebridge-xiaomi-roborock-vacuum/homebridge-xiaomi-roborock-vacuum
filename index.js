@@ -311,6 +311,7 @@ class XiaomiRoborockVacuum {
 
         if (this.startup) {
           this.model = this.device.miioModel;
+          this.services.info.getCharacteristic(Characteristic.Model).updateValue(this.model);
 
           this.log.info('STA getDevice | Connected to: %s', this.config.ip);
           this.log.info('STA getDevice | Model: ' + this.device.miioModel);
@@ -321,6 +322,7 @@ class XiaomiRoborockVacuum {
           try {
             const serial = await this.device.call('get_serial_number');
             this.log.info(`STA getDevice | Serialnumber: ${serial[0].serial_number}`);
+            this.services.info.getCharacteristic(Characteristic.SerialNumber).updateValue(serial[0].serial_number);
           } catch (err) {
             this.log.error(`ERR getDevice | get_serial_number | ${err}`);
           }
@@ -328,6 +330,7 @@ class XiaomiRoborockVacuum {
           try {
             const firmware = await this.device.call('miIO.info');
             this.log.info(`STA getDevice | Firmwareversion: ${firmware.fw_ver}`);
+            this.services.info.getCharacteristic(Characteristic.FirmwareRevision).updateValue(firmware.fw_ver);
           } catch (err) {
             this.log.error(`ERR getDevice | miIO.info | ${err}`);
           }
@@ -347,12 +350,30 @@ class XiaomiRoborockVacuum {
     }
   }
 
-  async getState() {
+  async ensureDevice(callingMethod) {
     if (!this.device) {
-      const errMsg = 'ERR getState | No vacuum cleaner is discovered.';
+      const errMsg = `ERR ${callingMethod} | No vacuum cleaner is discovered.`;
       this.log.error(errMsg);
       throw new Error(errMsg);
     }
+
+    try {
+      // checking if the device has an open socket it will fail retrieving it if not
+      // https://github.com/aholstenson/miio/blob/master/lib/network.js#L227
+      const socket = this.device.handle.api.parent.socket;
+      this.log.debug(`DEB ensureDevice | ${this.model} | Socket ${socket.id} is still on. Reusing it.`);
+    } catch (err) {
+      if (/destroyed/i.test(err.message)) {
+        this.log.info(`INF ensureDevice | ${this.model} | Socket was destroyed, reinitialising the device`);
+        await this.initializeDevice();
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  async getState() {
+    await this.ensureDevice('getState');
 
     try {
       const state = await this.device.state();
@@ -381,11 +402,7 @@ class XiaomiRoborockVacuum {
   }
 
   async getCleaning() {
-    if (!this.device) {
-      const errMsg = 'ERR getCleaning | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+    await this.ensureDevice('getCleaning');
 
     try {
       const isCleaning = this.isCleaning
@@ -399,11 +416,7 @@ class XiaomiRoborockVacuum {
   }
 
   async setCleaning(state) {
-    if (!this.device) {
-      const errMsg = 'ERR setCleaning | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+    await this.ensureDevice('setCleaning');
 
     try {
       if (state && !this.isCleaning) { // Start cleaning
@@ -420,11 +433,7 @@ class XiaomiRoborockVacuum {
   }
 
   async getSpeed() {
-    if (!this.device) {
-      const errMsg = 'ERR getSpeed | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+    await this.ensureDevice('getSpeed');
 
     this.log.info(`INF getSpeed | ${this.model} | Fanspeed is ${this.device.property('fanSpeed')}`)
     const speed = this.device.property('fanSpeed');
@@ -437,11 +446,7 @@ class XiaomiRoborockVacuum {
   }
 
   async setSpeed(speed) {
-    if (!this.device) {
-      const errMsg = 'ERR setSpeed | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+    await this.ensureDevice('setSpeed');
 
     this.log.debug(`ACT setSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`);
 
@@ -462,11 +467,7 @@ class XiaomiRoborockVacuum {
   }
 
   async getPauseState() {
-    if (!this.device) {
-      const errMsg = 'ERR getPauseState | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+    await this.ensureDevice('getPauseState');
 
     try {
       const isCleaning = this.isCleaning
@@ -478,11 +479,7 @@ class XiaomiRoborockVacuum {
   }
 
   async setPauseState(state) {
-    if (!this.device) {
-      const errMsg = 'ERR setPauseState | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+    await this.ensureDevice('setPauseState');
 
     try {
       if (state && !this.isCleaning) {
@@ -496,11 +493,7 @@ class XiaomiRoborockVacuum {
   }
 
   async getCharging() {
-    if (!this.device) {
-      const errMsg = 'ERR getCharging | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+    await this.ensureDevice('getCharging');
 
     // From https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L65
     const status = this.device.property('state');
@@ -510,11 +503,7 @@ class XiaomiRoborockVacuum {
   }
 
   async getDocked() {
-    if (!this.device) {
-      const errMsg = 'ERR getDocked | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+    await this.ensureDevice('getDocked');
 
     // From https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L65
     const status = this.device.property('state');
@@ -524,11 +513,7 @@ class XiaomiRoborockVacuum {
   }
 
   async getBattery() {
-    if (!this.device) {
-      const errMsg = 'ERR getBattery | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+    await this.ensureDevice('getBattery');
 
     // https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L90
     this.log.info(`INF getBattery | ${this.model} | Batterylevel is ${this.device.property('batteryLevel')}%`);
@@ -536,11 +521,7 @@ class XiaomiRoborockVacuum {
   }
 
   async getBatteryLow() {
-    if (!this.device) {
-      const errMsg = 'ERR getBatteryLow | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+    await this.ensureDevice('getBatteryLow');
 
     // https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L90
     this.log.info(`INF getBatteryLow | ${this.model} | Batterylevel is ${this.device.property('batteryLevel')}%`);
@@ -548,11 +529,7 @@ class XiaomiRoborockVacuum {
   }
 
   async identify(callback) {
-    if (!this.device) {
-      const errMsg = 'ERR getDocked | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+    await this.ensureDevice('identify');
 
     this.log.info(`ACT identify | ${this.model} | Find me - Hello!`);
     try {
@@ -570,12 +547,8 @@ class XiaomiRoborockVacuum {
   }
 
   // CONSUMABLE / CARE
-  getCareSensors() {
-    if (!this.device) {
-      const errMsg = 'ERR getCareSensors | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+  async getCareSensors() {
+    await this.ensureDevice('getCareSensors');
 
     // 30h = sensor_dirty_time
     const lifetime = 108000;
@@ -584,12 +557,8 @@ class XiaomiRoborockVacuum {
     return lifetimepercent;
   }
 
-  getCareFilter() {
-    if (!this.device) {
-      const errMsg = 'ERR getCareFilter | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+  async getCareFilter() {
+    await this.ensureDevice('getCareFilter');
 
     // 150h = filter_work_time
     const lifetime = 540000;
@@ -598,12 +567,8 @@ class XiaomiRoborockVacuum {
     return lifetimepercent;
   }
 
-  getCareSideBrush() {
-    if (!this.device) {
-      const errMsg = 'ERR getCareSideBrush | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+  async getCareSideBrush() {
+    await this.ensureDevice('getCareSideBrush');
 
     // 200h = side_brush_work_time
     const lifetime = 720000;
@@ -612,12 +577,8 @@ class XiaomiRoborockVacuum {
     return lifetimepercent;
   }
 
-  getCareMainBrush() {
-    if (!this.device) {
-      const errMsg = 'ERR getCareMainBrush | No vacuum cleaner is discovered.';
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
+  async getCareMainBrush() {
+    await this.ensureDevice('getCareMainBrush');
 
     // 300h = main_brush_work_time
     const lifetime = 1080000;
