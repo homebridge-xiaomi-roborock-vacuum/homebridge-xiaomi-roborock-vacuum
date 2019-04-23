@@ -99,7 +99,7 @@ class XiaomiRoborockVacuum {
   }
 
   initialiseServices() {
-    this.services.info = new Service.AccessoryInformation();
+    this.services.info = new Service.AccessoryInformation(`${this.config.name} Basic Info`);
     this.services.info
       .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi');
       // .setCharacteristic(Characteristic.Model, 'Roborock');
