@@ -99,7 +99,7 @@ class XiaomiRoborockVacuum {
   }
 
   initialiseServices() {
-    this.services.info = new Service.AccessoryInformation(`${this.config.name} Basic Info`);
+    this.services.info = new Service.AccessoryInformation();
     this.services.info
       .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi');
       // .setCharacteristic(Characteristic.Model, 'Roborock');
@@ -109,9 +109,9 @@ class XiaomiRoborockVacuum {
     this.services.info
       .getCharacteristic(Characteristic.Model)
       .on('get', (cb) => callbackify(() => this.device.miioModel, cb));
-      this.services.info
-        .getCharacteristic(Characteristic.SerialNumber)
-        .on('get', (cb) => callbackify(() => this.getSerialNumber(), cb));
+    this.services.info
+      .getCharacteristic(Characteristic.SerialNumber)
+      .on('get', (cb) => callbackify(() => this.getSerialNumber(), cb));
 
     this.services.fan = new Service.Fan(this.config.name);
     this.services.fan
@@ -320,6 +320,7 @@ class XiaomiRoborockVacuum {
 
         if (this.startup) {
           this.model = this.device.miioModel;
+          this.services.info.setCharacteristic(Characteristic.Model, this.device.miioModel);
 
           this.log.info('STA getDevice | Connected to: %s', this.config.ip);
           this.log.info('STA getDevice | Model: ' + this.device.miioModel);
@@ -329,13 +330,15 @@ class XiaomiRoborockVacuum {
 
           try {
             const serial = await this.getSerialNumber();
-            this.log.info(`STA getDevice | Serialnumber: ${serial[0].serial_number}`);
+            this.services.info.setCharacteristic(Characteristic.SerialNumber, serial);
+            this.log.info(`STA getDevice | Serialnumber: ${serial}`);
           } catch (err) {
             this.log.error(`ERR getDevice | get_serial_number | ${err}`);
           }
 
           try {
             const firmware = await this.getFirmware();
+            this.services.info.setCharacteristic(Characteristic.FirmwareRevision, firmware);
             this.log.info(`STA getDevice | Firmwareversion: ${firmware}`);
           } catch (err) {
             this.log.error(`ERR getDevice | miIO.info | ${err}`);
