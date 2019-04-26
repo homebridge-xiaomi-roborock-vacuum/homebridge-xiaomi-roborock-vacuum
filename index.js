@@ -328,6 +328,7 @@ class XiaomiRoborockVacuum {
 
           try {
             const serial = await this.getSerialNumber();
+            this.services.info.setCharacteristic(Characteristic.SerialNumber, `${serial}`);
             this.log.info(`STA getDevice | Serialnumber: ${serial}`);
           } catch (err) {
             this.log.error(`ERR getDevice | get_serial_number | ${err}`);
@@ -335,6 +336,7 @@ class XiaomiRoborockVacuum {
 
           try {
             const firmware = await this.getFirmware();
+            this.services.info.setCharacteristic(Characteristic.FirmwareRevision, `${firmware}`);
             this.log.info(`STA getDevice | Firmwareversion: ${firmware}`);
           } catch (err) {
             this.log.error(`ERR getDevice | miIO.info | ${err}`);
