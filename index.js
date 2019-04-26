@@ -373,6 +373,7 @@ class XiaomiRoborockVacuum {
         this.log.info(`INF ensureDevice | ${this.model} | Socket was destroyed, reinitialising the device`);
         await this.initializeDevice();
       } else {
+        this.log.error(err);
         throw err;
       }
     }
