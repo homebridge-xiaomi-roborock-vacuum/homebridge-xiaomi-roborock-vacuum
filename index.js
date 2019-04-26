@@ -91,18 +91,24 @@ class XiaomiRoborockVacuum {
       throw new Error('You must provide a token of the vacuum cleaner.');
     }
 
-    // HOMEKIT SERVICES
-    this.initialiseServices();
-
-    // Initialize device
-    this.initializeDevice();
+    this.init();
   }
 
-  initialiseServices() {
+  async init() {
+    // Initialize device
+    await this.initializeDevice();
+
+    // HOMEKIT SERVICES
+    this.initialiseServices();
+  }
+
+  async initialiseServices() {
     this.services.info = new Service.AccessoryInformation();
     this.services.info
       .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi')
-      .setCharacteristic(Characteristic.Model, 'Roborock');
+      .setCharacteristic(Characteristic.Model, this.model || 'Roborock')
+      .setCharacteristic(Characteristic.SerialNumber, await this.getSerialNumber())
+      .setCharacteristic(Characteristic.FirmwareRevision, await this.getFirmware());
     this.services.info
       .getCharacteristic(Characteristic.FirmwareRevision)
       .on('get', (cb) => callbackify(() => this.getFirmware(), cb));
@@ -317,7 +323,6 @@ class XiaomiRoborockVacuum {
 
         if (this.startup) {
           this.model = this.device.miioModel;
-          this.services.info.setCharacteristic(Characteristic.Model, this.device.miioModel);
 
           this.log.info('STA getDevice | Connected to: %s', this.config.ip);
           this.log.info('STA getDevice | Model: ' + this.device.miioModel);
@@ -327,7 +332,6 @@ class XiaomiRoborockVacuum {
 
           try {
             const serial = await this.getSerialNumber();
-            this.services.info.setCharacteristic(Characteristic.SerialNumber, serial);
             this.log.info(`STA getDevice | Serialnumber: ${serial}`);
           } catch (err) {
             this.log.error(`ERR getDevice | get_serial_number | ${err}`);
@@ -335,7 +339,6 @@ class XiaomiRoborockVacuum {
 
           try {
             const firmware = await this.getFirmware();
-            this.services.info.setCharacteristic(Characteristic.FirmwareRevision, firmware);
             this.log.info(`STA getDevice | Firmwareversion: ${firmware}`);
           } catch (err) {
             this.log.error(`ERR getDevice | miIO.info | ${err}`);
