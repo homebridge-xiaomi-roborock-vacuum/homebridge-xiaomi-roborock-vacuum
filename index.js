@@ -97,9 +97,6 @@ class XiaomiRoborockVacuum {
   async init() {
     // Initialize device
     await this.initializeDevice();
-
-    // HOMEKIT SERVICES
-    this.initialiseServices();
   }
 
   async initialiseServices() {
@@ -343,6 +340,9 @@ class XiaomiRoborockVacuum {
           } catch (err) {
             this.log.error(`ERR getDevice | miIO.info | ${err}`);
           }
+
+          // HOMEKIT SERVICES
+          await this.initialiseServices();
 
           this.startup = false;
         }
