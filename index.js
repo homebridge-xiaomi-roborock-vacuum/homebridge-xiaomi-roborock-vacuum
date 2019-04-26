@@ -107,7 +107,7 @@ class XiaomiRoborockVacuum {
     this.services.info
       .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi')
       .setCharacteristic(Characteristic.Model, this.model || 'Roborock')
-      .setCharacteristic(Characteristic.SerialNumber, ""await this.getSerialNumber()"")
+      .setCharacteristic(Characteristic.SerialNumber, await this.getSerialNumber())
       .setCharacteristic(Characteristic.FirmwareRevision, await this.getFirmware());
     this.services.info
       .getCharacteristic(Characteristic.FirmwareRevision)
