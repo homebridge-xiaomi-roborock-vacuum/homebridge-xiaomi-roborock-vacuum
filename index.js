@@ -92,19 +92,19 @@ class XiaomiRoborockVacuum {
     }
 
     // HOMEKIT SERVICES
-    this.initialiseServices();
+    // this.initialiseServices();
 
     // Initialize device
     this.initializeDevice();
   }
 
-  initialiseServices() {
+  async initialiseServices() {
     this.services.info = new Service.AccessoryInformation();
     this.services.info
       .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi')
       .setCharacteristic(Characteristic.Model, this.model || 'Roborock')
-      .setCharacteristic(Characteristic.SerialNumber, "-")
-      .setCharacteristic(Characteristic.FirmwareRevision, "-");
+      .setCharacteristic(Characteristic.SerialNumber, await this.getSerialNumber())
+      .setCharacteristic(Characteristic.FirmwareRevision, await this.getFirmware());
     this.services.info
       .getCharacteristic(Characteristic.FirmwareRevision)
       .on('get', (cb) => callbackify(() => this.getFirmware(), cb));
@@ -301,24 +301,11 @@ class XiaomiRoborockVacuum {
 
       if (device.matches('type:vaccuum')) {
         this.device = device;
-        this.device.on('errorChanged', (error) => this.changedError(error));
-        this.device.on('stateChanged', (state) => {
-          if (state.key === 'cleaning') {
-            this.changedCleaning(state.value);
-            this.changedPause(state.value);
-          } else if (state.key === 'charging') {
-            this.changedCharging(state.value);
-          } else if (state.key === 'fanSpeed') {
-            this.changedSpeed(state.value);
-          } else if (state.key === 'batteryLevel') {
-            this.changedBattery(state.value);
-          } else {
-            this.log.debug(`DEB stateChanged | ${this.model} | Not supported stateChanged event: ${state.key}:${state.value}`);
-          }
-        });
 
         if (this.startup) {
           this.model = this.device.miioModel;
+
+          await this.initialiseServices();
 
           this.log.info('STA getDevice | Connected to: %s', this.config.ip);
           this.log.info('STA getDevice | Model: ' + this.device.miioModel);
@@ -344,6 +331,22 @@ class XiaomiRoborockVacuum {
 
           this.startup = false;
         }
+
+        this.device.on('errorChanged', (error) => this.changedError(error));
+        this.device.on('stateChanged', (state) => {
+          if (state.key === 'cleaning') {
+            this.changedCleaning(state.value);
+            this.changedPause(state.value);
+          } else if (state.key === 'charging') {
+            this.changedCharging(state.value);
+          } else if (state.key === 'fanSpeed') {
+            this.changedSpeed(state.value);
+          } else if (state.key === 'batteryLevel') {
+            this.changedBattery(state.value);
+          } else {
+            this.log.debug(`DEB stateChanged | ${this.model} | Not supported stateChanged event: ${state.key}:${state.value}`);
+          }
+        });
 
         await this.getState();
       } else {
