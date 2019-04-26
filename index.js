@@ -101,8 +101,8 @@ class XiaomiRoborockVacuum {
   initialiseServices() {
     this.services.info = new Service.AccessoryInformation();
     this.services.info
-      .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi');
-      // .setCharacteristic(Characteristic.Model, 'Roborock');
+      .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi')
+      .setCharacteristic(Characteristic.Model, 'Roborock');
     this.services.info
       .getCharacteristic(Characteristic.FirmwareRevision)
       .on('get', (cb) => callbackify(() => this.getFirmware(), cb));
@@ -120,7 +120,6 @@ class XiaomiRoborockVacuum {
       .on('set', (newState, cb) => callbackify(() => this.setCleaning(newState), cb))
       .on('change', (oldState, newState) => {
         this.changedPause(newState);
-        // TODO: Add Battery?
       });
     this.services.fan
       .getCharacteristic(Characteristic.RotationSpeed)
@@ -156,8 +155,6 @@ class XiaomiRoborockVacuum {
 
     // ADDITIONAL HOMEKIT SERVICES
     this.initialiseCareServices();
-
-    // TODO: Initialize change methods
   }
 
   initialiseCareServices() {
@@ -400,8 +397,6 @@ class XiaomiRoborockVacuum {
       this.changedPause(state.cleaning);
     } catch (err) {
       this.log.error(`ERR getState | this.device.state | ${err}`);
-    } finally {
-      setTimeout(() => this.getState(), 5 * 60 * 1000); // Ensuring a full refresh of the status in 5 minutes
     }
   }
 
