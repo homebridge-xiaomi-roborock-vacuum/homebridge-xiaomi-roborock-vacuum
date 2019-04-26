@@ -92,19 +92,17 @@ class XiaomiRoborockVacuum {
     }
 
     // HOMEKIT SERVICES
-    // this.initialiseServices();
+    this.initialiseServices();
 
     // Initialize device
     this.initializeDevice();
   }
 
-  async initialiseServices() {
+  initialiseServices() {
     this.services.info = new Service.AccessoryInformation();
     this.services.info
       .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi')
-      .setCharacteristic(Characteristic.Model, this.model || 'Roborock')
-      .setCharacteristic(Characteristic.SerialNumber, await this.getSerialNumber())
-      .setCharacteristic(Characteristic.FirmwareRevision, await this.getFirmware());
+      .setCharacteristic(Characteristic.Model, 'Roborock');
     this.services.info
       .getCharacteristic(Characteristic.FirmwareRevision)
       .on('get', (cb) => callbackify(() => this.getFirmware(), cb));
@@ -304,8 +302,7 @@ class XiaomiRoborockVacuum {
 
         if (this.startup) {
           this.model = this.device.miioModel;
-
-          await this.initialiseServices();
+          this.services.info.setCharacteristic(Characteristic.Model, this.model);
 
           this.log.info('STA getDevice | Connected to: %s', this.config.ip);
           this.log.info('STA getDevice | Model: ' + this.device.miioModel);
