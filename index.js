@@ -95,17 +95,20 @@ class XiaomiRoborockVacuum {
   }
 
   async init() {
+    // HOMEKIT SERVICES
+    this.initialiseServices();
+
     // Initialize device
     await this.initializeDevice();
   }
 
-  async initialiseServices() {
+  initialiseServices() {
     this.services.info = new Service.AccessoryInformation();
     this.services.info
       .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi')
       .setCharacteristic(Characteristic.Model, this.model || 'Roborock')
-      .setCharacteristic(Characteristic.SerialNumber, await this.getSerialNumber())
-      .setCharacteristic(Characteristic.FirmwareRevision, await this.getFirmware());
+      .setCharacteristic(Characteristic.SerialNumber, "-")
+      .setCharacteristic(Characteristic.FirmwareRevision, "-");
     this.services.info
       .getCharacteristic(Characteristic.FirmwareRevision)
       .on('get', (cb) => callbackify(() => this.getFirmware(), cb));
@@ -340,9 +343,6 @@ class XiaomiRoborockVacuum {
           } catch (err) {
             this.log.error(`ERR getDevice | miIO.info | ${err}`);
           }
-
-          // HOMEKIT SERVICES
-          await this.initialiseServices();
 
           this.startup = false;
         }
