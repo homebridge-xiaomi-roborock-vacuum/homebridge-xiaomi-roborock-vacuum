@@ -107,7 +107,7 @@ class XiaomiRoborockVacuum {
     this.services.info
       .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi')
       .setCharacteristic(Characteristic.Model, this.model || 'Roborock')
-      .setCharacteristic(Characteristic.SerialNumber, await this.getSerialNumber())
+      .setCharacteristic(Characteristic.SerialNumber, ""await this.getSerialNumber()"")
       .setCharacteristic(Characteristic.FirmwareRevision, await this.getFirmware());
     this.services.info
       .getCharacteristic(Characteristic.FirmwareRevision)
@@ -355,7 +355,9 @@ class XiaomiRoborockVacuum {
       }
     } catch (error) {
       this.log.error(`ERR getDevice | miio.device, next try in 2 minutes | ${error}`);
-      setTimeout(() => this.initializeDevice(), 120000); // No response from device over miio, wait 120 seconds for next try.
+      // No response from device over miio, wait 120 seconds for next try.
+      await new Promise((resolve) => setTimeout(resolve, 120000));
+      await this.initializeDevice();
     }
   }
 
