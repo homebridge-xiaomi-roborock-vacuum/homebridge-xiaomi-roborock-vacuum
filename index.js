@@ -91,15 +91,11 @@ class XiaomiRoborockVacuum {
       throw new Error('You must provide a token of the vacuum cleaner.');
     }
 
-    this.init();
-  }
-
-  async init() {
     // HOMEKIT SERVICES
     this.initialiseServices();
 
     // Initialize device
-    await this.initializeDevice();
+    this.initializeDevice();
   }
 
   initialiseServices() {
