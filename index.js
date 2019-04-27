@@ -372,7 +372,7 @@ class XiaomiRoborockVacuum {
       // checking if the device has an open socket it will fail retrieving it if not
       // https://github.com/aholstenson/miio/blob/master/lib/network.js#L227
       const socket = this.device.handle.api.parent.socket;
-      this.log.debug(`DEB ensureDevice | ${this.model} | Socket ${socket.id} is still on. Reusing it.`);
+      this.log.debug(`DEB ensureDevice | ${this.model} | Socket ${socket} is still on. Reusing it.`);
     } catch (err) {
       if (/destroyed/i.test(err.message)) {
         this.log.info(`INF ensureDevice | ${this.model} | Socket was destroyed, reinitialising the device`);
