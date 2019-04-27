@@ -4,15 +4,19 @@ const miio = require('miio');
 const util = require('util');
 const callbackify = require('./lib/callbackify');
 
-let Service, Characteristic;
+let homebrideAPI, Service, Characteristic;
+
+const PLUGIN_NAME = 'homebridge-xiaomi-roborock-vacuum';
+const ACCESSORY_NAME = 'XiaomiRoborockVacuum';
 
 module.exports = function (homebridge) {
   // Accessory = homebridge.platformAccessory;
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
+  homebrideAPI = homebridge;
   // UUIDGen = homebridge.hap.uuid;
 
-  homebridge.registerAccessory('homebridge-xiaomi-roborock-vacuum', 'XiaomiRoborockVacuum', XiaomiRoborockVacuum);
+  homebridge.registerAccessory(PLUGIN_NAME, ACCESSORY_NAME, XiaomiRoborockVacuum);
 }
 
 class XiaomiRoborockVacuum {
@@ -103,15 +107,6 @@ class XiaomiRoborockVacuum {
     this.services.info
       .setCharacteristic(Characteristic.Manufacturer, 'Xiaomi')
       .setCharacteristic(Characteristic.Model, 'Roborock');
-    this.services.info
-      .getCharacteristic(Characteristic.FirmwareRevision)
-      .on('get', (cb) => callbackify(() => this.getFirmware(), cb));
-    this.services.info
-      .getCharacteristic(Characteristic.Model)
-      .on('get', (cb) => callbackify(() => this.device.miioModel, cb));
-    this.services.info
-      .getCharacteristic(Characteristic.SerialNumber)
-      .on('get', (cb) => callbackify(() => this.getSerialNumber(), cb));
 
     this.services.fan = new Service.Fan(this.config.name);
     this.services.fan
@@ -302,7 +297,21 @@ class XiaomiRoborockVacuum {
 
         if (this.startup) {
           this.model = this.device.miioModel;
-          this.services.info.setCharacteristic(Characteristic.Model, this.model);
+          
+          // The Service.AccessoryInformation we provide initially is replaced by HAP's own.
+          // We need to hook the events to this new service instead if we want to be able to update the values
+          const accessory = homebrideAPI.accessory(`${PLUGIN_NAME}.${ACCESSORY_NAME}`);
+          const infoService = accessory.getService(Service.AccessoryInformation);
+          infoService
+            .getCharacteristic(Characteristic.FirmwareRevision)
+            .on('get', (cb) => callbackify(() => this.getFirmware(), cb));
+          infoService
+            .getCharacteristic(Characteristic.Model)
+            .on('get', (cb) => callbackify(() => this.device.miioModel, cb));
+          infoService
+            .getCharacteristic(Characteristic.SerialNumber)
+            .on('get', (cb) => callbackify(() => this.getSerialNumber(), cb));
+          infoService.setCharacteristic(Characteristic.Model, this.model);
 
           this.log.info('STA getDevice | Connected to: %s', this.config.ip);
           this.log.info('STA getDevice | Model: ' + this.device.miioModel);
@@ -312,7 +321,7 @@ class XiaomiRoborockVacuum {
 
           try {
             const serial = await this.getSerialNumber();
-            this.services.info.setCharacteristic(Characteristic.SerialNumber, `${serial}`);
+            infoService.setCharacteristic(Characteristic.SerialNumber, `${serial}`);
             this.log.info(`STA getDevice | Serialnumber: ${serial}`);
           } catch (err) {
             this.log.error(`ERR getDevice | get_serial_number | ${err}`);
@@ -320,7 +329,7 @@ class XiaomiRoborockVacuum {
 
           try {
             const firmware = await this.getFirmware();
-            this.services.info.setCharacteristic(Characteristic.FirmwareRevision, `${firmware}`);
+            infoService.setCharacteristic(Characteristic.FirmwareRevision, `${firmware}`);
             this.log.info(`STA getDevice | Firmwareversion: ${firmware}`);
           } catch (err) {
             this.log.error(`ERR getDevice | miIO.info | ${err}`);
