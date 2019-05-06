@@ -279,6 +279,7 @@ class XiaomiRoborockVacuum {
       this.services.fan.getCharacteristic(Characteristic.RotationSpeed).updateValue(15);
     } else if (speed >= 0 && speed <= 100) {
       this.log.info(`INF changedSpeed | ${this.model} | Speed was changed to ${speed}%`);
+      this.services.fan.getCharacteristic(Characteristic.RotationSpeed).updateValue(speed);
     } else {
       this.log.warn(`WAR changedSpeed | ${this.model} | Speed was changed to ${speed}%, this speed is not supported`);
     }
