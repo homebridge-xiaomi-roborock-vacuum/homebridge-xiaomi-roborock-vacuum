@@ -99,7 +99,7 @@ class XiaomiRoborockVacuum {
     this.initialiseServices();
 
     // Initialize device
-    this.initializeDevice();
+    this.initialisingPromise = this.initializeDevice();
   }
 
   initialiseServices() {
@@ -377,7 +377,14 @@ class XiaomiRoborockVacuum {
     } catch (err) {
       if (/destroyed/i.test(err.message)) {
         this.log.info(`INF ensureDevice | ${this.model} | Socket was destroyed, reinitialising the device`);
-        await this.initializeDevice();
+        if (this.initialisingPromise === null) { // if already trying to re-connect, don't trigger yet another one
+          this.initialisingPromise = this.initializeDevice();
+        }
+        try {
+          await this.initialisingPromise;
+        } finally {
+          this.initialisingPromise = null;
+        }
       } else {
         this.log.error(err);
         throw err;
@@ -521,9 +528,9 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice('setPauseState');
 
     try {
-      if (state && !this.isCleaning) {
+      if (state) {
         await this.device.activateCleaning();
-      } else if (!state) {
+      } else {
         await this.device.pause();
       }
     } catch (err) {
