@@ -292,75 +292,81 @@ class XiaomiRoborockVacuum {
   }
 
   async initializeDevice() {
-    try {
+    if (this.startup) {
+      this.log.debug('DEB getDevice | Discovering vacuum cleaner');
+    }
+
+    const device = await miio.device({
+      address: this.config.ip,
+      token: this.config.token,
+    });
+
+    if (device.matches('type:vaccuum')) {
+      this.device = device;
+
       if (this.startup) {
-        this.log.debug('DEB getDevice | Discovering vacuum cleaner');
-      }
+        this.model = this.device.miioModel;
+        this.services.info.setCharacteristic(Characteristic.Model, this.model);
 
-      const device = await miio.device({
-        address: this.config.ip,
-        token: this.config.token,
-      });
+        this.log.info('STA getDevice | Connected to: %s', this.config.ip);
+        this.log.info('STA getDevice | Model: ' + this.device.miioModel);
+        this.log.info('STA getDevice | State: ' + this.device.property("state"));
+        this.log.info('STA getDevice | FanSpeed: ' + this.device.property("fanSpeed"));
+        this.log.info('STA getDevice | BatteryLevel: ' + this.device.property("batteryLevel"));
 
-      if (device.matches('type:vaccuum')) {
-        this.device = device;
-
-        if (this.startup) {
-          this.model = this.device.miioModel;
-          this.services.info.setCharacteristic(Characteristic.Model, this.model);
-
-          this.log.info('STA getDevice | Connected to: %s', this.config.ip);
-          this.log.info('STA getDevice | Model: ' + this.device.miioModel);
-          this.log.info('STA getDevice | State: ' + this.device.property("state"));
-          this.log.info('STA getDevice | FanSpeed: ' + this.device.property("fanSpeed"));
-          this.log.info('STA getDevice | BatteryLevel: ' + this.device.property("batteryLevel"));
-
-          try {
-            const serial = await this.getSerialNumber();
-            this.services.info.setCharacteristic(Characteristic.SerialNumber, `${serial}`);
-            this.log.info(`STA getDevice | Serialnumber: ${serial}`);
-          } catch (err) {
-            this.log.error(`ERR getDevice | get_serial_number | ${err}`);
-          }
-
-          try {
-            const firmware = await this.getFirmware();
-            this.services.info.setCharacteristic(Characteristic.FirmwareRevision, `${firmware}`);
-            this.log.info(`STA getDevice | Firmwareversion: ${firmware}`);
-          } catch (err) {
-            this.log.error(`ERR getDevice | miIO.info | ${err}`);
-          }
-
-          this.startup = false;
+        try {
+          const serial = await this.getSerialNumber();
+          this.services.info.setCharacteristic(Characteristic.SerialNumber, `${serial}`);
+          this.log.info(`STA getDevice | Serialnumber: ${serial}`);
+        } catch (err) {
+          this.log.error(`ERR getDevice | get_serial_number | ${err}`);
         }
 
-        this.device.on('errorChanged', (error) => this.changedError(error));
-        this.device.on('stateChanged', (state) => {
-          if (state.key === 'cleaning') {
-            this.changedCleaning(state.value);
-            this.changedPause(state.value);
-          } else if (state.key === 'charging') {
-            this.changedCharging(state.value);
-          } else if (state.key === 'fanSpeed') {
-            this.changedSpeed(state.value);
-          } else if (state.key === 'batteryLevel') {
-            this.changedBattery(state.value);
-          } else {
-            this.log.debug(`DEB stateChanged | ${this.model} | Not supported stateChanged event: ${state.key}:${state.value}`);
-          }
-        });
+        try {
+          const firmware = await this.getFirmware();
+          this.services.info.setCharacteristic(Characteristic.FirmwareRevision, `${firmware}`);
+          this.log.info(`STA getDevice | Firmwareversion: ${firmware}`);
+        } catch (err) {
+          this.log.error(`ERR getDevice | miIO.info | ${err}`);
+        }
 
-        await this.getState();
-      } else {
-        this.log.error('ERR getDevice | Is not a vacuum cleaner!');
-        this.log.debug(device);
-        device.destroy();
+        this.startup = false;
       }
-    } catch (error) {
-      this.log.error(`ERR getDevice | miio.device, next try in 2 minutes | ${error}`);
-      // No response from device over miio, wait 120 seconds for next try.
-      await new Promise((resolve) => setTimeout(resolve, 120000));
-      return this.initializeDevice();
+
+      this.device.on('errorChanged', (error) => this.changedError(error));
+      this.device.on('stateChanged', (state) => {
+        if (state.key === 'cleaning') {
+          this.changedCleaning(state.value);
+          this.changedPause(state.value);
+        } else if (state.key === 'charging') {
+          this.changedCharging(state.value);
+        } else if (state.key === 'fanSpeed') {
+          this.changedSpeed(state.value);
+        } else if (state.key === 'batteryLevel') {
+          this.changedBattery(state.value);
+        } else {
+          this.log.debug(`DEB stateChanged | ${this.model} | Not supported stateChanged event: ${state.key}:${state.value}`);
+        }
+      });
+
+      await this.getState();
+    } else {
+      this.log.error('ERR getDevice | Is not a vacuum cleaner!');
+      this.log.debug(device);
+      device.destroy();
+    }
+  }
+
+  async connect() {
+    while (true) { // This will ensure we keep retrying until the connection finally occurs (while broken with the return)
+      try {
+        await this.initializeDevice();
+        return;
+      } catch (error) {
+        this.log.error(`ERR connect | miio.device, next try in 2 minutes | ${error}`);
+        // No response from device over miio, wait 120 seconds for next try.
+        await new Promise((resolve) => setTimeout(resolve, 120000));
+      }
     }
   }
 
@@ -379,8 +385,8 @@ class XiaomiRoborockVacuum {
     } catch (err) {
       if (/destroyed/i.test(err.message) || /No vacuum cleaner is discovered yet/.test(err.message)) {
         this.log.info(`INF ensureDevice | ${this.model} | Socket was destroyed or not initialised, initialising the device`);
-        if (this.initialisingPromise === null) { // if already trying to re-connect, don't trigger yet another one
-          this.initialisingPromise = this.initializeDevice();
+        if (this.initialisingPromise === null) { // if already trying to connect, don't trigger yet another one
+          this.initialisingPromise = this.connect();
         }
         try {
           await this.initialisingPromise;
