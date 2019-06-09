@@ -99,7 +99,7 @@ class XiaomiRoborockVacuum {
     this.initialiseServices();
 
     // Initialize device
-    this.initialisingPromise = this.initializeDevice();
+    this.ensureDevice("Constructor");
   }
 
   initialiseServices() {
@@ -358,25 +358,27 @@ class XiaomiRoborockVacuum {
       }
     } catch (error) {
       this.log.error(`ERR getDevice | miio.device, next try in 2 minutes | ${error}`);
-      setTimeout(() => this.initializeDevice(), 120000); // No response from device over miio, wait 120 seconds for next try.
+      // No response from device over miio, wait 120 seconds for next try.
+      await new Promise((resolve) => setTimeout(resolve, 120000));
+      return this.initializeDevice();
     }
   }
 
   async ensureDevice(callingMethod) {
-    if (!this.device) {
-      const errMsg = `ERR ${callingMethod} | No vacuum cleaner is discovered.`;
-      this.log.error(errMsg);
-      throw new Error(errMsg);
-    }
-
     try {
+      if (!this.device) {
+        const errMsg = `ERR ${callingMethod} | No vacuum cleaner is discovered yet.`;
+        this.log.error(errMsg);
+        throw new Error(errMsg);
+      }
+
       // checking if the device has an open socket it will fail retrieving it if not
       // https://github.com/aholstenson/miio/blob/master/lib/network.js#L227
       const socket = this.device.handle.api.parent.socket;
       this.log.debug(`DEB ensureDevice | ${this.model} | Socket ${socket} is still on. Reusing it.`);
     } catch (err) {
-      if (/destroyed/i.test(err.message)) {
-        this.log.info(`INF ensureDevice | ${this.model} | Socket was destroyed, reinitialising the device`);
+      if (/destroyed/i.test(err.message) || /No vacuum cleaner is discovered yet/.test(err.message)) {
+        this.log.info(`INF ensureDevice | ${this.model} | Socket was destroyed or not initialised, initialising the device`);
         if (this.initialisingPromise === null) { // if already trying to re-connect, don't trigger yet another one
           this.initialisingPromise = this.initializeDevice();
         }
