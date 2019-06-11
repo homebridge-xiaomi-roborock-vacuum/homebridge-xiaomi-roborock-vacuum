@@ -99,8 +99,8 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 ## Changes
 #### 0.5.0
 - Refactoring by @afharo
--- re-connection mechanism
--- javascript promises (async/await)
+  - re-connection mechanism
+  - javascript promises (async/await)
 
 #### 0.4.2
 - Feature: Add support for homebridge-config-ui-x - thx @pisikaki
