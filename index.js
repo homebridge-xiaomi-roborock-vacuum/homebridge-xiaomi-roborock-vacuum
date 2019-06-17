@@ -23,10 +23,10 @@ class XiaomiRoborockVacuum {
   static get speedmodes_gen1() {
     return [
       0,  // 0%       = Off
-      38, // 1-38%    = Mi Home > "Quiet / Leise" > 38
-      60, // 39-60%   = Mi Home > "Balanced / Standard" > 60
-      77, // 61-77%   = Mi Home > "Turbo / Stark" > 77
-      90  // 78-100%   = Mi Home > "Full Speed / Max Speed / MAX" > 90
+      38, // 1-38%    = Mi Home > "Quiet / Leise" > 38 | 101
+      60, // 39-60%   = Mi Home > "Balanced / Standard" > 60 | 102
+      77, // 61-77%   = Mi Home > "Turbo / Stark" > 77 | 103
+      90  // 78-100%   = Mi Home > "Full Speed / Max Speed / MAX" > 90 | 104
     ];
   }
 
@@ -277,6 +277,22 @@ class XiaomiRoborockVacuum {
     if (speed === 105) { // Mop / Mopping / Nur wischen
       this.log.info(`INF changedSpeed | ${this.model} | Speed was changed to 105% (Mopping), for HomeKit 15%`);
       this.services.fan.getCharacteristic(Characteristic.RotationSpeed).updateValue(15);
+
+    // BEGIN: https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/47
+    } else if (speed === 104) { // Full Speed / Max Speed / MAX
+      this.log.info(`INF changedSpeed | ${this.model} | Speed was changed to 104% (Max), for HomeKit 90%`);
+      this.services.fan.getCharacteristic(Characteristic.RotationSpeed).updateValue(90);
+    } else if (speed === 103) { // Turbo / Stark
+      this.log.info(`INF changedSpeed | ${this.model} | Speed was changed to 103% (Turbo), for HomeKit 77%`);
+      this.services.fan.getCharacteristic(Characteristic.RotationSpeed).updateValue(77);
+    } else if (speed === 102) { // Balanced / Standard
+      this.log.info(`INF changedSpeed | ${this.model} | Speed was changed to 102% (Balanced), for HomeKit 60%`);
+      this.services.fan.getCharacteristic(Characteristic.RotationSpeed).updateValue(60);
+    } else if (speed === 101) { // Quiet / Leise
+      this.log.info(`INF changedSpeed | ${this.model} | Speed was changed to 101% (Quiet), for HomeKit 38%`);
+      this.services.fan.getCharacteristic(Characteristic.RotationSpeed).updateValue(38);
+    // END: https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/47
+
     } else if (speed >= 0 && speed <= 100) {
       this.log.info(`INF changedSpeed | ${this.model} | Speed was changed to ${speed}%`);
       this.services.fan.getCharacteristic(Characteristic.RotationSpeed).updateValue(speed);
@@ -496,6 +512,23 @@ class XiaomiRoborockVacuum {
       return 15;
     }
 
+    // BEGIN: https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/47
+    if (this.model == "rockrobo.vacuum.s6") {
+      if (speed === 104) { // Full Speed / Max Speed / MAX
+        return 90;
+      }
+      if (speed === 103) { // Turbo / Stark
+        return 77;
+      }
+      if (speed === 102) { // Balanced / Standard
+        return 60;
+      }
+      if (speed === 101) { // Quiet / Leise
+        return 38;
+      }
+    }
+    // END: https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/47
+
     return this.device.fanSpeed || 0;
   }
 
@@ -504,7 +537,7 @@ class XiaomiRoborockVacuum {
 
     this.log.debug(`ACT setSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`);
 
-    const speedModes = (this.model == "rockrobo.vacuum.v1") ? XiaomiRoborockVacuum.speedmodes_gen1 : XiaomiRoborockVacuum.speedmodes_gen2;
+    const speedModes = (this.model == "roborock.vacuum.s5") ? XiaomiRoborockVacuum.speedmodes_gen2 : XiaomiRoborockVacuum.speedmodes_gen1;
 
     // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
     const safeSpeed = Math.min(parseInt(speed), speedModes[speedModes.length - 1]);
@@ -514,6 +547,24 @@ class XiaomiRoborockVacuum {
     if (miioSpeedMode === 15) {
       miioSpeedMode = 105;
       this.log.info(`ACT setSpeed | ${this.model} | FanSpeed set to ${miioSpeedMode} over miIO for Mopping.`);
+
+    // BEGIN: https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/47
+    } else if (this.model == "rockrobo.vacuum.s6") {
+      if (miioSpeedMode === 38) {
+        miioSpeedMode = 101;
+        this.log.info(`ACT setSpeed | ${this.model} | FanSpeed set to ${miioSpeedMode} over miIO for Quiet.`);
+      } else if (miioSpeedMode === 60) {
+        miioSpeedMode = 102;
+        this.log.info(`ACT setSpeed | ${this.model} | FanSpeed set to ${miioSpeedMode} over miIO for Balanced.`);
+      } else if (miioSpeedMode === 77) {
+        miioSpeedMode = 103;
+        this.log.info(`ACT setSpeed | ${this.model} | FanSpeed set to ${miioSpeedMode} over miIO for Turbo.`);
+      } else if (miioSpeedMode === 90) {
+        miioSpeedMode = 104;
+        this.log.info(`ACT setSpeed | ${this.model} | FanSpeed set to ${miioSpeedMode} over miIO for MAX.`);
+      }
+    // END: https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/47
+
     } else {
       this.log.info(`ACT setSpeed | ${this.model} | FanSpeed set to ${miioSpeedMode} over miIO.`);
     }
