@@ -513,7 +513,7 @@ class XiaomiRoborockVacuum {
     }
 
     // BEGIN: https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/47
-    if (this.model == "rockrobo.vacuum.s6") {
+    if (this.model == "roborock.vacuum.s6") {
       if (speed === 104) { // Full Speed / Max Speed / MAX
         return 90;
       }
@@ -549,7 +549,7 @@ class XiaomiRoborockVacuum {
       this.log.info(`ACT setSpeed | ${this.model} | FanSpeed set to ${miioSpeedMode} over miIO for Mopping.`);
 
     // BEGIN: https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/47
-    } else if (this.model == "rockrobo.vacuum.s6") {
+    } else if (this.model == "roborock.vacuum.s6") {
       if (miioSpeedMode === 38) {
         miioSpeedMode = 101;
         this.log.info(`ACT setSpeed | ${this.model} | FanSpeed set to ${miioSpeedMode} over miIO for Quiet.`);
