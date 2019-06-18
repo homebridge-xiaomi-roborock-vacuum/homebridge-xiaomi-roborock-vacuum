@@ -538,7 +538,7 @@ class XiaomiRoborockVacuum {
 
     const { homekitTopLevel, name } = this.findSpeedModeFromMiio(speed);
 
-    this.log.info(`INF convertMiioSpeedToHomekit | ${this.model} | Fanspeed is ${speed} over miIO "${name}" > HomeKit speed ${homekitTopLevel}%`);
+    this.log.info(`INF getSpeed | ${this.model} | Fanspeed is ${speed} over miIO "${name}" > HomeKit speed ${homekitTopLevel}%`);
     return homekitTopLevel || 0;
   }
 
