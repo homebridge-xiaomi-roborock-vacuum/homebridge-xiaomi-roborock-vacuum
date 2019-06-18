@@ -31,48 +31,48 @@ class XiaomiRoborockVacuum {
 
   static get speedmodes_gen1() {
     return [
-      // 0%       = Off
+      // 0%       = Off / Aus
       { homekitTopLevel: 0, miLevel: 0, name: "Off" },
-      // 1-38%    = Mi Home > "Quiet / Leise" > 38 | 101
-      { homekitTopLevel: 38, miLevel: 38, name: "Quiet / Leise" },
-      // 39-60%   = Mi Home > "Balanced / Standard" > 60 | 102
-      { homekitTopLevel: 60, miLevel: 60, name: "Balanced / Standard" },
-      // 61-77%   = Mi Home > "Turbo / Stark" > 77 | 103
-      { homekitTopLevel: 77, miLevel: 77, name: "Turbo / Stark" },
-      // 78-100%   = Mi Home > "Full Speed / Max Speed / MAX" > 90 | 104
-      { homekitTopLevel: 100, miLevel: 90, name: "Full Speed / Max Speed / MAX" }
+      // 1-38%   = "Quiet / Leise"
+      { homekitTopLevel: 38, miLevel: 38, name: "Quiet" },
+      // 39-60%  = "Balanced / Standard"
+      { homekitTopLevel: 60, miLevel: 60, name: "Balanced" },
+      // 61-77%  = "Turbo / Stark"
+      { homekitTopLevel: 77, miLevel: 77, name: "Turbo" },
+      // 78-100% = "Full Speed / Max Speed / Max"
+      { homekitTopLevel: 100, miLevel: 90, name: "Max" }
     ];
   }
 
   static get speedmodes_gen2() {
     return [
-      // 0%       = Off
+      // 0%      = Off / Aus
       { homekitTopLevel: 0, miLevel: 0, name: "Off" },
-      // 1-15%    = Mi Home > "Mop / Mopping / Nur wischen" > 105
-      { homekitTopLevel: 15, miLevel: 105, name: "Mop / Mopping / Nur wischen" },
-      // 16-38%   = Mi Home > "Quiet / Leise" > 38
-      { homekitTopLevel: 38, miLevel: 38, name: "Quiet / Leise" },
-      // 39-60%   = Mi Home > "Balanced / Standard" > 60
-      { homekitTopLevel: 60, miLevel: 60, name: "Balanced / Standard" },
-      // 61-75%   = Mi Home > "Turbo / Stark" > 75
-      { homekitTopLevel: 75, miLevel: 75, name: "Turbo / Stark" },
-      // 76-100%   = Mi Home > "Full Speed / Max Speed / MAX" > 100
-      { homekitTopLevel: 100, miLevel: 100, name: "Full Speed / Max Speed / MAX" }
+      // 1-15%   = "Mop / Mopping / Nur wischen"
+      { homekitTopLevel: 15, miLevel: 105, name: "Mop" },
+      // 16-38%  = "Quiet / Leise"
+      { homekitTopLevel: 38, miLevel: 38, name: "Quiet" },
+      // 39-60%  = "Balanced / Standard"
+      { homekitTopLevel: 60, miLevel: 60, name: "Balanced" },
+      // 61-75%  = "Turbo / Stark"
+      { homekitTopLevel: 75, miLevel: 75, name: "Turbo" },
+      // 76-100% = "Full Speed / Max Speed / Max"
+      { homekitTopLevel: 100, miLevel: 100, name: "Max" }
     ];
   }
 
   static get speedmodes_gen3() {
     return [
-      // 0% = Off
+      // 0%      = Off / Aus
       { homekitTopLevel: 0, miLevel: 0, name: "Off" },
-      // 1-38%    = Mi Home > "Quiet / Leise" > 101
-      { homekitTopLevel: 38, miLevel: 101, name: "Quiet / Leise" },
-      // 39-60%   = Mi Home > "Balanced / Standard" > 102
-      { homekitTopLevel: 60, miLevel: 102, name: "Balanced / Standard" },
-      // 61-77%   = Mi Home > "Turbo / Stark" > 103
-      { homekitTopLevel: 77, miLevel: 103, name: "Turbo / Stark" },
-      // 78-100%   = Mi Home > "Full Speed / Max Speed / MAX" > 104
-      { homekitTopLevel: 100, miLevel: 104, name: "Full Speed / Max Speed / MAX" }
+      // 1-38%   = "Quiet / Leise"
+      { homekitTopLevel: 38, miLevel: 101, name: "Quiet" },
+      // 39-60%  = "Balanced / Standard"
+      { homekitTopLevel: 60, miLevel: 102, name: "Balanced" },
+      // 61-77%  = "Turbo / Stark"
+      { homekitTopLevel: 77, miLevel: 103, name: "Turbo" },
+      // 78-100% = "Full Speed / Max Speed / Max"
+      { homekitTopLevel: 100, miLevel: 104, name: "Max" }
     ];
   }
 
