@@ -38,7 +38,7 @@ Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
 <img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/screenshot2.jpg?raw=true" alt="Screenshot Elgato Eve App with homebridge-xiaomi-roborock-vacuum" width="350">
 
 
-## Anleitung
+## Instructions
 1. Install the plugin as `root` (`sudo su -`) with `npm install -g homebridge-xiaomi-roborock-vacuum@latest --unsafe-perm`.
 2. Customize you homebridge configuration `config.json`.
 3. Restart homebridge, ggf. `service homebridge restart`.
