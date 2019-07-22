@@ -39,9 +39,10 @@ Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
 
 
 ## Instructions
-1. Install the plugin as `root` (`sudo su -`) with `npm install -g homebridge-xiaomi-roborock-vacuum@latest --unsafe-perm`.
-2. Customize you homebridge configuration `config.json`.
-3. Restart homebridge, ggf. `service homebridge restart`.
+1. Install git packages first with `sudo apt install git`.
+2. Install the plugin as `root` (`sudo su -`) with `npm install -g homebridge-xiaomi-roborock-vacuum@latest --unsafe-perm`.
+3. Customize you homebridge configuration `config.json`.
+4. Restart homebridge, ggf. `service homebridge restart`.
 
 - Example `config.json` with one vacuum:
 
