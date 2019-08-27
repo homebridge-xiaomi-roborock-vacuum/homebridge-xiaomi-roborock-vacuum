@@ -121,6 +121,7 @@ class XiaomiRoborockVacuum {
 
     this.device = null;
     this.connectingPromise = null;
+    this.connectRetry = setTimeout(() => void 0, 100); // Noop timeout only to initialise the property
 
     if (!this.config.ip) {
       throw new Error('You must provide an ip address of the vacuum cleaner.');
@@ -134,7 +135,7 @@ class XiaomiRoborockVacuum {
     this.initialiseServices();
 
     // Initialize device
-    this.ensureConnection();
+    this.connect();
   }
 
   initialiseServices() {
@@ -387,30 +388,19 @@ class XiaomiRoborockVacuum {
     }
   }
 
-  async ensureConnection(maxTries = 3, delay = 10000) {
-    // We'll retry up to 3 times with 10 seconds wait (default values) in between before giving up.
-    // It used to wait forever, but since we are trying to reconnect on every GET/SET, if not connected yet, 
-    // it should be OK to give up earlier.
-    while (maxTries-- > 0) {
-      try {
-        await this.initializeDevice();
-        return;
-      } catch (error) {
-        this.log.error(`ERR connect | miio.device, next try in ${Math.round(delay/1000)} seconds | ${error}`);
-        // No response from device over miio, wait delay seconds for next try.
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
-    }
-    // We have exhausted the number of retries, throw connection error
-    throw Error(`Failed to connect after ${maxTries} attempts!`);
-  }
-
-  async connect(maxTries, delay) {
+  async connect() {
     if (this.connectingPromise === null) { // if already trying to connect, don't trigger yet another one
-      this.connectingPromise = this.ensureConnection(maxTries, delay);
+      this.connectingPromise = this.initializeDevice().catch((err) => {
+        this.log.error(`ERR connect | miio.device, next try in 2 minutes | ${error}`);
+        clearTimeout(this.connectRetry);
+        // Using setTimeout instead of holding the promise. This way we'll keep retrying but not holding the other actions
+        this.connectRetry = setTimeout(() => this.connect(), 120000);
+        throw err;
+      });
     }
     try {
       await this.connectingPromise;
+      clearTimeout(this.connectRetry);
     } finally {
       this.connectingPromise = null;
     }
@@ -430,8 +420,9 @@ class XiaomiRoborockVacuum {
       this.log.debug(`DEB ensureDevice | ${this.model} | The socket is still on. Reusing it.`);
     } catch (err) {
       if (/destroyed/i.test(err.message) || /No vacuum cleaner is discovered yet/.test(err.message)) {
+        this.device = null;
         this.log.info(`INF ensureDevice | ${this.model} | The socket was destroyed or not initialised, initialising the device`);
-        await this.connect(3, 1000); // In here we enforce 1s wait in between retries to accelerate the process
+        await this.connect();
       } else {
         this.log.error(err);
         throw err;
