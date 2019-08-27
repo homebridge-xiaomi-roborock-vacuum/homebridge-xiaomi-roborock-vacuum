@@ -390,12 +390,12 @@ class XiaomiRoborockVacuum {
 
   async connect() {
     if (this.connectingPromise === null) { // if already trying to connect, don't trigger yet another one
-      this.connectingPromise = this.initializeDevice().catch((err) => {
+      this.connectingPromise = this.initializeDevice().catch((error) => {
         this.log.error(`ERR connect | miio.device, next try in 2 minutes | ${error}`);
         clearTimeout(this.connectRetry);
         // Using setTimeout instead of holding the promise. This way we'll keep retrying but not holding the other actions
         this.connectRetry = setTimeout(() => this.connect(), 120000);
-        throw err;
+        throw error;
       });
     }
     try {
