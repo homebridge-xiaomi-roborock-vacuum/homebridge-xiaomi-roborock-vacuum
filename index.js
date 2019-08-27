@@ -420,7 +420,6 @@ class XiaomiRoborockVacuum {
       this.log.debug(`DEB ensureDevice | ${this.model} | The socket is still on. Reusing it.`);
     } catch (err) {
       if (/destroyed/i.test(err.message) || /No vacuum cleaner is discovered yet/.test(err.message)) {
-        this.device = null;
         this.log.info(`INF ensureDevice | ${this.model} | The socket was destroyed or not initialised, initialising the device`);
         await this.connect();
       } else {
