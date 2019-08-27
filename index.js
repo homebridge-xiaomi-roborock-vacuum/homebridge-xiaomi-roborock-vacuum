@@ -401,6 +401,8 @@ class XiaomiRoborockVacuum {
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
+    // We have exhausted the number of retries, throw connection error
+    throw Error(`Failed to connect after ${maxTries} attempts!`);
   }
 
   async connect(maxTries, delay) {
