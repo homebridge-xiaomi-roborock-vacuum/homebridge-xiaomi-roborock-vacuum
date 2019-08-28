@@ -120,7 +120,8 @@ class XiaomiRoborockVacuum {
     this.services = {};
 
     this.device = null;
-    this.startup = true;
+    this.connectingPromise = null;
+    this.connectRetry = setTimeout(() => void 0, 100); // Noop timeout only to initialise the property
 
     if (!this.config.ip) {
       throw new Error('You must provide an ip address of the vacuum cleaner.');
@@ -134,7 +135,7 @@ class XiaomiRoborockVacuum {
     this.initialiseServices();
 
     // Initialize device
-    this.ensureDevice("Constructor");
+    this.connect();
   }
 
   initialiseServices() {
@@ -328,9 +329,7 @@ class XiaomiRoborockVacuum {
   }
 
   async initializeDevice() {
-    if (this.startup) {
-      this.log.debug('DEB getDevice | Discovering vacuum cleaner');
-    }
+    this.log.debug('DEB getDevice | Discovering vacuum cleaner');
 
     const device = await miio.device({
       address: this.config.ip,
@@ -340,33 +339,29 @@ class XiaomiRoborockVacuum {
     if (device.matches('type:vaccuum')) {
       this.device = device;
 
-      if (this.startup) {
-        this.model = this.device.miioModel;
-        this.services.info.setCharacteristic(Characteristic.Model, this.model);
+      this.model = this.device.miioModel;
+      this.services.info.setCharacteristic(Characteristic.Model, this.model);
 
-        this.log.info('STA getDevice | Connected to: %s', this.config.ip);
-        this.log.info('STA getDevice | Model: ' + this.device.miioModel);
-        this.log.info('STA getDevice | State: ' + this.device.property("state"));
-        this.log.info('STA getDevice | FanSpeed: ' + this.device.property("fanSpeed"));
-        this.log.info('STA getDevice | BatteryLevel: ' + this.device.property("batteryLevel"));
+      this.log.info('STA getDevice | Connected to: %s', this.config.ip);
+      this.log.info('STA getDevice | Model: ' + this.device.miioModel);
+      this.log.info('STA getDevice | State: ' + this.device.property("state"));
+      this.log.info('STA getDevice | FanSpeed: ' + this.device.property("fanSpeed"));
+      this.log.info('STA getDevice | BatteryLevel: ' + this.device.property("batteryLevel"));
 
-        try {
-          const serial = await this.getSerialNumber();
-          this.services.info.setCharacteristic(Characteristic.SerialNumber, `${serial}`);
-          this.log.info(`STA getDevice | Serialnumber: ${serial}`);
-        } catch (err) {
-          this.log.error(`ERR getDevice | get_serial_number | ${err}`);
-        }
+      try {
+        const serial = await this.getSerialNumber();
+        this.services.info.setCharacteristic(Characteristic.SerialNumber, `${serial}`);
+        this.log.info(`STA getDevice | Serialnumber: ${serial}`);
+      } catch (err) {
+        this.log.error(`ERR getDevice | get_serial_number | ${err}`);
+      }
 
-        try {
-          const firmware = await this.getFirmware();
-          this.services.info.setCharacteristic(Characteristic.FirmwareRevision, `${firmware}`);
-          this.log.info(`STA getDevice | Firmwareversion: ${firmware}`);
-        } catch (err) {
-          this.log.error(`ERR getDevice | miIO.info | ${err}`);
-        }
-
-        this.startup = false;
+      try {
+        const firmware = await this.getFirmware();
+        this.services.info.setCharacteristic(Characteristic.FirmwareRevision, `${firmware}`);
+        this.log.info(`STA getDevice | Firmwareversion: ${firmware}`);
+      } catch (err) {
+        this.log.error(`ERR getDevice | miIO.info | ${err}`);
       }
 
       this.device.on('errorChanged', (error) => this.changedError(error));
@@ -394,15 +389,20 @@ class XiaomiRoborockVacuum {
   }
 
   async connect() {
-    while (true) { // This will ensure we keep retrying until the connection finally occurs (while broken with the return)
-      try {
-        await this.initializeDevice();
-        return;
-      } catch (error) {
+    if (this.connectingPromise === null) { // if already trying to connect, don't trigger yet another one
+      this.connectingPromise = this.initializeDevice().catch((error) => {
         this.log.error(`ERR connect | miio.device, next try in 2 minutes | ${error}`);
-        // No response from device over miio, wait 120 seconds for next try.
-        await new Promise((resolve) => setTimeout(resolve, 120000));
-      }
+        clearTimeout(this.connectRetry);
+        // Using setTimeout instead of holding the promise. This way we'll keep retrying but not holding the other actions
+        this.connectRetry = setTimeout(() => this.connect(), 120000);
+        throw error;
+      });
+    }
+    try {
+      await this.connectingPromise;
+      clearTimeout(this.connectRetry);
+    } finally {
+      this.connectingPromise = null;
     }
   }
 
@@ -421,14 +421,7 @@ class XiaomiRoborockVacuum {
     } catch (err) {
       if (/destroyed/i.test(err.message) || /No vacuum cleaner is discovered yet/.test(err.message)) {
         this.log.info(`INF ensureDevice | ${this.model} | The socket was destroyed or not initialised, initialising the device`);
-        if (this.initialisingPromise === null) { // if already trying to connect, don't trigger yet another one
-          this.initialisingPromise = this.connect();
-        }
-        try {
-          await this.initialisingPromise;
-        } finally {
-          this.initialisingPromise = null;
-        }
+        await this.connect();
       } else {
         this.log.error(err);
         throw err;
