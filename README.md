@@ -98,6 +98,9 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
+#### 0.6.3
+- Improve: roborock.vacuum.t6 fanSpeed not supported issue [PR](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/pull/70)
+
 #### 0.6.2
 - Feature: Add support for Mi Robot 1S
 - Improve: Controlled Connection Retries [PR](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/pull/66)
