@@ -98,6 +98,9 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
+#### 0.6.5
+- Feature: Add support for Roborock S5 Max
+
 #### 0.6.4
 - Feature: Add support for Roborock Xiaowa E20
 

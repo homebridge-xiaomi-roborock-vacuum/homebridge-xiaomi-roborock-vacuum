@@ -25,6 +25,7 @@ class XiaomiRoborockVacuum {
       'rockrobo.vacuum.v1': XiaomiRoborockVacuum.speedmodes_gen1,
       'roborock.vacuum.c1': XiaomiRoborockVacuum.speedmodes_gen1,
       'roborock.vacuum.s5': XiaomiRoborockVacuum.speedmodes_gen2,
+      'robotics.vacuum.s5e': XiaomiRoborockVacuum.speedmodes_gen2,
       'roborock.vacuum.s6': XiaomiRoborockVacuum.speedmodes_gen3,
       'roborock.vacuum.t6': XiaomiRoborockVacuum.speedmodes_gen3,
       'roborock.vacuum.e2': XiaomiRoborockVacuum.speedmodes_gen3,
