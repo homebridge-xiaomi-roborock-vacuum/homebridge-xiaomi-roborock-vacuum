@@ -9,6 +9,8 @@ let homebrideAPI, Service, Characteristic;
 const PLUGIN_NAME = 'homebridge-xiaomi-roborock-vacuum';
 const ACCESSORY_NAME = 'XiaomiRoborockVacuum';
 
+const GET_STATE_INTERVAL_MS = 30000; // 30s
+
 module.exports = function (homebridge) {
   // Accessory = homebridge.platformAccessory;
   Service = homebridge.hap.Service;
@@ -125,6 +127,7 @@ class XiaomiRoborockVacuum {
     this.device = null;
     this.connectingPromise = null;
     this.connectRetry = setTimeout(() => void 0, 100); // Noop timeout only to initialise the property
+    this.getStateInterval = setInterval(() => void 0, GET_STATE_INTERVAL_MS); // Noop timeout only to initialise the property
 
     if (!this.config.ip) {
       throw new Error('You must provide an ip address of the vacuum cleaner.');
@@ -386,8 +389,12 @@ class XiaomiRoborockVacuum {
       });
 
       await this.getState();
+      // Refresh the state every 30s so miio maintains a fresh connection (or recovers connection if lost until we fix https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/81)
+      clearInterval(this.getStateInterval);
+      this.getStateInterval = setInterval(() => this.getState(), GET_STATE_INTERVAL_MS);
     } else {
-      this.log.error('ERR getDevice | Is not a vacuum cleaner!');
+      const model = (device || {}).miioModel;
+      this.log.error(`ERR getDevice | Device "${model}" is not registered as a vacuum cleaner! If you think it should be, please open an issue at https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/new and provide this line.`);
       this.log.debug(device);
       device.destroy();
     }
