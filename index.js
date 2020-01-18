@@ -456,7 +456,7 @@ class XiaomiRoborockVacuum {
       this.changedCleaning(state.cleaning);
       this.changedCharging(state.charging);
       this.changedSpeed(state.fanSpeed);
-      this.changedBattery(state.BatteryLevel);
+      this.changedBattery(state.batteryLevel);
       this.changedPause(state.cleaning);
     } catch (err) {
       this.log.error(`ERR getState | this.device.state | ${err}`);
