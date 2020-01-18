@@ -138,7 +138,9 @@ class XiaomiRoborockVacuum {
     this.initialiseServices();
 
     // Initialize device
-    this.connect();
+    this.connect().catch(() => {
+      // Do nothing in the catch because this function already logs the error internally and retries after 2 minutes.
+    });
   }
 
   initialiseServices() {
