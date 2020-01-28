@@ -100,6 +100,9 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 ## Changes
 #### 0.6.5
 - Feature: Add support for Roborock S5 Max
+- Improve: Refresh the state every 30s to ensure miio is still properly connected
+- Bugfix: Battery level
+- Bugfix: UnhandledPromiseRejectionWarning on startup when it fails to connect
 
 #### 0.6.4
 - Feature: Add support for Roborock Xiaowa E20
