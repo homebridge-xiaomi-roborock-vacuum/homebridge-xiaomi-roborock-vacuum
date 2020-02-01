@@ -3,6 +3,7 @@
 const miio = require('miio');
 const util = require('util');
 const callbackify = require('./lib/callbackify');
+const safeCall = require('./lib/safeCall');
 
 let homebrideAPI, Service, Characteristic;
 
@@ -446,20 +447,18 @@ class XiaomiRoborockVacuum {
 
     try {
       const state = await this.device.state();
-      if (state.error) {
-        this.changedError(state.error);
-        throw state.error;
-      }
-
       this.log.debug(`DEB getState | ${this.model} | State %j`, state);
 
-      this.changedCleaning(state.cleaning);
-      this.changedCharging(state.charging);
-      this.changedSpeed(state.fanSpeed);
-      this.changedBattery(state.batteryLevel);
-      this.changedPause(state.cleaning);
+      safeCall(state.cleaning, (cleaning) => this.changedCleaning(cleaning));
+      safeCall(state.charging, (charging) => this.changedCharging(charging));
+      safeCall(state.fanSpeed, (fanSpeed) => this.changedSpeed(fanSpeed));
+      safeCall(state.batteryLevel, (batteryLevel) => this.changedBattery(batteryLevel));
+      safeCall(state.cleaning, (cleaning) => this.changedPause(cleaning));
+
+      // No need to throw the error at this point. This are just warnings like (https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/91)
+      safeCall(state.error, (error) => this.changedError(error));
     } catch (err) {
-      this.log.error(`ERR getState | this.device.state | ${err}`);
+      this.log.error(`ERR getState | this.device.state | %j`, err);
     }
   }
 
