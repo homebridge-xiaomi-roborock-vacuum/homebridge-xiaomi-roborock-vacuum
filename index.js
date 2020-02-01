@@ -446,10 +446,6 @@ class XiaomiRoborockVacuum {
 
     try {
       const state = await this.device.state();
-      if (state.error) {
-        this.changedError(state.error);
-        throw state.error;
-      }
 
       this.log.debug(`DEB getState | ${this.model} | State %j`, state);
 
@@ -458,8 +454,13 @@ class XiaomiRoborockVacuum {
       this.changedSpeed(state.fanSpeed);
       this.changedBattery(state.batteryLevel);
       this.changedPause(state.cleaning);
+      
+      if (state.error) {
+        this.changedError(state.error);
+        // No need to throw the error at this point. This are just warnings like (https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/91)
+      }
     } catch (err) {
-      this.log.error(`ERR getState | this.device.state | ${err}`);
+      this.log.error(`ERR getState | this.device.state | %j`, err);
     }
   }
 
