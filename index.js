@@ -125,6 +125,9 @@ class XiaomiRoborockVacuum {
     this.config.name = config.name || 'Roborock vacuum cleaner';
     this.services = {};
 
+    // Used to store the latest state to reduce logging
+    this.cachedState = new Map();
+
     this.device = null;
     this.connectingPromise = null;
     this.connectRetry = setTimeout(() => void 0, 100); // Noop timeout only to initialise the property
@@ -280,6 +283,19 @@ class XiaomiRoborockVacuum {
       .on('get', (cb) => callbackify(() => this.getCareMainBrush(), cb));
   }
 
+  /**
+   * Returns if the newValue is different to the previously cached one
+   * 
+   * @param {string} property
+   * @param {any} newValue
+   * @returns {boolean} Whether the newValue is not the same as the previously cached one.
+   */
+  isNewValue(property, newValue) {
+    const cachedValue = this.cachedState.get(property);
+    this.cachedState.set(property, newValue);
+    return cachedValue !== newValue;
+  }
+
   changedError(robotError) {
     this.log.debug(`DEB changedError | ${this.model} | ErrorID: ${robotError.id}, ErrorDescription: ${robotError.description}`);
     let robotErrorTxt = XiaomiRoborockVacuum.errors[`id${robotError.id}`] ?
@@ -292,33 +308,47 @@ class XiaomiRoborockVacuum {
   }
 
   changedCleaning(isCleaning) {
-    this.log.debug(`MON changedCleaning | ${this.model} | CleaningState is now ${isCleaning}`);
-
-    this.log.info(`INF changedCleaning | ${this.model} | Cleaning is ${isCleaning ? 'ON' : 'OFF'}.`);
+    if (this.isNewValue('cleaning', isCleaning)) {
+      this.log.debug(`MON changedCleaning | ${this.model} | CleaningState is now ${isCleaning}`);
+      this.log.info(`INF changedCleaning | ${this.model} | Cleaning is ${isCleaning ? 'ON' : 'OFF'}.`);
+    }
+    // We still update the value in Homebridge. If we are calling the changed method is because we want to change it.
     this.services.fan.getCharacteristic(Characteristic.On).updateValue(isCleaning);
   }
 
   changedPause(isCleaning) {
     if (this.config.pause) {
-      this.log.debug(`MON changedPause | ${this.model} | CleaningState is now ${isCleaning}`);
-      this.log.info(`INF changedPause | ${this.model} | ${isCleaning ? 'Paused possible' : 'Paused not possible, no cleaning'}`);
+      if (this.isNewValue('pause', isCleaning)) {
+        this.log.debug(`MON changedPause | ${this.model} | CleaningState is now ${isCleaning}`);
+        this.log.info(`INF changedPause | ${this.model} | ${isCleaning ? 'Paused possible' : 'Paused not possible, no cleaning'}`);
+      }
+      // We still update the value in Homebridge. If we are calling the changed method is because we want to change it.
       this.services.pause.getCharacteristic(Characteristic.On).updateValue(isCleaning);
     }
   }
 
   changedCharging(isCharging) {
-    this.log.info(`MON changedCharging | ${this.model} | ChargingState is now ${isCharging}`);
-    this.log.info(`INF changedCharging | ${this.model} | Charging is ${isCharging ? 'active' : 'cancelled'}`);
+    const isNewValue = this.isNewValue('charging', isCharging);
+    if (isNewValue) {
+      this.log.info(`MON changedCharging | ${this.model} | ChargingState is now ${isCharging}`);
+      this.log.info(`INF changedCharging | ${this.model} | Charging is ${isCharging ? 'active' : 'cancelled'}`);
+    }
+    // We still update the value in Homebridge. If we are calling the changed method is because we want to change it.
     this.services.battery.getCharacteristic(Characteristic.ChargingState).updateValue(isCharging ? Characteristic.ChargingState.CHARGING : Characteristic.ChargingState.NOT_CHARGING);
     if (this.config.dock) {
-      const msg = isCharging ? 'Robot was docked' : 'Robot not anymore in dock';
-      this.log.info(`INF changedCharging | ${this.model} | ${msg}.`);
+      if (isNewValue) {
+        const msg = isCharging ? 'Robot was docked' : 'Robot not anymore in dock';
+        this.log.info(`INF changedCharging | ${this.model} | ${msg}.`);
+      }
       this.services.dock.getCharacteristic(Characteristic.OccupancyDetected).updateValue(isCharging);
     }
   }
 
   changedSpeed(speed) {
-    this.log.info(`MON changedSpeed | ${this.model} | FanSpeed is now ${speed}%`);
+    const isNewValue = this.isNewValue('speed', speed);
+    if (isNewValue) {
+      this.log.info(`MON changedSpeed | ${this.model} | FanSpeed is now ${speed}%`);
+    }
 
     const speedMode = this.findSpeedModeFromMiio(speed);
 
@@ -326,7 +356,9 @@ class XiaomiRoborockVacuum {
       this.log.warn(`WAR changedSpeed | ${this.model} | Speed was changed to ${speed}%, this speed is not supported`);
     } else {
       const { homekitTopLevel, name } = speedMode;
-      this.log.info(`INF changedSpeed | ${this.model} | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`);
+      if (isNewValue) {
+        this.log.info(`INF changedSpeed | ${this.model} | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`);
+      }
       this.services.fan.getCharacteristic(Characteristic.RotationSpeed).updateValue(homekitTopLevel);
     }
   }
