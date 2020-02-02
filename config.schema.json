@@ -21,6 +21,12 @@
         "type": "string",
         "required": true
       },
+      "waterBox": {
+        "title": "Enable the Water Box mode (beta)",
+        "type": "boolean",
+        "default": false,
+        "required": false
+      },
       "pause": {
         "title": "Show switch for \"pause\"",
         "type": "boolean",

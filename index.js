@@ -108,7 +108,7 @@ class XiaomiRoborockVacuum {
       .getCharacteristic(Characteristic.SerialNumber)
       .on('get', (cb) => callbackify(() => this.getSerialNumber(), cb));
 
-    this.services.fan = new Service.Fan(this.config.name);
+    this.services.fan = new Service.Fan(this.config.name, 'Speed');
     this.services.fan
       .getCharacteristic(Characteristic.On)
       .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
@@ -121,15 +121,14 @@ class XiaomiRoborockVacuum {
       .on('get', (cb) => callbackify(() => this.getSpeed(), cb))
       .on('set', (newState, cb) => callbackify(() => this.setSpeed(newState), cb));
 
-    this.hiddenServices.waterBox = new Service.Fan(`${this.config.name} Water Box`);
-    // Initially hide it. We'll unhide it when we find out if the model supports this option.
-    // Can't used this. Not supported by homebridge yet (although the underlying library does :/)
-    // this.hiddenServices.waterBox.setHiddenService(true);
-    // TODO: Do we need to manage the Characteristic.On?
-    this.hiddenServices.waterBox
-      .getCharacteristic(Characteristic.RotationSpeed)
-      .on('get', (cb) => callbackify(() => this.getWaterSpeed(), cb))
-      .on('set', (newState, cb) => callbackify(() => this.setWaterSpeed(newState), cb));
+    if (this.config.waterBox) {
+      this.services.waterBox = new Service.Fan(`${this.config.name} Water Box`, 'Water Box');
+      // TODO: Do we need to manage the Characteristic.On?
+      this.services.waterBox
+        .getCharacteristic(Characteristic.RotationSpeed)
+        .on('get', (cb) => callbackify(() => this.getWaterSpeed(), cb))
+        .on('set', (newState, cb) => callbackify(() => this.setWaterSpeed(newState), cb));
+    }
 
     this.services.battery = new Service.BatteryService(`${this.config.name} Battery`);
     this.services.battery
@@ -439,12 +438,9 @@ class XiaomiRoborockVacuum {
       safeCall(state.fanSpeed, (fanSpeed) => this.changedSpeed(fanSpeed));
       safeCall(state.batteryLevel, (batteryLevel) => this.changedBattery(batteryLevel));
       safeCall(state.cleaning, (cleaning) => this.changedPause(cleaning));
-      safeCall(state['water_box_mode'], (waterBoxMode) => {
-        if (!this.services.fan.linkedServices.includes(this.hiddenServices.waterBox) && this.getWaterSpeedModes().length > 0) {
-          this.services.fan.addLinkedService(this.hiddenServices.waterBox);
-        }
-        return this.changedWaterSpeed(waterBoxMode);
-      });
+      if (this.config.waterBox) {
+        safeCall(state['water_box_mode'], (waterBoxMode) => this.changedWaterSpeed(waterBoxMode));
+      }
 
       // No need to throw the error at this point. This are just warnings like (https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/91)
       safeCall(state.error, (error) => this.changedError(error));
@@ -594,7 +590,7 @@ class XiaomiRoborockVacuum {
       this.log.info(`INF getWaterSpeed | ${this.model} | WaterBoxMode is ${speed} over miIO "${name}" > HomeKit speed ${homekitTopLevel}%`);
       homekitValue = homekitTopLevel || 0;
     }
-    this.hiddenServices.waterBox.getCharacteristic(Characteristic.On).updateValue(homekitValue > 0);
+    this.services.waterBox.getCharacteristic(Characteristic.On).updateValue(homekitValue > 0);
     return homekitValue;
   }
 
@@ -633,8 +629,8 @@ class XiaomiRoborockVacuum {
     } else {
       const { homekitTopLevel, name } = speedMode;
       this.log.info(`INF changedWaterSpeed | ${this.model} | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`);
-      this.hiddenServices.waterBox.getCharacteristic(Characteristic.RotationSpeed).updateValue(homekitTopLevel);
-      this.hiddenServices.waterBox.getCharacteristic(Characteristic.On).updateValue(homekitTopLevel > 0)
+      this.services.waterBox.getCharacteristic(Characteristic.RotationSpeed).updateValue(homekitTopLevel);
+      this.services.waterBox.getCharacteristic(Characteristic.On).updateValue(homekitTopLevel > 0)
     }
   }
 
