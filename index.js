@@ -120,7 +120,7 @@ class XiaomiRoborockVacuum {
       .on('get', (cb) => callbackify(() => this.getSpeed(), cb))
       .on('set', (newState, cb) => callbackify(() => this.setSpeed(newState), cb));
 
-    this.services.waterBox = new Service.Fan(`${this.config.name} Water Box`);
+    this.services.waterBox = new Service.Fan(`${this.config.name} Water Box`, 'Water Box');
     // Initially hide it. We'll unhide it when we find out if the model supports this option.
     this.services.waterBox.setHiddenService(true);
     // TODO: Do we need to manage the Characteristic.On?
