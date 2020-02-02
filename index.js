@@ -107,7 +107,7 @@ class XiaomiRoborockVacuum {
       .getCharacteristic(Characteristic.SerialNumber)
       .on('get', (cb) => callbackify(() => this.getSerialNumber(), cb));
 
-    this.services.fan = new Service.Fan(this.config.name);
+    this.services.fan = new Service.Fan(this.config.name, 'Speed');
     this.services.fan
       .getCharacteristic(Characteristic.On)
       .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
