@@ -66,6 +66,7 @@ class XiaomiRoborockVacuum {
     this.config = config;
     this.config.name = config.name || 'Roborock vacuum cleaner';
     this.services = {};
+    this.hiddenServices = new Map();
 
     // Used to store the latest state to reduce logging
     this.cachedState = new Map();
@@ -120,11 +121,12 @@ class XiaomiRoborockVacuum {
       .on('get', (cb) => callbackify(() => this.getSpeed(), cb))
       .on('set', (newState, cb) => callbackify(() => this.setSpeed(newState), cb));
 
-    this.services.waterBox = new Service.Fan(`${this.config.name} Water Box`, 'Water Box');
+    this.hiddenServices.waterBox = new Service.Fan(`${this.config.name} Water Box`, 'Water Box');
     // Initially hide it. We'll unhide it when we find out if the model supports this option.
-    this.services.waterBox.setHiddenService(true);
+    // Can't used this. Not supported by homebridge yet (although the underlying library does :/)
+    // this.hiddenServices.waterBox.setHiddenService(true);
     // TODO: Do we need to manage the Characteristic.On?
-    this.services.waterBox
+    this.hiddenServices.waterBox
       .getCharacteristic(Characteristic.RotationSpeed)
       .on('get', (cb) => callbackify(() => this.getWaterSpeed(), cb))
       .on('set', (newState, cb) => callbackify(() => this.setWaterSpeed(newState), cb));
@@ -438,8 +440,8 @@ class XiaomiRoborockVacuum {
       safeCall(state.batteryLevel, (batteryLevel) => this.changedBattery(batteryLevel));
       safeCall(state.cleaning, (cleaning) => this.changedPause(cleaning));
       safeCall(state['water_box_mode'], (waterBoxMode) => {
-        if (this.services.waterBox.isHiddenService) {
-          this.services.waterBox.setHiddenService(false);
+        if (!this.services.fan.linkedServices.includes(this.hiddenServices.waterBox) && this.getWaterSpeedModes().length > 0) {
+          this.services.fan.addLinkedService(this.hiddenServices.waterBox);
         }
         return this.changedWaterSpeed(waterBoxMode);
       });
@@ -592,7 +594,7 @@ class XiaomiRoborockVacuum {
       this.log.info(`INF getWaterSpeed | ${this.model} | WaterBoxMode is ${speed} over miIO "${name}" > HomeKit speed ${homekitTopLevel}%`);
       homekitValue = homekitTopLevel || 0;
     }
-    this.services.waterBox.getCharacteristic(Characteristic.On).updateValue(homekitValue > 0);
+    this.hiddenServices.waterBox.getCharacteristic(Characteristic.On).updateValue(homekitValue > 0);
     return homekitValue;
   }
 
@@ -607,7 +609,6 @@ class XiaomiRoborockVacuum {
     // If the robot does not support water-mode cleaning
     if (speedModes.length === 0) {
       this.log.info(`INF setWaterSpeed | ${this.model} | Model does not support the water mode`);
-      this.services.waterBox.setHiddenService(true);
       return;
     }
 
@@ -632,8 +633,8 @@ class XiaomiRoborockVacuum {
     } else {
       const { homekitTopLevel, name } = speedMode;
       this.log.info(`INF changedWaterSpeed | ${this.model} | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`);
-      this.services.waterBox.getCharacteristic(Characteristic.RotationSpeed).updateValue(homekitTopLevel);
-      this.services.waterBox.getCharacteristic(Characteristic.On).updateValue(homekitTopLevel > 0)
+      this.hiddenServices.waterBox.getCharacteristic(Characteristic.RotationSpeed).updateValue(homekitTopLevel);
+      this.hiddenServices.waterBox.getCharacteristic(Characteristic.On).updateValue(homekitTopLevel > 0)
     }
   }
 
