@@ -190,7 +190,13 @@ class XiaomiRoborockVacuum {
       .on('get', (cb) => callbackify(() => this.getBatteryLow(), cb));
 
     if (this.config.pause) {
-      this.services.pause = new Service.Switch(`${this.config.name} Pause`);
+      this.services.fanSwitch = new Service.Switch(this.config.name, 'ON/OFF');
+      this.services.fanSwitch
+        .getCharacteristic(Characteristic.On)
+        .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
+        .on('set', (newState, cb) => callbackify(() => this.setCleaning(newState), cb));
+
+      this.services.pause = new Service.Switch(`${this.config.name} Pause`, 'Pause');
       this.services.pause
         .getCharacteristic(Characteristic.On)
         .on('get', (cb) => callbackify(() => this.getPauseState(), cb))
@@ -323,6 +329,7 @@ class XiaomiRoborockVacuum {
         this.log.info(`INF changedPause | ${this.model} | ${isCleaning ? 'Paused possible' : 'Paused not possible, no cleaning'}`);
       }
       // We still update the value in Homebridge. If we are calling the changed method is because we want to change it.
+      this.services.fanSwitch.getCharacteristic(Characteristic.On).updateValue(isCleaning);
       this.services.pause.getCharacteristic(Characteristic.On).updateValue(isCleaning);
     }
   }
