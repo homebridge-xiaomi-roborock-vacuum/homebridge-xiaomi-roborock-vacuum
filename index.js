@@ -66,7 +66,6 @@ class XiaomiRoborockVacuum {
     this.config = config;
     this.config.name = config.name || 'Roborock vacuum cleaner';
     this.services = {};
-    this.hiddenServices = new Map();
 
     // Used to store the latest state to reduce logging
     this.cachedState = new Map();
