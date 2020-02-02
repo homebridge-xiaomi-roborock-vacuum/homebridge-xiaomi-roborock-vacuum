@@ -615,7 +615,7 @@ class XiaomiRoborockVacuum {
     try {
       if (state) {
         await this.device.activateCleaning();
-      } else {
+      } else if (this.isCleaning) { // Only pause if still cleaning
         await this.device.pause();
       }
     } catch (err) {
