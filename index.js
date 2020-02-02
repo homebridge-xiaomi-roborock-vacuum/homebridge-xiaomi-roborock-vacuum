@@ -108,7 +108,7 @@ class XiaomiRoborockVacuum {
       .getCharacteristic(Characteristic.SerialNumber)
       .on('get', (cb) => callbackify(() => this.getSerialNumber(), cb));
 
-    this.services.fan = new Service.Fan(this.config.name, 'Speed');
+    this.services.fan = new Service.Fan(this.config.name);
     this.services.fan
       .getCharacteristic(Characteristic.On)
       .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
@@ -121,7 +121,7 @@ class XiaomiRoborockVacuum {
       .on('get', (cb) => callbackify(() => this.getSpeed(), cb))
       .on('set', (newState, cb) => callbackify(() => this.setSpeed(newState), cb));
 
-    this.hiddenServices.waterBox = new Service.Fan(`${this.config.name} Water Box`, 'Water Box');
+    this.hiddenServices.waterBox = new Service.Fan(`${this.config.name} Water Box`);
     // Initially hide it. We'll unhide it when we find out if the model supports this option.
     // Can't used this. Not supported by homebridge yet (although the underlying library does :/)
     // this.hiddenServices.waterBox.setHiddenService(true);
