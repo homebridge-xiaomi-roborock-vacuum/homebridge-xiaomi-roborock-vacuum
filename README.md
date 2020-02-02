@@ -98,6 +98,10 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
+#### 0.6.6-dev
+- Improve: Reduce changed logs by only logging when the value is actually new
+- Improve: Vacuum error handling
+
 #### 0.6.5
 - Feature: Add support for Roborock S5 Max
 - Improve: Refresh the state every 30s to ensure miio is still properly connected
