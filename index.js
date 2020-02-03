@@ -439,7 +439,7 @@ class XiaomiRoborockVacuum {
         this.log.error(`ERR connect | miio.device, next try in 2 minutes | ${error}`);
         clearTimeout(this.connectRetry);
         // Using setTimeout instead of holding the promise. This way we'll keep retrying but not holding the other actions
-        this.connectRetry = setTimeout(() => this.connect(), 120000);
+        this.connectRetry = setTimeout(() => this.connect().catch(() => {}), 120000);
         throw error;
       });
     }
@@ -475,9 +475,8 @@ class XiaomiRoborockVacuum {
   }
 
   async getState() {
-    await this.ensureDevice('getState');
-
     try {
+      await this.ensureDevice('getState');
       const state = await this.device.state();
       this.log.debug(`DEB getState | ${this.model} | State %j`, state);
 
@@ -490,7 +489,7 @@ class XiaomiRoborockVacuum {
       // No need to throw the error at this point. This are just warnings like (https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/91)
       safeCall(state.error, (error) => this.changedError(error));
     } catch (err) {
-      this.log.error(`ERR getState | this.device.state | %j`, err);
+      this.log.error(`ERR getState | %j`, err);
     }
   }
 
