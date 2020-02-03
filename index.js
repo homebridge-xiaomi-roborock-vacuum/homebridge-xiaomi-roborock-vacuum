@@ -1,5 +1,6 @@
 'use strict';
 
+const semver = require('semver');
 const miio = require('miio');
 const util = require('util');
 const callbackify = require('./lib/callbackify');
@@ -25,13 +26,17 @@ module.exports = function (homebridge) {
 class XiaomiRoborockVacuum {
   static get models() {
     return {
-      'rockrobo.vacuum.v1': XiaomiRoborockVacuum.speedmodes_gen1,
-      'roborock.vacuum.c1': XiaomiRoborockVacuum.speedmodes_gen1,
-      'roborock.vacuum.s5': XiaomiRoborockVacuum.speedmodes_gen2,
-      'roborock.vacuum.s5e': XiaomiRoborockVacuum.speedmodes_gen2,
-      'roborock.vacuum.s6': XiaomiRoborockVacuum.speedmodes_gen3,
-      'roborock.vacuum.t6': XiaomiRoborockVacuum.speedmodes_gen3,
-      'roborock.vacuum.e2': XiaomiRoborockVacuum.speedmodes_gen3,
+      'default': {speed: XiaomiRoborockVacuum.speedmodes_gen1},
+      'rockrobo.vacuum.v1': [{speed: XiaomiRoborockVacuum.speedmodes_gen1}],
+      'roborock.vacuum.c1': [{speed: XiaomiRoborockVacuum.speedmodes_gen1}],
+      'roborock.vacuum.s5': [
+        {speed: XiaomiRoborockVacuum.speedmodes_gen2},
+        {firmware: '>=3.5.7', speed: XiaomiRoborockVacuum.speedmodes_gen3},
+      ],
+      'roborock.vacuum.s5e': [{speed: XiaomiRoborockVacuum.speedmodes_gen2}],
+      'roborock.vacuum.s6': [{speed: XiaomiRoborockVacuum.speedmodes_gen3}],
+      'roborock.vacuum.t6': [{speed: XiaomiRoborockVacuum.speedmodes_gen3}],
+      'roborock.vacuum.e2': [{speed: XiaomiRoborockVacuum.speedmodes_gen3}],
     }
   }
 
@@ -399,6 +404,7 @@ class XiaomiRoborockVacuum {
 
       try {
         const firmware = await this.getFirmware();
+        this.firmware = firmware;
         this.services.info.setCharacteristic(Characteristic.FirmwareRevision, `${firmware}`);
         this.log.info(`STA getDevice | Firmwareversion: ${firmware}`);
       } catch (err) {
@@ -557,9 +563,20 @@ class XiaomiRoborockVacuum {
     }
   }
 
+  findSpeedModes() {
+    return (XiaomiRoborockVacuum.models[this.model] || []).reduce((acc, option) => {
+      if (option.firmware) {
+        const [,cleanFirmware] = (this.firmware || '').match(/^(\d+\.\d+\.\d+)/) || [];
+        return semver.satisfies(cleanFirmware, option.firmware) ? option : acc;
+      } else {
+        return option;
+      }
+    }, XiaomiRoborockVacuum.models.default);
+  }
+
   findSpeedModeFromMiio(speed) {
     // Get the speed modes for this model
-    const speedModes = XiaomiRoborockVacuum.models[this.model] || XiaomiRoborockVacuum.speedmodes_gen1;
+    const speedModes = this.findSpeedModes().speed;
 
     // Find speed mode that matches the miLevel
     return speedModes.find((mode) => mode.miLevel === speed);
@@ -583,7 +600,7 @@ class XiaomiRoborockVacuum {
     this.log.debug(`ACT setSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`);
 
     // Get the speed modes for this model
-    const speedModes = XiaomiRoborockVacuum.models[this.model] || XiaomiRoborockVacuum.speedmodes_gen1;
+    const speedModes = this.findSpeedModes().speed;
 
     // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
     const safeSpeed = Math.min(parseInt(speed), speedModes[speedModes.length - 1].homekitTopLevel);
