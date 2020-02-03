@@ -611,7 +611,11 @@ class XiaomiRoborockVacuum {
 
     this.log.info(`ACT setWaterSpeed | ${this.model} | WaterBoxMode set to ${miLevel} over miIO for "${name}".`);
 
-    await this.device.setProperty('water_box_mode', miLevel);
+    const response = await this.device.call('set_custom_mode', [ miLevel ], { refresh : [ 'water_box_mode' ] });
+    if ( response !== 0 && r[0] !== 'ok' ) {
+      this.log.error(response);
+      throw new Error(`Failed to set the water_box_mode to ${miLevel}`);
+    }
   }
 
   changedWaterSpeed(speed) {
