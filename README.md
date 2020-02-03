@@ -102,6 +102,7 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 - Improve: Reduce changed logs by only logging when the value is actually new
 - Improve: Vacuum error handling
 - Improve: Fanspeed / Fanmode handling
+- Improve: miio library accept all "WORD.vacuum.*"
 - Bugfix: Fix the unhandled promises
 
 #### 0.6.5
