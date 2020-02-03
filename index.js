@@ -1,5 +1,6 @@
 'use strict';
 
+const semver = require('semver');
 const miio = require('miio');
 const util = require('util');
 const callbackify = require('./lib/callbackify');
@@ -350,6 +351,7 @@ class XiaomiRoborockVacuum {
 
       try {
         const firmware = await this.getFirmware();
+        this.firmware = firmware;
         this.services.info.setCharacteristic(Characteristic.FirmwareRevision, `${firmware}`);
         this.log.info(`STA getDevice | Firmwareversion: ${firmware}`);
       } catch (err) {
@@ -390,7 +392,7 @@ class XiaomiRoborockVacuum {
         this.log.error(`ERR connect | miio.device, next try in 2 minutes | ${error}`);
         clearTimeout(this.connectRetry);
         // Using setTimeout instead of holding the promise. This way we'll keep retrying but not holding the other actions
-        this.connectRetry = setTimeout(() => this.connect(), 120000);
+        this.connectRetry = setTimeout(() => this.connect().catch(() => {}), 120000);
         throw error;
       });
     }
@@ -426,9 +428,8 @@ class XiaomiRoborockVacuum {
   }
 
   async getState() {
-    await this.ensureDevice('getState');
-
     try {
+      await this.ensureDevice('getState');
       const state = await this.device.state();
       this.log.debug(`DEB getState | ${this.model} | State %j`, state);
       
@@ -444,7 +445,7 @@ class XiaomiRoborockVacuum {
       // No need to throw the error at this point. This are just warnings like (https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/91)
       safeCall(state.error, (error) => this.changedError(error));
     } catch (err) {
-      this.log.error(`ERR getState | this.device.state | %j`, err);
+      this.log.error(`ERR getState | %j`, err);
     }
   }
 
@@ -512,17 +513,20 @@ class XiaomiRoborockVacuum {
     }
   }
 
-  getSpeedModes() {
-    let speedMode = MODELS.default.speed;
-    if (MODELS[this.model] && MODELS[this.model].speed) {
-      speedMode = MODELS[this.model].speed;
-    }
-    return speedMode; 
+  findSpeedModes() {
+    return (MODELS[this.model] || []).reduce((acc, option) => {
+      if (option.firmware) {
+        const [,cleanFirmware] = (this.firmware || '').match(/^(\d+\.\d+\.\d+)/) || [];
+        return semver.satisfies(cleanFirmware, option.firmware) ? option : acc;
+      } else {
+        return option;
+      }
+    }, MODELS.default);
   }
 
   findSpeedModeFromMiio(speed) {
     // Get the speed modes for this model
-    const speedModes = this.getSpeedModes();
+    const speedModes = this.findSpeedModes().speed;
 
     // Find speed mode that matches the miLevel
     return speedModes.find((mode) => mode.miLevel === speed);
@@ -546,7 +550,7 @@ class XiaomiRoborockVacuum {
     this.log.debug(`ACT setSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`);
 
     // Get the speed modes for this model
-    const speedModes = this.getSpeedModes();
+    const speedModes = this.findSpeedModes().speed;
 
     // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
     const safeSpeed = Math.min(parseInt(speed), speedModes[speedModes.length - 1].homekitTopLevel);
@@ -559,17 +563,9 @@ class XiaomiRoborockVacuum {
     await this.device.changeFanSpeed(miLevel);
   }
 
-  getWaterSpeedModes() {
-    let speedModes = MODELS.default.waterspeed || [];
-    if (MODELS[this.model] && MODELS[this.model].waterspeed) {
-      speedModes = MODELS[this.model].waterspeed;
-    }
-    return speedModes; 
-  }
-
   findWaterSpeedModeFromMiio(speed) {
     // Get the speed modes for this model
-    const speedModes = this.getWaterSpeedModes();
+    const speedModes = this.findSpeedModes().waterspeed || [];
 
     // Find speed mode that matches the miLevel
     return speedModes.find((mode) => mode.miLevel === speed);
@@ -599,7 +595,7 @@ class XiaomiRoborockVacuum {
     this.log.debug(`ACT setWaterSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`);
 
     // Get the speed modes for this model
-    const speedModes = this.getWaterSpeedModes();
+    const speedModes = this.findSpeedModes().waterspeed || [];
 
     // If the robot does not support water-mode cleaning
     if (speedModes.length === 0) {
