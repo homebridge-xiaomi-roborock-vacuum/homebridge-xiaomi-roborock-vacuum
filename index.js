@@ -571,10 +571,23 @@ class XiaomiRoborockVacuum {
     return speedModes.find((mode) => mode.miLevel === speed);
   }
 
+  async getWaterSpeedInDevice() {
+    // From https://github.com/marcelrv/XiaomiRobotVacuumProtocol/blob/master/water_box_custom_mode.md
+    const response = await this.device.call('get_water_box_custom_mode', [ ], { refresh : [ 'water_box_mode' ] });
+    // From https://github.com/nicoh88/miio/blob/master/lib/devices/vacuum.js#L11-L18
+    const [waterMode] = response || [];
+    if ( typeof waterMode === undefined ) {
+      this.log.error(response);
+      throw new Error(`Failed to get the water_box_mode`);
+    }
+    return waterMode;
+  }
+
   async getWaterSpeed() {
     await this.ensureDevice('getWaterSpeed');
 
-    const speed = this.device.property('water_box_mode');
+    
+    const speed = await this.getWaterSpeedInDevice();
     this.log.info(`INF getWaterSpeed | ${this.model} | WaterBoxMode is ${speed} over miIO. Converting to HomeKit`)
 
     const waterSpeed = this.findWaterSpeedModeFromMiio(speed);
@@ -611,9 +624,10 @@ class XiaomiRoborockVacuum {
 
     this.log.info(`ACT setWaterSpeed | ${this.model} | WaterBoxMode set to ${miLevel} over miIO for "${name}".`);
 
+    // From https://github.com/marcelrv/XiaomiRobotVacuumProtocol/blob/master/water_box_custom_mode.md
     const response = await this.device.call('set_water_box_custom_mode', [ miLevel ], { refresh : [ 'water_box_mode' ] });
     // From https://github.com/nicoh88/miio/blob/master/lib/devices/vacuum.js#L11-L18
-    if ( response !== 0 && r[0] !== 'ok' ) {
+    if ( response !== 0 && response[0] !== 'ok' ) {
       this.log.error(response);
       throw new Error(`Failed to set the water_box_mode to ${miLevel}`);
     }
