@@ -11,28 +11,16 @@ With this [homebridge](https://github.com/nfarina/homebridge) plugin can you con
 
 Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15.6 or newer, not like the old ones 0.14.1. Timeouts and API errors are a thing of the past!
 
-<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/rockrobo.vacuum.v1.jpg" style="border:1px solid lightgray" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s5.jpg" style="border:1px solid lightgray" alt="Roborock S50 2nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s55.jpg" style="border:1px solid lightgray" alt="Roborock S55 2nd Generation Black" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s6.jpg" style="border:1px solid lightgray" alt="Roborock S6/T6 3nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.c10.jpg" style="border:1px solid lightgray" alt="Roborock Xiaowa Lite C10" width="300">
+<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/rockrobo.vacuum.v1.jpg" style="border:1px solid lightgray" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s5.jpg" style="border:1px solid lightgray" alt="Roborock S50 2nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s55.jpg" style="border:1px solid lightgray" alt="Roborock S55 2nd Generation Black" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s6.jpg" style="border:1px solid lightgray" alt="Roborock S6/T6 3nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.c10.jpg" style="border:1px solid lightgray" alt="Roborock Xiaowa Lite C10" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s5.max.jpg" style="border:1px solid lightgray" alt="Roborock S5 Max" width="300">
 
 
 ## Features
 * **Fan** as On-/Off-Switch. When switching off, directly back to the charging station.
-* Fanspeed levels adjustable via 3D Touch / Force Touch.
-  * Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1), Roborock S6/T6 3nd Generation (Roborock Vacuum S6/T6) and Xiaowa Lite C10
-    * Off (0%)
-    * Quiet (1-38%)
-    * Balanced (39-60%)
-    * Turbo (61-77%)
-    * Max Speed (78-100%)
-  * Roborock S50 2nd Generation and S55 2nd Generation
-    * Off (0%)
-    * Mopping (1-15%)
-    * Quiet (16-38%)
-    * Balanced (39-60%)
-    * Turbo (61-75%)
-    * Max Speed (76-100%)
+* [Fanspeed levels](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/models/speedmodes.js) adjustable via 3D Touch / Force Touch.
 * Battery status and condition in the device details. Low battery alert.
 * Pause switch (optional).
 * Occupancy sensor (similar to motion sensor) for dock status (optional).
+* Seconds Fan for water box modes (optional).
 
 <img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/screenshot1.jpg?raw=true" alt="Screenshot Apple HomeKit with homebridge-xiaomi-roborock-vacuum" width="350">
 <img src="https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/screenshot2.jpg?raw=true" alt="Screenshot Elgato Eve App with homebridge-xiaomi-roborock-vacuum" width="350">
@@ -54,7 +42,8 @@ Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
   "ip": "192.168.1.150",
   "token": "abcdef1234567890abcdef1234567890",
   "pause": false,
-  "dock": true
+  "dock": true,
+  "waterBox": false
  }
 ],
 ```
@@ -69,7 +58,8 @@ Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
   "ip": "192.168.1.150",
   "token": "abcdef1234567890abcdef1234567890",
   "pause": false,
-  "dock": true
+  "dock": true,
+  "waterBox": false
  },
  {
   "accessory": "XiaomiRoborockVacuum",
@@ -77,7 +67,8 @@ Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
   "ip": "192.168.1.151",
   "token": "1234567890abcdef1234567890abcdef",
   "pause": false,
-  "dock": true
+  "dock": true,
+  "waterBox": false
  }
 ],
 ```
@@ -99,7 +90,8 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
-#### 0.6.6-dev
+#### 0.6.6
+- Feature: Support the new WaterBox property (S5 Max)
 - Improve: Reduce changed logs by only logging when the value is actually new
 - Improve: Vacuum error handling
 - Improve: Fanspeed / Fanmode handling
