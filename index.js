@@ -11,6 +11,7 @@ let homebrideAPI, Service, Characteristic;
 const PLUGIN_NAME = 'homebridge-xiaomi-roborock-vacuum';
 const ACCESSORY_NAME = 'XiaomiRoborockVacuum';
 
+const MODELS = require('./models');
 const GET_STATE_INTERVAL_MS = 30000; // 30s
 
 module.exports = function (homebridge) {
@@ -24,69 +25,6 @@ module.exports = function (homebridge) {
 }
 
 class XiaomiRoborockVacuum {
-  static get models() {
-    return {
-      'default': {speed: XiaomiRoborockVacuum.speedmodes_gen1},
-      'rockrobo.vacuum.v1': [{speed: XiaomiRoborockVacuum.speedmodes_gen1}],
-      'roborock.vacuum.c1': [{speed: XiaomiRoborockVacuum.speedmodes_gen1}],
-      'roborock.vacuum.s5': [
-        {speed: XiaomiRoborockVacuum.speedmodes_gen2},
-        {firmware: '>=3.5.7', speed: XiaomiRoborockVacuum.speedmodes_gen3},
-      ],
-      'roborock.vacuum.s5e': [{speed: XiaomiRoborockVacuum.speedmodes_gen2}],
-      'roborock.vacuum.s6': [{speed: XiaomiRoborockVacuum.speedmodes_gen3}],
-      'roborock.vacuum.t6': [{speed: XiaomiRoborockVacuum.speedmodes_gen3}],
-      'roborock.vacuum.e2': [{speed: XiaomiRoborockVacuum.speedmodes_gen3}],
-    }
-  }
-
-  static get speedmodes_gen1() {
-    return [
-      // 0%       = Off / Aus
-      { homekitTopLevel: 0, miLevel: 0, name: "Off" },
-      // 1-38%   = "Quiet / Leise"
-      { homekitTopLevel: 38, miLevel: 38, name: "Quiet" },
-      // 39-60%  = "Balanced / Standard"
-      { homekitTopLevel: 60, miLevel: 60, name: "Balanced" },
-      // 61-77%  = "Turbo / Stark"
-      { homekitTopLevel: 77, miLevel: 77, name: "Turbo" },
-      // 78-100% = "Full Speed / Max Speed / Max"
-      { homekitTopLevel: 100, miLevel: 90, name: "Max" }
-    ];
-  }
-
-  static get speedmodes_gen2() {
-    return [
-      // 0%      = Off / Aus
-      { homekitTopLevel: 0, miLevel: 0, name: "Off" },
-      // 1-15%   = "Mop / Mopping / Nur wischen"
-      { homekitTopLevel: 15, miLevel: 105, name: "Mop" },
-      // 16-38%  = "Quiet / Leise"
-      { homekitTopLevel: 38, miLevel: 38, name: "Quiet" },
-      // 39-60%  = "Balanced / Standard"
-      { homekitTopLevel: 60, miLevel: 60, name: "Balanced" },
-      // 61-75%  = "Turbo / Stark"
-      { homekitTopLevel: 75, miLevel: 75, name: "Turbo" },
-      // 76-100% = "Full Speed / Max Speed / Max"
-      { homekitTopLevel: 100, miLevel: 100, name: "Max" }
-    ];
-  }
-
-  static get speedmodes_gen3() {
-    return [
-      // 0%      = Off / Aus
-      { homekitTopLevel: 0, miLevel: 0, name: "Off" },
-      // 1-38%   = "Quiet / Leise"
-      { homekitTopLevel: 38, miLevel: 101, name: "Quiet" },
-      // 39-60%  = "Balanced / Standard"
-      { homekitTopLevel: 60, miLevel: 102, name: "Balanced" },
-      // 61-77%  = "Turbo / Stark"
-      { homekitTopLevel: 77, miLevel: 103, name: "Turbo" },
-      // 78-100% = "Full Speed / Max Speed / Max"
-      { homekitTopLevel: 100, miLevel: 104, name: "Max" }
-    ];
-  }
-
   // From https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L128
   static get cleaningStatuses() {
     return [
@@ -170,7 +108,7 @@ class XiaomiRoborockVacuum {
       .getCharacteristic(Characteristic.SerialNumber)
       .on('get', (cb) => callbackify(() => this.getSerialNumber(), cb));
 
-    this.services.fan = new Service.Fan(this.config.name);
+    this.services.fan = new Service.Fan(this.config.name, 'Speed');
     this.services.fan
       .getCharacteristic(Characteristic.On)
       .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
@@ -181,7 +119,16 @@ class XiaomiRoborockVacuum {
     this.services.fan
       .getCharacteristic(Characteristic.RotationSpeed)
       .on('get', (cb) => callbackify(() => this.getSpeed(), cb))
-      .on('set', (newState, cb) => callbackify(() => this.setSpeed(newState), cb))
+      .on('set', (newState, cb) => callbackify(() => this.setSpeed(newState), cb));
+
+    if (this.config.waterBox) {
+      this.services.waterBox = new Service.Fan(`${this.config.name} Water Box`, 'Water Box');
+      // TODO: Do we need to manage the Characteristic.On?
+      this.services.waterBox
+        .getCharacteristic(Characteristic.RotationSpeed)
+        .on('get', (cb) => callbackify(() => this.getWaterSpeed(), cb))
+        .on('set', (newState, cb) => callbackify(() => this.setWaterSpeed(newState), cb));
+    }
 
     this.services.battery = new Service.BatteryService(`${this.config.name} Battery`);
     this.services.battery
@@ -485,12 +432,15 @@ class XiaomiRoborockVacuum {
       await this.ensureDevice('getState');
       const state = await this.device.state();
       this.log.debug(`DEB getState | ${this.model} | State %j`, state);
-
+      
       safeCall(state.cleaning, (cleaning) => this.changedCleaning(cleaning));
       safeCall(state.charging, (charging) => this.changedCharging(charging));
       safeCall(state.fanSpeed, (fanSpeed) => this.changedSpeed(fanSpeed));
       safeCall(state.batteryLevel, (batteryLevel) => this.changedBattery(batteryLevel));
       safeCall(state.cleaning, (cleaning) => this.changedPause(cleaning));
+      if (this.config.waterBox) {
+        safeCall(state['water_box_mode'], (waterBoxMode) => this.changedWaterSpeed(waterBoxMode));
+      }
 
       // No need to throw the error at this point. This are just warnings like (https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/91)
       safeCall(state.error, (error) => this.changedError(error));
@@ -564,14 +514,14 @@ class XiaomiRoborockVacuum {
   }
 
   findSpeedModes() {
-    return (XiaomiRoborockVacuum.models[this.model] || []).reduce((acc, option) => {
+    return (MODELS[this.model] || []).reduce((acc, option) => {
       if (option.firmware) {
         const [,cleanFirmware] = (this.firmware || '').match(/^(\d+\.\d+\.\d+)/) || [];
         return semver.satisfies(cleanFirmware, option.firmware) ? option : acc;
       } else {
         return option;
       }
-    }, XiaomiRoborockVacuum.models.default);
+    }, MODELS.default);
   }
 
   findSpeedModeFromMiio(speed) {
@@ -611,6 +561,91 @@ class XiaomiRoborockVacuum {
     this.log.info(`ACT setSpeed | ${this.model} | FanSpeed set to ${miLevel} over miIO for "${name}".`);
 
     await this.device.changeFanSpeed(miLevel);
+  }
+
+  findWaterSpeedModeFromMiio(speed) {
+    // Get the speed modes for this model
+    const speedModes = this.findSpeedModes().waterspeed || [];
+
+    // Find speed mode that matches the miLevel
+    return speedModes.find((mode) => mode.miLevel === speed);
+  }
+
+  async getWaterSpeedInDevice() {
+    // From https://github.com/marcelrv/XiaomiRobotVacuumProtocol/blob/master/water_box_custom_mode.md
+    const response = await this.device.call('get_water_box_custom_mode', [ ], { refresh : [ 'water_box_mode' ] });
+    // From https://github.com/nicoh88/miio/blob/master/lib/devices/vacuum.js#L11-L18
+    const [waterMode] = response || [];
+    if ( typeof waterMode === undefined ) {
+      this.log.error(response);
+      throw new Error(`Failed to get the water_box_mode`);
+    }
+    return waterMode;
+  }
+
+  async getWaterSpeed() {
+    await this.ensureDevice('getWaterSpeed');
+
+    
+    const speed = await this.getWaterSpeedInDevice();
+    this.log.info(`INF getWaterSpeed | ${this.model} | WaterBoxMode is ${speed} over miIO. Converting to HomeKit`)
+
+    const waterSpeed = this.findWaterSpeedModeFromMiio(speed);
+
+    let homekitValue = 0
+    if (waterSpeed) {
+      const { homekitTopLevel, name } = waterSpeed
+      this.log.info(`INF getWaterSpeed | ${this.model} | WaterBoxMode is ${speed} over miIO "${name}" > HomeKit speed ${homekitTopLevel}%`);
+      homekitValue = homekitTopLevel || 0;
+    }
+    this.services.waterBox.getCharacteristic(Characteristic.On).updateValue(homekitValue > 0);
+    return homekitValue;
+  }
+
+  async setWaterSpeed(speed) {
+    await this.ensureDevice('setWaterSpeed');
+
+    this.log.debug(`ACT setWaterSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`);
+
+    // Get the speed modes for this model
+    const speedModes = this.findSpeedModes().waterspeed || [];
+
+    // If the robot does not support water-mode cleaning
+    if (speedModes.length === 0) {
+      this.log.info(`INF setWaterSpeed | ${this.model} | Model does not support the water mode`);
+      return;
+    }
+
+    // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
+    const safeSpeed = Math.min(parseInt(speed), speedModes[speedModes.length - 1].homekitTopLevel);
+
+    // Find the minimum homekitTopLevel that matches the desired speed
+    const { miLevel, name } = speedModes.find((mode) => safeSpeed <= mode.homekitTopLevel);
+
+    this.log.info(`ACT setWaterSpeed | ${this.model} | WaterBoxMode set to ${miLevel} over miIO for "${name}".`);
+
+    // From https://github.com/marcelrv/XiaomiRobotVacuumProtocol/blob/master/water_box_custom_mode.md
+    const response = await this.device.call('set_water_box_custom_mode', [ miLevel ], { refresh : [ 'water_box_mode' ] });
+    // From https://github.com/nicoh88/miio/blob/master/lib/devices/vacuum.js#L11-L18
+    if ( response !== 0 && response[0] !== 'ok' ) {
+      this.log.error(response);
+      throw new Error(`Failed to set the water_box_mode to ${miLevel}`);
+    }
+  }
+
+  changedWaterSpeed(speed) {
+    this.log.info(`MON changedWaterSpeed | ${this.model} | WaterBoxMode is now ${speed}%`);
+
+    const speedMode = this.findWaterSpeedModeFromMiio(speed);
+
+    if (typeof speedMode === "undefined") {
+      this.log.warn(`WAR changedWaterSpeed | ${this.model} | Speed was changed to ${speed}%, this speed is not supported`);
+    } else {
+      const { homekitTopLevel, name } = speedMode;
+      this.log.info(`INF changedWaterSpeed | ${this.model} | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`);
+      this.services.waterBox.getCharacteristic(Characteristic.RotationSpeed).updateValue(homekitTopLevel);
+      this.services.waterBox.getCharacteristic(Characteristic.On).updateValue(homekitTopLevel > 0)
+    }
   }
 
   async getPauseState() {
