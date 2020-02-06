@@ -90,6 +90,9 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
+#### 0.6.7
+- Bugfix: Readme fix
+
 #### 0.6.6
 - Feature: Support the new WaterBox property (S5 Max)
 - Improve: Reduce changed logs by only logging when the value is actually new
