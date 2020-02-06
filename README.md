@@ -16,7 +16,7 @@ Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
 
 ## Features
 * **Fan** as On-/Off-Switch. When switching off, directly back to the charging station.
-* [Fanspeed levels](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/models/speedmodes.js) adjustable via 3D Touch / Force Touch.
+   * [Fanspeed levels](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/models/speedmodes.js) adjustable via 3D Touch / Force Touch.
 * Battery status and condition in the device details. Low battery alert.
 * Pause switch (optional).
 * Occupancy sensor (similar to motion sensor) for dock status (optional).
@@ -90,6 +90,8 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
+#### 0.6.8-dev
+
 #### 0.6.7
 - Bugfix: Readme fix
 
