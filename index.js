@@ -560,7 +560,12 @@ class XiaomiRoborockVacuum {
 
     this.log.info(`ACT setSpeed | ${this.model} | FanSpeed set to ${miLevel} over miIO for "${name}".`);
 
-    await this.device.changeFanSpeed(miLevel);
+    if (miLevel === 0) {
+      this.log.debug(`DEB setSpeed | ${this.model} | FanSpeed is 0 => Calling setCleaning(false) instead of changing the fan speed`);
+      await this.setCleaning(false);
+    } else {
+      await this.device.changeFanSpeed(miLevel);
+    }
   }
 
   findWaterSpeedModeFromMiio(speed) {
