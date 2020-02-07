@@ -90,6 +90,9 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
+#### 0.6.9-dev
+- ...
+
 #### 0.6.8
 - Bugfix: Going to dock on speed 0, not stop
 
