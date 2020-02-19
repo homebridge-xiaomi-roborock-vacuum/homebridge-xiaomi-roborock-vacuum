@@ -157,6 +157,21 @@ class XiaomiRoborockVacuum {
         .on('get', (cb) => callbackify(() => this.getDocked(), cb));
     }
 
+    if (this.config.rooms) {
+      for(var i = 0; i < this.config.rooms.length; i++) {
+        var name = this.config.rooms[i].name;
+        var id   = this.config.rooms[i].id;
+        this.services[name] = new Service.Switch(`${this.config.name} ${name}`,'roomService' + i);
+        this.services[name]
+        .getCharacteristic(Characteristic.On)
+        .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
+        .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, 17), cb))
+        .on('change', (oldState, newState) => {
+          this.changedPause(newState);
+        });
+      }
+    }
+
     // ADDITIONAL HOMEKIT SERVICES
     this.initialiseCareServices();
   }

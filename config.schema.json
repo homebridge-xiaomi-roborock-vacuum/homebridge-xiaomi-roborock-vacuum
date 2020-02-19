@@ -38,6 +38,22 @@
         "type": "boolean",
         "default": true,
         "required": true
+      },
+      "rooms" {
+        "title": "Room cleaning",
+        "type": "array",
+        "default": false,
+        "required": false,
+        "items": {
+          "name": {
+            "name": "Room Name",
+            "type": "string"
+          },
+          "id": {
+            "name": "Room ID",
+            "type": "integer"
+          }
+        }
       }
     }
   }
