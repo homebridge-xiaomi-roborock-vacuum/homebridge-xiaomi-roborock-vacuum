@@ -165,7 +165,7 @@ class XiaomiRoborockVacuum {
         this.services[name]
         .getCharacteristic(Characteristic.On)
         .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
-        .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, 17), cb))
+        .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, id), cb))
         .on('change', (oldState, newState) => {
           this.changedPause(newState);
         });
