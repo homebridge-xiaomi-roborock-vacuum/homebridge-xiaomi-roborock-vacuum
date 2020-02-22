@@ -39,6 +39,12 @@
         "default": true,
         "required": true
       },
+      "cleanword": {
+        "title": "Cleaning Word",
+        "type": "string",
+        "default": "clean",
+        "required": true
+      },
       "rooms" {
         "title": "Room cleaning",
         "type": "array",

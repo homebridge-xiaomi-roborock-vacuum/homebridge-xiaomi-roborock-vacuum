@@ -161,8 +161,9 @@ class XiaomiRoborockVacuum {
       for(var i = 0; i < this.config.rooms.length; i++) {
         var name = this.config.rooms[i].name;
         var id   = this.config.rooms[i].id;
-        this.services[name] = new Service.Switch(`${this.config.name} ${name}`,'roomService' + i);
-        this.services[name]
+        var sname = 'room' + i;
+        this.services[sname] = new Service.Switch(`${this.config.name} ${name}`,'roomService' + i);
+        this.services[sname]
         .getCharacteristic(Characteristic.On)
         .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
         .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, id), cb))
@@ -171,6 +172,8 @@ class XiaomiRoborockVacuum {
         });
       }
     }
+
+    console.log(this.services);
 
     // ADDITIONAL HOMEKIT SERVICES
     this.initialiseCareServices();
@@ -518,6 +521,23 @@ class XiaomiRoborockVacuum {
       if (state && !this.isCleaning) { // Start cleaning
         this.log.info(`ACT setCleaning | ${this.model} | Start cleaning, not charging.`);
         await this.device.activateCleaning();
+      } else if (!state) { // Stop cleaning
+        this.log.info(`ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`);
+        await this.device.activateCharging(); // Charging works for 1st, not for 2nd
+      }
+    } catch (err) {
+      this.log.error(`ERR setCleaning | ${this.model} | Failed to set cleaning to ${state}`, err);
+      throw err;
+    }
+  }
+
+  async setCleaningRoom(state, room) {
+    await this.ensureDevice('setCleaning');
+
+    try {
+      if (state && !this.isCleaning) { // Start cleaning
+        this.log.info(`ACT setCleaning | ${this.model} | Start cleaning, not charging.`);
+        await this.device.call('app_segment_clean', [room]);
       } else if (!state) { // Stop cleaning
         this.log.info(`ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`);
         await this.device.activateCharging(); // Charging works for 1st, not for 2nd
