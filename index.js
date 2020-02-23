@@ -159,21 +159,22 @@ class XiaomiRoborockVacuum {
 
     if (this.config.rooms) {
       for(var i = 0; i < this.config.rooms.length; i++) {
-        var name = this.config.rooms[i].name;
-        var id   = this.config.rooms[i].id;
         var sname = 'room' + i;
-        this.services[sname] = new Service.Switch(`${this.config.name} ${name}`,'roomService' + i);
+        this.services[sname] = new Service.Switch(`${this.config.cleanword} ${this.config.rooms[i].name}`,'roomService' + i);
+        this.services[sname].roomId = this.config.rooms[i].id;
+        this.services[sname].parent = this;
         this.services[sname]
         .getCharacteristic(Characteristic.On)
         .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
-        .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, id), cb))
+        .on('set', function(newState, cb) {
+          this.parent.setCleaningRoom(newState, this.roomId)
+          cb();
+        }.bind(this.services[sname]))
         .on('change', (oldState, newState) => {
           this.changedPause(newState);
         });
       }
     }
-
-    console.log(this.services);
 
     // ADDITIONAL HOMEKIT SERVICES
     this.initialiseCareServices();
@@ -536,7 +537,7 @@ class XiaomiRoborockVacuum {
 
     try {
       if (state && !this.isCleaning) { // Start cleaning
-        this.log.info(`ACT setCleaning | ${this.model} | Start cleaning, not charging.`);
+        this.log.info(`ACT setCleaning | ${this.model} | Start cleaning Room ID ${room}, not charging.`);
         await this.device.call('app_segment_clean', [room]);
       } else if (!state) { // Stop cleaning
         this.log.info(`ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`);
