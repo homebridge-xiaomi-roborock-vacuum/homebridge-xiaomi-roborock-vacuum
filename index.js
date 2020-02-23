@@ -157,23 +157,13 @@ class XiaomiRoborockVacuum {
         .on('get', (cb) => callbackify(() => this.getDocked(), cb));
     }
 
-    if (this.config.rooms) {
+    if (this.config.autoroom) {
       this.getRoomMap();
+    }
+
+    if (this.config.rooms && !this.config.autoroom) {
       for(var i = 0; i < this.config.rooms.length; i++) {
-        var sname = 'room' + i;
-        this.services[sname] = new Service.Switch(`${this.config.cleanword} ${this.config.rooms[i].name}`,'roomService' + i);
-        this.services[sname].roomId = this.config.rooms[i].id;
-        this.services[sname].parent = this;
-        this.services[sname]
-        .getCharacteristic(Characteristic.On)
-        .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
-        .on('set', function(newState, cb) {
-          this.parent.setCleaningRoom(newState, this.roomId)
-          cb();
-        }.bind(this.services[sname]))
-        .on('change', (oldState, newState) => {
-          this.changedPause(newState);
-        });
+        this.createRoom(this.config.rooms[i].id, this.config.rooms[i].name);
       }
     }
 
@@ -556,10 +546,29 @@ class XiaomiRoborockVacuum {
     try {
       const map = await this.device.call('get_room_mapping');
       this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
+      for(let val of map) {
+        this.createRoom(val[0], `Automatic ${val[1]}`);
+      }
     } catch (err) {
       this.log.error(`ERR getRoomMap | Failed getting the Room Map.`, err);
       throw err;
     }
+  }
+
+  createRoom(roomId, roomName) {
+    this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${roomName}`,'roomService' + roomId);
+    this.services[roomName].roomId = roomId;
+    this.services[roomName].parent = this;
+    this.services[roomName]
+    .getCharacteristic(Characteristic.On)
+    .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
+    .on('set', function(newState, cb) {
+      this.parent.setCleaningRoom(newState, this.roomId)
+      cb();
+    }.bind(this.services[roomName]))
+    .on('change', (oldState, newState) => {
+      this.changedPause(newState);
+    });
   }
 
   findSpeedModes() {
