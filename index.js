@@ -158,6 +158,7 @@ class XiaomiRoborockVacuum {
     }
 
     if (this.config.rooms) {
+      this.getRoomMap();
       for(var i = 0; i < this.config.rooms.length; i++) {
         var sname = 'room' + i;
         this.services[sname] = new Service.Switch(`${this.config.cleanword} ${this.config.rooms[i].name}`,'roomService' + i);
@@ -545,6 +546,18 @@ class XiaomiRoborockVacuum {
       }
     } catch (err) {
       this.log.error(`ERR setCleaning | ${this.model} | Failed to set cleaning to ${state}`, err);
+      throw err;
+    }
+  }
+
+  async getRoomMap() {
+    await this.ensureDevice('getRoomMap');
+
+    try {
+      const map = await this.device.call('get_room_mapping');
+      this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
+    } catch (err) {
+      this.log.error(`ERR getRoomMap | Failed getting the Room Map.`, err);
       throw err;
     }
   }
