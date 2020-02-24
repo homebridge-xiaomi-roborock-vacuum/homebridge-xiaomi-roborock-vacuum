@@ -157,11 +157,7 @@ class XiaomiRoborockVacuum {
         .on('get', (cb) => callbackify(() => this.getDocked(), cb));
     }
 
-    if (this.config.autoroom) {
-      this.getRoomMap();
-    }
-
-    if (this.config.rooms && !this.config.autoroom) {
+    if (this.config.rooms) {
       for(var i in this.config.rooms) {
         this.createRoom(this.config.rooms[i].id, this.config.rooms[i].name);
       }

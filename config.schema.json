@@ -45,12 +45,6 @@
         "default": "clean",
         "required": true
       },
-      "autoroom": {
-        "title": "Automatic Room Detection",
-        "type": "boolean",
-        "default": false,
-        "required": true
-      },
       "rooms" {
         "title": "Room cleaning",
         "type": "array",
