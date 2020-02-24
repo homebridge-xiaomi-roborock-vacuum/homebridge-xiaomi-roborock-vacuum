@@ -162,7 +162,7 @@ class XiaomiRoborockVacuum {
     }
 
     if (this.config.rooms && !this.config.autoroom) {
-      for(var i = 0; i < this.config.rooms.length; i++) {
+      for(var i in this.config.rooms) {
         this.createRoom(this.config.rooms[i].id, this.config.rooms[i].name);
       }
     }
@@ -515,7 +515,7 @@ class XiaomiRoborockVacuum {
         await this.device.activateCleaning();
       } else if (!state) { // Stop cleaning
         this.log.info(`ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`);
-        await this.device.activateCharging(); // Charging works for 1st, not for 2nd
+        await this.activateCharging(); // Charging works for 1st, not for 2nd
       }
     } catch (err) {
       this.log.error(`ERR setCleaning | ${this.model} | Failed to set cleaning to ${state}`, err);
@@ -532,11 +532,20 @@ class XiaomiRoborockVacuum {
         await this.device.call('app_segment_clean', [room]);
       } else if (!state) { // Stop cleaning
         this.log.info(`ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`);
-        await this.device.activateCharging(); // Charging works for 1st, not for 2nd
+        await this.activateCharging();
       }
     } catch (err) {
       this.log.error(`ERR setCleaning | ${this.model} | Failed to set cleaning to ${state}`, err);
       throw err;
+    }
+  }
+
+  async activateCharging() {
+    await this.ensureDevice('activateCharging');
+    try {
+      await this.device.call('app_charge');
+    } catch (err) {
+      this.device.call('app_charge');
     }
   }
 
@@ -547,7 +556,7 @@ class XiaomiRoborockVacuum {
       const map = await this.device.call('get_room_mapping');
       this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
       for(let val of map) {
-        this.createRoom(val[0], `Automatic ${val[1]}`);
+        this.createRoom(val[0], val[1]);
       }
     } catch (err) {
       this.log.error(`ERR getRoomMap | Failed getting the Room Map.`, err);
@@ -556,6 +565,7 @@ class XiaomiRoborockVacuum {
   }
 
   createRoom(roomId, roomName) {
+    this.log.info(`INF createRoom | ${this.model} | Room ${roomName} (${roomId})`);
     this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${roomName}`,'roomService' + roomId);
     this.services[roomName].roomId = roomId;
     this.services[roomName].parent = this;
