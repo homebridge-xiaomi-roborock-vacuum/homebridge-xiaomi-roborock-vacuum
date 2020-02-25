@@ -157,6 +157,12 @@ class XiaomiRoborockVacuum {
         .on('get', (cb) => callbackify(() => this.getDocked(), cb));
     }
 
+    if (this.config.rooms) {
+      for(var i in this.config.rooms) {
+        this.createRoom(this.config.rooms[i].id, this.config.rooms[i].name);
+      }
+    }
+
     // ADDITIONAL HOMEKIT SERVICES
     this.initialiseCareServices();
   }
@@ -505,12 +511,68 @@ class XiaomiRoborockVacuum {
         await this.device.activateCleaning();
       } else if (!state) { // Stop cleaning
         this.log.info(`ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`);
-        await this.device.activateCharging(); // Charging works for 1st, not for 2nd
+        await this.activateCharging(); // Charging works for 1st, not for 2nd
       }
     } catch (err) {
       this.log.error(`ERR setCleaning | ${this.model} | Failed to set cleaning to ${state}`, err);
       throw err;
     }
+  }
+
+  async setCleaningRoom(state, room) {
+    await this.ensureDevice('setCleaning');
+
+    try {
+      if (state && !this.isCleaning) { // Start cleaning
+        this.log.info(`ACT setCleaning | ${this.model} | Start cleaning Room ID ${room}, not charging.`);
+        await this.device.call('app_segment_clean', [room]);
+      } else if (!state) { // Stop cleaning
+        this.log.info(`ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`);
+        await this.activateCharging();
+      }
+    } catch (err) {
+      this.log.error(`ERR setCleaning | ${this.model} | Failed to set cleaning to ${state}`, err);
+      throw err;
+    }
+  }
+
+  async activateCharging() {
+    await this.ensureDevice('activateCharging');
+    try {
+      await this.device.call('app_charge');
+    } catch (err) {
+      this.log.error(`ERR setCharging | ${this.model} | Failed to go charging.`, err);
+      throw err;
+    }
+  }
+
+  async getRoomMap() {
+    await this.ensureDevice('getRoomMap');
+
+    try {
+      const map = await this.device.call('get_room_mapping');
+      this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
+      for(let val of map) {
+        this.createRoom(val[0], val[1]);
+      }
+    } catch (err) {
+      this.log.error(`ERR getRoomMap | Failed getting the Room Map.`, err);
+      throw err;
+    }
+  }
+
+  createRoom(roomId, roomName) {
+    this.log.info(`INF createRoom | ${this.model} | Room ${roomName} (${roomId})`);
+    this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${roomName}`,'roomService' + roomId);
+    this.services[roomName].roomId = roomId;
+    this.services[roomName].parent = this;
+    this.services[roomName]
+    .getCharacteristic(Characteristic.On)
+    .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
+    .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, roomId), cb))
+    .on('change', (oldState, newState) => {
+      this.changedPause(newState);
+    });
   }
 
   findSpeedModes() {

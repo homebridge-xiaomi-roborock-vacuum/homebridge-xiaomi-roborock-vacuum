@@ -6,3 +6,4 @@ crashreports/
 package-lock.json
 debug/
 bugs/
+.bin/
