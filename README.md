@@ -43,7 +43,18 @@ Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
   "token": "abcdef1234567890abcdef1234567890",
   "pause": false,
   "dock": true,
-  "waterBox": false
+  "waterBox": false,
+  "cleanword": "cleaning",
+  "rooms": [
+    {
+      "id": 16,
+      "name": "Livingroom"
+    },
+    {
+      "id": 17,
+      "name": "Kitchen"
+    }
+  ]
  }
 ],
 ```
@@ -80,6 +91,8 @@ Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
 | `pause` | false | when set to true, HomeKit shows an additional switch for "pause" - switch is on, when pause is possible |
 | `dock` | false |  when set to true, HomeKit shows an occupancy sensor, if robot is in the charging dock |
 | `waterBox` | false | when set to true, HomeKit shows an additional slider to control the amount of water released by the robot (only selected models like S5-Max). Currently in a beta state. |
+| `cleanword` | cleaning | used for autonaming the Roomselectors |
+| `rooms` | false | Array of ID / Name for a single Room. If set you have another switch for cleaning only this room |
 
 
 ## Xiaomi Token
