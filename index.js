@@ -541,7 +541,8 @@ class XiaomiRoborockVacuum {
     try {
       await this.device.call('app_charge');
     } catch (err) {
-      this.device.call('app_charge');
+      this.log.error(`ERR setCharging | ${this.model} | Failed to go charging.`, err);
+      throw err;
     }
   }
 
@@ -568,10 +569,7 @@ class XiaomiRoborockVacuum {
     this.services[roomName]
     .getCharacteristic(Characteristic.On)
     .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
-    .on('set', function(newState, cb) {
-      this.parent.setCleaningRoom(newState, this.roomId)
-      cb();
-    }.bind(this.services[roomName]))
+    .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, roomId), cb))
     .on('change', (oldState, newState) => {
       this.changedPause(newState);
     });
