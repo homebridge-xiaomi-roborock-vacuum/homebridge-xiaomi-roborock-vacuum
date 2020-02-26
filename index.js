@@ -142,7 +142,7 @@ class XiaomiRoborockVacuum {
       .on('get', (cb) => callbackify(() => this.getBatteryLow(), cb));
 
     if (this.config.pause) {
-      this.services.pause = new Service.Switch(`${this.config.name} Pause`);
+      this.services.pause = new Service.Switch(`${this.config.name} Pause`, 'Pause Switch');
       this.services.pause
         .getCharacteristic(Characteristic.On)
         .on('get', (cb) => callbackify(() => this.getPauseState(), cb))
