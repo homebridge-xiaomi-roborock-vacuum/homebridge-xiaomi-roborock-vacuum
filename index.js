@@ -66,6 +66,7 @@ class XiaomiRoborockVacuum {
     this.log = log;
     this.config = config;
     this.config.name = config.name || 'Roborock vacuum cleaner';
+    this.config.cleanword = config.cleanword || 'cleaning';
     this.services = {};
 
     // Used to store the latest state to reduce logging
