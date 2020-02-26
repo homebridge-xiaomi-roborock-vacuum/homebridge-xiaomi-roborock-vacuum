@@ -348,6 +348,10 @@ class XiaomiRoborockVacuum {
       this.log.info('STA getDevice | FanSpeed: ' + this.device.property("fanSpeed"));
       this.log.info('STA getDevice | BatteryLevel: ' + this.device.property("batteryLevel"));
 
+      if (this.config.autoroom) {
+        this.getRoomMap();
+      }
+
       try {
         const serial = await this.getSerialNumber();
         this.services.info.setCharacteristic(Characteristic.SerialNumber, `${serial}`);
