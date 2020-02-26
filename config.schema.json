@@ -45,21 +45,11 @@
         "default": "clean",
         "required": true
       },
-      "rooms" {
-        "title": "Room cleaning",
-        "type": "array",
+      "autoroom": {
+        "title": "Automatic Room Detection",
+        "type": "boolean",
         "default": false,
-        "required": false,
-        "items": {
-          "name": {
-            "name": "Room Name",
-            "type": "string"
-          },
-          "id": {
-            "name": "Room ID",
-            "type": "integer"
-          }
-        }
+        "required": true
       }
     }
   }
