@@ -158,10 +158,6 @@ class XiaomiRoborockVacuum {
         .on('get', (cb) => callbackify(() => this.getDocked(), cb));
     }
 
-    if (this.config.autoroom) {
-      this.getRoomMap();
-    }
-
     if (this.config.rooms && !this.config.autoroom) {
       for(var i in this.config.rooms) {
         this.createRoom(this.config.rooms[i].id, this.config.rooms[i].name);
@@ -351,6 +347,10 @@ class XiaomiRoborockVacuum {
       this.log.info('STA getDevice | State: ' + this.device.property("state"));
       this.log.info('STA getDevice | FanSpeed: ' + this.device.property("fanSpeed"));
       this.log.info('STA getDevice | BatteryLevel: ' + this.device.property("batteryLevel"));
+
+      if (this.config.autoroom) {
+        this.getRoomMap();
+      }
 
       try {
         const serial = await this.getSerialNumber();
