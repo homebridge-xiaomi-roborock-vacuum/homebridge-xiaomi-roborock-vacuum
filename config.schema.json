@@ -51,7 +51,7 @@
         "default": false,
         "required": true
       },
-      "rooms" {
+      "rooms": {
         "title": "Room cleaning",
         "type": "array",
         "required": false,
