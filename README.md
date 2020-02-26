@@ -32,7 +32,7 @@ Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
 3. Customize you homebridge configuration `config.json`.
 4. Restart homebridge, ggf. `service homebridge restart`.
 
-- Example `config.json` with one vacuum:
+- Example `config.json` with one vacuum and room cleaning:
 
 ```
 "accessories": [
@@ -103,8 +103,8 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
-#### 0.6.9-dev
-- ...
+#### 0.7.0
+- Feature: Room cleaning with separately switch for each room
 
 #### 0.6.8
 - Bugfix: Going to dock on speed 0, not stop
