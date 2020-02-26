@@ -349,7 +349,7 @@ class XiaomiRoborockVacuum {
       this.log.info('STA getDevice | BatteryLevel: ' + this.device.property("batteryLevel"));
 
       if (this.config.autoroom) {
-        this.getRoomMap();
+        await this.getRoomMap();
       }
 
       try {
