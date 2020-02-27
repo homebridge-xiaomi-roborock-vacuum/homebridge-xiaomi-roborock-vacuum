@@ -569,7 +569,7 @@ class XiaomiRoborockVacuum {
 
   createRoom(roomId, roomName) {
     this.log.info(`INF createRoom | ${this.model} | Room ${roomName} (${roomId})`);
-    this.services[roomName] = new Service.Fan(`${this.config.cleanword} ${roomName}`,'roomService' + roomId);
+    this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${roomName}`,'roomService' + roomId);
     this.services[roomName].roomId = roomId;
     this.services[roomName].parent = this;
     //this.services[roomName].getCharacteristic(Characteristic.SerialNumber).updateValue(`0000-${roomId}`);
