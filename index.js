@@ -66,6 +66,7 @@ class XiaomiRoborockVacuum {
     this.log = log;
     this.config = config;
     this.config.name = config.name || 'Roborock vacuum cleaner';
+    this.config.cleanword = config.cleanword || 'cleaning';
     this.services = {};
 
     // Used to store the latest state to reduce logging
@@ -347,6 +348,10 @@ class XiaomiRoborockVacuum {
       this.log.info('STA getDevice | FanSpeed: ' + this.device.property("fanSpeed"));
       this.log.info('STA getDevice | BatteryLevel: ' + this.device.property("batteryLevel"));
 
+      if (this.config.autoroom) {
+        await this.getRoomMap();
+      }
+
       try {
         const serial = await this.getSerialNumber();
         this.services.info.setCharacteristic(Characteristic.SerialNumber, `${serial}`);
@@ -552,9 +557,9 @@ class XiaomiRoborockVacuum {
     try {
       const map = await this.device.call('get_room_mapping');
       this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
-      for(let val of map) {
-        this.createRoom(val[0], val[1]);
-      }
+      //for(let val of map) {
+      //  this.createRoom(val[0], val[1]);
+      //}
     } catch (err) {
       this.log.error(`ERR getRoomMap | Failed getting the Room Map.`, err);
       throw err;

@@ -45,22 +45,82 @@
         "default": "clean",
         "required": true
       },
-      "rooms" {
+      "autoroom": {
+        "title": "Automatic Room Detection",
+        "type": "boolean",
+        "default": false,
+        "required": true
+      },
+      "rooms": {
         "title": "Room cleaning",
         "type": "array",
-        "default": false,
         "required": false,
         "items": {
-          "name": {
-            "name": "Room Name",
-            "type": "string"
-          },
-          "id": {
-            "name": "Room ID",
-            "type": "integer"
+          "title": "Rooms",
+          "type": "object",
+          "properties": {
+            "name": {
+              "name": "Room Name",
+              "type": "string"
+            },
+            "id": {
+              "name": "Room ID",
+              "type": "integer"
+            }
           }
         }
       }
     }
-  }
+  },
+  "layout": [
+    "name",
+    {
+      "type": "flex",
+      "flex-flow": "row wrap",
+      "items": [
+        "ip",
+        "token"
+      ]
+    },
+    "waterBox",
+    "pause",
+    "dock",
+    "cleanword",
+    "autoroom",
+    {
+      "type": "fieldset",
+      "title": "Rooms",
+      "description": "Room Mapping", 
+      "expandable": true,
+      "expanded": false,
+      "items": [
+        {
+          "notitle": true,
+          "key": "rooms",
+          "type": "array",
+          "items": [
+            {
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row",
+              "items": [
+                {
+                  "key": "rooms[].id",
+                  "flex": "1 1 50px",
+                  "notitle": true,
+                  "placeholder": "Room ID"
+                },
+                {
+                  "key": "rooms[].name",
+                  "flex": "4 4 200px",
+                  "notitle": true,
+                  "placeholder": "Room Name"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
