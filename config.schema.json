@@ -89,7 +89,7 @@
               "type": "string"
             },
             "zone": {
-              "name": "Zoon",
+              "name": "Zone",
               "type": "string"
             }
           }
