@@ -618,11 +618,11 @@ class XiaomiRoborockVacuum {
 
   createZone(zoneName, zoneParams) {
     this.log.info(`INF createRoom | ${this.model} | Zone ${zoneName} (${zoneParams})`);
-    this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${zoneName}`,'zoneCleaning' + zoneNanem);
-    this.services[roomName].zoneParams = zoneParams;
-    this.services[roomName].parent = this;
+    this.services[zoneName] = new Service.Switch(`${this.config.cleanword} ${zoneName}`,'zoneCleaning' + zoneName);
+    this.services[zoneName].zoneParams = zoneParams;
+    this.services[zoneName].parent = this;
     //this.services[roomName].getCharacteristic(Characteristic.SerialNumber).updateValue(`0000-${roomId}`);
-    this.services[roomName]
+    this.services[zoneName]
     .getCharacteristic(Characteristic.On)
     .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
     .on('set', (newState, cb) => callbackify(() => this.setCleaningZone(newState, zoneParams), cb))
