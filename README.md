@@ -93,7 +93,13 @@ This plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
 | `waterBox` | false | when set to true, HomeKit shows an additional slider to control the amount of water released by the robot (only selected models like S5-Max). Currently in a beta state. |
 | `cleanword` | cleaning | used for autonaming the Roomselectors |
 | `rooms` | false | Array of ID / Name for a single Room. If set you have another switch for cleaning only this room |
+| `autoroom` | false | when set to true, Rooms while generated from Robot. (only S6) |
 
+## AutoRoom Generation
+This feature seems to be working only on the S6 Model.
+We figured out this is why the Api call only delivers the mapping when the Rooms are named in the Xioami / Roborock App.
+
+So when you have an S6 but not named the Rooms in your App this function will not work! Thanks @domeOo
 
 ## Xiaomi Token
 To use this plugin, you have to read the "token" of the xiaomi vacuum robots. Here are some detailed instructions:
