@@ -5,6 +5,7 @@ const miio = require('miio');
 const util = require('util');
 const callbackify = require('./lib/callbackify');
 const safeCall = require('./lib/safeCall');
+const sleep = require('system-sleep');
 
 let homebrideAPI, Service, Characteristic;
 
@@ -67,6 +68,7 @@ class XiaomiRoborockVacuum {
     this.config = config;
     this.config.name = config.name || 'Roborock vacuum cleaner';
     this.config.cleanword = config.cleanword || 'cleaning';
+    this.config.delay = config.delay || false;
     this.services = {};
 
     // Used to store the latest state to reduce logging
@@ -158,7 +160,7 @@ class XiaomiRoborockVacuum {
         .on('get', (cb) => callbackify(() => this.getDocked(), cb));
     }
 
-    if (this.config.rooms) {
+    if (this.config.rooms && !this.config.autoroom) {
       for(var i in this.config.rooms) {
         this.createRoom(this.config.rooms[i].id, this.config.rooms[i].name);
       }
@@ -567,9 +569,9 @@ class XiaomiRoborockVacuum {
     try {
       const map = await this.device.call('get_room_mapping');
       this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
-      //for(let val of map) {
-      //  this.createRoom(val[0], val[1]);
-      //}
+      for(let val of map) {
+        this.createRoom(val[0], val[1]);
+      }
     } catch (err) {
       this.log.error(`ERR getRoomMap | Failed getting the Room Map.`, err);
       throw err;
@@ -581,6 +583,7 @@ class XiaomiRoborockVacuum {
     this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${roomName}`,'roomService' + roomId);
     this.services[roomName].roomId = roomId;
     this.services[roomName].parent = this;
+    //this.services[roomName].getCharacteristic(Characteristic.SerialNumber).updateValue(`0000-${roomId}`);
     this.services[roomName]
     .getCharacteristic(Characteristic.On)
     .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
@@ -806,6 +809,8 @@ class XiaomiRoborockVacuum {
   }
 
   getServices() {
+    if (this.config.delay)
+      sleep(5000);
     this.log.debug(`DEB getServices | ${this.model}`);
     return Object.keys(this.services).map((key) => this.services[key]);
   }

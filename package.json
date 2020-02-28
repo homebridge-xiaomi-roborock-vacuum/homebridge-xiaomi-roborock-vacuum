@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "miio": "git://github.com/nicoh88/miio.git#master",
-    "semver": "^7.1.2"
+    "semver": "^7.1.2",
+    "system-sleep": "^1.3.6"
   }
 }
