@@ -166,6 +166,12 @@ class XiaomiRoborockVacuum {
       }
     }
 
+    if (this.config.zones) {
+      for(var i in this.config.zones) {
+        this.createZone(this.config.zones[i].name, this.config.zones[i].zone);
+      }
+    }
+
     // ADDITIONAL HOMEKIT SERVICES
     this.initialiseCareServices();
   }
@@ -543,6 +549,23 @@ class XiaomiRoborockVacuum {
     }
   }
 
+  async setCleaningZone(state, zone) {
+    await this.ensureDevice('setCleaning');
+
+    try {
+      if (state && !this.isCleaning) { // Start cleaning
+        this.log.info(`ACT setCleaning | ${this.model} | Start cleaning Zone ${zone}, not charging.`);
+        await this.device.call('app_zoned_clean', [zone]);
+      } else if (!state) { // Stop cleaning
+        this.log.info(`ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`);
+        await this.activateCharging();
+      }
+    } catch (err) {
+      this.log.error(`ERR setCleaning | ${this.model} | Failed to set cleaning to ${state}`, err);
+      throw err;
+    }
+  }
+
   async activateCharging() {
     await this.ensureDevice('activateCharging');
     try {
@@ -588,6 +611,21 @@ class XiaomiRoborockVacuum {
     .getCharacteristic(Characteristic.On)
     .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
     .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, roomId), cb))
+    .on('change', (oldState, newState) => {
+      this.changedPause(newState);
+    });
+  }
+
+  createZone(zoneName, zoneParams) {
+    this.log.info(`INF createRoom | ${this.model} | Zone ${zoneName} (${zoneParams})`);
+    this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${zoneName}`,'zoneCleaning' + zoneNanem);
+    this.services[roomName].zoneParams = zoneParams;
+    this.services[roomName].parent = this;
+    //this.services[roomName].getCharacteristic(Characteristic.SerialNumber).updateValue(`0000-${roomId}`);
+    this.services[roomName]
+    .getCharacteristic(Characteristic.On)
+    .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
+    .on('set', (newState, cb) => callbackify(() => this.setCleaningZone(newState, zoneParams), cb))
     .on('change', (oldState, newState) => {
       this.changedPause(newState);
     });
