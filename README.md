@@ -103,6 +103,9 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
+#### 0.7.2
+- Bugfix: Stop cleaning, go to dock
+
 #### 0.7.1
 - Bugfix: config.schema.json update for homebridge-config-ui-x
 - Bugfix: config cleanword default "cleaning" if not sets in config.json
