@@ -39,6 +39,12 @@
         "default": true,
         "required": true
       },
+      "delay": {
+        "title": "Startdelay (beta) just for testing",
+        "type": "boolean",
+        "default": false,
+        "required": false
+      },
       "cleanword": {
         "title": "Cleaning Word",
         "type": "string",
@@ -85,6 +91,7 @@
     "waterBox",
     "pause",
     "dock",
+    "delay",
     "cleanword",
     "autoroom",
     {

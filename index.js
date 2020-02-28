@@ -68,6 +68,7 @@ class XiaomiRoborockVacuum {
     this.config = config;
     this.config.name = config.name || 'Roborock vacuum cleaner';
     this.config.cleanword = config.cleanword || 'cleaning';
+    this.config.delay = config.delay || false;
     this.services = {};
 
     // Used to store the latest state to reduce logging
@@ -808,7 +809,7 @@ class XiaomiRoborockVacuum {
   }
 
   getServices() {
-    if (this.config.autoroom)
+    if (this.config.delay)
       sleep(5000);
     this.log.debug(`DEB getServices | ${this.model}`);
     return Object.keys(this.services).map((key) => this.services[key]);
