@@ -9,7 +9,7 @@
 ## Homebridge plugin for Xiaomi / Roborock Vacuum Cleaner's
 With this [homebridge](https://github.com/nfarina/homebridge) plugin can you control the xiaomi vacuum robots as fan in your Apple Home App (HomeKit).
 
-Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15.6 or newer, not like the old ones 0.14.1. Timeouts and API errors are a thing of the past!
+This plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15.6 or newer, not like the old ones 0.14.1. Timeouts and API errors are a thing of the past!
 
 <img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/rockrobo.vacuum.v1.jpg" style="border:1px solid lightgray" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s5.jpg" style="border:1px solid lightgray" alt="Roborock S50 2nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s55.jpg" style="border:1px solid lightgray" alt="Roborock S55 2nd Generation Black" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s6.jpg" style="border:1px solid lightgray" alt="Roborock S6/T6 3nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.c10.jpg" style="border:1px solid lightgray" alt="Roborock Xiaowa Lite C10" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/nicoh88/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s5.max.jpg" style="border:1px solid lightgray" alt="Roborock S5 Max" width="300">
 
@@ -32,7 +32,7 @@ Thus plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
 3. Customize you homebridge configuration `config.json`.
 4. Restart homebridge, ggf. `service homebridge restart`.
 
-- Example `config.json` with one vacuum:
+- Example `config.json` with one vacuum and room cleaning:
 
 ```
 "accessories": [
@@ -103,8 +103,16 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
-#### 0.6.9-dev
-- ...
+#### 0.7.2
+- Bugfix: Stop cleaning, go to dock
+
+#### 0.7.1
+- Bugfix: config.schema.json update for homebridge-config-ui-x
+- Bugfix: config cleanword default "cleaning" if not sets in config.json
+- Bugfix: Add subtype to the pause switch
+
+#### 0.7.0
+- Feature: Room cleaning with separately switch for each room
 
 #### 0.6.8
 - Bugfix: Going to dock on speed 0, not stop

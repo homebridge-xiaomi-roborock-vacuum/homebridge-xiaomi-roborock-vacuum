@@ -144,7 +144,7 @@ class XiaomiRoborockVacuum {
       .on('get', (cb) => callbackify(() => this.getBatteryLow(), cb));
 
     if (this.config.pause) {
-      this.services.pause = new Service.Switch(`${this.config.name} Pause`);
+      this.services.pause = new Service.Switch(`${this.config.name} Pause`, 'Pause Switch');
       this.services.pause
         .getCharacteristic(Characteristic.On)
         .on('get', (cb) => callbackify(() => this.getPauseState(), cb))
@@ -545,7 +545,17 @@ class XiaomiRoborockVacuum {
   async activateCharging() {
     await this.ensureDevice('activateCharging');
     try {
-      await this.device.call('app_charge');
+      const refreshState = {
+        refresh: [ 'state' ],
+        refreshDelay: 1000
+      };
+      await this.device.call('app_stop', [], refreshState);
+      // Wait one second before calling go to charge
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const changeResponse = await this.device.call('app_charge', [], refreshState);
+      if (!(changeResponse && changeResponse[0] === 'ok')) {
+        throw new Error('Failed to go to change');
+      }
     } catch (err) {
       this.log.error(`ERR setCharging | ${this.model} | Failed to go charging.`, err);
       throw err;
