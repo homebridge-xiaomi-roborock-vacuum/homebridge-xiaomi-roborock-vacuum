@@ -93,7 +93,7 @@ This plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
 | `waterBox` | false | when set to true, HomeKit shows an additional slider to control the amount of water released by the robot (only selected models like S5-Max). Currently in a beta state. |
 | `cleanword` | cleaning | used for autonaming the Roomselectors |
 | `rooms` | false | Array of ID / Name for a single Room. If set you have another switch for cleaning only this room |
-| `autoroom` | false | when set to true, Rooms while generated from Robot. (only S6) |
+| `autoroom` | false | when set to true, Rooms will be generated from Robot. (only S6) |
 
 ## AutoRoom Generation
 This feature seems to be working only on the S6 Model.
