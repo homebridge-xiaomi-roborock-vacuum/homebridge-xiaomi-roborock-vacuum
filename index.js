@@ -31,7 +31,8 @@ class XiaomiRoborockVacuum {
     return [
       'cleaning',
       'spot-cleaning',
-      'zone-cleaning'
+      'zone-cleaning',
+      'room-cleaning'
     ];
   }
 
