@@ -7,6 +7,7 @@ module.exports = {
   'default': {speed: speedmodes.gen1},
   'rockrobo.vacuum.v1': [{speed: speedmodes.gen1}],
   'roborock.vacuum.c1': [{speed: speedmodes.gen1}],
+  'roborock.vacuum.m1s': [{speed: speedmodes.gen3}],
   'roborock.vacuum.s5': [
     {speed: speedmodes.gen2},
     {firmware: '>=3.5.7', speed: speedmodes.gen3},
