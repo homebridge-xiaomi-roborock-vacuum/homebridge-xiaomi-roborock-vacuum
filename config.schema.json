@@ -75,6 +75,25 @@
             }
           }
         }
+      },
+      "zones": {
+        "title": "Zone cleaning",
+        "type": "array",
+        "required": false,
+        "items": {
+          "title": "Zones",
+          "type": "object",
+          "properties": {
+            "name": {
+              "name": "Name",
+              "type": "string"
+            },
+            "zone": {
+              "name": "Zone",
+              "type": "string"
+            }
+          }
+        }
       }
     }
   },
@@ -122,6 +141,41 @@
                   "flex": "4 4 200px",
                   "notitle": true,
                   "placeholder": "Room Name"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "fieldset",
+      "title": "Zones",
+      "description": "Zone cleaning", 
+      "expandable": true,
+      "expanded": false,
+      "items": [
+        {
+          "notitle": true,
+          "key": "zones",
+          "type": "array",
+          "items": [
+            {
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row",
+              "items": [
+                {
+                  "key": "zones[].name",
+                  "flex": "1 1 100px",
+                  "notitle": true,
+                  "placeholder": "Zone Name"
+                },
+                {
+                  "key": "zones[].zone",
+                  "flex": "4 4 150px",
+                  "notitle": true,
+                  "placeholder": "Zone Parameter"
                 }
               ]
             }

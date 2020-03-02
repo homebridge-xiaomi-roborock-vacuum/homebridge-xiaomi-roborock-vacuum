@@ -31,7 +31,8 @@ class XiaomiRoborockVacuum {
     return [
       'cleaning',
       'spot-cleaning',
-      'zone-cleaning'
+      'zone-cleaning',
+      'room-cleaning'
     ];
   }
 
@@ -163,6 +164,12 @@ class XiaomiRoborockVacuum {
     if (this.config.rooms && !this.config.autoroom) {
       for(var i in this.config.rooms) {
         this.createRoom(this.config.rooms[i].id, this.config.rooms[i].name);
+      }
+    }
+
+    if (this.config.zones) {
+      for(var i in this.config.zones) {
+        this.createZone(this.config.zones[i].name, this.config.zones[i].zone);
       }
     }
 
@@ -532,7 +539,32 @@ class XiaomiRoborockVacuum {
     try {
       if (state && !this.isCleaning) { // Start cleaning
         this.log.info(`ACT setCleaning | ${this.model} | Start cleaning Room ID ${room}, not charging.`);
-        await this.device.call('app_segment_clean', [room]);
+        const refreshState = {
+          refresh: [ 'state' ],
+          refreshDelay: 1000
+        };
+        await this.device.call('app_segment_clean', [room], refreshState);
+      } else if (!state) { // Stop cleaning
+        this.log.info(`ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`);
+        await this.activateCharging();
+      }
+    } catch (err) {
+      this.log.error(`ERR setCleaning | ${this.model} | Failed to set cleaning to ${state}`, err);
+      throw err;
+    }
+  }
+
+  async setCleaningZone(state, zone) {
+    await this.ensureDevice('setCleaning');
+
+    try {
+      if (state && !this.isCleaning) { // Start cleaning
+        this.log.info(`ACT setCleaning | ${this.model} | Start cleaning Zone ${zone}, not charging.`);
+        const refreshState = {
+          refresh: [ 'state' ],
+          refreshDelay: 1000
+        };
+        await this.device.call('app_zoned_clean', [zone], refreshState);
       } else if (!state) { // Stop cleaning
         this.log.info(`ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`);
         await this.activateCharging();
@@ -581,13 +613,22 @@ class XiaomiRoborockVacuum {
   createRoom(roomId, roomName) {
     this.log.info(`INF createRoom | ${this.model} | Room ${roomName} (${roomId})`);
     this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${roomName}`,'roomService' + roomId);
-    this.services[roomName].roomId = roomId;
-    this.services[roomName].parent = this;
-    //this.services[roomName].getCharacteristic(Characteristic.SerialNumber).updateValue(`0000-${roomId}`);
     this.services[roomName]
     .getCharacteristic(Characteristic.On)
     .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
     .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, roomId), cb))
+    .on('change', (oldState, newState) => {
+      this.changedPause(newState);
+    });
+  }
+
+  createZone(zoneName, zoneParams) {
+    this.log.info(`INF createRoom | ${this.model} | Zone ${zoneName} (${zoneParams})`);
+    this.services[zoneName] = new Service.Switch(`${this.config.cleanword} ${zoneName}`,'zoneCleaning' + zoneName);
+    this.services[zoneName]
+    .getCharacteristic(Characteristic.On)
+    .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
+    .on('set', (newState, cb) => callbackify(() => this.setCleaningZone(newState, zoneParams), cb))
     .on('change', (oldState, newState) => {
       this.changedPause(newState);
     });
