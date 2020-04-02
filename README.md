@@ -109,7 +109,7 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 
 
 ## Changes
-#### 0.7.3-dev
+#### 0.7.3
 - Feature: Add support for Roborock T4 with gen3 speeds
 - Feature: AutoRoom Generation (only S6)
 - Feature: Add support for Mi Vacuum Robot 1S
