@@ -601,6 +601,10 @@ class XiaomiRoborockVacuum {
     try {
       const map = await this.device.call('get_room_mapping');
       this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
+      if(map.size() == 0)
+        {
+            this.log.info(`Rooms are empty`);
+        }
       for(let val of map) {
         this.createRoom(val[0], val[1]);
       }
