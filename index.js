@@ -604,8 +604,11 @@ class XiaomiRoborockVacuum {
 
     try {
       const timers = await this.device.call('get_timer');
+
+      // Find specific timer containing the room order
+      // Timer needs to be scheduled for 00:00 and inactive
       let leetTimer = timers.find(
-        x => x[2][0].startsWith("37 13"));
+        x => x[2][0].startsWith("0 0") && x[1] == 'off');
       if (leetTimer == undefined) {
         this.log.error(`ERR getRoomList | ${this.model} | Could not find a timer for autoroom`);
         return;
