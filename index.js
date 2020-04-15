@@ -601,21 +601,30 @@ class XiaomiRoborockVacuum {
 
   async getRoomList() {
     await this.ensureDevice('getRoomList');
-    this.log.info(`INF getRoomList | ${this.model} | No named rooms available. Try to get list of unnamed rooms`);
-    const timers = await this.device.call('get_timer');
-    let leetTimer = timers.find(
-      x => x[2][0].startsWith("37 13"));
-    if (leetTimer == undefined) {
-      this.log.error(`ERR getRoomList | ${this.model} | Could not find a timer for autoroom`);
-    } else {
-      let roomIds = leetTimer[2][1][1]['segments'].split`,`.map(x=>+x);
-      if (roomIds.length != this.config.autoroom.length) {
-        this.log.error(`ERR getRoomList | ${this.model} | Number of rooms in config does not match number of rooms in the timer`)
-      } else {
-        for (const [i, roomId] of roomIds.entries()) {
-          this.createRoom(roomId, this.config.autoroom[i]);
-        }
+
+    try {
+      const timers = await this.device.call('get_timer');
+      let leetTimer = timers.find(
+        x => x[2][0].startsWith("37 13"));
+      if (leetTimer == undefined) {
+        this.log.error(`ERR getRoomList | ${this.model} | Could not find a timer for autoroom`);
+        return;
       }
+
+      let roomIds = leetTimer[2][1][1]['segments'].split`,`.map(x=>+x);
+      this.log.info(`INF getRoomList | ${this.model} | Room IDs are ${roomIds}`);
+
+      if (roomIds.length != this.config.autoroom.length) {
+        this.log.error(`ERR getRoomList | ${this.model} | Number of rooms in config does not match number of rooms in the timer`);
+	 return;
+      }
+
+      for (const [i, roomId] of roomIds.entries()) {
+        this.createRoom(roomId, this.config.autoroom[i]);
+      }
+    } catch (err) {
+      this.log.error(`ERR getRoomList | Failed getting the Room List.`, err);
+      throw err;
     }
   }
 
