@@ -358,7 +358,11 @@ class XiaomiRoborockVacuum {
       this.log.info('STA getDevice | BatteryLevel: ' + this.device.property("batteryLevel"));
 
       if (this.config.autoroom) {
-        await this.getRoomMap();
+	if (Array.isArray(this.config.autoroom)) {
+	  await this.getRoomList();
+	} else {
+          await this.getRoomMap();
+	}
       }
 
       try {
@@ -595,33 +599,34 @@ class XiaomiRoborockVacuum {
     }
   }
 
+  async getRoomList() {
+    await this.ensureDevice('getRoomList');
+    this.log.info(`INF getRoomList | ${this.model} | No named rooms available. Try to get list of unnamed rooms`);
+    const timers = await this.device.call('get_timer');
+    let leetTimer = timers.find(
+      x => x[2][0].startsWith("37 13"));
+    if (leetTimer == undefined) {
+      this.log.error(`ERR getRoomList | ${this.model} | Could not find a timer for autoroom`);
+    } else {
+      let roomIds = leetTimer[2][1][1]['segments'].split`,`.map(x=>+x);
+      if (roomIds.length != this.config.autoroom.length) {
+        this.log.error(`ERR getRoomList | ${this.model} | Number of rooms in config does not match number of rooms in the timer`)
+      } else {
+        for (const [i, roomId] of roomIds.entries()) {
+          this.createRoom(roomId, this.config.autoroom[i]);
+        }
+      }
+    }
+  }
+
   async getRoomMap() {
     await this.ensureDevice('getRoomMap');
 
     try {
       const map = await this.device.call('get_room_mapping');
-      if(Object.keys(map).length == 0) {
-        this.log.info(`INF getRoomMap | ${this.model} | No named rooms available. Try to get list of unnamed rooms`);
-        const timers = await this.device.call('get_timer');
-        let leetTimer = timers.find(
-          x => x[2][0].startsWith("37 13"));
-        if (leetTimer == undefined) {
-          this.log.error(`ERR getRoomMap | ${this.model} | Could not find a timer for autoroom`);
-        } else {
-          let roomIds = leetTimer[2][1][1]['segments'].split`,`.map(x=>+x);
-          if (roomIds.length == 1 && roomIds[0] == 0) {
-            this.log.error(`ERR getRoomMap | ${this.model} | Timer for autoroom does not have selected rooms`)
-          } else {
-            for (let id of roomIds) {
-              this.createRoom(id, `Room ${id}`);
-            }
-          }
-        }
-      } else {
-        this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
-        for(let val of map) {
-          this.createRoom(val[0], val[1]);
-        }
+      this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
+      for(let val of map) {
+        this.createRoom(val[0], val[1]);
       }
     } catch (err) {
       this.log.error(`ERR getRoomMap | Failed getting the Room Map.`, err);
