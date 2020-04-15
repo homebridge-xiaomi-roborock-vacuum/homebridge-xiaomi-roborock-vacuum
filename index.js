@@ -600,27 +600,25 @@ class XiaomiRoborockVacuum {
 
     try {
       const map = await this.device.call('get_room_mapping');
-      this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
-      if(map.size() == 0) {
-        this.log.info(`INF No named rooms available. Try to get list of unnamed rooms`);
+      if(Object.keys(map).length == 0) {
+        this.log.info(`INF getRoomMap | ${this.model} | No named rooms available. Try to get list of unnamed rooms`);
         const timers = await this.device.call('get_timer');
         let leetTimer = timers.find(
           x => x[2][0].startswith("37 13"));
         if (leetTimer == undefined) {
-          this.log.error(`ERR Could not find a timer for autoroom`);
+          this.log.error(`ERR getRoomMap | ${this.model} | Could not find a timer for autoroom`);
+        } else {
+          let roomIds = leetTimer[2][1][1]['segments'];
+          if (roomIds == '0') {
+            this.log.error(`ERR getRoomMap | ${this.model} | Timer for autoroom does not have selected rooms`)
           } else {
-            let roomIds = leetTimer[2][1][1]['segments'];
-            if (roomIds == '0') {
-              this.log.error(`ERR Timer for autoroom does not have selected rooms`)
-            } else {
-              for (let id in roomIds)
-              {
-                this.createRoom(id, `Room ${id}`);
-              }
+            for (let id in roomIds) {
+              this.createRoom(id, `Room ${id}`);
             }
           }
         }
-      }
+      } else {
+      this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
       for(let val of map) {
         this.createRoom(val[0], val[1]);
       }
