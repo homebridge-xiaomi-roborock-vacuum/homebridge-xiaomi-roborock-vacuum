@@ -358,11 +358,11 @@ class XiaomiRoborockVacuum {
       this.log.info('STA getDevice | BatteryLevel: ' + this.device.property("batteryLevel"));
 
       if (this.config.autoroom) {
-	if (Array.isArray(this.config.autoroom)) {
-	  await this.getRoomList();
-	} else {
-          await this.getRoomMap();
-	}
+        if (Array.isArray(this.config.autoroom)) {
+           await this.getRoomList();
+        } else {
+           await this.getRoomMap();
+        }
       }
 
       try {
@@ -619,7 +619,7 @@ class XiaomiRoborockVacuum {
 
       if (roomIds.length != this.config.autoroom.length) {
         this.log.error(`ERR getRoomList | ${this.model} | Number of rooms in config does not match number of rooms in the timer`);
-	 return;
+        return;
       }
 
       for (const [i, roomId] of roomIds.entries()) {
