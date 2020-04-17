@@ -615,16 +615,18 @@ class XiaomiRoborockVacuum {
       }
 
       let roomIds = leetTimer[2][1][1]['segments'].split`,`.map(x=>+x);
-      this.log.info(`INF getRoomList | ${this.model} | Room IDs are ${roomIds}`);
+      this.log.debug(`DEB getRoomList | ${this.model} | Room IDs are ${roomIds}`);
 
       if (roomIds.length != this.config.autoroom.length) {
         this.log.error(`ERR getRoomList | ${this.model} | Number of rooms in config does not match number of rooms in the timer`);
         return;
       }
-
+      let roomMap = [];
       for (const [i, roomId] of roomIds.entries()) {
         this.createRoom(roomId, this.config.autoroom[i]);
+        roomMap.push({'id': roomId, 'name': this.config.autoroom[i]});
       }
+      this.log.info(`INF getRoomList | ${this.model} | Created "rooms": ${JSON.stringify(roomMap)}`);
     } catch (err) {
       this.log.error(`ERR getRoomList | Failed getting the Room List.`, err);
       throw err;
