@@ -1,7 +1,7 @@
 'use strict';
 
 const semver = require('semver');
-const miio = require('miio');
+const miio = require('miio-nicoh88');
 const util = require('util');
 const callbackify = require('./lib/callbackify');
 const safeCall = require('./lib/safeCall');
