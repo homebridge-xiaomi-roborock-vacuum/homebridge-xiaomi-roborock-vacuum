@@ -75,6 +75,8 @@ class XiaomiRoborockVacuum {
     // Used to store the latest state to reduce logging
     this.cachedState = new Map();
 
+    // Store rooms to change ids dynamically
+    this.rooms = [];
     this.device = null;
     this.connectingPromise = null;
     this.connectRetry = setTimeout(() => void 0, 100); // Noop timeout only to initialise the property
@@ -164,6 +166,12 @@ class XiaomiRoborockVacuum {
     if (this.config.rooms && !this.config.autoroom) {
       for(var i in this.config.rooms) {
         this.createRoom(this.config.rooms[i].id, this.config.rooms[i].name);
+      }
+    }
+
+    if (this.config.autoroom && Array.isArray(this.config.autoroom)) {
+      for(var i in this.config.autoroom) {
+        this.createRoom(0, this.config.autoroom[i]);
       }
     }
 
@@ -623,7 +631,7 @@ class XiaomiRoborockVacuum {
       }
       let roomMap = [];
       for (const [i, roomId] of roomIds.entries()) {
-        this.createRoom(roomId, this.config.autoroom[i]);
+        this.rooms[i].id = roomId;
         roomMap.push({'id': roomId, 'name': this.config.autoroom[i]});
       }
       this.log.info(`INF getRoomList | ${this.model} | Created "rooms": ${JSON.stringify(roomMap)}`);
@@ -650,11 +658,13 @@ class XiaomiRoborockVacuum {
 
   createRoom(roomId, roomName) {
     this.log.info(`INF createRoom | ${this.model} | Room ${roomName} (${roomId})`);
-    this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${roomName}`,'roomService' + roomId);
+    this.rooms.push({'id': roomId, 'name': roomName});
+    const idx = this.rooms.length - 1;
+    this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${roomName}`,'roomService' + idx);
     this.services[roomName]
     .getCharacteristic(Characteristic.On)
     .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
-    .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, roomId), cb))
+    .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, this.rooms[idx].id), cb))
     .on('change', (oldState, newState) => {
       this.changedPause(newState);
     });
