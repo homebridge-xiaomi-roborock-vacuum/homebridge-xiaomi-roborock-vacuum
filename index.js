@@ -75,8 +75,6 @@ class XiaomiRoborockVacuum {
     // Used to store the latest state to reduce logging
     this.cachedState = new Map();
 
-    // Store rooms to change ids dynamically
-    this.rooms = [];
     this.device = null;
     this.connectingPromise = null;
     this.connectRetry = setTimeout(() => void 0, 100); // Noop timeout only to initialise the property
@@ -169,9 +167,11 @@ class XiaomiRoborockVacuum {
       }
     }
 
+    // Declare services for rooms in advance, so HomeKit can create the switches
     if (this.config.autoroom && Array.isArray(this.config.autoroom)) {
-      for(var i in this.config.autoroom) {
-        this.createRoom(0, this.config.autoroom[i]);
+      for(const i in this.config.autoroom) {
+        // Index will be overwritten, when robot is available
+        this.createRoom(i, this.config.autoroom[i]);
       }
     }
 
@@ -622,7 +622,7 @@ class XiaomiRoborockVacuum {
         return;
       }
 
-      let roomIds = leetTimer[2][1][1]['segments'].split`,`.map(x=>+x);
+      let roomIds = leetTimer[2][1][1]['segments'].split(`,`).map(x=>+x);
       this.log.debug(`DEB getRoomList | ${this.model} | Room IDs are ${roomIds}`);
 
       if (roomIds.length != this.config.autoroom.length) {
@@ -631,7 +631,7 @@ class XiaomiRoborockVacuum {
       }
       let roomMap = [];
       for (const [i, roomId] of roomIds.entries()) {
-        this.rooms[i].id = roomId;
+        this.services[this.config.autoroom[i]].roomId = roomId;
         roomMap.push({'id': roomId, 'name': this.config.autoroom[i]});
       }
       this.log.info(`INF getRoomList | ${this.model} | Created "rooms": ${JSON.stringify(roomMap)}`);
@@ -658,13 +658,12 @@ class XiaomiRoborockVacuum {
 
   createRoom(roomId, roomName) {
     this.log.info(`INF createRoom | ${this.model} | Room ${roomName} (${roomId})`);
-    this.rooms.push({'id': roomId, 'name': roomName});
-    const idx = this.rooms.length - 1;
-    this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${roomName}`,'roomService' + idx);
+    this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${roomName}`,'roomService' + roomId);
+    this.services[roomName].roomId = roomId;
     this.services[roomName]
     .getCharacteristic(Characteristic.On)
     .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
-    .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, this.rooms[idx].id), cb))
+    .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, this.services[roomName].roomId), cb))
     .on('change', (oldState, newState) => {
       this.changedPause(newState);
     });
