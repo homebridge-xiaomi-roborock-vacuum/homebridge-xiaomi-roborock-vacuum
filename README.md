@@ -58,11 +58,11 @@ This plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
   "zones": [
     {
       "name":"Family Room",
-      "zone":[[bot-x-coord,bot-y-coord,top-x-coord,top-y-coord,no-of-cleanings]]
+      "zone":[[25000,25000,32000,32000,2]]
     },
     {
       "name":"Bedroom",
-      "zone":[[bot-x-coord,bot-y-coord,top-x-coord,top-y-coord,no-of-cleanings]]
+      "zone":[[21000,32000,24000,37000,1]]
     }
   ]
  }
@@ -103,7 +103,7 @@ This plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
 | `waterBox` | false | when set to true, HomeKit shows an additional slider to control the amount of water released by the robot (only selected models like S5-Max). Currently in a beta state. |
 | `cleanword` | cleaning | used for autonaming the Roomselectors |
 | `rooms` | false | Array of ID / Name for a single Room. If set you have another switch for cleaning only this room |
-| `zones` | false | Array of name / zone coordinates for a single zone. Coordinates are laid out as bottom-left-x, bottom-left-y, top-right-x, top-right-y, number-of-cleanings.  A separate tile in Home will be created for each zone.
+| `zones` | false | Array of name / zone coordinates for a single zone. Coordinates are laid out as bottom-left-x, bottom-left-y, top-right-x, top-right-y, number-of-cleanings.  A separate tile in Home will be created for each zone.  Figuring out coordinates will take some trial and error.  Ensure this section is surrounded with double brackets: [[ ]]
 | `autoroom` | false | set to true to generate rooms from robot (only S6) or set to array of room name strings (see semi automatic below) |
 
 ## AutoRoom Generation
