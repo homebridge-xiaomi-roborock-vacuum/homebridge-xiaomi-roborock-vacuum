@@ -57,13 +57,13 @@ This plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
   ],
   "zones": [
     {
-			"name":"Family Room",
-			"zone":[[bot-x-coord,bot-y-coord,top-x-coord,top-y-coord,no-of-cleanings]]
-		},
+      "name":"Family Room",
+      "zone":[[bot-x-coord,bot-y-coord,top-x-coord,top-y-coord,no-of-cleanings]]
+    },
     {
-			"name":"Bedroom",
-			"zone":[[bot-x-coord,bot-y-coord,top-x-coord,top-y-coord,no-of-cleanings]]
-		}
+      "name":"Bedroom",
+      "zone":[[bot-x-coord,bot-y-coord,top-x-coord,top-y-coord,no-of-cleanings]]
+    }
   ]
  }
 ],
