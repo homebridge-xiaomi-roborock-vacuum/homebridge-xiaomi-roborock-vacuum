@@ -167,6 +167,14 @@ class XiaomiRoborockVacuum {
       }
     }
 
+    // Declare services for rooms in advance, so HomeKit can create the switches
+    if (this.config.autoroom && Array.isArray(this.config.autoroom)) {
+      for(const i in this.config.autoroom) {
+        // Index will be overwritten, when robot is available
+        this.createRoom(i, this.config.autoroom[i]);
+      }
+    }
+
     if (this.config.zones) {
       for(var i in this.config.zones) {
         this.createZone(this.config.zones[i].name, this.config.zones[i].zone);
@@ -359,7 +367,11 @@ class XiaomiRoborockVacuum {
       this.log.info('STA getDevice | BatteryLevel: ' + this.device.property("batteryLevel"));
 
       if (this.config.autoroom) {
-        await this.getRoomMap();
+        if (Array.isArray(this.config.autoroom)) {
+           await this.getRoomList();
+        } else {
+           await this.getRoomMap();
+        }
       }
 
       try {
@@ -596,6 +608,40 @@ class XiaomiRoborockVacuum {
     }
   }
 
+  async getRoomList() {
+    await this.ensureDevice('getRoomList');
+
+    try {
+      const timers = await this.device.call('get_timer');
+
+      // Find specific timer containing the room order
+      // Timer needs to be scheduled for 00:00 and inactive
+      let leetTimer = timers.find(
+        x => x[2][0].startsWith("0 0") && x[1] == 'off');
+      if (leetTimer == undefined) {
+        this.log.error(`ERR getRoomList | ${this.model} | Could not find a timer for autoroom`);
+        return;
+      }
+
+      let roomIds = leetTimer[2][1][1]['segments'].split(`,`).map(x=>+x);
+      this.log.debug(`DEB getRoomList | ${this.model} | Room IDs are ${roomIds}`);
+
+      if (roomIds.length != this.config.autoroom.length) {
+        this.log.error(`ERR getRoomList | ${this.model} | Number of rooms in config does not match number of rooms in the timer`);
+        return;
+      }
+      let roomMap = [];
+      for (const [i, roomId] of roomIds.entries()) {
+        this.services[this.config.autoroom[i]].roomId = roomId;
+        roomMap.push({'id': roomId, 'name': this.config.autoroom[i]});
+      }
+      this.log.info(`INF getRoomList | ${this.model} | Created "rooms": ${JSON.stringify(roomMap)}`);
+    } catch (err) {
+      this.log.error(`ERR getRoomList | Failed getting the Room List.`, err);
+      throw err;
+    }
+  }
+
   async getRoomMap() {
     await this.ensureDevice('getRoomMap');
 
@@ -614,10 +660,11 @@ class XiaomiRoborockVacuum {
   createRoom(roomId, roomName) {
     this.log.info(`INF createRoom | ${this.model} | Room ${roomName} (${roomId})`);
     this.services[roomName] = new Service.Switch(`${this.config.cleanword} ${roomName}`,'roomService' + roomId);
+    this.services[roomName].roomId = roomId;
     this.services[roomName]
     .getCharacteristic(Characteristic.On)
     .on('get', (cb) => callbackify(() => this.getCleaning(), cb))
-    .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, roomId), cb))
+    .on('set', (newState, cb) => callbackify(() => this.setCleaningRoom(newState, this.services[roomName].roomId), cb))
     .on('change', (oldState, newState) => {
       this.changedPause(newState);
     });
