@@ -5,7 +5,12 @@ const miio = require('miio-nicoh88');
 const util = require('util');
 const callbackify = require('./lib/callbackify');
 const safeCall = require('./lib/safeCall');
-const sleep = require('system-sleep');
+let sleep;
+try {
+  sleep = require('system-sleep');
+} catch (e) {
+  // noop
+}
 
 let homebrideAPI, Service, Characteristic;
 
@@ -898,10 +903,17 @@ class XiaomiRoborockVacuum {
   }
 
   getServices() {
-    if (this.config.delay)
-      sleep(5000);
+    if (this.config.delay) this.sleep(5000);
     this.log.debug(`DEB getServices | ${this.model}`);
     return Object.keys(this.services).map((key) => this.services[key]);
+  }
+
+  sleep(time) {
+    if (sleep) {
+      sleep(time);
+    } else {
+      this.log.warn(`Can't use the delay option because sleep failed to install`);
+    }
   }
 
   // CONSUMABLE / CARE
