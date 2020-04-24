@@ -265,6 +265,7 @@ class XiaomiRoborockVacuum {
   }
 
   changedError(robotError) {
+    robotError = robotError || { id: 'unknown', description: `unknown: "${robotError}"` };
     this.log.debug(`DEB changedError | ${this.model} | ErrorID: ${robotError.id}, ErrorDescription: ${robotError.description}`);
     let robotErrorTxt = XiaomiRoborockVacuum.errors[`id${robotError.id}`] ?
       XiaomiRoborockVacuum.errors[`id${robotError.id}`].description :
