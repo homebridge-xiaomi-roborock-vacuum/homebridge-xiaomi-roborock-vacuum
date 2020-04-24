@@ -577,7 +577,16 @@ class XiaomiRoborockVacuum {
           refresh: [ 'state' ],
           refreshDelay: 1000
         };
-        await this.device.call('app_zoned_clean', [zone], refreshState);
+        
+        var zoneParams = [];
+        for (var zon of zone) {
+          if (zon.length == 4) {
+              zoneParams.push(zon.concat(1));
+          } else if (zon.length == 5) {
+              zoneParams.push(zon);
+          }
+        }
+        await this.device.call('app_zoned_clean',zoneParams,refreshState);
       } else if (!state) { // Stop cleaning
         this.log.info(`ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`);
         await this.activateCharging();
