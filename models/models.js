@@ -13,7 +13,7 @@ module.exports = {
     {firmware: '>=3.5.7', speed: speedmodes.gen3},
   ],
   'roborock.vacuum.s5e': [{speed: speedmodes.gen4, waterspeed: watermodes.gen1}],
-  'roborock.vacuum.s6': [{speed: speedmodes.gen3}],
+  'roborock.vacuum.s6': [{speed: speedmodes.gen3, waterspeed: watermodes.gen3}],
   'roborock.vacuum.t6': [{speed: speedmodes.gen3}],
   'roborock.vacuum.t4': [{speed: speedmodes.gen3}],
   'roborock.vacuum.e2': [{speed: speedmodes.gen3}],
