@@ -328,6 +328,75 @@ class XiaomiRoborockVacuum {
       "get",
       (cb) => callbackify(() => this.getCareMainBrush(), cb)
     );
+
+    // Use Homekit's native FilterMaintenance Service
+    this.services.CareSensors = new Service.FilterMaintenance(
+      "Care indicator sensors",
+      "sensors"
+    );
+    this.services.CareSensors.getCharacteristic(
+      Characteristic.FilterChangeIndication
+    ).on("get", (cb) =>
+      callbackify(async () => {
+        return (await this.getCareSensors()) >= 100;
+      }, cb)
+    );
+    this.services.CareSensors.getCharacteristic(
+      Characteristic.FilterLifeLevel
+    ).on("get", (cb) =>
+      callbackify(async () => 100 - (await this.getCareSensors()), cb)
+    );
+
+    this.services.CareFilter = new Service.FilterMaintenance(
+      "Care indicator filter",
+      "filter"
+    );
+    this.services.CareFilter.getCharacteristic(
+      Characteristic.FilterChangeIndication
+    ).on("get", (cb) =>
+      callbackify(async () => {
+        return (await this.getCareFilter()) >= 100;
+      }, cb)
+    );
+    this.services.CareFilter.getCharacteristic(
+      Characteristic.FilterLifeLevel
+    ).on("get", (cb) =>
+      callbackify(async () => 100 - (await this.getCareFilter()), cb)
+    );
+
+    this.services.CareSideBrush = new Service.FilterMaintenance(
+      "Care indicator side brush",
+      "side brush"
+    );
+    this.services.CareSideBrush.getCharacteristic(
+      Characteristic.FilterChangeIndication
+    ).on("get", (cb) =>
+      callbackify(async () => {
+        return (await this.getCareSideBrush()) >= 100;
+      }, cb)
+    );
+    this.services.CareSideBrush.getCharacteristic(
+      Characteristic.FilterLifeLevel
+    ).on("get", (cb) =>
+      callbackify(async () => 100 - (await this.getCareSideBrush()), cb)
+    );
+
+    this.services.CareMainBrush = new Service.FilterMaintenance(
+      "Care indicator main brush",
+      "main brush"
+    );
+    this.services.CareMainBrush.getCharacteristic(
+      Characteristic.FilterChangeIndication
+    ).on("get", (cb) =>
+      callbackify(async () => {
+        return (await this.getCareMainBrush()) >= 100;
+      }, cb)
+    );
+    this.services.CareMainBrush.getCharacteristic(
+      Characteristic.FilterLifeLevel
+    ).on("get", (cb) =>
+      callbackify(async () => 100 - (await this.getCareMainBrush()), cb)
+    );
   }
 
   /**
