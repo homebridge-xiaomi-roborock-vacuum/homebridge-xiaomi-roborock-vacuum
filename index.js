@@ -912,7 +912,8 @@ class XiaomiRoborockVacuum {
     if (sleep) {
       sleep(time);
     } else {
-      this.log.warn(`Can't use the delay option because sleep failed to install`);
+      this.log.warn(`Can't use the delay option because the module "system-sleep" failed to install.\n
+      Make sure this optional dependency is properly installed if you want to use the "delay" option.`);
     }
   }
 
