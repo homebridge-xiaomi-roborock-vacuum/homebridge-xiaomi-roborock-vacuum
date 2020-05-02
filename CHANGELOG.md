@@ -1,5 +1,12 @@
 # Changes
 
+## @next (possibly 0.8.0)
+
+- **[Breaking Change]**: The fan speeds are now evenly distributed. So the speeds follow a step-based pattern:
+   - If 5 possible states => 0%, 25%, 50%, 75% and 100%
+   - If 6 possible states => 0%, 20%, 40%, 60%, 80% and 100%
+   - If 7 possible states => 0%, 16%, 32%, 48%, 64%, 80% and 96% 
+
 ## 0.7.7
 
 - [Models] Add "Mop" mode for model S6 (#144)
