@@ -1,5 +1,10 @@
 # Changes
 
+#### 0.7.7
+- [Models] Add "Mop" mode for model S6 (#144)
+- [Models] Add "Custom" mode for model S5-Max (#110)
+- [Fix] Move `system-sleep` to optional dependencies to fix installation errors that fail to compile it (#151)
+
 #### 0.7.6
 - [Feature] Semiautomatic determination of room ids ([read the README for usage](./README.md#semi-automatic))
 - [Fix] Log errors when not an error from the protocol
