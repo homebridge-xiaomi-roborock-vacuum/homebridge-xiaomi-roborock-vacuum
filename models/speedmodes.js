@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = {
   gen1: [
@@ -11,7 +11,7 @@ module.exports = {
     // 61-77%  = "Turbo / Stark"
     { homekitTopLevel: 77, miLevel: 77, name: "Turbo" },
     // 78-100% = "Full Speed / Max Speed / Max"
-    { homekitTopLevel: 100, miLevel: 90, name: "Max" }
+    { homekitTopLevel: 100, miLevel: 90, name: "Max" },
   ],
   gen2: [
     // 0%      = Off / Aus
@@ -25,7 +25,7 @@ module.exports = {
     // 61-75%  = "Turbo / Stark"
     { homekitTopLevel: 75, miLevel: 75, name: "Turbo" },
     // 76-100% = "Full Speed / Max Speed / Max"
-    { homekitTopLevel: 100, miLevel: 100, name: "Max" }
+    { homekitTopLevel: 100, miLevel: 100, name: "Max" },
   ],
   gen3: [
     // 0%      = Off / Aus
@@ -37,7 +37,7 @@ module.exports = {
     // 61-77%  = "Turbo / Stark"
     { homekitTopLevel: 77, miLevel: 103, name: "Turbo" },
     // 78-100% = "Full Speed / Max Speed / Max"
-    { homekitTopLevel: 100, miLevel: 104, name: "Max" }
+    { homekitTopLevel: 100, miLevel: 104, name: "Max" },
   ],
   // S5-Max (https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/79#issuecomment-576246934)
   gen4: [
@@ -52,7 +52,7 @@ module.exports = {
     // 61-77%  = "Turbo / Stark"
     { homekitTopLevel: 77, miLevel: 103, name: "Turbo" },
     // 78-100% = "Full Speed / Max Speed / Max"
-    { homekitTopLevel: 100, miLevel: 104, name: "Max" }
+    { homekitTopLevel: 100, miLevel: 104, name: "Max" },
   ],
   // S5-Max + Custom (https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/110)
   "gen4+custom": [
@@ -70,5 +70,5 @@ module.exports = {
     { homekitTopLevel: 90, miLevel: 104, name: "Max" },
     // 91-100% = "Custom"
     { homekitTopLevel: 100, miLevel: 106, name: "Custom" },
-  ]
+  ],
 };

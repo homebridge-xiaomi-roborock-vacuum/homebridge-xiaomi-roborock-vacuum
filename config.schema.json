@@ -102,10 +102,7 @@
     {
       "type": "flex",
       "flex-flow": "row wrap",
-      "items": [
-        "ip",
-        "token"
-      ]
+      "items": ["ip", "token"]
     },
     "waterBox",
     "pause",
@@ -116,7 +113,7 @@
     {
       "type": "fieldset",
       "title": "Rooms",
-      "description": "Room Mapping", 
+      "description": "Room Mapping",
       "expandable": true,
       "expanded": false,
       "items": [
@@ -151,7 +148,7 @@
     {
       "type": "fieldset",
       "title": "Zones",
-      "description": "Zone cleaning", 
+      "description": "Zone cleaning",
       "expandable": true,
       "expanded": false,
       "items": [
