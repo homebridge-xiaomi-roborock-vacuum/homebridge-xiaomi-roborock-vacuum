@@ -413,10 +413,7 @@ class XiaomiRoborockVacuum {
   }
 
   changedError(robotError) {
-    robotError = robotError || {
-      id: "unknown",
-      description: `unknown: "${robotError}"`,
-    };
+    if (!robotError) return;
     this.log.debug(
       `DEB changedError | ${this.model} | ErrorID: ${robotError.id}, ErrorDescription: ${robotError.description}`
     );
@@ -429,6 +426,8 @@ class XiaomiRoborockVacuum {
     this.log.warn(
       `WAR changedError | ${this.model} | Robot has an ERROR - ${robotError.id}, ${robotErrorTxt}`
     );
+    // Clear the error_code property
+    this.device.setProperty("error_code", null);
   }
 
   changedCleaning(isCleaning) {
