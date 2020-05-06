@@ -19,4 +19,5 @@ module.exports = {
   "roborock.vacuum.t6": [{ speed: speedmodes.gen3 }],
   "roborock.vacuum.t4": [{ speed: speedmodes.gen3 }],
   "roborock.vacuum.e2": [{ speed: speedmodes.gen3 }],
+  "roborock.vacuum.a08": [{ speed: speedmodes.gen3 }],
 };
