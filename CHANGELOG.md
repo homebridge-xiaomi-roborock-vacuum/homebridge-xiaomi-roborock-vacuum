@@ -6,6 +6,7 @@
   - If 5 possible states => 0%, 25%, 50%, 75% and 100%
   - If 6 possible states => 0%, 20%, 40%, 60%, 80% and 100%
   - If 7 possible states => 0%, 16%, 32%, 48%, 64%, 80% and 96%
+- [Models] Add Roborock S6 Pure to list of models (#176)
 - [Feature] Report native `FilterMaintenance` services for the care indicators
 - [Bug] Fix error duplication in logs (#162)
 
