@@ -1285,7 +1285,10 @@ class XiaomiRoborockVacuum {
   getServices() {
     if (this.config.delay) this.sleep(5000);
     this.log.debug(`DEB getServices | ${this.model}`);
-    return Object.keys(this.services).map((key) => this.services[key]);
+    return Object.keys(this.services).map((key) => {
+      if (key !== "fan") this.services.fan.addLinkedService(this.services[key]);
+      return this.services[key];
+    });
   }
 
   sleep(time) {
