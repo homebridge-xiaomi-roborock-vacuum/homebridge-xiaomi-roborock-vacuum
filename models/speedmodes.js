@@ -27,6 +27,20 @@ module.exports = {
     // 76-100% = "Full Speed / Max Speed / Max"
     { homekitTopLevel: 100, miLevel: 100, name: "Max" },
   ],
+  "xiaowa-e202-02": [
+    // 0%      = Off / Aus
+    { homekitTopLevel: 0, miLevel: 0, name: "Off" },
+    // 0-16%  = "Gentle"
+    { homekitTopLevel: 16, miLevel: 41, name: "Gentle" },
+    // 16-38%  = "Silent"
+    { homekitTopLevel: 38, miLevel: 50, name: "Silent" },
+    // 39-60%  = "Balanced / Standard"
+    { homekitTopLevel: 60, miLevel: 68, name: "Balanced" },
+    // 61-75%  = "Turbo / Stark"
+    { homekitTopLevel: 75, miLevel: 79, name: "Turbo" },
+    // 76-100% = "Full Speed / Max Speed / Max"
+    { homekitTopLevel: 100, miLevel: 100, name: "Max" }
+  ],  
   gen3: [
     // 0%      = Off / Aus
     { homekitTopLevel: 0, miLevel: 0, name: "Off" },
