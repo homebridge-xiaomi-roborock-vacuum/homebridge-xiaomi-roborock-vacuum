@@ -1,5 +1,9 @@
 # Changes
 
+## 0.8.3
+
+- [Bug] Fix the `minStep` maths (#190) - Thank you @bedrin
+
 ## 0.8.2
 
 - [Models] Fix Xiaowa E202-02 modes (#179) - Thank you @bedrin
