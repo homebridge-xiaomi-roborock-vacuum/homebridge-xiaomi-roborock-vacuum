@@ -1,5 +1,9 @@
 # Changes
 
+## 0.8.1
+
+- [Bug] Avoid calling `homebridge@1.x.x` new methods if they are not available (#185)
+
 ## 0.8.0
 
 - **[Breaking Change]** The fan speeds are now evenly distributed. So the speeds follow a step-based pattern:
