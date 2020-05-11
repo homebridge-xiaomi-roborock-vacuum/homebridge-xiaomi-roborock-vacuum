@@ -141,7 +141,9 @@ class XiaomiRoborockVacuum {
       .on("get", (cb) => callbackify(() => this.getSerialNumber(), cb));
 
     this.services.fan = new Service.Fan(this.config.name, "Speed");
-    this.services.fan.setPrimaryService(true);
+    if (this.services.fan.setPrimaryService) {
+      this.services.fan.setPrimaryService(true);
+    }
     this.services.fan
       .getCharacteristic(Characteristic.On)
       .on("get", (cb) => callbackify(() => this.getCleaning(), cb))
@@ -1290,7 +1292,9 @@ class XiaomiRoborockVacuum {
     if (this.config.delay) this.sleep(5000);
     this.log.debug(`DEB getServices | ${this.model}`);
     return Object.keys(this.services).map((key) => {
-      if (key !== "fan") this.services.fan.addLinkedService(this.services[key]);
+      if (key !== "fan" && this.services.fan.addLinkedService) {
+        this.services.fan.addLinkedService(this.services[key]);
+      }
       return this.services[key];
     });
   }
