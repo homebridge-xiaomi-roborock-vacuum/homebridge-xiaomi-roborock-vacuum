@@ -1,5 +1,9 @@
 # Changes
 
+## 0.8.2
+
+- [Models] Fix Xiaowa E202-02 modes (#179) - Thank you @bedrin
+
 ## 0.8.1
 
 - [Bug] Avoid calling `homebridge@1.x.x` new methods if they are not available (#185)
