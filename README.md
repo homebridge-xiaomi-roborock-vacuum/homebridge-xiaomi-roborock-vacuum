@@ -20,6 +20,7 @@ This plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
   - [Fanspeed levels](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/blob/master/models/speedmodes.js) adjustable via 3D Touch / Force Touch.
 - Battery status and condition in the device details. Low battery alert.
 - Pause switch (optional).
+- Room cleaning (optional): Read [Autoroom generation](#autoroom-generation) to understand how it works
 - Occupancy sensor (similar to motion sensor) for dock status (optional).
 - Seconds Fan for water box modes (optional).
 
@@ -113,16 +114,22 @@ This plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
 
 ## AutoRoom Generation
 
-### Fully automatic
-
-This feature seems to be working only on the S6 Model.
-We figured out this is why the Api call only delivers the mapping when the Rooms are named in the Xioami / Roborock App.
-
-So when you have an S6 but not named the Rooms in your App this function will not work! Thanks @domeOo
-
 ### Semi automatic
 
-This feature seems to work with all models which offer room cleaning. To use it, in the config set `autoroom` to an array of room names. Then in the app, setup a timer at midnight (00:00 or 12:00am). Enable `Select a room to divide`. Then on the map select the rooms in the order as they appear in the homebridge config. The order is important as this is how the plugin maps the room names to IDs. Finally submit the timer and deactivate it. Then restart homebridge.
+This feature seems to work with all models which offer room cleaning. To use it:
+
+1. Set the `autoroom` property in the config to an array of room names (`["my room 1", "my room 2", "my room 3"]`. 
+2. In the Xiaomi Mi app, setup a timer at midnight (00:00 or 12:00am).
+3. Enable `Select a room to divide`. 
+4. On the map select the rooms in the order as they appear in the config set in step 1. The order is important as this is how the plugin maps the room names to IDs.
+5. Submit the timer and make sure it's deactivated. 
+6. Restart `homebridge`.
+
+### Fully automatic
+
+This feature seems to be working **only on the S6 Model** because it's the only that supports naming the rooms in the Xiaomi / Roborock App.
+
+Even if you have an S6 but you haven't named the Rooms in your App yet, this function will not work! Thanks @domeOo
 
 ## Xiaomi Token
 
