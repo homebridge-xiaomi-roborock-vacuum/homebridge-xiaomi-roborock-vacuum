@@ -2,7 +2,7 @@
 
 ## next (possibly 0.9.0)
 
-- [Bug] Xiaowa E202-02 fails to go back to the dock (#181) - Thans @bedrin
+- [Bug] Xiaowa E202-02 fails to go back to the dock (#181) - Thanks @bedrin
 
 ## 0.8.2
 
