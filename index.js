@@ -792,7 +792,11 @@ class XiaomiRoborockVacuum {
         this.log.info(
           `ACT setCleaning | ${this.model} | Start cleaning, not charging.`
         );
-        await this.device.activateCleaning();
+        const refreshState = {
+          refresh: [ 'state' ],
+          refreshDelay: 1000
+        };
+        const changeResponse = await this.device.call('app_start', [], refreshState);
       } else if (!state) {
         // Stop cleaning
         this.log.info(
@@ -885,7 +889,7 @@ class XiaomiRoborockVacuum {
         refresh: ["state"],
         refreshDelay: 1000,
       };
-      await this.device.call("app_stop", [], refreshState);
+      await this.device.call("app_pause", [], refreshState);
       // Wait one second before calling go to charge
       await new Promise((resolve) => setTimeout(resolve, 1000));
       const changeResponse = await this.device.call(
@@ -893,7 +897,7 @@ class XiaomiRoborockVacuum {
         [],
         refreshState
       );
-      if (!(changeResponse && changeResponse[0] === "ok")) {
+      if (!(changeResponse && changeResponse[0] && changeResponse[0].toLowerCase() === "ok")) {
         throw new Error("Failed to go to change");
       }
     } catch (err) {
@@ -1162,7 +1166,7 @@ class XiaomiRoborockVacuum {
       { refresh: ["water_box_mode"] }
     );
     // From https://github.com/nicoh88/miio/blob/master/lib/devices/vacuum.js#L11-L18
-    if (response !== 0 && response[0] !== "ok") {
+    if (!(response && response[0] && response[0].toLowerCase() === "ok")) {
       this.log.error(response);
       throw new Error(`Failed to set the water_box_mode to ${miLevel}`);
     }
