@@ -621,10 +621,10 @@ class XiaomiRoborockVacuum {
       });
 
       // Now that we know the model, amend the steps in the Rotation speed (for better usability)
-      const minStep = 100 / (this.findSpeedModes().length - 1);
+      const minStep = 100 / (this.findSpeedModes().speed.length - 1);
       this.services.fan
         .getCharacteristic(Characteristic.RotationSpeed)
-        .setProps({ minStep });
+        .setProps({ "minStep": minStep });
 
       await this.getState();
       // Refresh the state every 30s so miio maintains a fresh connection (or recovers connection if lost until we fix https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/81)
