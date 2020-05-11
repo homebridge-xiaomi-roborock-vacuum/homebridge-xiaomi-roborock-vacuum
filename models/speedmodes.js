@@ -29,17 +29,17 @@ const SPEEDMODES = {
   ],
   "xiaowa-e202-02": [
     // 0%      = Off / Aus
-    { homekitTopLevel: 0, miLevel: 0, name: "Off" },
-    // 0-16%  = "Gentle"
-    { homekitTopLevel: 16, miLevel: 41, name: "Gentle" },
-    // 16-38%  = "Silent"
-    { homekitTopLevel: 38, miLevel: 50, name: "Silent" },
-    // 39-60%  = "Balanced / Standard"
-    { homekitTopLevel: 60, miLevel: 68, name: "Balanced" },
-    // 61-75%  = "Turbo / Stark"
-    { homekitTopLevel: 75, miLevel: 79, name: "Turbo" },
-    // 76-100% = "Full Speed / Max Speed / Max"
-    { homekitTopLevel: 100, miLevel: 100, name: "Max" }
+    { miLevel: 0, name: "Off" },
+    // 0-20%  = "Gentle"
+    { miLevel: 41, name: "Gentle" },
+    // 20-40%  = "Silent"
+    { miLevel: 50, name: "Silent" },
+    // 40-60%  = "Balanced / Standard"
+    { miLevel: 68, name: "Balanced" },
+    // 60-80%  = "Turbo / Stark"
+    { miLevel: 79, name: "Turbo" },
+    // 80-100% = "Full Speed / Max Speed / Max"
+    { miLevel: 100, name: "Max" }
   ],  
   gen3: [
     // 0%      = Off / Aus
