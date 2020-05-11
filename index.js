@@ -141,6 +141,7 @@ class XiaomiRoborockVacuum {
       .on("get", (cb) => callbackify(() => this.getSerialNumber(), cb));
 
     this.services.fan = new Service.Fan(this.config.name, "Speed");
+    this.services.fan.setPrimaryService(true);
     this.services.fan
       .getCharacteristic(Characteristic.On)
       .on("get", (cb) => callbackify(() => this.getCleaning(), cb))
@@ -232,171 +233,173 @@ class XiaomiRoborockVacuum {
   }
 
   initialiseCareServices() {
-    Characteristic.CareSensors = function () {
-      Characteristic.call(
-        this,
+    if (this.config.legacyCareSensors) {
+      Characteristic.CareSensors = function () {
+        Characteristic.call(
+          this,
+          "Care indicator sensors",
+          "00000101-0000-0000-0000-000000000000"
+        );
+        this.setProps({
+          format: Characteristic.Formats.FLOAT,
+          unit: "%",
+          perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY],
+        });
+        this.value = this.getDefaultValue();
+      };
+      util.inherits(Characteristic.CareSensors, Characteristic);
+      Characteristic.CareSensors.UUID = "00000101-0000-0000-0000-000000000000";
+
+      Characteristic.CareFilter = function () {
+        Characteristic.call(
+          this,
+          "Care indicator filter",
+          "00000102-0000-0000-0000-000000000000"
+        );
+        this.setProps({
+          format: Characteristic.Formats.FLOAT,
+          unit: "%",
+          perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY],
+        });
+        this.value = this.getDefaultValue();
+      };
+      util.inherits(Characteristic.CareFilter, Characteristic);
+      Characteristic.CareFilter.UUID = "00000102-0000-0000-0000-000000000000";
+
+      Characteristic.CareSideBrush = function () {
+        Characteristic.call(
+          this,
+          "Care indicator side brush",
+          "00000103-0000-0000-0000-000000000000"
+        );
+        this.setProps({
+          format: Characteristic.Formats.FLOAT,
+          unit: "%",
+          perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY],
+        });
+        this.value = this.getDefaultValue();
+      };
+      util.inherits(Characteristic.CareSideBrush, Characteristic);
+      Characteristic.CareSideBrush.UUID =
+        "00000103-0000-0000-0000-000000000000";
+
+      Characteristic.CareMainBrush = function () {
+        Characteristic.call(
+          this,
+          "Care indicator main brush",
+          "00000104-0000-0000-0000-000000000000"
+        );
+        this.setProps({
+          format: Characteristic.Formats.FLOAT,
+          unit: "%",
+          perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY],
+        });
+        this.value = this.getDefaultValue();
+      };
+      util.inherits(Characteristic.CareMainBrush, Characteristic);
+      Characteristic.CareMainBrush.UUID =
+        "00000104-0000-0000-0000-000000000000";
+
+      Service.Care = function (displayName, subtype) {
+        Service.call(
+          this,
+          displayName,
+          "00000111-0000-0000-0000-000000000000",
+          subtype
+        );
+        this.addCharacteristic(Characteristic.CareSensors);
+        this.addCharacteristic(Characteristic.CareFilter);
+        this.addCharacteristic(Characteristic.CareSideBrush);
+        this.addCharacteristic(Characteristic.CareMainBrush);
+      };
+      util.inherits(Service.Care, Service);
+      Service.Care.UUID = "00000111-0000-0000-0000-000000000000";
+
+      this.services.Care = new Service.Care(`${this.config.name} Care`);
+      this.services.Care.getCharacteristic(Characteristic.CareSensors).on(
+        "get",
+        (cb) => callbackify(() => this.getCareSensors(), cb)
+      );
+      this.services.Care.getCharacteristic(Characteristic.CareFilter).on(
+        "get",
+        (cb) => callbackify(() => this.getCareFilter(), cb)
+      );
+      this.services.Care.getCharacteristic(
+        Characteristic.CareSideBrush
+      ).on("get", (cb) => callbackify(() => this.getCareSideBrush(), cb));
+      this.services.Care.getCharacteristic(
+        Characteristic.CareMainBrush
+      ).on("get", (cb) => callbackify(() => this.getCareMainBrush(), cb));
+    } else {
+      // Use Homekit's native FilterMaintenance Service
+      this.services.CareSensors = new Service.FilterMaintenance(
         "Care indicator sensors",
-        "00000101-0000-0000-0000-000000000000"
+        "sensors"
       );
-      this.setProps({
-        format: Characteristic.Formats.FLOAT,
-        unit: "%",
-        perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY],
-      });
-      this.value = this.getDefaultValue();
-    };
-    util.inherits(Characteristic.CareSensors, Characteristic);
-    Characteristic.CareSensors.UUID = "00000101-0000-0000-0000-000000000000";
+      this.services.CareSensors.getCharacteristic(
+        Characteristic.FilterChangeIndication
+      ).on("get", (cb) =>
+        callbackify(async () => {
+          return (await this.getCareSensors()) >= 100;
+        }, cb)
+      );
+      this.services.CareSensors.getCharacteristic(
+        Characteristic.FilterLifeLevel
+      ).on("get", (cb) =>
+        callbackify(async () => 100 - (await this.getCareSensors()), cb)
+      );
 
-    Characteristic.CareFilter = function () {
-      Characteristic.call(
-        this,
+      this.services.CareFilter = new Service.FilterMaintenance(
         "Care indicator filter",
-        "00000102-0000-0000-0000-000000000000"
+        "filter"
       );
-      this.setProps({
-        format: Characteristic.Formats.FLOAT,
-        unit: "%",
-        perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY],
-      });
-      this.value = this.getDefaultValue();
-    };
-    util.inherits(Characteristic.CareFilter, Characteristic);
-    Characteristic.CareFilter.UUID = "00000102-0000-0000-0000-000000000000";
+      this.services.CareFilter.getCharacteristic(
+        Characteristic.FilterChangeIndication
+      ).on("get", (cb) =>
+        callbackify(async () => {
+          return (await this.getCareFilter()) >= 100;
+        }, cb)
+      );
+      this.services.CareFilter.getCharacteristic(
+        Characteristic.FilterLifeLevel
+      ).on("get", (cb) =>
+        callbackify(async () => 100 - (await this.getCareFilter()), cb)
+      );
 
-    Characteristic.CareSideBrush = function () {
-      Characteristic.call(
-        this,
+      this.services.CareSideBrush = new Service.FilterMaintenance(
         "Care indicator side brush",
-        "00000103-0000-0000-0000-000000000000"
+        "side brush"
       );
-      this.setProps({
-        format: Characteristic.Formats.FLOAT,
-        unit: "%",
-        perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY],
-      });
-      this.value = this.getDefaultValue();
-    };
-    util.inherits(Characteristic.CareSideBrush, Characteristic);
-    Characteristic.CareSideBrush.UUID = "00000103-0000-0000-0000-000000000000";
+      this.services.CareSideBrush.getCharacteristic(
+        Characteristic.FilterChangeIndication
+      ).on("get", (cb) =>
+        callbackify(async () => {
+          return (await this.getCareSideBrush()) >= 100;
+        }, cb)
+      );
+      this.services.CareSideBrush.getCharacteristic(
+        Characteristic.FilterLifeLevel
+      ).on("get", (cb) =>
+        callbackify(async () => 100 - (await this.getCareSideBrush()), cb)
+      );
 
-    Characteristic.CareMainBrush = function () {
-      Characteristic.call(
-        this,
+      this.services.CareMainBrush = new Service.FilterMaintenance(
         "Care indicator main brush",
-        "00000104-0000-0000-0000-000000000000"
+        "main brush"
       );
-      this.setProps({
-        format: Characteristic.Formats.FLOAT,
-        unit: "%",
-        perms: [Characteristic.Perms.READ, Characteristic.Perms.NOTIFY],
-      });
-      this.value = this.getDefaultValue();
-    };
-    util.inherits(Characteristic.CareMainBrush, Characteristic);
-    Characteristic.CareMainBrush.UUID = "00000104-0000-0000-0000-000000000000";
-
-    Service.Care = function (displayName, subtype) {
-      Service.call(
-        this,
-        displayName,
-        "00000111-0000-0000-0000-000000000000",
-        subtype
+      this.services.CareMainBrush.getCharacteristic(
+        Characteristic.FilterChangeIndication
+      ).on("get", (cb) =>
+        callbackify(async () => {
+          return (await this.getCareMainBrush()) >= 100;
+        }, cb)
       );
-      this.addCharacteristic(Characteristic.CareSensors);
-      this.addCharacteristic(Characteristic.CareFilter);
-      this.addCharacteristic(Characteristic.CareSideBrush);
-      this.addCharacteristic(Characteristic.CareMainBrush);
-    };
-    util.inherits(Service.Care, Service);
-    Service.Care.UUID = "00000111-0000-0000-0000-000000000000";
-
-    this.services.Care = new Service.Care(`${this.config.name} Care`);
-    this.services.Care.getCharacteristic(Characteristic.CareSensors).on(
-      "get",
-      (cb) => callbackify(() => this.getCareSensors(), cb)
-    );
-    this.services.Care.getCharacteristic(Characteristic.CareFilter).on(
-      "get",
-      (cb) => callbackify(() => this.getCareFilter(), cb)
-    );
-    this.services.Care.getCharacteristic(Characteristic.CareSideBrush).on(
-      "get",
-      (cb) => callbackify(() => this.getCareSideBrush(), cb)
-    );
-    this.services.Care.getCharacteristic(Characteristic.CareMainBrush).on(
-      "get",
-      (cb) => callbackify(() => this.getCareMainBrush(), cb)
-    );
-
-    // Use Homekit's native FilterMaintenance Service
-    this.services.CareSensors = new Service.FilterMaintenance(
-      "Care indicator sensors",
-      "sensors"
-    );
-    this.services.CareSensors.getCharacteristic(
-      Characteristic.FilterChangeIndication
-    ).on("get", (cb) =>
-      callbackify(async () => {
-        return (await this.getCareSensors()) >= 100;
-      }, cb)
-    );
-    this.services.CareSensors.getCharacteristic(
-      Characteristic.FilterLifeLevel
-    ).on("get", (cb) =>
-      callbackify(async () => 100 - (await this.getCareSensors()), cb)
-    );
-
-    this.services.CareFilter = new Service.FilterMaintenance(
-      "Care indicator filter",
-      "filter"
-    );
-    this.services.CareFilter.getCharacteristic(
-      Characteristic.FilterChangeIndication
-    ).on("get", (cb) =>
-      callbackify(async () => {
-        return (await this.getCareFilter()) >= 100;
-      }, cb)
-    );
-    this.services.CareFilter.getCharacteristic(
-      Characteristic.FilterLifeLevel
-    ).on("get", (cb) =>
-      callbackify(async () => 100 - (await this.getCareFilter()), cb)
-    );
-
-    this.services.CareSideBrush = new Service.FilterMaintenance(
-      "Care indicator side brush",
-      "side brush"
-    );
-    this.services.CareSideBrush.getCharacteristic(
-      Characteristic.FilterChangeIndication
-    ).on("get", (cb) =>
-      callbackify(async () => {
-        return (await this.getCareSideBrush()) >= 100;
-      }, cb)
-    );
-    this.services.CareSideBrush.getCharacteristic(
-      Characteristic.FilterLifeLevel
-    ).on("get", (cb) =>
-      callbackify(async () => 100 - (await this.getCareSideBrush()), cb)
-    );
-
-    this.services.CareMainBrush = new Service.FilterMaintenance(
-      "Care indicator main brush",
-      "main brush"
-    );
-    this.services.CareMainBrush.getCharacteristic(
-      Characteristic.FilterChangeIndication
-    ).on("get", (cb) =>
-      callbackify(async () => {
-        return (await this.getCareMainBrush()) >= 100;
-      }, cb)
-    );
-    this.services.CareMainBrush.getCharacteristic(
-      Characteristic.FilterLifeLevel
-    ).on("get", (cb) =>
-      callbackify(async () => 100 - (await this.getCareMainBrush()), cb)
-    );
+      this.services.CareMainBrush.getCharacteristic(
+        Characteristic.FilterLifeLevel
+      ).on("get", (cb) =>
+        callbackify(async () => 100 - (await this.getCareMainBrush()), cb)
+      );
+    }
   }
 
   /**
@@ -762,8 +765,6 @@ class XiaomiRoborockVacuum {
   }
 
   async getCleaning() {
-    await this.ensureDevice("getCleaning");
-
     try {
       const isCleaning = this.isCleaning;
       this.log.info(
@@ -1025,8 +1026,6 @@ class XiaomiRoborockVacuum {
   }
 
   async getSpeed() {
-    await this.ensureDevice("getSpeed");
-
     const speed = this.device.property("fanSpeed");
     this.log.info(
       `INF getSpeed | ${this.model} | Fanspeed is ${speed} over miIO. Converting to HomeKit`
@@ -1227,9 +1226,6 @@ class XiaomiRoborockVacuum {
   }
 
   async getCharging() {
-    await this.ensureDevice("getCharging");
-
-    // From https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L65
     const status = this.device.property("state");
     this.log.info(
       `INF getCharging | ${this.model} | Charging is ${
@@ -1243,9 +1239,6 @@ class XiaomiRoborockVacuum {
   }
 
   async getDocked() {
-    await this.ensureDevice("getDocked");
-
-    // From https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L65
     const status = this.device.property("state");
     this.log.info(
       `INF getDocked | ${this.model} | Robot Docked is ${
@@ -1257,9 +1250,6 @@ class XiaomiRoborockVacuum {
   }
 
   async getBattery() {
-    await this.ensureDevice("getBattery");
-
-    // https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L90
     this.log.info(
       `INF getBattery | ${this.model} | Batterylevel is ${this.device.property(
         "batteryLevel"
@@ -1269,9 +1259,6 @@ class XiaomiRoborockVacuum {
   }
 
   async getBatteryLow() {
-    await this.ensureDevice("getBatteryLow");
-
-    // https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L90
     this.log.info(
       `INF getBatteryLow | ${
         this.model
@@ -1298,7 +1285,10 @@ class XiaomiRoborockVacuum {
   getServices() {
     if (this.config.delay) this.sleep(5000);
     this.log.debug(`DEB getServices | ${this.model}`);
-    return Object.keys(this.services).map((key) => this.services[key]);
+    return Object.keys(this.services).map((key) => {
+      if (key !== "fan") this.services.fan.addLinkedService(this.services[key]);
+      return this.services[key];
+    });
   }
 
   sleep(time) {
@@ -1313,8 +1303,6 @@ class XiaomiRoborockVacuum {
 
   // CONSUMABLE / CARE
   async getCareSensors() {
-    await this.ensureDevice("getCareSensors");
-
     // 30h = sensor_dirty_time
     const lifetime = 108000;
     const lifetimepercent =
@@ -1330,8 +1318,6 @@ class XiaomiRoborockVacuum {
   }
 
   async getCareFilter() {
-    await this.ensureDevice("getCareFilter");
-
     // 150h = filter_work_time
     const lifetime = 540000;
     const lifetimepercent =
@@ -1347,8 +1333,6 @@ class XiaomiRoborockVacuum {
   }
 
   async getCareSideBrush() {
-    await this.ensureDevice("getCareSideBrush");
-
     // 200h = side_brush_work_time
     const lifetime = 720000;
     const lifetimepercent =
@@ -1364,8 +1348,6 @@ class XiaomiRoborockVacuum {
   }
 
   async getCareMainBrush() {
-    await this.ensureDevice("getCareMainBrush");
-
     // 300h = main_brush_work_time
     const lifetime = 1080000;
     const lifetimepercent =
