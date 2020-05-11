@@ -1,5 +1,9 @@
 # Changes
 
+## next (possibly 0.9.0)
+
+- [Bug] Xiaowa E202-02 fails to go back to the dock (#181) - Thans @bedrin
+
 ## 0.8.2
 
 - [Models] Fix Xiaowa E202-02 modes (#179) - Thank you @bedrin
