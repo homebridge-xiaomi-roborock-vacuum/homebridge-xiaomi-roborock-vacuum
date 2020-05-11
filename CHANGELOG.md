@@ -1,6 +1,6 @@
 # Changes
 
-## @next (possibly 0.8.0)
+## 0.8.0
 
 - **[Breaking Change]** The fan speeds are now evenly distributed. So the speeds follow a step-based pattern:
   - If 5 possible states => 0%, 25%, 50%, 75% and 100%
