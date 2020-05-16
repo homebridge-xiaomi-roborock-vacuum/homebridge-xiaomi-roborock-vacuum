@@ -1287,7 +1287,7 @@ class XiaomiRoborockVacuum {
         refresh: [ 'state' ],
         refreshDelay: 1000
       };
-      const changeResponse = await this.device.call('app_pause', [speed], refreshState);
+      const changeResponse = await this.device.call('app_pause', [], refreshState);
       if (!this.isSuccess(changeResponse)) {
         throw new Error("Failed to pause device");
       }
