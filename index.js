@@ -700,6 +700,7 @@ class XiaomiRoborockVacuum {
   async getState() {
     try {
       await this.ensureDevice("getState");
+      await this.device.poll();
       const state = await this.device.state();
       this.log.debug(`DEB getState | ${this.model} | State %j`, state);
 
