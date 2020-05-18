@@ -11,6 +11,8 @@
 ## 0.8.2
 
 - [Models] Fix Xiaowa E202-02 modes (#179) - Thank you @bedrin
+- [Bug] Fix Xiaowa E202-02 fail to go to the dock (#180)
+- [Bug] Fix stalled updates (#146)
 
 ## 0.8.1
 
