@@ -35,7 +35,7 @@
     "homebridge": ">=0.4.45"
   },
   "dependencies": {
-    "miio-nicoh88": ">=0.1.0",
+    "miio-nicoh88": "next",
     "semver": "^7.3.2"
   },
   "optionalDependencies": {
