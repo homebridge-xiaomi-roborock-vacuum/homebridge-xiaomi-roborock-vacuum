@@ -700,6 +700,7 @@ class XiaomiRoborockVacuum {
   async getState() {
     try {
       await this.ensureDevice("getState");
+      await this.device.poll();
       const state = await this.device.state();
       this.log.debug(`DEB getState | ${this.model} | State %j`, state);
 
@@ -792,11 +793,7 @@ class XiaomiRoborockVacuum {
         this.log.info(
           `ACT setCleaning | ${this.model} | Start cleaning, not charging.`
         );
-        const refreshState = {
-          refresh: [ 'state' ],
-          refreshDelay: 1000
-        };
-        const changeResponse = await this.device.call('app_start', [], refreshState);
+        await this.activateCleaning();
       } else if (!state) {
         // Stop cleaning
         this.log.info(
@@ -882,6 +879,28 @@ class XiaomiRoborockVacuum {
     }
   }
 
+  // Do not use activateCleaning() from aholstenson/miio since it's check for response is not correct
+  // See https://github.com/aholstenson/miio/pull/283
+  async activateCleaning() {
+    await this.ensureDevice("activateCleaning");
+    try {
+      const refreshState = {
+        refresh: [ 'state' ],
+        refreshDelay: 1000
+      };
+      const changeResponse = await this.device.call('app_start', [], refreshState);
+      if (!this.isSuccess(changeResponse)) {
+        throw new Error("Failed to start cleaning");
+      }
+    } catch (err) {
+      this.log.error(
+        `ERR setCleaning | ${this.model} | Failed to start cleaning.`,
+        err
+      );
+      throw err;
+    }
+  }
+
   async activateCharging() {
     await this.ensureDevice("activateCharging");
     try {
@@ -889,7 +908,13 @@ class XiaomiRoborockVacuum {
         refresh: ["state"],
         refreshDelay: 1000,
       };
-      await this.device.call("app_pause", [], refreshState);
+      // On some models (like Xiaowa E202) app_stop doesn't work so we use app_pause
+      try {
+        await this.pause();
+      } catch (e) {
+        // If on some reason app_pause is not available on the device try app_stop instead
+        await this.device.call("app_stop", [], refreshState);
+      }
       // Wait one second before calling go to charge
       await new Promise((resolve) => setTimeout(resolve, 1000));
       const changeResponse = await this.device.call(
@@ -897,7 +922,7 @@ class XiaomiRoborockVacuum {
         [],
         refreshState
       );
-      if (!(changeResponse && changeResponse[0] && changeResponse[0].toLowerCase() === "ok")) {
+      if (!this.isSuccess(changeResponse)) {
         throw new Error("Failed to go to change");
       }
     } catch (err) {
@@ -1076,7 +1101,29 @@ class XiaomiRoborockVacuum {
       );
       await this.setCleaning(false);
     } else {
-      await this.device.changeFanSpeed(miLevel);
+      await this.changeFanSpeed(miLevel);
+    }
+  }
+
+  // Do not use changeFanSpeed() from aholstenson/miio since it's check for response is not correct
+  // See https://github.com/aholstenson/miio/pull/283
+  async changeFanSpeed(speed) {
+    await this.ensureDevice("changeFanSpeed");
+    try {
+      const refreshState = {
+        refresh: [ 'state' ],
+        refreshDelay: 1000
+      };
+      const changeResponse = await this.device.call('set_custom_mode', [speed], refreshState);
+      if (!this.isSuccess(changeResponse)) {
+        throw new Error("Failed to set fan speed");
+      }
+    } catch (err) {
+      this.log.error(
+        `ERR changeFanSpeed | ${this.model} | Failed to set fan speed.`,
+        err
+      );
+      throw err;
     }
   }
 
@@ -1166,7 +1213,7 @@ class XiaomiRoborockVacuum {
       { refresh: ["water_box_mode"] }
     );
     // From https://github.com/nicoh88/miio/blob/master/lib/devices/vacuum.js#L11-L18
-    if (!(response && response[0] && response[0].toLowerCase() === "ok")) {
+    if (!this.isSuccess(response)) {
       this.log.error(response);
       throw new Error(`Failed to set the water_box_mode to ${miLevel}`);
     }
@@ -1219,15 +1266,37 @@ class XiaomiRoborockVacuum {
 
     try {
       if (state) {
-        await this.device.activateCleaning();
+        await this.activateCleaning();
       } else {
-        await this.device.pause();
+        await this.pause();
       }
     } catch (err) {
       this.log.error(
         `ERR setPauseState | ${this.model} | Failed updating pause state ${state}.`,
         err
       );
+    }
+  }
+
+  // Do not use pause() from aholstenson/miio since it's check for response is not correct
+  // See https://github.com/aholstenson/miio/pull/283
+  async pause() {
+    await this.ensureDevice("pause");
+    try {
+      const refreshState = {
+        refresh: [ 'state' ],
+        refreshDelay: 1000
+      };
+      const changeResponse = await this.device.call('app_pause', [], refreshState);
+      if (!this.isSuccess(changeResponse)) {
+        throw new Error("Failed to pause device");
+      }
+    } catch (err) {
+      this.log.error(
+        `ERR pause | ${this.model} | Failed to pause.`,
+        err
+      );
+      throw err;
     }
   }
 
@@ -1369,4 +1438,12 @@ class XiaomiRoborockVacuum {
     );
     return lifetimepercent;
   }
+
+  isSuccess(r) {
+    // {"result":0,"id":17} 	  = Firmware 3.3.9_003095 (Gen1)
+    // {"result":["ok"],"id":11}      = Firmware 3.3.9_003194 (Gen1), 3.3.9_001168 (Gen2)
+    // {"result":["OK"],"id":11}      = Firmware 1.3.0_0752 on Xiaowa E202-02
+    return (r && (r === 0 || (r[0] && (r[0] === "ok" || r[0] === "OK")) ) );
+  }
+
 }
