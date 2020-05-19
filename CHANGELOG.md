@@ -4,6 +4,10 @@
 
 - [Bug] Xiaowa E202-02 fails to go back to the dock (#181) - Thanks @bedrin
 
+## 0.8.4
+
+- [Models] `rockrobo.vacuum.v1` now supports new speed modes - Thank you @mrreview
+
 ## 0.8.3
 
 - [Bug] Fix the `minStep` maths (#190) - Thank you @bedrin
