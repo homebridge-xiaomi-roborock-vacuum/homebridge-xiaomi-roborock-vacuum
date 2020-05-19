@@ -5,7 +5,7 @@ const watermodes = require("./watermodes");
 
 module.exports = {
   default: { speed: speedmodes.gen1 },
-  "rockrobo.vacuum.v1": [{ speed: speedmodes.gen1 }],
+  "rockrobo.vacuum.v1": [{ speed: speedmodes.gen2 }],
   "roborock.vacuum.c1": [{ speed: speedmodes.gen1 }],
   "roborock.vacuum.m1s": [{ speed: speedmodes.gen3 }],
   "roborock.vacuum.s5": [
@@ -18,6 +18,6 @@ module.exports = {
   "roborock.vacuum.s6": [{ speed: speedmodes.gen4 }],
   "roborock.vacuum.t6": [{ speed: speedmodes.gen3 }],
   "roborock.vacuum.t4": [{ speed: speedmodes.gen3 }],
-  "roborock.vacuum.e2": [{ speed: speedmodes["xiaowa-e202-02"]}],
+  "roborock.vacuum.e2": [{ speed: speedmodes["xiaowa-e202-02"] }],
   "roborock.vacuum.a08": [{ speed: speedmodes.gen3 }],
 };
