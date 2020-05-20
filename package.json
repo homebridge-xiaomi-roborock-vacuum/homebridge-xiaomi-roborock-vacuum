@@ -1,6 +1,6 @@
 {
-  "name": "homebridge-xiaomi-roborock-vacuum",
-  "version": "0.8.4",
+  "name": "homebridge-roborock",
+  "version": "0.5.3",
   "description": "Xiaomi Vacuum Cleaner - 1st (Mi Robot), 2nd (Roborock S50 + S55), 3rd Generation (Roborock S6) and S5 Max - plugin for Homebridge.",
   "license": "MIT",
   "keywords": [
@@ -22,26 +22,13 @@
     "xiaowa c10",
     "mi robot 1s"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum.git"
-  },
-  "bugs": {
-    "url": "https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues"
-  },
-  "homepage": "https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum",
   "engines": {
     "node": ">=10.0.0",
     "homebridge": ">=0.4.45"
   },
   "dependencies": {
-    "miio-nicoh88": ">=0.1.0",
-    "semver": "^7.3.2"
-  },
-  "optionalDependencies": {
+    "miio": "git://github.com/nicoh88/miio.git#master",
+    "semver": "^7.1.2",
     "system-sleep": "^1.3.6"
-  },
-  "devDependencies": {
-    "prettier": "^2.0.5"
   }
 }
