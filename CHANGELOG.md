@@ -1,5 +1,10 @@
 # Changes
 
+## 0.10.0
+
+- [Enhancement] Move `nicoh88-miio` library to this module (#196)
+- [Feature] Provide aggregated `FilterLifeLevel` characteristic in the fan service (#145)
+
 ## 0.9.0
 
 - [Bug] Xiaowa E202-02 fails to go back to the dock (#181) - Thanks @bedrin
@@ -101,12 +106,12 @@
 
 ## 0.6.3
 
-- Improve: roborock.vacuum.t6 fanSpeed not supported issue [PR](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/pull/70)
+- Improve: roborock.vacuum.t6 fanSpeed not supported issue [PR](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/70)
 
 ## 0.6.2
 
 - Feature: Add support for Mi Robot 1S
-- Improve: Controlled Connection Retries [PR](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/pull/66)
+- Improve: Controlled Connection Retries [PR](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/66)
 
 ## 0.6.1
 
@@ -137,10 +142,10 @@
 
 ## 0.4.0
 
-- Feature: Mopping is now supported. [#31](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/31)
+- Feature: Mopping is now supported. [#31](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/31)
 - Feature: Slightly different Speedmodes between Gen1 and Gen2 considered.
-- Bugfix: Initializing status values to variables at startup, there were problems when the robot was not docked when starting homebridge. [#15](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/15) & [#30](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/30)
-- Bugfix: `pause` functionality improved. [#15](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/15) & [#30](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/30)
+- Bugfix: Initializing status values to variables at startup, there were problems when the robot was not docked when starting homebridge. [#15](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/15) & [#30](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/30)
+- Bugfix: `pause` functionality improved. [#15](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/15) & [#30](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/30)
 - Bugfix: Logging improved.
 
 ## 0.3.2
@@ -157,7 +162,7 @@
 
 ## 0.2.2
 
-- Bugfix: Own Fork from "miio" with fixed for [#5](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/5), [#6](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/6) and [#7](https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/7).
+- Bugfix: Own Fork from "miio" with fixed for [#5](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/5), [#6](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/6) and [#7](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/7).
 
 ## 0.2.1
 

@@ -53,7 +53,7 @@ const SPEEDMODES = {
     // 76-100% = "Full Speed / Max Speed / Max"
     { miLevel: 104, name: "Max" },
   ],
-  // S5-Max (https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/79#issuecomment-576246934)
+  // S5-Max (https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/79#issuecomment-576246934)
   gen4: [
     // 0%      = Off / Aus
     { miLevel: 0, name: "Off" },
@@ -68,7 +68,7 @@ const SPEEDMODES = {
     // 81-100% = "Full Speed / Max Speed / Max"
     { miLevel: 104, name: "Max" },
   ],
-  // S5-Max + Custom (https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/110)
+  // S5-Max + Custom (https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/110)
   "gen4+custom": [
     // 0%      = Off / Aus
     { miLevel: 0, name: "Off" },
