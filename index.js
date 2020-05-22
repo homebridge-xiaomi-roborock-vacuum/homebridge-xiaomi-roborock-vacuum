@@ -588,7 +588,7 @@ class XiaomiRoborockVacuum {
 
       this.log.info("STA getDevice | Connected to: %s", this.config.ip);
       this.log.info("STA getDevice | Model: " + this.device.miioModel);
-      this.log.info("STA getDevice | State: " + this.device.state());
+      this.log.info("STA getDevice | State: " + this.device.property("state"));
       this.log.info(
         "STA getDevice | FanSpeed: " + this.device.property("fanSpeed")
       );
