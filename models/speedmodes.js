@@ -39,8 +39,8 @@ const SPEEDMODES = {
     // 60-80%  = "Turbo / Stark"
     { miLevel: 79, name: "Turbo" },
     // 80-100% = "Full Speed / Max Speed / Max"
-    { miLevel: 100, name: "Max" }
-  ],  
+    { miLevel: 100, name: "Max" },
+  ],
   gen3: [
     // 0%      = Off / Aus
     { miLevel: 0, name: "Off" },
