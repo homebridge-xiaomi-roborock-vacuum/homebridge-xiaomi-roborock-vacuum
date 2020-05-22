@@ -1,5 +1,10 @@
 # Changes
 
+## 0.10.0
+
+- [Enhancement] Move `nicoh88-miio` library to this module (#196)
+- [Feature] Provide aggregated `FilterLifeLevel` characteristic in the fan service (#145)
+
 ## 0.9.0
 
 - [Bug] Xiaowa E202-02 fails to go back to the dock (#181) - Thanks @bedrin
