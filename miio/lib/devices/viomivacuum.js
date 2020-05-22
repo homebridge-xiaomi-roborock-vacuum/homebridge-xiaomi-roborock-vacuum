@@ -47,67 +47,6 @@ module.exports = class extends Vacuum {
     this.defineProperty("suction_grade", {
       name: "fanSpeed",
     });
-
-    // Consumable status - times for brushes and filters
-    this.defineProperty("main_brush_work_time", {
-      name: "mainBrushWorkTime",
-    });
-    this.defineProperty("side_brush_work_time", {
-      name: "sideBrushWorkTime",
-    });
-    this.defineProperty("filter_work_time", {
-      name: "filterWorkTime",
-    });
-    this.defineProperty("sensor_dirty_time", {
-      name: "sensorDirtyTime",
-    });
-
-    this._monitorInterval = 60000;
-  }
-
-  propertyUpdated(key, value, oldValue) {
-    if (key === "state") {
-      // Update charging state
-      this.updateCharging(value === "charging");
-
-      switch (value) {
-        case "cleaning":
-        case "spot-cleaning":
-        case "zone-cleaning":
-          // The vacuum is cleaning
-          this.updateCleaning(true);
-          break;
-        case "paused":
-          // Cleaning has been paused, do nothing special
-          break;
-        case "error":
-          // An error has occurred, rely on error mapping
-          this.updateError(this.property("error"));
-          break;
-        case "charging-error":
-          // Charging error, trigger an error
-          this.updateError({
-            code: "charging-error",
-            message: "Error during charging",
-          });
-          break;
-        case "charger-offline":
-          // Charger is offline, trigger an error
-          this.updateError({
-            code: "charger-offline",
-            message: "Charger is offline",
-          });
-          break;
-        default:
-          // The vacuum is not cleaning
-          this.updateCleaning(false);
-          break;
-      }
-    } else if (key === "fanSpeed") {
-      this.updateFanSpeed(value);
-    }
-
-    super.propertyUpdated(key, value, oldValue);
   }
 
   cleanRooms(listOfRooms) {
@@ -137,7 +76,7 @@ module.exports = class extends Vacuum {
    */
   pause() {
     return this.call("set_mode_withroom", [0, 2, 0], {
-      refresh: ["state "],
+      refresh: ["state"],
     }).then(checkResult);
   }
 
