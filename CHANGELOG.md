@@ -1,5 +1,12 @@
 # Changes
 
+## 0.9.0
+
+- [Bug] Xiaowa E202-02 fails to go back to the dock (#181) - Thanks @bedrin
+- [Bug] Xiaowa E202-02 successful response is upper-cased "OK" - Thanks @bedrin
+- [Bug] Pause before going to dock (#180) - Thanks @bedrin
+- [Bug] Fixes connection drops and outdated statuses (#146) - Thanks @bedrin
+
 ## 0.8.4
 
 - [Models] `rockrobo.vacuum.v1` now supports new speed modes - Thank you @mrreview
@@ -11,6 +18,8 @@
 ## 0.8.2
 
 - [Models] Fix Xiaowa E202-02 modes (#179) - Thank you @bedrin
+- [Bug] Fix Xiaowa E202-02 fail to go to the dock (#180)
+- [Bug] Fix stalled updates (#146)
 
 ## 0.8.1
 
