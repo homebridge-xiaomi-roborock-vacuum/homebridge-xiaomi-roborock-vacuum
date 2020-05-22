@@ -15,7 +15,8 @@ function checkResult(r) {
   //console.log(r)
   // {"result":0,"id":17}      = Firmware 3.3.9_003095 (Gen1)
   // {"result":["ok"],"id":11} = Firmware 3.3.9_003194 (Gen1), 3.3.9_001168 (Gen2)
-  if (r !== 0 && r[0] !== "ok") {
+  // {"result":["OK"],"id":11}      = Firmware 1.3.0_0752 on Xiaowa E202-02
+  if (r !== 0 && r[0] !== "ok" && r[0] !== "OK") {
     throw new Error("Could not complete call to device");
   }
 }
@@ -126,6 +127,10 @@ module.exports = class extends Vacuum.with(
       name: "sensorDirtyTime",
     });
 
+    this.defineProperty("water_box_mode", {
+      name: "waterBoxMode",
+    });
+
     this._monitorInterval = 60000;
   }
 
@@ -175,6 +180,37 @@ module.exports = class extends Vacuum.with(
     super.propertyUpdated(key, value, oldValue);
   }
 
+  getDeviceInfo() {
+    return this.call("miIO.info");
+  }
+
+  async getSerialNumber() {
+    const serial = await this.call("get_serial_number");
+    return serial[0].serial_number;
+  }
+
+  getRoomMap() {
+    return this.call("get_room_mapping");
+  }
+
+  cleanRooms(listOfRooms) {
+    return this.call("app_segment_clean", listOfRooms, {
+      refresh: ["state"],
+      refreshDelay: 1000,
+    }).then(checkResult);
+  }
+
+  cleanZones(listOfZones) {
+    return this.call("app_zoned_clean", listOfZones, {
+      refresh: ["state"],
+      refreshDelay: 1000,
+    }).then(checkResult);
+  }
+
+  getTimer() {
+    return this.call("get_timer");
+  }
+
   /**
    * Start a cleaning session.
    */
@@ -190,7 +226,7 @@ module.exports = class extends Vacuum.with(
    */
   pause() {
     return this.call("app_pause", [], {
-      refresh: ["state "],
+      refresh: ["state"],
     }).then(checkResult);
   }
 
@@ -208,15 +244,19 @@ module.exports = class extends Vacuum.with(
    * Stop the current cleaning session and return to charge.
    */
   activateCharging() {
-    return this.call("app_stop", [])
-      .then(checkResult)
-      .then(() =>
-        this.call("app_charge", [], {
-          refresh: ["state"],
-          refreshDelay: 1000,
-        })
-      )
-      .then(checkResult);
+    return (
+      this.pause()
+        .catch(() => this.deactivateCleaning())
+        // Wait 1 second
+        .then(() => new Promise((resolve) => setTimeout(resolve, 1000)))
+        .then(() =>
+          this.call("app_charge", [], {
+            refresh: ["state"],
+            refreshDelay: 1000,
+          })
+        )
+        .then(checkResult)
+    );
   }
 
   /**
@@ -234,6 +274,25 @@ module.exports = class extends Vacuum.with(
   changeFanSpeed(speed) {
     return this.call("set_custom_mode", [speed], {
       refresh: ["fanSpeed"],
+    }).then(checkResult);
+  }
+
+  /**
+   * Get WaterBoxMode (only working for the model S6)
+   * @returns {Promise<*>}
+   */
+  async getWaterBoxMode() {
+    // From https://github.com/marcelrv/XiaomiRobotVacuumProtocol/blob/master/water_box_custom_mode.md
+    const response = await this.call("get_water_box_custom_mode", [], {
+      refresh: ["waterBoxMode"],
+    });
+    return response[0];
+  }
+
+  setWaterBoxMode(mode) {
+    // From https://github.com/marcelrv/XiaomiRobotVacuumProtocol/blob/master/water_box_custom_mode.md
+    return this.call("set_water_box_custom_mode", [mode], {
+      refresh: ["waterBoxMode"],
     }).then(checkResult);
   }
 
