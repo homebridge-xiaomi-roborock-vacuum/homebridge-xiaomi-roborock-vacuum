@@ -1,5 +1,9 @@
 # Changes
 
+## next (0.11.0)
+
+- [Models] S5 should use the gen4 speeds (#131)
+
 ## 0.10.1
 
 - [Enhancement] Updated internal dependencies and removed vulnerability warnings
