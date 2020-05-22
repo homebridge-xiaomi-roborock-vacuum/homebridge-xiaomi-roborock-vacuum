@@ -1,7 +1,7 @@
 "use strict";
 
 const semver = require("semver");
-const miio = require("miio-nicoh88");
+const miio = require("./miio");
 const util = require("util");
 const callbackify = require("./lib/callbackify");
 const safeCall = require("./lib/safeCall");
@@ -627,7 +627,7 @@ class XiaomiRoborockVacuum {
         .setProps({ minStep: minStep });
 
       await this.getState();
-      // Refresh the state every 30s so miio maintains a fresh connection (or recovers connection if lost until we fix https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/81)
+      // Refresh the state every 30s so miio maintains a fresh connection (or recovers connection if lost until we fix https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/81)
       clearInterval(this.getStateInterval);
       this.getStateInterval = setInterval(
         () => this.getState(),
@@ -636,7 +636,7 @@ class XiaomiRoborockVacuum {
     } else {
       const model = (device || {}).miioModel;
       this.log.error(
-        `ERR getDevice | Device "${model}" is not registered as a vacuum cleaner! If you think it should be, please open an issue at https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/new and provide this line.`
+        `ERR getDevice | Device "${model}" is not registered as a vacuum cleaner! If you think it should be, please open an issue at https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/new and provide this line.`
       );
       this.log.debug(device);
       device.destroy();
@@ -717,7 +717,7 @@ class XiaomiRoborockVacuum {
         );
       }
 
-      // No need to throw the error at this point. This are just warnings like (https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/91)
+      // No need to throw the error at this point. This are just warnings like (https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/91)
       safeCall(state.error, (error) => this.changedError(error));
     } catch (err) {
       this.log.error(`ERR getState | %j`, err);
@@ -1144,7 +1144,7 @@ class XiaomiRoborockVacuum {
     const response = await this.device.call("get_water_box_custom_mode", [], {
       refresh: ["water_box_mode"],
     });
-    // From https://github.com/nicoh88/miio/blob/master/lib/devices/vacuum.js#L11-L18
+    // From https://github.com/homebridge-xiaomi-roborock-vacuum/miio/blob/master/lib/devices/vacuum.js#L11-L18
     const [waterMode] = response || [];
     if (typeof waterMode === undefined) {
       this.log.error(response);
@@ -1216,7 +1216,7 @@ class XiaomiRoborockVacuum {
       [miLevel],
       { refresh: ["water_box_mode"] }
     );
-    // From https://github.com/nicoh88/miio/blob/master/lib/devices/vacuum.js#L11-L18
+    // From https://github.com/homebridge-xiaomi-roborock-vacuum/miio/blob/master/lib/devices/vacuum.js#L11-L18
     if (!this.isSuccess(response)) {
       this.log.error(response);
       throw new Error(`Failed to set the water_box_mode to ${miLevel}`);
