@@ -1,7 +1,7 @@
 "use strict";
 
 const semver = require("semver");
-const miio = require("miio-nicoh88");
+const miio = require("./miio");
 const util = require("util");
 const callbackify = require("./lib/callbackify");
 const safeCall = require("./lib/safeCall");
@@ -333,6 +333,31 @@ class XiaomiRoborockVacuum {
         Characteristic.CareMainBrush
       ).on("get", (cb) => callbackify(() => this.getCareMainBrush(), cb));
     } else {
+      this.services.fan
+        .getCharacteristic(Characteristic.FilterChangeIndication)
+        .on("get", (cb) =>
+          callbackify(async () => {
+            const carePercentages = await Promise.all([
+              this.getCareSensors(),
+              this.getCareFilter(),
+              this.getCareSideBrush(),
+            ]);
+            return carePercentages.some((item) => item >= 100);
+          }, cb)
+        );
+      this.services.fan
+        .getCharacteristic(Characteristic.FilterLifeLevel)
+        .on("get", (cb) =>
+          callbackify(async () => {
+            const carePercentages = await Promise.all([
+              this.getCareSensors(),
+              this.getCareFilter(),
+              this.getCareSideBrush(),
+            ]);
+            return 100 - Math.max(...carePercentages);
+          }, cb)
+        );
+
       // Use Homekit's native FilterMaintenance Service
       this.services.CareSensors = new Service.FilterMaintenance(
         "Care indicator sensors",
@@ -624,10 +649,10 @@ class XiaomiRoborockVacuum {
       const minStep = 100 / (this.findSpeedModes().speed.length - 1);
       this.services.fan
         .getCharacteristic(Characteristic.RotationSpeed)
-        .setProps({ "minStep": minStep });
+        .setProps({ minStep: minStep });
 
       await this.getState();
-      // Refresh the state every 30s so miio maintains a fresh connection (or recovers connection if lost until we fix https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/81)
+      // Refresh the state every 30s so miio maintains a fresh connection (or recovers connection if lost until we fix https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/81)
       clearInterval(this.getStateInterval);
       this.getStateInterval = setInterval(
         () => this.getState(),
@@ -636,7 +661,7 @@ class XiaomiRoborockVacuum {
     } else {
       const model = (device || {}).miioModel;
       this.log.error(
-        `ERR getDevice | Device "${model}" is not registered as a vacuum cleaner! If you think it should be, please open an issue at https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/new and provide this line.`
+        `ERR getDevice | Device "${model}" is not registered as a vacuum cleaner! If you think it should be, please open an issue at https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/new and provide this line.`
       );
       this.log.debug(device);
       device.destroy();
@@ -717,7 +742,7 @@ class XiaomiRoborockVacuum {
         );
       }
 
-      // No need to throw the error at this point. This are just warnings like (https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/91)
+      // No need to throw the error at this point. This are just warnings like (https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/91)
       safeCall(state.error, (error) => this.changedError(error));
     } catch (err) {
       this.log.error(`ERR getState | %j`, err);
@@ -885,10 +910,14 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("activateCleaning");
     try {
       const refreshState = {
-        refresh: [ 'state' ],
-        refreshDelay: 1000
+        refresh: ["state"],
+        refreshDelay: 1000,
       };
-      const changeResponse = await this.device.call('app_start', [], refreshState);
+      const changeResponse = await this.device.call(
+        "app_start",
+        [],
+        refreshState
+      );
       if (!this.isSuccess(changeResponse)) {
         throw new Error("Failed to start cleaning");
       }
@@ -1111,10 +1140,14 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("changeFanSpeed");
     try {
       const refreshState = {
-        refresh: [ 'state' ],
-        refreshDelay: 1000
+        refresh: ["state"],
+        refreshDelay: 1000,
       };
-      const changeResponse = await this.device.call('set_custom_mode', [speed], refreshState);
+      const changeResponse = await this.device.call(
+        "set_custom_mode",
+        [speed],
+        refreshState
+      );
       if (!this.isSuccess(changeResponse)) {
         throw new Error("Failed to set fan speed");
       }
@@ -1140,7 +1173,7 @@ class XiaomiRoborockVacuum {
     const response = await this.device.call("get_water_box_custom_mode", [], {
       refresh: ["water_box_mode"],
     });
-    // From https://github.com/nicoh88/miio/blob/master/lib/devices/vacuum.js#L11-L18
+    // From https://github.com/homebridge-xiaomi-roborock-vacuum/miio/blob/master/lib/devices/vacuum.js#L11-L18
     const [waterMode] = response || [];
     if (typeof waterMode === undefined) {
       this.log.error(response);
@@ -1212,7 +1245,7 @@ class XiaomiRoborockVacuum {
       [miLevel],
       { refresh: ["water_box_mode"] }
     );
-    // From https://github.com/nicoh88/miio/blob/master/lib/devices/vacuum.js#L11-L18
+    // From https://github.com/homebridge-xiaomi-roborock-vacuum/miio/blob/master/lib/devices/vacuum.js#L11-L18
     if (!this.isSuccess(response)) {
       this.log.error(response);
       throw new Error(`Failed to set the water_box_mode to ${miLevel}`);
@@ -1284,18 +1317,19 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("pause");
     try {
       const refreshState = {
-        refresh: [ 'state' ],
-        refreshDelay: 1000
+        refresh: ["state"],
+        refreshDelay: 1000,
       };
-      const changeResponse = await this.device.call('app_pause', [], refreshState);
+      const changeResponse = await this.device.call(
+        "app_pause",
+        [],
+        refreshState
+      );
       if (!this.isSuccess(changeResponse)) {
         throw new Error("Failed to pause device");
       }
     } catch (err) {
-      this.log.error(
-        `ERR pause | ${this.model} | Failed to pause.`,
-        err
-      );
+      this.log.error(`ERR pause | ${this.model} | Failed to pause.`, err);
       throw err;
     }
   }
@@ -1443,7 +1477,6 @@ class XiaomiRoborockVacuum {
     // {"result":0,"id":17} 	  = Firmware 3.3.9_003095 (Gen1)
     // {"result":["ok"],"id":11}      = Firmware 3.3.9_003194 (Gen1), 3.3.9_001168 (Gen2)
     // {"result":["OK"],"id":11}      = Firmware 1.3.0_0752 on Xiaowa E202-02
-    return (r && (r === 0 || (r[0] && (r[0] === "ok" || r[0] === "OK")) ) );
+    return r && (r === 0 || (r[0] && (r[0] === "ok" || r[0] === "OK")));
   }
-
 }

@@ -24,22 +24,38 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum.git"
+    "url": "git+https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum.git"
   },
   "bugs": {
-    "url": "https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues"
+    "url": "https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues"
   },
-  "homepage": "https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum",
+  "homepage": "https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum",
+  "bin": {
+    "miio": "./miio/cli/index.js"
+  },
   "engines": {
     "node": ">=10.0.0",
     "homebridge": ">=0.4.45"
   },
+  "scripts": {
+    "lint:fix": "npx prettier --write **/*.*"
+  },
   "dependencies": {
-    "miio-nicoh88": "next",
+    "abstract-things": "^0.9.0",
+    "appdirectory": "^0.1.0",
+    "chalk": "^2.3.0",
+    "debug": "^3.1.0",
+    "deep-equal": "^1.0.1",
+    "mkdirp": "^0.5.1",
+    "tinkerhub-discovery": "^0.3.1",
+    "yargs": "^10.1.1",
     "semver": "^7.3.2"
   },
   "optionalDependencies": {
     "system-sleep": "^1.3.6"
+  },
+  "peerDependencies": {
+    "homebridge": ">=0.4.45"
   },
   "devDependencies": {
     "prettier": "^2.0.5"
