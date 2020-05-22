@@ -1,185 +1,199 @@
-'use strict';
+"use strict";
 
-const { TimedDiscovery, BasicDiscovery, search, addService, removeService } = require('tinkerhub-discovery');
-const { Children } = require('abstract-things');
+const {
+  TimedDiscovery,
+  BasicDiscovery,
+  search,
+  addService,
+  removeService,
+} = require("tinkerhub-discovery");
+const { Children } = require("abstract-things");
 
-const util = require('util');
-const dns = require('dns');
+const util = require("util");
+const dns = require("dns");
 
-const network = require('./network');
-const infoFromHostname = require('./infoFromHostname');
+const network = require("./network");
+const infoFromHostname = require("./infoFromHostname");
 
-const connectToDevice = require('./connectToDevice');
+const connectToDevice = require("./connectToDevice");
 
-const tryAdd = Symbol('tryAdd');
+const tryAdd = Symbol("tryAdd");
 
-const Browser = module.exports.Browser = class Browser extends TimedDiscovery {
-	static get type() {
-		return 'miio';
-	}
+const Browser = (module.exports.Browser = class Browser extends TimedDiscovery {
+  static get type() {
+    return "miio";
+  }
 
-	constructor(options) {
-		super({
-			maxStaleTime: (options.cacheTime || 1800) * 1000
-		});
+  constructor(options) {
+    super({
+      maxStaleTime: (options.cacheTime || 1800) * 1000,
+    });
 
-		if(typeof options.useTokenStorage !== 'undefined' ? options.useTokenStorage : true) {
-			this.tokens = require('./tokens');
-		}
+    if (
+      typeof options.useTokenStorage !== "undefined"
+        ? options.useTokenStorage
+        : true
+    ) {
+      this.tokens = require("./tokens");
+    }
 
-		this.manualTokens = options.tokens || {};
-		this[tryAdd] = this[tryAdd].bind(this);
+    this.manualTokens = options.tokens || {};
+    this[tryAdd] = this[tryAdd].bind(this);
 
-		this.start();
-	}
+    this.start();
+  }
 
-	_manualToken(id) {
-		return this.manualTokens[id] || null;
-	}
+  _manualToken(id) {
+    return this.manualTokens[id] || null;
+  }
 
-	start() {
-		this.handle = network.ref();
-		network.on('device', this[tryAdd]);
+  start() {
+    this.handle = network.ref();
+    network.on("device", this[tryAdd]);
 
-		super.start();
-	}
+    super.start();
+  }
 
-	stop() {
-		super.stop();
+  stop() {
+    super.stop();
 
-		network.removeListener('device', this[tryAdd]);
-		this.handle.release();
-	}
+    network.removeListener("device", this[tryAdd]);
+    this.handle.release();
+  }
 
-	[search]() {
-		network.search();
-	}
+  [search]() {
+    network.search();
+  }
 
-	[tryAdd](device) {
-		const service = {
-			id: device.id,
-			address: device.address,
-			port: device.port,
-			token: device.token || this._manualToken(device.id),
-			autoToken: device.autoToken,
+  [tryAdd](device) {
+    const service = {
+      id: device.id,
+      address: device.address,
+      port: device.port,
+      token: device.token || this._manualToken(device.id),
+      autoToken: device.autoToken,
 
-			connect: function(options={}) {
-				return connectToDevice(Object.assign({
-					address: this.address,
-					port: this.port,
-					model: this.model
-				}, options));
-			}
-		};
+      connect: function (options = {}) {
+        return connectToDevice(
+          Object.assign(
+            {
+              address: this.address,
+              port: this.port,
+              model: this.model,
+            },
+            options
+          )
+        );
+      },
+    };
 
-		const add = () => this[addService](service);
+    const add = () => this[addService](service);
 
-		// Give us five seconds to try resolve some extras for new devices
-		setTimeout(add, 5000);
+    // Give us five seconds to try resolve some extras for new devices
+    setTimeout(add, 5000);
 
-		dns.lookupService(service.address, service.port, (err, hostname) => {
-			if(err || ! hostname) {
-				add();
-				return;
-			}
+    dns.lookupService(service.address, service.port, (err, hostname) => {
+      if (err || !hostname) {
+        add();
+        return;
+      }
 
-			service.hostname = hostname;
-			const info = infoFromHostname(hostname);
-			if(info) {
-				service.model = info.model;
-			}
+      service.hostname = hostname;
+      const info = infoFromHostname(hostname);
+      if (info) {
+        service.model = info.model;
+      }
 
-			add();
-		});
-	}
+      add();
+    });
+  }
 
-	[util.inspect.custom]() {
-		return 'MiioBrowser{}';
-	}
-};
+  [util.inspect.custom]() {
+    return "MiioBrowser{}";
+  }
+});
 
 class Devices extends BasicDiscovery {
-	static get type() {
-		return 'miio:devices';
-	}
+  static get type() {
+    return "miio:devices";
+  }
 
-	constructor(options) {
-		super();
+  constructor(options) {
+    super();
 
-		this._filter = options && options.filter;
-		this._skipSubDevices = options && options.skipSubDevices;
+    this._filter = options && options.filter;
+    this._skipSubDevices = options && options.skipSubDevices;
 
-		this._browser = new Browser(options)
-			.map(reg => {
-				return connectToDevice({
-					address: reg.address,
-					port: reg.port,
-					model: reg.model,
-					withPlaceholder: true
-				});
-			});
+    this._browser = new Browser(options).map((reg) => {
+      return connectToDevice({
+        address: reg.address,
+        port: reg.port,
+        model: reg.model,
+        withPlaceholder: true,
+      });
+    });
 
-		this._browser.on('available', s => {
-			this[addService](s);
+    this._browser.on("available", (s) => {
+      this[addService](s);
 
-			if(s instanceof Children) {
-				this._bindSubDevices(s);
-			}
-		});
+      if (s instanceof Children) {
+        this._bindSubDevices(s);
+      }
+    });
 
-		this._browser.on('unavailable', s => {
-			this[removeService](s);
-		});
-	}
+    this._browser.on("unavailable", (s) => {
+      this[removeService](s);
+    });
+  }
 
-	start() {
-		super.start();
+  start() {
+    super.start();
 
-		this._browser.start();
-	}
+    this._browser.start();
+  }
 
-	stop() {
-		super.stop();
+  stop() {
+    super.stop();
 
-		this._browser.stop();
-	}
+    this._browser.stop();
+  }
 
-	[util.inspect.custom]() {
-		return 'MiioDevices{}';
-	}
+  [util.inspect.custom]() {
+    return "MiioDevices{}";
+  }
 
-	_bindSubDevices(device) {
-		if(this._skipSubDevices) return;
+  _bindSubDevices(device) {
+    if (this._skipSubDevices) return;
 
-		const handleAvailable = sub => {
-			if(! sub.miioModel) return;
+    const handleAvailable = (sub) => {
+      if (!sub.miioModel) return;
 
-			const reg = {
-				id: sub.internalId,
-				model: sub.model,
-				type: sub.type,
+      const reg = {
+        id: sub.internalId,
+        model: sub.model,
+        type: sub.type,
 
-				parent: device,
-				device: sub
-			};
+        parent: device,
+        device: sub,
+      };
 
-			if(this._filter && ! this._filter(reg)) {
-				// Filter does not match sub device
-				return;
-			}
+      if (this._filter && !this._filter(reg)) {
+        // Filter does not match sub device
+        return;
+      }
 
-			// Register and emit event
-			this[addService](sub);
-		};
+      // Register and emit event
+      this[addService](sub);
+    };
 
-		device.on('thing:available', handleAvailable);
-		device.on('thing:unavailable', sub => this[removeService](sub.id));
+    device.on("thing:available", handleAvailable);
+    device.on("thing:unavailable", (sub) => this[removeService](sub.id));
 
-		// Register initial devices
-		for(const child of device.children()) {
-			handleAvailable(child);
-		}
-	}
+    // Register initial devices
+    for (const child of device.children()) {
+      handleAvailable(child);
+    }
+  }
 }
 
 module.exports.Devices = Devices;

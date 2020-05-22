@@ -6,19 +6,20 @@
 
 ```javascript
 const browser = miio.browse({
-  cacheTime: 300 // 5 minutes. Default is 1800 seconds (30 minutes)
+  cacheTime: 300, // 5 minutes. Default is 1800 seconds (30 minutes)
 });
 
 const devices = {};
-browser.on('available', reg => {
-  if(! reg.token) {
-    console.log(reg.id, 'hides its token');
+browser.on("available", (reg) => {
+  if (!reg.token) {
+    console.log(reg.id, "hides its token");
     return;
   }
 
   // Directly connect to the device anyways - so use miio.devices() if you just do this
-  reg.connect()
-    .then(device => {
+  reg
+    .connect()
+    .then((device) => {
       devices[reg.id] = device;
 
       // Do something useful with the device
@@ -26,13 +27,13 @@ browser.on('available', reg => {
     .catch(handleErrorProperlyHere);
 });
 
-browser.on('unavailable', reg => {
+browser.on("unavailable", (reg) => {
   const device = devices[reg.id];
-  if(! device) return;
+  if (!device) return;
 
   device.destroy();
   delete devices[reg.id];
-})
+});
 ```
 
 You can also use mDNS for discovery, but this library does not contain a mDNS
@@ -49,9 +50,7 @@ supported by the library.
 
 ```javascript
 // Call any method via call
-device.call('set_mode', [ 'silent' ])
-  .then(console.log)
-  .catch(console.error);
+device.call("set_mode", ["silent"]).then(console.log).catch(console.error);
 ```
 
 **Important**: `call` is advanced usage, the library does very little for you
@@ -65,13 +64,13 @@ device is not yet supported you can easily do so:
 
 ```javascript
 // Define a property that should be monitored
-device.defineProperty('mode');
+device.defineProperty("mode");
 
 // Define that a certain property should be run through a custom conversion
-device.defineProperty('temp_dec', v => v / 10.0);
+device.defineProperty("temp_dec", (v) => v / 10.0);
 
 // Fetch the last value of a monitored property
-const value = device.property('temp_dec');
+const value = device.property("temp_dec");
 ```
 
 ## Device management
@@ -80,23 +79,26 @@ Get information and update the wireless settings of devices via the management
 API.
 
 Discover the token of a device:
+
 ```javascript
-device.discover()
-  .then(info => console.log(info.token));
+device.discover().then((info) => console.log(info.token));
 ```
 
 Get internal information about the device:
+
 ```javascript
-device.management.info()
-  .then(console.log);
+device.management.info().then(console.log);
 ```
 
 Update the wireless settings:
+
 ```javascript
-device.management.updateWireless({
-  ssid: 'SSID of network',
-  passwd: 'Password of network'
-}).then(console.log);
+device.management
+  .updateWireless({
+    ssid: "SSID of network",
+    passwd: "Password of network",
+  })
+  .then(console.log);
 ```
 
 Warning: The device will either connect to the new network or it will get stuck

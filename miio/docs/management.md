@@ -30,10 +30,10 @@ Support: At least basic
 
 The information output is:
 
-* __Device ID__ - the unique identifier of the device, does not change if the device is reset.
-* __Model ID__ - the model id if it could be determined, this indicates what type of device it is
-* __Address__ - the IP that the device has on the network
-* __Token__ - the token of the device or ??? if it could not be automatically determined
+- **Device ID** - the unique identifier of the device, does not change if the device is reset.
+- **Model ID** - the model id if it could be determined, this indicates what type of device it is
+- **Address** - the IP that the device has on the network
+- **Token** - the token of the device or ??? if it could not be automatically determined
 
 ### Storing tokens of all discovered devices
 
@@ -49,8 +49,8 @@ enable this:
 
 Options:
 
-* `--ssid` - the required SSID of the 2.4 GHz WiFi network that the device should connect to
-* `--passwd` - the password of the WiFi network
+- `--ssid` - the required SSID of the 2.4 GHz WiFi network that the device should connect to
+- `--passwd` - the password of the WiFi network
 
 _Warning:_ This command does not verify that the device can actually connect to
 the network. If it can not it will be stuck and will need to be reset.
@@ -69,9 +69,9 @@ configure this new device without using the Mi Home app.
 
 If the device does not show up on your main network the problem is probably one of:
 
-* Wrong SSID - check that the SSID you gave the `--configure` command is correct.
-* Wrong password - check that the password is correct for the WiFi network.
-* Not a 2.4 GHz network - make sure to use a 2.4 GHz network as 5 GHz networks are not supported.
+- Wrong SSID - check that the SSID you gave the `--configure` command is correct.
+- Wrong password - check that the password is correct for the WiFi network.
+- Not a 2.4 GHz network - make sure to use a 2.4 GHz network as 5 GHz networks are not supported.
 
 You will need to reset the device to try another connection.
 

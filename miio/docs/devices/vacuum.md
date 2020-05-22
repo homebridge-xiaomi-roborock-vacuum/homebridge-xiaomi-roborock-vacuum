@@ -1,7 +1,7 @@
 # Robot Vacuums
 
-* **Devices**: Mi Robot Vacuum
-* **Model identifiers**: `rockrobo.vacuum.v1`
+- **Devices**: Mi Robot Vacuum
+- **Model identifiers**: `rockrobo.vacuum.v1`
 
 Robot vacuums are mapped into a device of type [`vacuum`][vacuum]. The device
 will support many different capabilities, such as autonomous cleaning, getting
@@ -12,7 +12,7 @@ the cleaning state and more.
 ### Check if device is a vacuum
 
 ```javascript
-if(device.matches('type:vacuum')) {
+if (device.matches("type:vacuum")) {
   /*
    * This device is a vacuum.
    */

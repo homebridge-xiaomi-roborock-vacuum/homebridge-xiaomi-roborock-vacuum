@@ -333,30 +333,30 @@ class XiaomiRoborockVacuum {
         Characteristic.CareMainBrush
       ).on("get", (cb) => callbackify(() => this.getCareMainBrush(), cb));
     } else {
-      this.services.fan.getCharacteristic(
-        Characteristic.FilterChangeIndication
-      ).on("get", (cb) =>
-        callbackify(async () => {
-          const carePercentages = await Promise.all([
-            this.getCareSensors(),
-            this.getCareFilter(),
-            this.getCareSideBrush()
-          ]);
-          return carePercentages.some((item) => item >= 100)
-        }, cb)
-      );
-      this.services.fan.getCharacteristic(
-        Characteristic.FilterLifeLevel
-      ).on("get", (cb) =>
-        callbackify(async () => {
-          const carePercentages = await Promise.all([
-            this.getCareSensors(),
-            this.getCareFilter(),
-            this.getCareSideBrush()
-          ]);
-          return 100 - Math.max(...carePercentages)
-        }, cb)
-      );
+      this.services.fan
+        .getCharacteristic(Characteristic.FilterChangeIndication)
+        .on("get", (cb) =>
+          callbackify(async () => {
+            const carePercentages = await Promise.all([
+              this.getCareSensors(),
+              this.getCareFilter(),
+              this.getCareSideBrush(),
+            ]);
+            return carePercentages.some((item) => item >= 100);
+          }, cb)
+        );
+      this.services.fan
+        .getCharacteristic(Characteristic.FilterLifeLevel)
+        .on("get", (cb) =>
+          callbackify(async () => {
+            const carePercentages = await Promise.all([
+              this.getCareSensors(),
+              this.getCareFilter(),
+              this.getCareSideBrush(),
+            ]);
+            return 100 - Math.max(...carePercentages);
+          }, cb)
+        );
 
       // Use Homekit's native FilterMaintenance Service
       this.services.CareSensors = new Service.FilterMaintenance(
@@ -1140,10 +1140,14 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("changeFanSpeed");
     try {
       const refreshState = {
-        refresh: [ 'state' ],
-        refreshDelay: 1000
+        refresh: ["state"],
+        refreshDelay: 1000,
       };
-      const changeResponse = await this.device.call('set_custom_mode', [speed], refreshState);
+      const changeResponse = await this.device.call(
+        "set_custom_mode",
+        [speed],
+        refreshState
+      );
       if (!this.isSuccess(changeResponse)) {
         throw new Error("Failed to set fan speed");
       }

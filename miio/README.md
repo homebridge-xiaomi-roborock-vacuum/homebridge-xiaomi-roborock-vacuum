@@ -1,10 +1,10 @@
 # miIO Device Library
 
-This is a copy of the repo https://github.com/homebridge-xiaomi-roborock-vacuum/miio, 
-a forked version of the *currently unmaintained* original project https://github.com/aholstenson/miio.
+This is a copy of the repo https://github.com/homebridge-xiaomi-roborock-vacuum/miio,
+a forked version of the _currently unmaintained_ original project https://github.com/aholstenson/miio.
 
-The reason for moving it to this parent project is that the development is so tightly linked we constantly had to change 
-both libraries at the same time and since the original project is no longer maintained, it's not worth going through the 
+The reason for moving it to this parent project is that the development is so tightly linked we constantly had to change
+both libraries at the same time and since the original project is no longer maintained, it's not worth going through the
 pain of maintaining 2 repos, plus the additional complexity of making clear we were using the forked version.
 
 If it makes sense at any point to roll back and move it to the standalone library, we'll def do that :)
