@@ -3,6 +3,8 @@
 ## next (0.11.0)
 
 - [Models] S5 should use the gen4 speeds (#131)
+- [Models] Add support for Viomi models (#100 #199 #150)
+- [Bug] Set `error_code` to `0` after logging it to clear it up (#193)
 
 ## 0.10.1
 

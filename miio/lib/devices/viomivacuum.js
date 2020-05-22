@@ -1,15 +1,7 @@
 "use strict";
 
 const Vacuum = require("./vacuum");
-
-function checkResult(r) {
-  //console.log(r)
-  // {"result":0,"id":17}      = Firmware 3.3.9_003095 (Gen1)
-  // {"result":["ok"],"id":11} = Firmware 3.3.9_003194 (Gen1), 3.3.9_001168 (Gen2)
-  if (r !== 0 && r[0] !== "ok" && r[0] !== "OK") {
-    throw new Error("Could not complete call to device");
-  }
-}
+const checkResult = require("../checkResult");
 
 /**
  * Implementation of the interface used by the Mi Robot Vacuum. This device
@@ -116,6 +108,18 @@ module.exports = class extends Vacuum {
     }
 
     super.propertyUpdated(key, value, oldValue);
+  }
+
+  cleanRooms(listOfRooms) {
+    // From https://github.com/rytilahti/python-miio/issues/550#issuecomment-552780952
+    return this.call(
+      "set_mode_withroom",
+      [0, 1, listOfRooms.length].concat(listOfRooms),
+      {
+        refresh: ["state"],
+        refreshDelay: 1000,
+      }
+    ).then(checkResult);
   }
 
   /**
