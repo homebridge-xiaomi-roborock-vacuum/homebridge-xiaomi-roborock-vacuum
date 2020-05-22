@@ -1,8 +1,11 @@
 # Changes
 
-## next (possibly 0.9.0)
+## 0.9.0
 
 - [Bug] Xiaowa E202-02 fails to go back to the dock (#181) - Thanks @bedrin
+- [Bug] Xiaowa E202-02 successful response is upper-cased "OK" - Thanks @bedrin
+- [Bug] Pause before going to dock (#180) - Thanks @bedrin
+- [Bug] Fixes connection drops and outdated statuses (#146) - Thanks @bedrin
 
 ## 0.8.4
 
