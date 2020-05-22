@@ -1,5 +1,9 @@
 # Changes
 
+## 0.10.1
+
+- [Enhancement] Updated internal dependencies and removed vulnerability warnings
+
 ## 0.10.0
 
 - [Enhancement] Move `nicoh88-miio` library to this module (#196)
