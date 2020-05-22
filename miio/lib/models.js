@@ -4,6 +4,7 @@
  * Mapping from models into high-level devices.
  */
 const Vacuum = require("./devices/vacuum");
+const MijiaVacuum = require("./devices/mijiavacuum");
 const ViomiVacuum = require("./devices/viomivacuum");
 
 module.exports = {
@@ -13,9 +14,10 @@ module.exports = {
   "roborock.vacuum.c1": Vacuum,
   "roborock.vacuum.s6": Vacuum,
   "roborock.vacuum.t6": Vacuum,
-  "roborock.vacuum.m1s": Vacuum,
   "roborock.vacuum.e2": Vacuum,
   "roborock.vacuum.s4": Vacuum,
+
+  "roborock.vacuum.m1s": MijiaVacuum,
 
   "dreame.vacuum.mc1808": ViomiVacuum,
   "viomi.vacuum.v7": ViomiVacuum,

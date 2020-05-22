@@ -20,4 +20,10 @@ module.exports = {
   "roborock.vacuum.t4": [{ speed: speedmodes.gen3 }],
   "roborock.vacuum.e2": [{ speed: speedmodes["xiaowa-e202-02"] }],
   "roborock.vacuum.a08": [{ speed: speedmodes.gen3 }],
+
+  // Viomi
+  viomi: { speed: speedmodes.viomi },
+  "dreame.vacuum.mc1808": [{ speed: speedmodes.viomi }],
+  "viomi.vacuum.v7": [{ speed: speedmodes.viomi }],
+  "viomi.vacuum.v8": [{ speed: speedmodes.viomi }],
 };

@@ -3,7 +3,7 @@
 const SPEEDMODES = {
   gen1: [
     // 0%      = Off / Aus
-    { miLevel: 0, name: "Off" },
+    { miLevel: -1, name: "Off" },
     // 0-25%  = "Quiet / Leise"
     { miLevel: 38, name: "Quiet" },
     // 26-50%  = "Balanced / Standard"
@@ -15,7 +15,7 @@ const SPEEDMODES = {
   ],
   gen2: [
     // 0%      = Off / Aus
-    { miLevel: 0, name: "Off" },
+    { miLevel: -1, name: "Off" },
     // 1-20%   = "Mop / Mopping / Nur wischen"
     { miLevel: 105, name: "Mop" },
     // 21-40%  = "Quiet / Leise"
@@ -29,7 +29,7 @@ const SPEEDMODES = {
   ],
   "xiaowa-e202-02": [
     // 0%      = Off / Aus
-    { miLevel: 0, name: "Off" },
+    { miLevel: -1, name: "Off" },
     // 0-20%  = "Gentle"
     { miLevel: 41, name: "Gentle" },
     // 20-40%  = "Silent"
@@ -43,7 +43,7 @@ const SPEEDMODES = {
   ],
   gen3: [
     // 0%      = Off / Aus
-    { miLevel: 0, name: "Off" },
+    { miLevel: -1, name: "Off" },
     // 1-25%   = "Quiet / Leise"
     { miLevel: 101, name: "Quiet" },
     // 26-50%  = "Balanced / Standard"
@@ -56,7 +56,7 @@ const SPEEDMODES = {
   // S5-Max (https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/79#issuecomment-576246934)
   gen4: [
     // 0%      = Off / Aus
-    { miLevel: 0, name: "Off" },
+    { miLevel: -1, name: "Off" },
     // 1-20%   = "Soft"
     { miLevel: 105, name: "Soft" },
     // 21-40%   = "Quiet / Leise"
@@ -71,7 +71,7 @@ const SPEEDMODES = {
   // S5-Max + Custom (https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/110)
   "gen4+custom": [
     // 0%      = Off / Aus
-    { miLevel: 0, name: "Off" },
+    { miLevel: -1, name: "Off" },
     // 1-16%   = "Soft"
     { miLevel: 105, name: "Soft" },
     // 17-32%   = "Quiet / Leise"
@@ -84,6 +84,20 @@ const SPEEDMODES = {
     { miLevel: 104, name: "Max" },
     // 81-100% = "Custom"
     { miLevel: 106, name: "Custom" },
+  ],
+
+  // From https://github.com/rytilahti/python-miio/blob/20f915c9589fed55544a5417abe3fd3d9e12d08d/miio/viomivacuum.py#L16-L20
+  viomi: [
+    // 0%      = Off / Aus
+    { miLevel: -1, name: "Off" },
+    // 25%      = Silent
+    { miLevel: 0, name: "Silent" },
+    // 50%      = Standard
+    { miLevel: 1, name: "Standard" },
+    // 75%      = Medium
+    { miLevel: 2, name: "Medium" },
+    // 100%      = Turbo
+    { miLevel: 3, name: "Turbo" },
   ],
 };
 
