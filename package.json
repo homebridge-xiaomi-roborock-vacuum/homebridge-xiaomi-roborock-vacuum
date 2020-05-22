@@ -35,7 +35,7 @@
     "homebridge": ">=0.4.45"
   },
   "scripts": {
-    "lint": "prettier --check **/*.*"
+    "lint:fix": "npx prettier --write **/*.*"
   },
   "dependencies": {
     "miio-nicoh88": "next",
