@@ -1,15 +1,53 @@
 "use strict";
 
-const Vacuum = require("./vacuum");
+const { ChargingState, AutonomousCharging } = require("abstract-things");
+const {
+  Vacuum,
+  AdjustableFanSpeed,
+  AutonomousCleaning,
+  SpotCleaning,
+} = require("abstract-things/climate");
+
+const MiioApi = require("../device");
+const BatteryLevel = require("./capabilities/battery-level");
 const checkResult = require("../checkResult");
 
-/**
- * Implementation of the interface used by the Mi Robot Vacuum. This device
- * doesn't use properties via get_prop but instead has a get_status.
- */
-module.exports = class extends Vacuum {
+module.exports = class extends Vacuum.with(
+  MiioApi,
+  BatteryLevel,
+  AutonomousCharging,
+  AutonomousCleaning,
+  SpotCleaning,
+  AdjustableFanSpeed,
+  ChargingState
+) {
+  static get type() {
+    return "miio:vacuum";
+  }
   constructor(options) {
     super(options);
+
+    // Enable the debugging info from miio in this device while we are testing
+    process.env.DEBUG = ["miio:*", "thing:*", process.env.DEBUG]
+      .filter(Boolean)
+      .join(",");
+
+    this.defineProperty("error_code", {
+      name: "error",
+      mapper: (e) => {
+        switch (e) {
+          case 0:
+            return null;
+          default:
+            return {
+              code: e,
+              message: "Unknown error " + e,
+            };
+        }
+
+        // TODO: Find a list of error codes and map them correctly
+      },
+    });
 
     this.defineProperty("run_state", {
       name: "state",
@@ -47,6 +85,67 @@ module.exports = class extends Vacuum {
     this.defineProperty("suction_grade", {
       name: "fanSpeed",
     });
+
+    this._monitorInterval = 60000;
+  }
+
+  propertyUpdated(key, value, oldValue) {
+    if (key === "state") {
+      // Update charging state
+      this.updateCharging(value === "charging");
+
+      switch (value) {
+        case "cleaning":
+        case "spot-cleaning":
+        case "zone-cleaning":
+        case "room-cleaning":
+          // The vacuum is cleaning
+          this.updateCleaning(true);
+          break;
+        case "paused":
+          // Cleaning has been paused, do nothing special
+          break;
+        case "error":
+          // An error has occurred, rely on error mapping
+          this.updateError(this.property("error"));
+          break;
+        case "charging-error":
+          // Charging error, trigger an error
+          this.updateError({
+            code: "charging-error",
+            message: "Error during charging",
+          });
+          break;
+        case "charger-offline":
+          // Charger is offline, trigger an error
+          this.updateError({
+            code: "charger-offline",
+            message: "Charger is offline",
+          });
+          break;
+        default:
+          // The vacuum is not cleaning
+          this.updateCleaning(false);
+          break;
+      }
+    } else if (key === "fanSpeed") {
+      this.updateFanSpeed(value);
+    }
+
+    super.propertyUpdated(key, value, oldValue);
+  }
+
+  getDeviceInfo() {
+    return this.call("miIO.info");
+  }
+
+  async getSerialNumber() {
+    const serial = await this.call("get_serial_number");
+    return serial[0].serial_number;
+  }
+
+  getRoomMap() {
+    return this.call("get_room_mapping");
   }
 
   cleanRooms(listOfRooms) {
@@ -59,6 +158,10 @@ module.exports = class extends Vacuum {
         refreshDelay: 1000,
       }
     ).then(checkResult);
+  }
+
+  getTimer() {
+    return this.call("get_timer");
   }
 
   /**
@@ -120,20 +223,10 @@ module.exports = class extends Vacuum {
     }).then(checkResult);
   }
 
-  loadProperties(props) {
-    // We override loadProperties
-    props = props.map((key) => this._reversePropertyDefinitions[key] || key);
-
-    return this.call("get_prop", props, {
-      refresh: ["state"],
-      refreshDelay: 1000,
-    }).then((status) => {
-      const mapped = {};
-      props.forEach((prop, index) => {
-        const value = status[index];
-        this._pushProperty(mapped, prop, value);
-      });
-      return mapped;
-    });
+  /**
+   * Activate the find function, will make the device give off a sound.
+   */
+  find() {
+    return this.call("find_me", [""]).then(() => null);
   }
 };

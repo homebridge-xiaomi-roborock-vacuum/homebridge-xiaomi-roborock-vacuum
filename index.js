@@ -727,7 +727,11 @@ class XiaomiRoborockVacuum {
       await this.ensureDevice("getState");
       await this.device.poll();
       const state = await this.device.state();
-      this.log.debug(`DEB getState | ${this.model} | State %j`, state);
+      this.log.debug(
+        `DEB getState | ${this.model} | State %j | Props %j`,
+        state,
+        this.device.properties
+      );
 
       safeCall(state.cleaning, (cleaning) => this.changedCleaning(cleaning));
       safeCall(state.charging, (charging) => this.changedCharging(charging));
