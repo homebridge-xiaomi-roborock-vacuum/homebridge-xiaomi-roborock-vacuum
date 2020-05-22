@@ -624,7 +624,7 @@ class XiaomiRoborockVacuum {
       const minStep = 100 / (this.findSpeedModes().speed.length - 1);
       this.services.fan
         .getCharacteristic(Characteristic.RotationSpeed)
-        .setProps({ "minStep": minStep });
+        .setProps({ minStep: minStep });
 
       await this.getState();
       // Refresh the state every 30s so miio maintains a fresh connection (or recovers connection if lost until we fix https://github.com/nicoh88/homebridge-xiaomi-roborock-vacuum/issues/81)
@@ -885,10 +885,14 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("activateCleaning");
     try {
       const refreshState = {
-        refresh: [ 'state' ],
-        refreshDelay: 1000
+        refresh: ["state"],
+        refreshDelay: 1000,
       };
-      const changeResponse = await this.device.call('app_start', [], refreshState);
+      const changeResponse = await this.device.call(
+        "app_start",
+        [],
+        refreshState
+      );
       if (!this.isSuccess(changeResponse)) {
         throw new Error("Failed to start cleaning");
       }
@@ -1284,18 +1288,19 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("pause");
     try {
       const refreshState = {
-        refresh: [ 'state' ],
-        refreshDelay: 1000
+        refresh: ["state"],
+        refreshDelay: 1000,
       };
-      const changeResponse = await this.device.call('app_pause', [], refreshState);
+      const changeResponse = await this.device.call(
+        "app_pause",
+        [],
+        refreshState
+      );
       if (!this.isSuccess(changeResponse)) {
         throw new Error("Failed to pause device");
       }
     } catch (err) {
-      this.log.error(
-        `ERR pause | ${this.model} | Failed to pause.`,
-        err
-      );
+      this.log.error(`ERR pause | ${this.model} | Failed to pause.`, err);
       throw err;
     }
   }
@@ -1443,7 +1448,6 @@ class XiaomiRoborockVacuum {
     // {"result":0,"id":17} 	  = Firmware 3.3.9_003095 (Gen1)
     // {"result":["ok"],"id":11}      = Firmware 3.3.9_003194 (Gen1), 3.3.9_001168 (Gen2)
     // {"result":["OK"],"id":11}      = Firmware 1.3.0_0752 on Xiaowa E202-02
-    return (r && (r === 0 || (r[0] && (r[0] === "ok" || r[0] === "OK")) ) );
+    return r && (r === 0 || (r[0] && (r[0] === "ok" || r[0] === "OK")));
   }
-
 }
