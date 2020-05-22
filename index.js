@@ -457,7 +457,7 @@ class XiaomiRoborockVacuum {
       `WAR changedError | ${this.model} | Robot has an ERROR - ${robotError.id}, ${robotErrorTxt}`
     );
     // Clear the error_code property
-    this.device.setProperty("error_code", null);
+    this.device.setRawProperty("error_code", 0);
   }
 
   changedCleaning(isCleaning) {
@@ -753,18 +753,18 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("getSerialNumber");
 
     try {
-      const serial = await this.device.call("get_serial_number");
+      const serialNumber = await this.device.getSerialNumber();
       this.log.info(
-        `INF getSerialNumber | ${this.model} | Serial Number is ${serial[0].serial_number}`
+        `INF getSerialNumber | ${this.model} | Serial Number is ${serialNumber}`
       );
 
-      return serial[0].serial_number;
+      return serialNumber;
     } catch (err) {
-      this.log.error(
-        `ERR getSerialNumber | Failed getting the firmware version.`,
+      this.log.warn(
+        `ERR getSerialNumber | Failed getting the serial number.`,
         err
       );
-      throw err;
+      return `Unknown`;
     }
   }
 
@@ -772,7 +772,7 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("getFirmware");
 
     try {
-      const firmware = await this.device.call("miIO.info");
+      const firmware = await this.device.getDeviceInfo();
       this.log.info(
         `INF getFirmware | ${this.model} | Firmwareversion is ${firmware.fw_ver}`
       );
@@ -818,13 +818,13 @@ class XiaomiRoborockVacuum {
         this.log.info(
           `ACT setCleaning | ${this.model} | Start cleaning, not charging.`
         );
-        await this.activateCleaning();
+        await this.device.activateCleaning();
       } else if (!state) {
         // Stop cleaning
         this.log.info(
           `ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`
         );
-        await this.activateCharging(); // Charging works for 1st, not for 2nd
+        await this.device.activateCharging();
       }
     } catch (err) {
       this.log.error(
@@ -844,17 +844,13 @@ class XiaomiRoborockVacuum {
         this.log.info(
           `ACT setCleaning | ${this.model} | Start cleaning Room ID ${room}, not charging.`
         );
-        const refreshState = {
-          refresh: ["state"],
-          refreshDelay: 1000,
-        };
-        await this.device.call("app_segment_clean", [room], refreshState);
+        await this.device.cleanRooms([room]);
       } else if (!state) {
         // Stop cleaning
         this.log.info(
           `ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`
         );
-        await this.activateCharging();
+        await this.device.activateCharging();
       }
     } catch (err) {
       this.log.error(
@@ -874,26 +870,22 @@ class XiaomiRoborockVacuum {
         this.log.info(
           `ACT setCleaning | ${this.model} | Start cleaning Zone ${zone}, not charging.`
         );
-        const refreshState = {
-          refresh: ["state"],
-          refreshDelay: 1000,
-        };
 
-        var zoneParams = [];
-        for (var zon of zone) {
-          if (zon.length == 4) {
+        const zoneParams = [];
+        for (const zon of zone) {
+          if (zon.length === 4) {
             zoneParams.push(zon.concat(1));
-          } else if (zon.length == 5) {
+          } else if (zon.length === 5) {
             zoneParams.push(zon);
           }
         }
-        await this.device.call("app_zoned_clean", zoneParams, refreshState);
+        await this.device.cleanZones(zoneParams);
       } else if (!state) {
         // Stop cleaning
         this.log.info(
           `ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`
         );
-        await this.activateCharging();
+        await this.device.activateCharging();
       }
     } catch (err) {
       this.log.error(
@@ -904,77 +896,18 @@ class XiaomiRoborockVacuum {
     }
   }
 
-  // Do not use activateCleaning() from aholstenson/miio since it's check for response is not correct
-  // See https://github.com/aholstenson/miio/pull/283
-  async activateCleaning() {
-    await this.ensureDevice("activateCleaning");
-    try {
-      const refreshState = {
-        refresh: ["state"],
-        refreshDelay: 1000,
-      };
-      const changeResponse = await this.device.call(
-        "app_start",
-        [],
-        refreshState
-      );
-      if (!this.isSuccess(changeResponse)) {
-        throw new Error("Failed to start cleaning");
-      }
-    } catch (err) {
-      this.log.error(
-        `ERR setCleaning | ${this.model} | Failed to start cleaning.`,
-        err
-      );
-      throw err;
-    }
-  }
-
-  async activateCharging() {
-    await this.ensureDevice("activateCharging");
-    try {
-      const refreshState = {
-        refresh: ["state"],
-        refreshDelay: 1000,
-      };
-      // On some models (like Xiaowa E202) app_stop doesn't work so we use app_pause
-      try {
-        await this.pause();
-      } catch (e) {
-        // If on some reason app_pause is not available on the device try app_stop instead
-        await this.device.call("app_stop", [], refreshState);
-      }
-      // Wait one second before calling go to charge
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const changeResponse = await this.device.call(
-        "app_charge",
-        [],
-        refreshState
-      );
-      if (!this.isSuccess(changeResponse)) {
-        throw new Error("Failed to go to change");
-      }
-    } catch (err) {
-      this.log.error(
-        `ERR setCharging | ${this.model} | Failed to go charging.`,
-        err
-      );
-      throw err;
-    }
-  }
-
   async getRoomList() {
     await this.ensureDevice("getRoomList");
 
     try {
-      const timers = await this.device.call("get_timer");
+      const timers = await this.device.getTimer();
 
       // Find specific timer containing the room order
       // Timer needs to be scheduled for 00:00 and inactive
       let leetTimer = timers.find(
         (x) => x[2][0].startsWith("0 0") && x[1] == "off"
       );
-      if (leetTimer == undefined) {
+      if (typeof leetTimer === "undefined") {
         this.log.error(
           `ERR getRoomList | ${this.model} | Could not find a timer for autoroom`
         );
@@ -986,7 +919,7 @@ class XiaomiRoborockVacuum {
         `DEB getRoomList | ${this.model} | Room IDs are ${roomIds}`
       );
 
-      if (roomIds.length != this.config.autoroom.length) {
+      if (roomIds.length !== this.config.autoroom.length) {
         this.log.error(
           `ERR getRoomList | ${this.model} | Number of rooms in config does not match number of rooms in the timer`
         );
@@ -1012,7 +945,7 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("getRoomMap");
 
     try {
-      const map = await this.device.call("get_room_mapping");
+      const map = await this.device.getRoomMap();
       this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
       for (let val of map) {
         this.createRoom(val[0], val[1]);
@@ -1066,6 +999,10 @@ class XiaomiRoborockVacuum {
   }
 
   findSpeedModes() {
+    if (this.model.startsWith("viomi.")) {
+      return MODELS.viomi;
+    }
+
     return (MODELS[this.model] || []).reduce((acc, option) => {
       if (option.firmware) {
         const [, cleanFirmware] =
@@ -1086,7 +1023,7 @@ class XiaomiRoborockVacuum {
   }
 
   async getSpeed() {
-    const speed = this.device.property("fanSpeed");
+    const speed = await this.device.fanSpeed();
     this.log.info(
       `INF getSpeed | ${this.model} | Fanspeed is ${speed} over miIO. Converting to HomeKit`
     );
@@ -1124,39 +1061,13 @@ class XiaomiRoborockVacuum {
       `ACT setSpeed | ${this.model} | FanSpeed set to ${miLevel} over miIO for "${name}".`
     );
 
-    if (miLevel === 0) {
-      this.log.debug(
-        `DEB setSpeed | ${this.model} | FanSpeed is 0 => Calling setCleaning(false) instead of changing the fan speed`
+    if (miLevel === -1) {
+      this.log.info(
+        `INF setSpeed | ${this.model} | FanSpeed is -1 => Calling setCleaning(false) instead of changing the fan speed`
       );
       await this.setCleaning(false);
     } else {
-      await this.changeFanSpeed(miLevel);
-    }
-  }
-
-  // Do not use changeFanSpeed() from aholstenson/miio since it's check for response is not correct
-  // See https://github.com/aholstenson/miio/pull/283
-  async changeFanSpeed(speed) {
-    await this.ensureDevice("changeFanSpeed");
-    try {
-      const refreshState = {
-        refresh: ["state"],
-        refreshDelay: 1000,
-      };
-      const changeResponse = await this.device.call(
-        "set_custom_mode",
-        [speed],
-        refreshState
-      );
-      if (!this.isSuccess(changeResponse)) {
-        throw new Error("Failed to set fan speed");
-      }
-    } catch (err) {
-      this.log.error(
-        `ERR changeFanSpeed | ${this.model} | Failed to set fan speed.`,
-        err
-      );
-      throw err;
+      await this.device.changeFanSpeed(miLevel);
     }
   }
 
@@ -1168,24 +1079,10 @@ class XiaomiRoborockVacuum {
     return speedModes.find((mode) => mode.miLevel === speed);
   }
 
-  async getWaterSpeedInDevice() {
-    // From https://github.com/marcelrv/XiaomiRobotVacuumProtocol/blob/master/water_box_custom_mode.md
-    const response = await this.device.call("get_water_box_custom_mode", [], {
-      refresh: ["water_box_mode"],
-    });
-    // From https://github.com/homebridge-xiaomi-roborock-vacuum/miio/blob/master/lib/devices/vacuum.js#L11-L18
-    const [waterMode] = response || [];
-    if (typeof waterMode === undefined) {
-      this.log.error(response);
-      throw new Error(`Failed to get the water_box_mode`);
-    }
-    return waterMode;
-  }
-
   async getWaterSpeed() {
     await this.ensureDevice("getWaterSpeed");
 
-    const speed = await this.getWaterSpeedInDevice();
+    const speed = await this.device.getWaterBoxMode();
     this.log.info(
       `INF getWaterSpeed | ${this.model} | WaterBoxMode is ${speed} over miIO. Converting to HomeKit`
     );
@@ -1239,17 +1136,7 @@ class XiaomiRoborockVacuum {
       `ACT setWaterSpeed | ${this.model} | WaterBoxMode set to ${miLevel} over miIO for "${name}".`
     );
 
-    // From https://github.com/marcelrv/XiaomiRobotVacuumProtocol/blob/master/water_box_custom_mode.md
-    const response = await this.device.call(
-      "set_water_box_custom_mode",
-      [miLevel],
-      { refresh: ["water_box_mode"] }
-    );
-    // From https://github.com/homebridge-xiaomi-roborock-vacuum/miio/blob/master/lib/devices/vacuum.js#L11-L18
-    if (!this.isSuccess(response)) {
-      this.log.error(response);
-      throw new Error(`Failed to set the water_box_mode to ${miLevel}`);
-    }
+    await this.device.setWaterBoxMode(miLevel);
   }
 
   changedWaterSpeed(speed) {
@@ -1281,11 +1168,12 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("getPauseState");
 
     try {
-      const isCleaning = this.isCleaning;
+      const isPaused = this.device.property("state") === "paused";
+      const canBePaused = this.isCleaning && !isPaused;
       this.log.info(
-        `INF getPauseState | ${this.model} | Pause possible is ${isCleaning}`
+        `INF getPauseState | ${this.model} | Pause possible is ${canBePaused}`
       );
-      return isCleaning;
+      return canBePaused;
     } catch (err) {
       this.log.error(
         `ERR getPauseState | ${this.model} | Failed getting the cleaning status.`,
@@ -1299,38 +1187,15 @@ class XiaomiRoborockVacuum {
 
     try {
       if (state) {
-        await this.activateCleaning();
+        await this.device.activateCleaning();
       } else {
-        await this.pause();
+        await this.device.pause();
       }
     } catch (err) {
       this.log.error(
         `ERR setPauseState | ${this.model} | Failed updating pause state ${state}.`,
         err
       );
-    }
-  }
-
-  // Do not use pause() from aholstenson/miio since it's check for response is not correct
-  // See https://github.com/aholstenson/miio/pull/283
-  async pause() {
-    await this.ensureDevice("pause");
-    try {
-      const refreshState = {
-        refresh: ["state"],
-        refreshDelay: 1000,
-      };
-      const changeResponse = await this.device.call(
-        "app_pause",
-        [],
-        refreshState
-      );
-      if (!this.isSuccess(changeResponse)) {
-        throw new Error("Failed to pause device");
-      }
-    } catch (err) {
-      this.log.error(`ERR pause | ${this.model} | Failed to pause.`, err);
-      throw err;
     }
   }
 
@@ -1359,21 +1224,19 @@ class XiaomiRoborockVacuum {
   }
 
   async getBattery() {
+    const batteryLevel = await this.device.batteryLevel();
     this.log.info(
-      `INF getBattery | ${this.model} | Batterylevel is ${this.device.property(
-        "batteryLevel"
-      )}%`
+      `INF getBattery | ${this.model} | Batterylevel is ${batteryLevel}%`
     );
-    return this.device.property("batteryLevel");
+    return batteryLevel;
   }
 
   async getBatteryLow() {
+    const batteryLevel = await this.device.batteryLevel();
     this.log.info(
-      `INF getBatteryLow | ${
-        this.model
-      } | Batterylevel is ${this.device.property("batteryLevel")}%`
+      `INF getBatteryLow | ${this.model} | Batterylevel is ${batteryLevel}%`
     );
-    return this.device.property("batteryLevel") < 20
+    return batteryLevel < 20
       ? Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW
       : Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL;
   }
@@ -1416,14 +1279,14 @@ class XiaomiRoborockVacuum {
   async getCareSensors() {
     // 30h = sensor_dirty_time
     const lifetime = 108000;
-    const lifetimepercent =
-      (this.device.property("sensorDirtyTime") / lifetime) * 100;
+    const sensorDirtyTime = this.device.property("sensorDirtyTime");
+    const lifetimepercent = (sensorDirtyTime / lifetime) * 100;
     this.log.info(
       `INF getCareSensors | ${
         this.model
-      } | Sensors dirtytime is ${this.device.property(
-        "sensorDirtyTime"
-      )} seconds / ${lifetimepercent.toFixed(2)}%.`
+      } | Sensors dirtytime is ${sensorDirtyTime} seconds / ${lifetimepercent.toFixed(
+        2
+      )}%.`
     );
     return lifetimepercent;
   }
@@ -1471,12 +1334,5 @@ class XiaomiRoborockVacuum {
       )} seconds / ${lifetimepercent.toFixed(2)}%.`
     );
     return lifetimepercent;
-  }
-
-  isSuccess(r) {
-    // {"result":0,"id":17} 	  = Firmware 3.3.9_003095 (Gen1)
-    // {"result":["ok"],"id":11}      = Firmware 3.3.9_003194 (Gen1), 3.3.9_001168 (Gen2)
-    // {"result":["OK"],"id":11}      = Firmware 1.3.0_0752 on Xiaowa E202-02
-    return r && (r === 0 || (r[0] && (r[0] === "ok" || r[0] === "OK")));
   }
 }
