@@ -726,7 +726,7 @@ class XiaomiRoborockVacuum {
     try {
       await this.ensureDevice("getState");
       await this.device.poll();
-      const state = await this.device.state();
+      const state = this.device.property("state");
       this.log.debug(`DEB getState | ${this.model} | State %j`, state);
 
       safeCall(state.cleaning, (cleaning) => this.changedCleaning(cleaning));
@@ -1168,7 +1168,7 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("getPauseState");
 
     try {
-      const isPaused = (await this.device.state()) === "paused";
+      const isPaused = this.device.property("state") === "paused";
       const canBePaused = this.isCleaning && !isPaused;
       this.log.info(
         `INF getPauseState | ${this.model} | Pause possible is ${canBePaused}`
@@ -1200,7 +1200,7 @@ class XiaomiRoborockVacuum {
   }
 
   async getCharging() {
-    const status = await this.device.state();
+    const status = this.device.property("state");
     this.log.info(
       `INF getCharging | ${this.model} | Charging is ${
         status === "charging"
@@ -1213,7 +1213,7 @@ class XiaomiRoborockVacuum {
   }
 
   async getDocked() {
-    const status = await this.device.state();
+    const status = this.device.property("state");
     this.log.info(
       `INF getDocked | ${this.model} | Robot Docked is ${
         status === "charging"
