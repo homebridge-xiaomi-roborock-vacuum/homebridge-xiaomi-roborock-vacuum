@@ -1279,7 +1279,7 @@ class XiaomiRoborockVacuum {
   async getCareSensors() {
     // 30h = sensor_dirty_time
     const lifetime = 108000;
-    const sensorDirtyTime = await this.device.property("sensorDirtyTime");
+    const sensorDirtyTime = this.device.property("sensorDirtyTime");
     const lifetimepercent = (sensorDirtyTime / lifetime) * 100;
     this.log.info(
       `INF getCareSensors | ${
