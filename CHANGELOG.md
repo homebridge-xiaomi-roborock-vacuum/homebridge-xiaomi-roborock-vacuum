@@ -1,5 +1,13 @@
 # Changes
 
+## 0.11.2
+
+- [Bug] Remove `homebridge` from `peerDependencies` as it fails some installations
+
+## 0.11.1
+
+- [Bug] Viomi models class can't be created as an extension of Roborock
+
 ## 0.11.0
 
 - [Models] S5 should use the gen4 speeds (#131)
