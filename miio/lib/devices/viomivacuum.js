@@ -64,6 +64,26 @@ module.exports = class extends Vacuum.with(
       name: "fanSpeed",
     });
 
+    // Consumable status - times for brushes and filters
+    // From https://github.com/rytilahti/python-miio/issues/550#issuecomment-570808184
+    this.defineProperty("main_brush_life", {
+      name: "mainBrushWorkTime",
+    });
+    this.defineProperty("side_brush_life", {
+      name: "sideBrushWorkTime",
+    });
+    this.defineProperty("hypa_life", {
+      name: "filterWorkTime",
+    });
+    this.defineProperty("mop_life", {
+      // ? not sure about this one
+      name: "mopWorkTime",
+    });
+    this.defineProperty("sensor_dirty_time", {
+      // ? not sure about this one
+      name: "sensorDirtyTime",
+    });
+
     this._monitorInterval = 60000;
   }
 

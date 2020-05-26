@@ -1,5 +1,9 @@
 # Changes
 
+## 0.11.6
+
+- [Bug] Viomi: Add consumable status (main/side brush lives) (#216)
+
 ## 0.11.5
 
 - [Bug] Viomi: Fix charging state and battery level (#216)
