@@ -89,6 +89,10 @@ class XiaomiRoborockVacuum {
       id23: {
         description: "Make sure the signal emission area of dock is clean.",
       },
+      id24: {
+        description:
+          "Robot stuck in a blocked area. Manually move it and resume the cleaning.",
+      },
     };
   }
 
@@ -444,6 +448,7 @@ class XiaomiRoborockVacuum {
 
   changedError(robotError) {
     if (!robotError) return;
+    if (!this.isNewValue("error", robotError.id)) return;
     this.log.debug(
       `DEB changedError | ${this.model} | ErrorID: ${robotError.id}, ErrorDescription: ${robotError.description}`
     );

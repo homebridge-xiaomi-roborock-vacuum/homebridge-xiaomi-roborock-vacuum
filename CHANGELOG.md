@@ -1,5 +1,9 @@
 # Changes
 
+## 0.11.4
+
+- [Bug] Only show errors the first time they happen (#162)
+
 ## 0.11.3
 
 - [Bug] Some `roborock.vacuum.m1s` require Viomi command to clean rooms and some others Roborock's way :scream: (#141 & #215)
