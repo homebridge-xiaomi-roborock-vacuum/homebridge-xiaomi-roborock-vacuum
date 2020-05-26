@@ -1,5 +1,9 @@
 # Changes
 
+## 0.11.3
+
+- [Bug] Some `roborock.vacuum.m1s` require Viomi command to clean rooms and some others Roborock's way :scream: (#141 & #215)
+
 ## 0.11.2
 
 - [Bug] Remove `homebridge` from `peerDependencies` as it fails some installations
