@@ -27,28 +27,6 @@ module.exports = class extends Vacuum.with(
   constructor(options) {
     super(options);
 
-    // Enable the debugging info from miio in this device while we are testing
-    process.env.DEBUG = ["miio:*", "thing:*", process.env.DEBUG]
-      .filter(Boolean)
-      .join(",");
-
-    this.defineProperty("error_code", {
-      name: "error",
-      mapper: (e) => {
-        switch (e) {
-          case 0:
-            return null;
-          default:
-            return {
-              code: e,
-              message: "Unknown error " + e,
-            };
-        }
-
-        // TODO: Find a list of error codes and map them correctly
-      },
-    });
-
     this.defineProperty("run_state", {
       name: "state",
       mapper: (s) => {

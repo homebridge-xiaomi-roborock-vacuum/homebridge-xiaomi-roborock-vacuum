@@ -1,5 +1,9 @@
 # Changes
 
+## 0.11.5
+
+- [Bug] Viomi: Fix charging state and battery level (#216)
+
 ## 0.11.4
 
 - [Bug] Only show errors the first time they happen (#162)
