@@ -86,11 +86,24 @@
           "properties": {
             "name": {
               "name": "Name",
-              "type": "string"
+              "type": "string",
+              "required": true
             },
             "zone": {
               "name": "Zone",
-              "type": "string"
+              "required": true,
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "title": "Zone definition",
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 5,
+                "items": {
+                  "title": "Coordinates [bottom-left-x, bottom-left-y, top-right-x, top-right-y, number-of-cleanings]",
+                  "type": "number"
+                }
+              }
             }
           }
         }
