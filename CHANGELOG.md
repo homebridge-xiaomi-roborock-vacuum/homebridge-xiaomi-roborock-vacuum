@@ -1,5 +1,9 @@
 # Changes
 
+## 0.11.8
+
+- [Bug] Fix zones layout in `config.schema.json` (#218)
+
 ## 0.11.7
 
 - [Bug] Fix zones definition in `config.schema.json` (#218)
