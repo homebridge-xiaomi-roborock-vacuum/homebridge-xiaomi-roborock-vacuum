@@ -1,5 +1,9 @@
 # Changes
 
+## 0.11.9
+
+- [Bug] `config.schema.json`: remove "\*" because it shows duplicated entries
+
 ## 0.11.8
 
 - [Bug] Fix zones layout in `config.schema.json` (#218)
