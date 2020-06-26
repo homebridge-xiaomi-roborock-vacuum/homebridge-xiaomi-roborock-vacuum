@@ -472,7 +472,7 @@ class XiaomiRoborockVacuum {
       );
       this.log.info(
         `INF changedCleaning | ${this.model} | Cleaning is ${
-          isCleaning ? "ON" : "OFF"
+        isCleaning ? "ON" : "OFF"
         }.`
       );
     }
@@ -490,7 +490,7 @@ class XiaomiRoborockVacuum {
         );
         this.log.info(
           `INF changedPause | ${this.model} | ${
-            isCleaning ? "Paused possible" : "Paused not possible, no cleaning"
+          isCleaning ? "Paused possible" : "Paused not possible, no cleaning"
           }`
         );
       }
@@ -509,7 +509,7 @@ class XiaomiRoborockVacuum {
       );
       this.log.info(
         `INF changedCharging | ${this.model} | Charging is ${
-          isCharging ? "active" : "cancelled"
+        isCharging ? "active" : "cancelled"
         }`
       );
     }
@@ -683,7 +683,7 @@ class XiaomiRoborockVacuum {
         clearTimeout(this.connectRetry);
         // Using setTimeout instead of holding the promise. This way we'll keep retrying but not holding the other actions
         this.connectRetry = setTimeout(
-          () => this.connect().catch(() => {}),
+          () => this.connect().catch(() => { }),
           120000
         );
         throw error;
@@ -1048,27 +1048,54 @@ class XiaomiRoborockVacuum {
   async setSpeed(speed) {
     await this.ensureDevice("setSpeed");
 
-    this.log.debug(
-      `ACT setSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`
-    );
+    if (typeof speed === "number") {
+      this.log.debug(
+        `ACT setSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`
+      );
+    }
 
     // Get the speed modes for this model
     const speedModes = this.findSpeedModes().speed;
 
-    // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
-    const safeSpeed = Math.min(
-      parseInt(speed),
-      speedModes[speedModes.length - 1].homekitTopLevel
-    );
+    let miLevel = null;
+    let name = null;
 
-    // Find the minimum homekitTopLevel that matches the desired speed
-    const { miLevel, name } = speedModes.find(
-      (mode) => safeSpeed <= mode.homekitTopLevel
-    );
+    if (typeof speed === "number") { // Speed set by number
+      // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
+      const safeSpeed = Math.min(
+        parseInt(speed),
+        speedModes[speedModes.length - 1].homekitTopLevel
+      );
+
+      // Find the minimum homekitTopLevel that matches the desired speed
+      const speedMode = speedModes.find(
+        (mode) => safeSpeed <= mode.homekitTopLevel
+      );
+      miLevel = speedMode.miLevel;
+      name = speedMode.name;
+    }
+    else { // Set by mode name
+      const speedMode = speedModes.find(
+        (mode) => mode.name === speed
+      );
+
+      if (speedMode == null) {
+        this.log.info(
+          `INF setSpeed | ${this.model} | Mode "${speed}" does not exist.`
+        );
+        return;
+      }
+      miLevel = speedMode.miLevel;
+      name = speedMode.name;
+    }
 
     this.log.info(
       `ACT setSpeed | ${this.model} | FanSpeed set to ${miLevel} over miIO for "${name}".`
     );
+
+    // Save the latest set speed for handling the "custom" speed later
+    this.cachedState.set("FanSpeed", miLevel);
+    this.cachedState.set("FanSpeedName", name);
 
     if (miLevel === -1) {
       this.log.info(
@@ -1077,6 +1104,15 @@ class XiaomiRoborockVacuum {
       await this.setCleaning(false);
     } else {
       await this.device.changeFanSpeed(miLevel);
+
+      // If speed is "custom", also set the water speed to "custom" (for Xiaomi App)
+      if (name === "Custom" && this.config.waterBox && this.cachedState.get("WaterSpeedName") !== "Custom") {
+        this.setWaterSpeed("Custom");
+      }
+      // If speed is not "custom" remove set the water speed also to a fixed value (for Xiaomi App)
+      else if (name !== "Custom" && this.config.waterBox && this.cachedState.get("WaterSpeedName") === "Custom") {
+        this.setWaterSpeed("Medium");
+      }
     }
   }
 
@@ -1115,9 +1151,11 @@ class XiaomiRoborockVacuum {
   async setWaterSpeed(speed) {
     await this.ensureDevice("setWaterSpeed");
 
-    this.log.debug(
-      `ACT setWaterSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`
-    );
+    if (typeof speed === "number") {
+      this.log.debug(
+        `ACT setWaterSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`
+      );
+    }
 
     // Get the speed modes for this model
     const speedModes = this.findSpeedModes().waterspeed || [];
@@ -1130,22 +1168,56 @@ class XiaomiRoborockVacuum {
       return;
     }
 
-    // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
-    const safeSpeed = Math.min(
-      parseInt(speed),
-      speedModes[speedModes.length - 1].homekitTopLevel
-    );
+    let miLevel = null;
+    let name = null;
 
-    // Find the minimum homekitTopLevel that matches the desired speed
-    const { miLevel, name } = speedModes.find(
-      (mode) => safeSpeed <= mode.homekitTopLevel
-    );
+    if (typeof speed === "number") { // Speed set by number
+      // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
+      const safeSpeed = Math.min(
+        parseInt(speed),
+        speedModes[speedModes.length - 1].homekitTopLevel
+      );
+
+      // Find the minimum homekitTopLevel that matches the desired speed
+      const speedMode = speedModes.find(
+        (mode) => safeSpeed <= mode.homekitTopLevel
+      );
+      miLevel = speedMode.miLevel;
+      name = speedMode.name;
+    }
+    else { // Set by mode name
+      const speedMode = speedModes.find(
+        (mode) => mode.name === speed
+      );
+
+      if (speedMode == null) {
+        this.log.info(
+          `INF setWaterSpeed | ${this.model} | Mode "${speed}" does not exist.`
+        );
+        return;
+      }
+      miLevel = speedMode.miLevel;
+      name = speedMode.name;
+    }
 
     this.log.info(
       `ACT setWaterSpeed | ${this.model} | WaterBoxMode set to ${miLevel} over miIO for "${name}".`
     );
 
+    // Save the latest set speed for handling the "custom" speed later
+    this.cachedState.set("WaterSpeed", miLevel);
+    this.cachedState.set("WaterSpeedName", name);
+
     await this.device.setWaterBoxMode(miLevel);
+
+    // If speed is "custom", also set the water speed to "custom" (for Xiaomi App)
+    if (name === "Custom" && this.cachedState.get("FanSpeedName") !== "Custom") {
+      this.setSpeed("Custom");
+    }
+    // If speed is not "custom" remove set the water speed also to a fixed value (for Xiaomi App)
+    else if (name !== "Custom" && this.cachedState.get("FanSpeedName") === "Custom") {
+      this.setSpeed("Balanced");
+    }
   }
 
   changedWaterSpeed(speed) {
@@ -1212,7 +1284,7 @@ class XiaomiRoborockVacuum {
     const status = this.device.property("state");
     this.log.info(
       `INF getCharging | ${this.model} | Charging is ${
-        status === "charging"
+      status === "charging"
       } (Status is ${status})`
     );
 
@@ -1225,7 +1297,7 @@ class XiaomiRoborockVacuum {
     const status = this.device.property("state");
     this.log.info(
       `INF getDocked | ${this.model} | Robot Docked is ${
-        status === "charging"
+      status === "charging"
       } (Status is ${status})`
     );
 
@@ -1292,7 +1364,7 @@ class XiaomiRoborockVacuum {
     const lifetimepercent = (sensorDirtyTime / lifetime) * 100;
     this.log.info(
       `INF getCareSensors | ${
-        this.model
+      this.model
       } | Sensors dirtytime is ${sensorDirtyTime} seconds / ${lifetimepercent.toFixed(
         2
       )}%.`
@@ -1307,7 +1379,7 @@ class XiaomiRoborockVacuum {
       (this.device.property("filterWorkTime") / lifetime) * 100;
     this.log.info(
       `INF getCareFilter | ${
-        this.model
+      this.model
       } | Filter worktime is ${this.device.property(
         "filterWorkTime"
       )} seconds / ${lifetimepercent.toFixed(2)}%.`
@@ -1322,7 +1394,7 @@ class XiaomiRoborockVacuum {
       (this.device.property("sideBrushWorkTime") / lifetime) * 100;
     this.log.info(
       `INF getCareSideBrush | ${
-        this.model
+      this.model
       } | Sidebrush worktime is ${this.device.property(
         "sideBrushWorkTime"
       )} seconds / ${lifetimepercent.toFixed(2)}%.`
@@ -1337,7 +1409,7 @@ class XiaomiRoborockVacuum {
       (this.device.property("mainBrushWorkTime") / lifetime) * 100;
     this.log.info(
       `INF getCareMainBrush | ${
-        this.model
+      this.model
       } | Mainbrush worktime is ${this.device.property(
         "mainBrushWorkTime"
       )} seconds / ${lifetimepercent.toFixed(2)}%.`

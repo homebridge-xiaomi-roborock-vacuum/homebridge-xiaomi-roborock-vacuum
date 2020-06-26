@@ -1,6 +1,9 @@
 "use strict";
 
-const { ChargingState, AutonomousCharging } = require("abstract-things");
+const {
+  ChargingState,
+  AutonomousCharging
+} = require("abstract-things");
 const {
   Vacuum,
   AdjustableFanSpeed,
@@ -41,7 +44,7 @@ module.exports = class extends Vacuum.with(
           default:
             return {
               code: e,
-              message: "Unknown error " + e,
+                message: "Unknown error " + e,
             };
         }
 
@@ -218,6 +221,7 @@ module.exports = class extends Vacuum.with(
   pause() {
     return this.call("app_pause", [], {
       refresh: ["state"],
+      refreshDelay: 1000 // https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/236
     }).then(checkResult);
   }
 
@@ -237,16 +241,16 @@ module.exports = class extends Vacuum.with(
   activateCharging() {
     return (
       this.pause()
-        .catch(() => this.deactivateCleaning())
-        // Wait 1 second
-        .then(() => new Promise((resolve) => setTimeout(resolve, 1000)))
-        .then(() =>
-          this.call("app_charge", [], {
-            refresh: ["state"],
-            refreshDelay: 1000,
-          })
-        )
-        .then(checkResult)
+      .catch(() => this.deactivateCleaning())
+      // Wait 1 second
+      .then(() => new Promise((resolve) => setTimeout(resolve, 1000)))
+      .then(() =>
+        this.call("app_charge", [], {
+          refresh: ["state"],
+          refreshDelay: 1000,
+        })
+      )
+      .then(checkResult)
     );
   }
 

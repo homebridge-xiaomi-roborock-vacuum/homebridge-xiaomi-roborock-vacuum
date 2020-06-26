@@ -16,6 +16,7 @@ module.exports = {
   "roborock.vacuum.t6": Vacuum,
   "roborock.vacuum.e2": Vacuum,
   "roborock.vacuum.s4": Vacuum,
+  "roborock.vacuum.a10": Vacuum,
 
   "roborock.vacuum.m1s": MijiaVacuum,
 

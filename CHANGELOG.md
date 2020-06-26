@@ -1,5 +1,12 @@
 # Changes
 
+## 0.12.0
+
+- [Models] Add Roborock S6 MaxV to list of models
+- [Bug] Roborock S6 MaxV | Model report 106% FanSpeed (#235)
+- [Bug] Roborock S6 MaxV | Model stop cleaning is throwing an error (#236)
+- [Bug] Xiaomi App modesetting update is wrong, if only fan speed or water speed is changed from custom to fixed value or vice versa (#238)
+
 ## 0.11.9
 
 - [Bug] `config.schema.json`: remove "\*" because it shows duplicated entries
