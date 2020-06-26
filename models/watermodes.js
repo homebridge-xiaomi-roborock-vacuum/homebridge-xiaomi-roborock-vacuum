@@ -7,25 +7,25 @@ module.exports = {
     {
       homekitTopLevel: 0,
       miLevel: 200,
-      name: "Off"
+      name: "Off",
     },
     // 1-35%   = "Light"
     {
       homekitTopLevel: 35,
       miLevel: 201,
-      name: "Light"
+      name: "Light",
     },
     // 36-70%  = "Medium"
     {
       homekitTopLevel: 70,
       miLevel: 202,
-      name: "Medium"
+      name: "Medium",
     },
     // 71-100% = "High"
     {
       homekitTopLevel: 100,
       miLevel: 203,
-      name: "Hight"
+      name: "Hight",
     },
   ],
   // S6-MaxV + Custom
@@ -34,31 +34,31 @@ module.exports = {
     {
       homekitTopLevel: 0,
       miLevel: 200,
-      name: "Off"
+      name: "Off",
     },
     // 1-25%   = "Light"
     {
       homekitTopLevel: 25,
       miLevel: 201,
-      name: "Light"
+      name: "Light",
     },
     // 26-50%  = "Medium"
     {
       homekitTopLevel: 50,
       miLevel: 202,
-      name: "Medium"
+      name: "Medium",
     },
     // 51-75% = "High"
     {
       homekitTopLevel: 75,
       miLevel: 203,
-      name: "Hight"
+      name: "Hight",
     },
     // 76-100% = "Custom"
     {
       homekitTopLevel: 100,
       miLevel: 204,
-      name: "Custom"
+      name: "Custom",
     },
   ],
 };

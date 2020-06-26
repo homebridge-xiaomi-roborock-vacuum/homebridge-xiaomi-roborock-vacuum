@@ -5,118 +5,118 @@ const SPEEDMODES = {
     // 0%      = Off / Aus
     {
       miLevel: -1,
-      name: "Off"
+      name: "Off",
     },
     // 0-25%  = "Quiet / Leise"
     {
       miLevel: 38,
-      name: "Quiet"
+      name: "Quiet",
     },
     // 26-50%  = "Balanced / Standard"
     {
       miLevel: 60,
-      name: "Balanced"
+      name: "Balanced",
     },
     // 51-75%  = "Turbo / Stark"
     {
       miLevel: 77,
-      name: "Turbo"
+      name: "Turbo",
     },
     // 76-100% = "Full Speed / Max Speed / Max"
     {
       miLevel: 90,
-      name: "Max"
+      name: "Max",
     },
   ],
   gen2: [
     // 0%      = Off / Aus
     {
       miLevel: -1,
-      name: "Off"
+      name: "Off",
     },
     // 1-20%   = "Mop / Mopping / Nur wischen"
     {
       miLevel: 105,
-      name: "Mop"
+      name: "Mop",
     },
     // 21-40%  = "Quiet / Leise"
     {
       miLevel: 38,
-      name: "Quiet"
+      name: "Quiet",
     },
     // 41-60%  = "Balanced / Standard"
     {
       miLevel: 60,
-      name: "Balanced"
+      name: "Balanced",
     },
     // 61-80%  = "Turbo / Stark"
     {
       miLevel: 75,
-      name: "Turbo"
+      name: "Turbo",
     },
     // 81-100% = "Full Speed / Max Speed / Max"
     {
       miLevel: 100,
-      name: "Max"
+      name: "Max",
     },
   ],
   "xiaowa-e202-02": [
     // 0%      = Off / Aus
     {
       miLevel: -1,
-      name: "Off"
+      name: "Off",
     },
     // 0-20%  = "Gentle"
     {
       miLevel: 41,
-      name: "Gentle"
+      name: "Gentle",
     },
     // 20-40%  = "Silent"
     {
       miLevel: 50,
-      name: "Silent"
+      name: "Silent",
     },
     // 40-60%  = "Balanced / Standard"
     {
       miLevel: 68,
-      name: "Balanced"
+      name: "Balanced",
     },
     // 60-80%  = "Turbo / Stark"
     {
       miLevel: 79,
-      name: "Turbo"
+      name: "Turbo",
     },
     // 80-100% = "Full Speed / Max Speed / Max"
     {
       miLevel: 100,
-      name: "Max"
+      name: "Max",
     },
   ],
   gen3: [
     // 0%      = Off / Aus
     {
       miLevel: -1,
-      name: "Off"
+      name: "Off",
     },
     // 1-25%   = "Quiet / Leise"
     {
       miLevel: 101,
-      name: "Quiet"
+      name: "Quiet",
     },
     // 26-50%  = "Balanced / Standard"
     {
       miLevel: 102,
-      name: "Balanced"
+      name: "Balanced",
     },
     // 51-75%  = "Turbo / Stark"
     {
       miLevel: 103,
-      name: "Turbo"
+      name: "Turbo",
     },
     // 76-100% = "Full Speed / Max Speed / Max"
     {
       miLevel: 104,
-      name: "Max"
+      name: "Max",
     },
   ],
   // S5-Max (https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/79#issuecomment-576246934)
@@ -124,32 +124,32 @@ const SPEEDMODES = {
     // 0%      = Off / Aus
     {
       miLevel: -1,
-      name: "Off"
+      name: "Off",
     },
     // 1-20%   = "Soft"
     {
       miLevel: 105,
-      name: "Soft"
+      name: "Soft",
     },
     // 21-40%   = "Quiet / Leise"
     {
       miLevel: 101,
-      name: "Quiet"
+      name: "Quiet",
     },
     // 41-60%  = "Balanced / Standard"
     {
       miLevel: 102,
-      name: "Balanced"
+      name: "Balanced",
     },
     // 61-80%  = "Turbo / Stark"
     {
       miLevel: 103,
-      name: "Turbo"
+      name: "Turbo",
     },
     // 81-100% = "Full Speed / Max Speed / Max"
     {
       miLevel: 104,
-      name: "Max"
+      name: "Max",
     },
   ],
   // S5-Max + Custom (https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/110)
@@ -157,37 +157,37 @@ const SPEEDMODES = {
     // 0%      = Off / Aus
     {
       miLevel: -1,
-      name: "Off"
+      name: "Off",
     },
     // 1-16%   = "Soft"
     {
       miLevel: 105,
-      name: "Soft"
+      name: "Soft",
     },
     // 17-32%   = "Quiet / Leise"
     {
       miLevel: 101,
-      name: "Quiet"
+      name: "Quiet",
     },
     // 33-48%  = "Balanced / Standard"
     {
       miLevel: 102,
-      name: "Balanced"
+      name: "Balanced",
     },
     // 49-64%  = "Turbo / Stark"
     {
       miLevel: 103,
-      name: "Turbo"
+      name: "Turbo",
     },
     // 65-80% = "Full Speed / Max Speed / Max"
     {
       miLevel: 104,
-      name: "Max"
+      name: "Max",
     },
     // 81-100% = "Custom"
     {
       miLevel: 106,
-      name: "Custom"
+      name: "Custom",
     },
   ],
 
@@ -196,27 +196,27 @@ const SPEEDMODES = {
     // 0%      = Off / Aus
     {
       miLevel: -1,
-      name: "Off"
+      name: "Off",
     },
     // 25%      = Silent
     {
       miLevel: 0,
-      name: "Silent"
+      name: "Silent",
     },
     // 50%      = Standard
     {
       miLevel: 1,
-      name: "Standard"
+      name: "Standard",
     },
     // 75%      = Medium
     {
       miLevel: 2,
-      name: "Medium"
+      name: "Medium",
     },
     // 100%      = Turbo
     {
       miLevel: 3,
-      name: "Turbo"
+      name: "Turbo",
     },
   ],
 };
@@ -236,7 +236,9 @@ function autoAssignHomekitTopLevel() {
   return generations.reduce((acc, gen) => {
     const speedmodes = SPEEDMODES[gen].map((mode, index, modes) => {
       const step = Math.floor(100 / (modes.length - 1));
-      return Object.assign({}, {
+      return Object.assign(
+        {},
+        {
           // if it's the last element, max it out to 100%
           homekitTopLevel: index === modes.length - 1 ? 100 : index * step,
         },
@@ -244,7 +246,7 @@ function autoAssignHomekitTopLevel() {
       );
     });
     return Object.assign({}, acc, {
-      [gen]: speedmodes
+      [gen]: speedmodes,
     });
   }, {});
 }
