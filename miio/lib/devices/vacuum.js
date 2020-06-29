@@ -218,6 +218,7 @@ module.exports = class extends Vacuum.with(
   pause() {
     return this.call("app_pause", [], {
       refresh: ["state"],
+      refreshDelay: 1000, // https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/236
     }).then(checkResult);
   }
 

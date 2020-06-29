@@ -1048,27 +1048,53 @@ class XiaomiRoborockVacuum {
   async setSpeed(speed) {
     await this.ensureDevice("setSpeed");
 
-    this.log.debug(
-      `ACT setSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`
-    );
+    if (typeof speed === "number") {
+      this.log.debug(
+        `ACT setSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`
+      );
+    }
 
     // Get the speed modes for this model
     const speedModes = this.findSpeedModes().speed;
 
-    // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
-    const safeSpeed = Math.min(
-      parseInt(speed),
-      speedModes[speedModes.length - 1].homekitTopLevel
-    );
+    let miLevel = null;
+    let name = null;
 
-    // Find the minimum homekitTopLevel that matches the desired speed
-    const { miLevel, name } = speedModes.find(
-      (mode) => safeSpeed <= mode.homekitTopLevel
-    );
+    if (typeof speed === "number") {
+      // Speed set by number
+      // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
+      const safeSpeed = Math.min(
+        parseInt(speed),
+        speedModes[speedModes.length - 1].homekitTopLevel
+      );
+
+      // Find the minimum homekitTopLevel that matches the desired speed
+      const speedMode = speedModes.find(
+        (mode) => safeSpeed <= mode.homekitTopLevel
+      );
+      miLevel = speedMode.miLevel;
+      name = speedMode.name;
+    } else {
+      // Set by mode name
+      const speedMode = speedModes.find((mode) => mode.name === speed);
+
+      if (speedMode == null) {
+        this.log.info(
+          `INF setSpeed | ${this.model} | Mode "${speed}" does not exist.`
+        );
+        return;
+      }
+      miLevel = speedMode.miLevel;
+      name = speedMode.name;
+    }
 
     this.log.info(
       `ACT setSpeed | ${this.model} | FanSpeed set to ${miLevel} over miIO for "${name}".`
     );
+
+    // Save the latest set speed for handling the "custom" speed later
+    this.cachedState.set("FanSpeed", miLevel);
+    this.cachedState.set("FanSpeedName", name);
 
     if (miLevel === -1) {
       this.log.info(
@@ -1077,6 +1103,23 @@ class XiaomiRoborockVacuum {
       await this.setCleaning(false);
     } else {
       await this.device.changeFanSpeed(miLevel);
+
+      // If speed is "custom", also set the water speed to "custom" (for Xiaomi App)
+      if (
+        name === "Custom" &&
+        this.config.waterBox &&
+        this.cachedState.get("WaterSpeedName") !== "Custom"
+      ) {
+        this.setWaterSpeed("Custom");
+      }
+      // If speed is not "custom" remove set the water speed also to a fixed value (for Xiaomi App)
+      else if (
+        name !== "Custom" &&
+        this.config.waterBox &&
+        this.cachedState.get("WaterSpeedName") === "Custom"
+      ) {
+        this.setWaterSpeed("Medium");
+      }
     }
   }
 
@@ -1115,9 +1158,11 @@ class XiaomiRoborockVacuum {
   async setWaterSpeed(speed) {
     await this.ensureDevice("setWaterSpeed");
 
-    this.log.debug(
-      `ACT setWaterSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`
-    );
+    if (typeof speed === "number") {
+      this.log.debug(
+        `ACT setWaterSpeed | ${this.model} | Speed got ${speed}% over HomeKit > CLEANUP.`
+      );
+    }
 
     // Get the speed modes for this model
     const speedModes = this.findSpeedModes().waterspeed || [];
@@ -1130,22 +1175,61 @@ class XiaomiRoborockVacuum {
       return;
     }
 
-    // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
-    const safeSpeed = Math.min(
-      parseInt(speed),
-      speedModes[speedModes.length - 1].homekitTopLevel
-    );
+    let miLevel = null;
+    let name = null;
 
-    // Find the minimum homekitTopLevel that matches the desired speed
-    const { miLevel, name } = speedModes.find(
-      (mode) => safeSpeed <= mode.homekitTopLevel
-    );
+    if (typeof speed === "number") {
+      // Speed set by number
+      // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
+      const safeSpeed = Math.min(
+        parseInt(speed),
+        speedModes[speedModes.length - 1].homekitTopLevel
+      );
+
+      // Find the minimum homekitTopLevel that matches the desired speed
+      const speedMode = speedModes.find(
+        (mode) => safeSpeed <= mode.homekitTopLevel
+      );
+      miLevel = speedMode.miLevel;
+      name = speedMode.name;
+    } else {
+      // Set by mode name
+      const speedMode = speedModes.find((mode) => mode.name === speed);
+
+      if (speedMode == null) {
+        this.log.info(
+          `INF setWaterSpeed | ${this.model} | Mode "${speed}" does not exist.`
+        );
+        return;
+      }
+      miLevel = speedMode.miLevel;
+      name = speedMode.name;
+    }
 
     this.log.info(
       `ACT setWaterSpeed | ${this.model} | WaterBoxMode set to ${miLevel} over miIO for "${name}".`
     );
 
+    // Save the latest set speed for handling the "custom" speed later
+    this.cachedState.set("WaterSpeed", miLevel);
+    this.cachedState.set("WaterSpeedName", name);
+
     await this.device.setWaterBoxMode(miLevel);
+
+    // If speed is "custom", also set the water speed to "custom" (for Xiaomi App)
+    if (
+      name === "Custom" &&
+      this.cachedState.get("FanSpeedName") !== "Custom"
+    ) {
+      this.setSpeed("Custom");
+    }
+    // If speed is not "custom" remove set the water speed also to a fixed value (for Xiaomi App)
+    else if (
+      name !== "Custom" &&
+      this.cachedState.get("FanSpeedName") === "Custom"
+    ) {
+      this.setSpeed("Balanced");
+    }
   }
 
   changedWaterSpeed(speed) {
