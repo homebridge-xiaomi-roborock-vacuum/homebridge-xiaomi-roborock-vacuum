@@ -6,10 +6,10 @@ but does not describe the commands that can be issued to the devices.
 
 Currently the best way to figure out what commands a device supports is to
 run a packet capture with Wireshark between the Mi Home app and your device.
-The `miio` command line app can the be used together with JSON export from
+The `miio-vacuum` command line app can the be used together with JSON export from
 Wireshark to extract messages sent back and forth.
 
-First make sure you have installed the `miio` app:
+First make sure you have installed the `miio-vacuum` app:
 
 `npm install -g homebridge-xiaomi-roborock-vacuum`
 
@@ -17,7 +17,7 @@ First make sure you have installed the `miio` app:
 
 ### Figure out your device token before starting
 
-If you do not have the token of your device yet, run `miio --discover` to list
+If you do not have the token of your device yet, run `miio-vacuum --discover` to list
 devices on your network and their auto-extracted tokens. If the token is not
 found, follow the [instructions to find device tokens](management.md). This needs
 to be done before you start your capture or the capture will be useless as
@@ -40,11 +40,11 @@ apply a filter in Wireshark to limit the size of the file.
 
 A good starting filter is: `udp.dstport == 54321 or udp.srcport == 54321`
 
-### Running the `miio` app
+### Running the `miio-vacuum` app
 
 To extract messages sent back and forth and dump to your terminal:
 
-`miio protocol json-dump path/to/file.json --token tokenAsHex`
+`miio-vacuum protocol json-dump path/to/file.json --token tokenAsHex`
 
 ### Figuring out the output
 
@@ -65,13 +65,13 @@ the Mi Home app calls and how the replies look.
 
 ## Testing commands
 
-The `miio` command line app can be used to control devices and test things
+The `miio-vacuum` command line app can be used to control devices and test things
 when you are implementing or debugging your device.
 
 Use the `--control` flag to issue a command:
 
-`miio protocol call id-or-address nameOfMethod paramsAsJSON`
+`miio-vacuum protocol call id-or-address nameOfMethod paramsAsJSON`
 
 For example to get a property from the device:
 
-`miio protocol call id-or-address get_prop '["temperature","use_time"]'`
+`miio-vacuum protocol call id-or-address get_prop '["temperature","use_time"]'`
