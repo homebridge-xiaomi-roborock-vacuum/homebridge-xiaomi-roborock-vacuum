@@ -1,5 +1,11 @@
 # Changes
 
+## 0.12.1
+
+- [Enhancement] Add "find me" switch to locate Roborock
+- [Enhancement] Add configuration for "find me" word
+- [Enhancement] Add configuration for "pause" word
+
 ## 0.12.0
 
 - [Models] Add Roborock S6 MaxV to list of models

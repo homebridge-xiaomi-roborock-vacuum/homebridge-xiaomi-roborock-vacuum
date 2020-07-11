@@ -33,6 +33,24 @@
         "default": false,
         "required": true
       },
+      "pauseWord": {
+        "title": "Pause Word",
+        "type": "string",
+        "default": "pause",
+        "required": true
+      },
+      "findMe": {
+        "title": "Show switch for \"find me\"",
+        "type": "boolean",
+        "default": false,
+        "required": true
+      },
+      "findMeWord": {
+        "title": "Find Me Word",
+        "type": "string",
+        "default": "where are you",
+        "required": true
+      },
       "dock": {
         "title": "Show Dock sensor",
         "type": "boolean",
@@ -115,10 +133,16 @@
     {
       "type": "flex",
       "flex-flow": "row wrap",
-      "items": ["ip", "token"]
+      "items": [
+        "ip",
+        "token"
+      ]
     },
     "waterBox",
     "pause",
+    "pauseWord",
+    "findMe",
+    "findMeWord",
     "dock",
     "delay",
     "cleanword",
