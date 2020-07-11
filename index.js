@@ -212,7 +212,7 @@ class XiaomiRoborockVacuum {
       );
       this.services.findMe
         .getCharacteristic(Characteristic.On)
-        .on('get', (cb) => callbackify(() => false, cb))
+        .on("get", (cb) => callbackify(() => false, cb))
         .on("set", (newState, cb) => this.identify(cb));
     }
 
