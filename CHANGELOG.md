@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.1
+
+- [Bug] Avoid services requests while the device is not connected yet (#251)
+
 ## 0.12.0
 
 - [Models] Add Roborock S6 MaxV to list of models
