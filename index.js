@@ -243,6 +243,10 @@ class XiaomiRoborockVacuum {
   }
 
   initialiseCareServices() {
+    // Make sure `this.device` exists before calling any of the methods
+    const callbackify = (fn, cb) =>
+      this.device ? callbackifyLib(fn, cb) : cb(new Error("Not connected yet"));
+
     if (this.config.legacyCareSensors) {
       Characteristic.CareSensors = function () {
         Characteristic.call(
@@ -970,6 +974,10 @@ class XiaomiRoborockVacuum {
   }
 
   createRoom(roomId, roomName) {
+    // Make sure `this.device` exists before calling any of the methods
+    const callbackify = (fn, cb) =>
+      this.device ? callbackifyLib(fn, cb) : cb(new Error("Not connected yet"));
+
     this.log.info(
       `INF createRoom | ${this.model} | Room ${roomName} (${roomId})`
     );
@@ -993,6 +1001,10 @@ class XiaomiRoborockVacuum {
   }
 
   createZone(zoneName, zoneParams) {
+    // Make sure `this.device` exists before calling any of the methods
+    const callbackify = (fn, cb) =>
+      this.device ? callbackifyLib(fn, cb) : cb(new Error("Not connected yet"));
+
     this.log.info(
       `INF createRoom | ${this.model} | Zone ${zoneName} (${zoneParams})`
     );
