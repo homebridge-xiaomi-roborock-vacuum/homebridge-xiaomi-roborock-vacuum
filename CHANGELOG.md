@@ -1,5 +1,9 @@
 # Changes
 
+## 0.12.2
+
+- [Bug] Callbackify is missing (#254)
+
 ## 0.12.1
 
 - [Bug] Avoid services requests while the device is not connected yet (#251)
