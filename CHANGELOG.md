@@ -3,7 +3,9 @@
 - [Enhancement] Add "find me" switch to locate Roborock
 - [Enhancement] Add configuration for "find me" word
 - [Enhancement] Add configuration for "pause" word
-- [Bug] Waterbox speed is reportet, even if no cleaning is active
+- [Bug] Waterbox speed is reported, even if no cleaning is active
+
+Thank you @L-C-P for all these additions.
 
 ## 0.12.2
 
