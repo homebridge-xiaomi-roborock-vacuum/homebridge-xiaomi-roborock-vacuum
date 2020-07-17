@@ -1,10 +1,17 @@
-# Changes
-
-## 0.12.1
+## 0.13.0
 
 - [Enhancement] Add "find me" switch to locate Roborock
 - [Enhancement] Add configuration for "find me" word
 - [Enhancement] Add configuration for "pause" word
+- [Bug] Waterbox speed is reportet, even if no cleaning is active
+
+## 0.12.2
+
+- [Bug] Callbackify is missing (#254)
+
+## 0.12.1
+
+- [Bug] Avoid services requests while the device is not connected yet (#251)
 
 ## 0.12.0
 
