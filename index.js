@@ -193,7 +193,7 @@ class XiaomiRoborockVacuum {
 
     if (this.config.pause) {
       this.services.pause = new Service.Switch(
-        `${this.config.name} ${this.config.pauseWord}`,
+        `${this.config.name} ${this.config.pauseWord || 'Pause'}`,
         "Pause Switch"
       );
       this.services.pause
