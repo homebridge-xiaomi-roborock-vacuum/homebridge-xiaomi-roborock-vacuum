@@ -1,4 +1,9 @@
-# Changes
+## 0.13.0
+
+- [Enhancement] Add "find me" switch to locate Roborock
+- [Enhancement] Add configuration for "find me" word
+- [Enhancement] Add configuration for "pause" word
+- [Bug] Waterbox speed is reportet, even if no cleaning is active
 
 ## 0.12.2
 

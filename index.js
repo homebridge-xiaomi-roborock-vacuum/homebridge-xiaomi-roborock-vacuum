@@ -101,6 +101,10 @@ class XiaomiRoborockVacuum {
     this.config = config;
     this.config.name = config.name || "Roborock vacuum cleaner";
     this.config.cleanword = config.cleanword || "cleaning";
+    this.config.pause = config.pause || false;
+    this.config.pauseWord = config.pauseWord || "Pause";
+    this.config.findMe = config.findMe || false;
+    this.config.findMeWord = config.findMeWord || "where are you";
     this.config.delay = config.delay || false;
     this.services = {};
 
@@ -197,7 +201,7 @@ class XiaomiRoborockVacuum {
 
     if (this.config.pause) {
       this.services.pause = new Service.Switch(
-        `${this.config.name} Pause`,
+        `${this.config.name} ${this.config.pauseWord}`,
         "Pause Switch"
       );
       this.services.pause
@@ -207,6 +211,17 @@ class XiaomiRoborockVacuum {
           callbackify(() => this.setPauseState(newState), cb)
         );
       // TODO: Add 'change' status?
+    }
+
+    if (this.config.findMe) {
+      this.services.findMe = new Service.Switch(
+        `${this.config.name} ${this.config.findMeWord}`,
+        "FindMe Switch"
+      );
+      this.services.findMe
+        .getCharacteristic(Characteristic.On)
+        .on("get", (cb) => callbackify(() => false, cb))
+        .on("set", (newState, cb) => this.identify(cb));
     }
 
     if (this.config.dock) {
@@ -488,6 +503,12 @@ class XiaomiRoborockVacuum {
     this.services.fan
       .getCharacteristic(Characteristic.On)
       .updateValue(isCleaning);
+
+    if (this.config.waterBox) {
+      this.services.waterBox
+        .getCharacteristic(Characteristic.On)
+        .updateValue(isCleaning);
+    }
   }
 
   changedPause(isCleaning) {
@@ -506,6 +527,12 @@ class XiaomiRoborockVacuum {
       this.services.pause
         .getCharacteristic(Characteristic.On)
         .updateValue(isCleaning);
+
+      if (this.config.waterBox) {
+        this.services.waterBox
+          .getCharacteristic(Characteristic.On)
+          .updateValue(isCleaning);
+      }
     }
   }
 
@@ -1058,6 +1085,7 @@ class XiaomiRoborockVacuum {
     this.log.info(
       `INF getSpeed | ${this.model} | Fanspeed is ${speed} over miIO "${name}" > HomeKit speed ${homekitTopLevel}%`
     );
+
     return homekitTopLevel || 0;
   }
 
