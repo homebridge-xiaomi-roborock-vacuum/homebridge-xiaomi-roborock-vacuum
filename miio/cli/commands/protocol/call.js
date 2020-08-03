@@ -15,6 +15,7 @@ exports.handler = function (argv) {
   let pending = 0;
   const browser = deviceFinder({
     filter: target,
+    token: argv.token,
   });
   browser.on("available", (device) => {
     pending++;

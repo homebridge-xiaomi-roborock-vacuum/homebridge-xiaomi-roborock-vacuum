@@ -44,6 +44,7 @@ module.exports = function (options = {}) {
     connectToDevice({
       address: options.filter,
       withPlaceholder: true,
+      token: options.token,
     })
       .then((device) => result.emit("available", device))
       .catch(() => result.emit("done"));
@@ -53,6 +54,7 @@ module.exports = function (options = {}) {
     const browser = new Devices({
       cacheTime: options.cacheTime || 300,
       filter: options.filter ? asToplevelFilter(filter) : null,
+      token: options.token,
     });
 
     browser.on("available", (device) => {

@@ -17,7 +17,7 @@ exports.handler = function (argv) {
   log.info("Discovering devices. Press Ctrl+C to stop.");
   log.plain();
 
-  const browser = deviceFinder();
+  const browser = deviceFinder({ token: argv.token });
   browser.on("available", (device) => {
     try {
       log.device(device);

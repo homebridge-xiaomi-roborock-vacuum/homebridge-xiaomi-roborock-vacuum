@@ -130,6 +130,7 @@ class Devices extends BasicDiscovery {
         port: reg.port,
         model: reg.model,
         withPlaceholder: true,
+        token: options.token,
       });
     });
 
