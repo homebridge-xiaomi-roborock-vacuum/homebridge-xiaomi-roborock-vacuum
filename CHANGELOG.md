@@ -1,3 +1,7 @@
+## 0.13.1
+
+- [Enhancement] Add support for token in the params of the CLI `miio-vacuum` (#262)
+
 ## 0.13.0
 
 - [Enhancement] Add "find me" switch to locate Roborock
