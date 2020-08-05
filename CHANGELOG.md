@@ -1,3 +1,7 @@
+## 0.13.2
+
+- [Models] Add Roborock T7 (#265)
+
 ## 0.13.1
 
 - [Enhancement] Add support for token in the params of the CLI `miio-vacuum` (#262)
