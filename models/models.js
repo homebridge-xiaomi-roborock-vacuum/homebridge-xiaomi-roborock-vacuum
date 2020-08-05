@@ -69,6 +69,12 @@ module.exports = {
       waterspeed: watermodes["gen1+custom"],
     },
   ],
+  "roborock.vacuum.a11": [
+    {
+      speed: speedmodes["gen4+custom"],
+      waterspeed: watermodes["gen1+custom"],
+    },
+  ],
 
   // Viomi
   viomi: {
