@@ -124,6 +124,11 @@ class XiaomiRoborockVacuum {
       throw new Error("You must provide a token of the vacuum cleaner.");
     }
 
+    if (this.config.rooms && this.config.autoroom) {
+      throw new Error(`Both "autoroom" and "rooms" config options can't be used at the same time.\n
+      Please, use "autoroom" to retrieve the "rooms" config and remove it when not needed.`);
+    }
+
     // HOMEKIT SERVICES
     this.initialiseServices();
 
