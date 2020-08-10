@@ -1,3 +1,9 @@
+# Changelog
+
+## 0.13.3
+
+- [Models] Add `roborock.vacuum.a9`
+
 ## 0.13.2
 
 - [Models] Add Roborock T7 (#265)
