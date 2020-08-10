@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.4
+
+- [Enhancement] Validate if autoroom and rooms are used at the same time (#270)
+
 ## 0.13.3
 
 - [Models] Add `roborock.vacuum.a9`
