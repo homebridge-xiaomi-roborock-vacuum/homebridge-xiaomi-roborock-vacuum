@@ -119,7 +119,7 @@ This plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
 
 ### Semi automatic
 
-This feature seems to work with all models which offer room cleaning. To use it:
+This feature seems to work with all models which offer room cleaning, but may not work on newer firmware versions (3.5.8_0358 or newer). To use it:
 
 1. Set the `autoroom` property in the config to an array of room names (`["my room 1", "my room 2", "my room 3"]`.
 2. In the Xiaomi Mi app, setup a timer at midnight (00:00 or 12:00am).
@@ -130,9 +130,9 @@ This feature seems to work with all models which offer room cleaning. To use it:
 
 ### Fully automatic
 
-This feature seems to be working **only on the S6 Model** because it's the only that supports naming the rooms in the Xiaomi / Roborock App.
+This feature seems to be working on models that support naming the rooms in the Xiaomi / Roborock App. This is known to include the Roborock S6 as well as the S4 with firmware version 3.5.8_0358 or newer.
 
-Even if you have an S6 but you haven't named the Rooms in your App yet, this function will not work! Thanks @domeOo
+Even if you have one of these models but you haven't named the Rooms in your App yet, this function will not work! Thanks @domeOo
 
 ## Xiaomi Token
 
