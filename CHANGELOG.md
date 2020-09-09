@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.5
+
+- [Bug] WaterMode doesn't register OFF requests (#284)
+
 ## 0.13.4
 
 - [Enhancement] Validate if autoroom and rooms are used at the same time (#270)
