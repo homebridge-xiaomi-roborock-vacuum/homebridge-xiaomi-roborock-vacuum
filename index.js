@@ -182,12 +182,26 @@ class XiaomiRoborockVacuum {
         `${this.config.name} Water Box`,
         "Water Box"
       );
-      // TODO: Do we need to manage the Characteristic.On?
       this.services.waterBox
         .getCharacteristic(Characteristic.RotationSpeed)
         .on("get", (cb) => callbackify(() => this.getWaterSpeed(), cb))
         .on("set", (newState, cb) =>
           callbackify(() => this.setWaterSpeed(newState), cb)
+        );
+      // We need to handle the ON/OFF characteristic (https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/284)
+      this.services.waterBox
+        .getCharacteristic(Characteristic.On)
+        .on("get", (cb) =>
+          // If the speed is over 0%, assume it's ON
+          callbackify(async () => (await this.getWaterSpeed()) > 0, cb)
+        )
+        .on("set", (newState, cb) =>
+          callbackify(() => {
+            // Set to 0% (Off) when receiving an OFF request, do nothing otherwise.
+            if (!newState) {
+              return this.setCleaning(0);
+            }
+          }, cb)
         );
     }
 
