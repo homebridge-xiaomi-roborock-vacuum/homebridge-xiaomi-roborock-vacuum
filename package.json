@@ -44,7 +44,7 @@
     "abstract-things": "0.9.0",
     "appdirectory": "0.1.0",
     "chalk": "4.0.0",
-    "debug": "4.1.1",
+    "debug": "4.2.0",
     "deep-equal": "2.0.3",
     "mkdirp": "1.0.4",
     "tinkerhub-discovery": "0.3.1",
