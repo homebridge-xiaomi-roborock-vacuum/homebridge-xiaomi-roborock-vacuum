@@ -52,7 +52,7 @@
     "semver": "7.3.2"
   },
   "optionalDependencies": {
-    "system-sleep": "1.3.6"
+    "system-sleep": "1.3.7"
   },
   "devDependencies": {
     "prettier": "2.1.2"
