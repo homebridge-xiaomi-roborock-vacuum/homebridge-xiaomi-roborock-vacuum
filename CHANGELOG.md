@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.6
+
+- [Bug] Fix speed mappings for rockrobo.vacuum.v1 (#296)
+
 ## 0.13.5
 
 - [Bug] WaterMode doesn't register OFF requests (#284)
