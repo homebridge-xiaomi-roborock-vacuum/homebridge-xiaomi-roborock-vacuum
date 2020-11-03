@@ -9,7 +9,7 @@ module.exports = {
   },
   "rockrobo.vacuum.v1": [
     {
-      speed: speedmodes.gen2,
+      speed: speedmodes.gen1,
     },
   ],
   "roborock.vacuum.c1": [
