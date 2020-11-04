@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.0
+
+- [Enhancement] Add `silent` log config to stop logging `info` and `debug` messages (#307)
+
 ## 0.13.6
 
 - [Bug] Fix speed mappings for rockrobo.vacuum.v1 (#296)
