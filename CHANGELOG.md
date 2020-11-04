@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.14.0
+## 0.14.1
+
+- [Bug] Fix bug in 0.14.0
+
+## 0.14.0 - Broken
 
 - [Enhancement] Add `silent` log config to stop logging `info` and `debug` messages (#307)
 
