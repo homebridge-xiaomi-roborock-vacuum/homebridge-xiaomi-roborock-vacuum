@@ -27,6 +27,12 @@
         "default": false,
         "required": false
       },
+      "silent": {
+        "title": "Do not log info and debug messages (only log warn and error messages)",
+        "type": "boolean",
+        "default": false,
+        "required": false
+      },
       "pause": {
         "title": "Show switch for \"pause\"",
         "type": "boolean",
@@ -133,12 +139,10 @@
     {
       "type": "flex",
       "flex-flow": "row wrap",
-      "items": [
-        "ip",
-        "token"
-      ]
+      "items": ["ip", "token"]
     },
     "waterBox",
+    "silent",
     "pause",
     "pauseWord",
     "findMe",
