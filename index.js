@@ -12,6 +12,8 @@ try {
   // noop
 }
 
+const noop = () => {};
+
 let homebrideAPI, Service, Characteristic;
 
 const PLUGIN_NAME = "homebridge-xiaomi-roborock-vacuum";
@@ -97,7 +99,12 @@ class XiaomiRoborockVacuum {
   }
 
   constructor(log, config) {
-    this.log = log;
+    this.log = {
+      debug: config.silent ? noop : log.debug,
+      info: config.silent ? noop : log.info,
+      warn: log.warn,
+      error: log.error,
+    };
     this.config = config;
     this.config.name = config.name || "Roborock vacuum cleaner";
     this.config.cleanword = config.cleanword || "cleaning";
