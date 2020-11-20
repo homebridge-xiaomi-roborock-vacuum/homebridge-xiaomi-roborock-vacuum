@@ -191,6 +191,13 @@ module.exports = class extends Vacuum.with(
     }).then(checkResult);
   }
 
+  resumeCleanRooms(listOfRooms) {
+    return this.call("resume_segment_clean", listOfRooms, {
+      refresh: ["state"],
+      refreshDelay: 1000,
+    }).then(checkResult);
+  }
+
   cleanZones(listOfZones) {
     return this.call("app_zoned_clean", listOfZones, {
       refresh: ["state"],
