@@ -159,7 +159,8 @@ module.exports = class extends Vacuum.with(
   }
 
   resumeCleanRooms(listOfRooms) {
-    return this.pause();
+    // TODO need to find out the miio command here.
+    return;
   }
 
   getTimer() {

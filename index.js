@@ -123,7 +123,7 @@ class XiaomiRoborockVacuum {
     this.connectRetry = setTimeout(() => void 0, 100); // Noop timeout only to initialise the property
     this.getStateInterval = setInterval(() => void 0, GET_STATE_INTERVAL_MS); // Noop timeout only to initialise the property
 
-    this.roomIdsToClean = [];
+    this.roomIdsToClean = new Set();
 
     if (!this.config.ip) {
       throw new Error("You must provide an ip address of the vacuum cleaner.");
@@ -527,7 +527,7 @@ class XiaomiRoborockVacuum {
         }.`
       );
       if (!isCleaning) {
-        this.roomIdsToClean = [];
+        this.roomIdsToClean.clear();
       }
     }
     // We still update the value in Homebridge. If we are calling the changed method is because we want to change it.
@@ -891,7 +891,7 @@ class XiaomiRoborockVacuum {
 
   async getCleaningRoom(roomId) {
     await this.ensureDevice("getCleaningRoom");
-    return this.roomIdsToClean.includes(roomId);
+    return this.roomIdsToClean.has(roomId);
   }
 
   async setCleaning(state) {
@@ -901,10 +901,10 @@ class XiaomiRoborockVacuum {
       if (state && !this.isCleaning) {
         // Start cleaning
 
-        if(this.roomIdsToClean.length > 0){
-          await this.device.cleanRooms(this.roomIdsToClean);
+        if(this.roomIdsToClean.size > 0){
+          await this.device.cleanRooms(Array.from(this.roomIdsToClean));
           this.log.info(
-              `ACT setCleaning | ${this.model} | Start rooms cleaning for rooms ${this.roomIdsToClean}, device is in state ${this.device.property('state')}.`
+              `ACT setCleaning | ${this.model} | Start rooms cleaning for rooms ${Array.from(this.roomIdsToClean)}, device is in state ${this.device.property('state')}.`
           );
         }else{
           await this.device.activateCleaning();
@@ -918,7 +918,7 @@ class XiaomiRoborockVacuum {
         this.log.info(
           `ACT setCleaning | ${this.model} | Stop cleaning and go to charge, device is in state ${this.device.property('state')}`
         );
-        this.roomIdsToClean = [];
+        this.roomIdsToClean.clear();
 
       }
     } catch (err) {
@@ -938,19 +938,15 @@ class XiaomiRoborockVacuum {
         this.log.info(
           `ACT setCleaningRoom | ${this.model} | Enable cleaning Room ID ${roomId}.`
         );
-        if (!this.roomIdsToClean.includes(roomId)){
-          this.roomIdsToClean.push(roomId)
-        }
+        // Delete then add, to maintain the correct order.
+        this.roomIdsToClean.delete(roomId);
+        this.roomIdsToClean.add(roomId)
+
       } else if (!state && !this.isCleaning && !this.isPaused){
         this.log.info(
           `ACT setCleaningRoom | ${this.model} | Diable cleaning Room ID ${roomId}.`
         );
-        if (this.roomIdsToClean.includes(roomId)) {
-          const index = this.roomIdsToClean.indexOf(roomId);
-          if(index > -1){
-            this.roomIdsToClean.splice(index, 1);
-          }
-        }
+        this.roomIdsToClean.delete(roomId);
       }
     } catch (err) {
       this.log.error(
@@ -1384,7 +1380,7 @@ class XiaomiRoborockVacuum {
 
     try {
       if (state && this.isPaused) {
-        if(this.roomIdsToClean.length > 0) {
+        if(this.roomIdsToClean.size > 0) {
           await this.device.resumeCleanRooms();
           this.log.info(`INF setPauseState | Resume room cleaning, and the device is in state  ${this.device.property('state')}`);
         } else {
@@ -1462,15 +1458,24 @@ class XiaomiRoborockVacuum {
     if (this.config.delay) this.sleep(5000);
     this.log.debug(`DEB getServices | ${this.model}`);
     return Object.keys(this.services).reduce((services, key) => {
-      if (key !== "fan" && this.services.fan.addLinkedService) {
-        this.services.fan.addLinkedService(this.services[key]);
-      }
+
+
+      let currentServices = [];
 
       if (key === "rooms"){
-        services = services.concat(Object.values(this.services[key]));
+        currentServices = Object.values(this.services[key]);
       }else{
-        services.push(this.services[key]);
+        currentServices = [services.push(this.services[key])];
       }
+
+      if (key !== "fan" && this.services.fan.addLinkedService) {
+        let fanService = this.services.fan;
+        currentServices.forEach(currentService =>{
+          fanService.addLinkedService(currentService);
+        });
+      }
+
+      services = services.concat(currentServices);
       return services;
     }, []);
   }
