@@ -943,7 +943,7 @@ class XiaomiRoborockVacuum {
         }
       } else if (!state && !this.isCleaning && !this.isPaused){
         this.log.info(
-          `ACT setCleaningRoom | ${this.model} | Diable cleaning Room ID ${roomId}.`
+          `ACT setCleaningRoom | ${this.model} | Disable cleaning Room ID ${roomId}.`
         );
         if (this.roomIdsToClean.includes(roomId)) {
           const index = this.roomIdsToClean.indexOf(roomId);
