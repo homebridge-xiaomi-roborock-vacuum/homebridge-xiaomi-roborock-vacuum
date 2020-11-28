@@ -62,7 +62,7 @@ module.exports = {
       speed: speedmodes.gen3,
     },
   ],
-  "roborock.vacuum.a9": [
+  "roborock.vacuum.a09": [
     {
       speed: speedmodes["gen4+custom"],
       waterspeed: watermodes["gen1+custom"],
