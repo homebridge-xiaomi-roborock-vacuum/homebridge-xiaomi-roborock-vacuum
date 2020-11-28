@@ -1465,7 +1465,7 @@ class XiaomiRoborockVacuum {
       if (key === "rooms"){
         currentServices = Object.values(this.services[key]);
       }else{
-        currentServices = [services.push(this.services[key])];
+        currentServices = [this.services[key]];
       }
 
       if (key !== "fan" && this.services.fan.addLinkedService) {
