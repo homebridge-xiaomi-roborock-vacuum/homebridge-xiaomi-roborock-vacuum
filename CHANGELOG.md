@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.15.0
+
+- **[Breaking change]** You can now enable multiple rooms at once! This is a breaking change for users that already used the old behaviour (one room at a time). Read more in the PR that introduced the changes (#317)
+- [Models] Model `roborock.vacuum.a9` is renamed to `roborock.vacuum.a09` (#314)
+- [Bug] Fix bug introduced in 0.14.1 that printed `undefined` at the end of the logs (#316)
+
+Thank you to @ileodo por this release!
+
 ## 0.14.1
 
 - [Bug] Fix bug in 0.14.0
