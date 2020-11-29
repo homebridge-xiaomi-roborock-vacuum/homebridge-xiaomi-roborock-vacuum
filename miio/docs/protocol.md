@@ -68,10 +68,10 @@ the Mi Home app calls and how the replies look.
 The `miio-vacuum` command line app can be used to control devices and test things
 when you are implementing or debugging your device.
 
-Use the `--control` flag to issue a command:
+Use the `call` option to issue a command:
 
-`miio-vacuum protocol call id-or-address nameOfMethod paramsAsJSON`
+`miio-vacuum protocol call id-or-address nameOfMethod paramsAsJSON --token tokenAsHex`
 
 For example to get a property from the device:
 
-`miio-vacuum protocol call id-or-address get_prop '["temperature","use_time"]'`
+`miio-vacuum protocol call id-or-address get_prop '["temperature","use_time"]' --token tokenAsHex`

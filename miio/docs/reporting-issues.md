@@ -25,14 +25,14 @@ terminal window:
 The `miio` tool comes with a command for inspecting a device. You will need
 either the device id or address of your device. To use the inspect tool run:
 
-`miio inspect id-or-address`
+`miio-vacuum inspect id-or-address --token tokenAsHex`
 
 This will find the device on your network, connect to it and fetch some debug
 information. Including that information when you open an issue will be of great
 help. You can safely exclude the IP and token of your device and any properties
 that include sensitive information.
 
-If you do not know the id or address of your device, try running `miio discover`
+If you do not know the id or address of your device, try running `miio-vacuum discover --token tokenAsHex`
 to list all devices on your network.
 
 ## Other bugs
