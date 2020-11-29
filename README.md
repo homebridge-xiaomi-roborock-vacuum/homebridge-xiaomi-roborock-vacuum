@@ -8,31 +8,34 @@
 
 ## Homebridge plugin for Xiaomi / Roborock Vacuum Cleaner's
 
-With this [homebridge](https://github.com/nfarina/homebridge) plugin can you control the xiaomi vacuum robots as fan in your Apple Home App (HomeKit).
+This [homebridge](https://github.com/homebridge/homebridge) plugin allows you to control the Xiaomi vacuum robots in your Apple Home App (HomeKit).
 
-This plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15.6 or newer, not like the old ones 0.14.1. Timeouts and API errors are a thing of the past!
+It is currently presented in the Home App in the form of a Fan because Apple don't officially support Vacuums in Homekit (we can't wait for this moment to arrive)!
 
-<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/rockrobo.vacuum.v1.jpg" style="border:1px solid lightgray" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s5.jpg" style="border:1px solid lightgray" alt="Roborock S50 2nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s55.jpg" style="border:1px solid lightgray" alt="Roborock S55 2nd Generation Black" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s6.jpg" style="border:1px solid lightgray" alt="Roborock S6/T6 3nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.c10.jpg" style="border:1px solid lightgray" alt="Roborock Xiaowa Lite C10" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s5.max.jpg" style="border:1px solid lightgray" alt="Roborock S5 Max" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/roborock.vacuum.s6.maxv.jpg" style="border:1px solid lightgray" alt="Roborock S6 MaxV" width="300">
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/rockrobo.vacuum.v1.jpg" style="border:1px solid lightgray" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s5.jpg" style="border:1px solid lightgray" alt="Roborock S50 2nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s55.jpg" style="border:1px solid lightgray" alt="Roborock S55 2nd Generation Black" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s6.jpg" style="border:1px solid lightgray" alt="Roborock S6/T6 3nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.c10.jpg" style="border:1px solid lightgray" alt="Roborock Xiaowa Lite C10" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s5.max.jpg" style="border:1px solid lightgray" alt="Roborock S5 Max" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s6.maxv.jpg" style="border:1px solid lightgray" alt="Roborock S6 MaxV" width="300">
+
+For the underlying communication layer, it uses a port of the no-longer maintained library [miio](https://github.com/aholstenson/miio). You'll find the code in the directory [./miio](./miio).
 
 ## Features
 
 - **Fan** as On-/Off-Switch. When switching off, directly back to the charging station.
-  - [Fanspeed levels](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/models/speedmodes.js) adjustable via 3D Touch / Force Touch.
+  - [Fanspeed levels](./models/speedmodes.js) adjustable via 3D Touch / Force Touch.
 - Battery status and condition in the device details. Low battery alert.
 - Pause switch (optional).
-- Room cleaning (optional): Read [Autoroom generation](#autoroom-generation) to understand how it works
+- Room cleaning (optional): Read [Room cleaning](#room-cleaning) to understand how it works.
+- Zone cleaning (optional).
 - Occupancy sensor (similar to motion sensor) for dock status (optional).
-- Seconds Fan for water box modes (optional).
+- Second Fan for water box modes (optional).
+  - [Watermode levels](./models/watermodes.js) only when enabled in config, and the device supports it.
 
-<img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/screenshot1.jpg?raw=true" alt="Screenshot Apple HomeKit with homebridge-xiaomi-roborock-vacuum" width="350">
-<img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/screenshot2.jpg?raw=true" alt="Screenshot Elgato Eve App with homebridge-xiaomi-roborock-vacuum" width="350">
+<img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/screenshot1.jpg?raw=true" alt="Screenshot Apple HomeKit with homebridge-xiaomi-roborock-vacuum" width="350">
+<img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/screenshot2.jpg?raw=true" alt="Screenshot Elgato Eve App with homebridge-xiaomi-roborock-vacuum" width="350">
 
 ## Instructions
 
-1. Install git packages first with `sudo apt install git`.
-2. Install the plugin as `root` (`sudo su -`) with `npm install -g homebridge-xiaomi-roborock-vacuum@latest --unsafe-perm`.
-3. Customize you homebridge configuration `config.json`.
-4. Restart homebridge, ggf. `service homebridge restart`.
+1. Install the plugin as `root` (`sudo su -`) with `npm install -g homebridge-xiaomi-roborock-vacuum@latest --unsafe-perm`.
+2. Customize you homebridge configuration `config.json`.
+3. Restart homebridge, ggf. `service homebridge restart`.
 
 - Example `config.json` with one vacuum and room cleaning:
 
@@ -58,7 +61,7 @@ This plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
     }
   ],
   "zones": [
- {
+    {
       "name":"Family Room (x2)",
       "zone":[[25000,25000,32000,32000,2]]
     },
@@ -116,9 +119,19 @@ This plugin use the new [miio](https://github.com/aholstenson/miio) version 0.15
 | `zones`           | false         | Array of name / zone coordinates for a single zone group. A zone group may contain multiple zone squares, each with its own value for number of cleanings. Coordinates are laid out as bottom-left-x, bottom-left-y, top-right-x, top-right-y, number-of-cleanings. A separate tile in Home will be created for each zone group. Figuring out coordinates will take some trial and error. Each zone should be surrounded by brackets: [], with the entire value also surrounded by brackets |
 | `autoroom`        | false         | set to true to generate rooms from robot (only S6) or set to array of room name strings (see semi automatic below)                                                                                                                                                                                                                                                                                                                                                                          |
 
-## AutoRoom Generation
+## Room cleaning
 
-### Semi automatic
+This plugin supports Room cleaning (only models that support room cleaning via the Xiaomi Mi Home app). Keep reading to understand how it works and how to set it up.
+
+### How it works
+
+To start the Room Clean Mode, you can enable/disable the room switches in the 
+order that they need to be cleaned. Then turn on the main Fan switch to start 
+the actual cleaning.
+
+### How can I set it up
+
+#### Semi automatic
 
 This feature seems to work with all models which offer room cleaning, but may not work on newer firmware versions (3.5.8_0358 or newer). To use it:
 
@@ -129,17 +142,11 @@ This feature seems to work with all models which offer room cleaning, but may no
 5. Submit the timer and make sure it's deactivated.
 6. Restart `homebridge`.
 
-### Fully automatic
+#### Fully automatic
 
 This feature seems to be working on models that support naming the rooms in the Xiaomi / Roborock App. This is known to include the Roborock S6 as well as the S4 with firmware version 3.5.8_0358 or newer.
 
 Even if you have one of these models but you haven't named the Rooms in your App yet, this function will not work! Thanks @domeOo
-
-## Room Clean Mode
-
-To start the Room Clean Mode, you can enable/disable the room switches in the 
-order that they need to be cleaned. Then turn on the main Fan switch to start 
-the actual cleaning.
 
 ## Xiaomi Token
 
@@ -148,3 +155,21 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 - :us::gb: - [python-miio - Getting started](https://python-miio.readthedocs.io/en/latest/discovery.html)
 - :de: - [Apple HomeKit Forum - HomeKit.Community](https://forum.smartapfel.de/forum/thread/370-xiaomi-token-auslesen/)
 - :de: - [Homematic-Guru.de](https://homematic-guru.de/xiaomi-vacuum-staubsauger-roboter-mit-homematic-steuern)
+
+NOTE: We are not currently aware of how to retrieve the token from the Roborock App. Please, share any findings in the issue #104.
+
+## Is my model supported?
+
+As new users join our community, and use this plugin, we try to learn from their device, and keep up with the new devices Xiaomi releases. However, the main developer @afharo, only owns the model S5, and he can't test the features on other models. If you wonder whether your device is supported, please:
+ 
+1. Check the [./models/models.js](./models/models.js) file to see if your device is already in the explicit list.
+2. If not, maybe it matches de _default_ behaviour (just try running the plugin and see if it works).
+    1. If it works, but the vacuum modes (aka speeds) are wrong: add your model to the list in 1 with the right mapping.
+    2. If it doesn't work, please, try making sure the IP and token are correct, by running the command `miio-vacuum inspect id-or-address --token tokenAsHex`.  
+    HINT: Try a couple of times, just in case there's a network glitch.
+    3. If you can connect and see the details of your robot, try running the manual commands like explained in [here](./miio/docs/protocol.md#testing-commands).  
+    HINT: You can find the list of commands for your device in the Python project [python-miio](https://github.com/rytilahti/python-miio).
+
+## My model is, allegedly, supported, but it fails to connect
+
+Run the command `miio-vacuum inspect id-or-address --token tokenAsHex`, replacing `id-or-address` with your vacuum's IP address and the `tokenAsHex` with a HEX representation of the token obtained [earlier](#xiaomi-token).
