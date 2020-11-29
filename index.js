@@ -100,10 +100,10 @@ class XiaomiRoborockVacuum {
 
   constructor(log, config) {
     this.log = {
-      debug: (msg, meta) => (config.silent ? noop : log.debug(msg, meta || "")),
-      info: (msg, meta) => (config.silent ? noop : log.info(msg, meta || "")),
-      warn: (msg, meta) => log.warn(msg, meta || ""),
-      error: (msg, meta) => log.error(msg, meta || ""),
+      debug: (...args) => (config.silent ? noop() : log.debug(...args)),
+      info: (...args) => (config.silent ? noop() : log.info(...args)),
+      warn: (...args) => log.warn(...args),
+      error: (...args) => log.error(...args),
     };
     this.config = config;
     this.config.name = config.name || "Roborock vacuum cleaner";
