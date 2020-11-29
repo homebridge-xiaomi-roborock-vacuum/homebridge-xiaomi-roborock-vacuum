@@ -1381,7 +1381,7 @@ class XiaomiRoborockVacuum {
     try {
       if (state && this.isPaused) {
         if(this.roomIdsToClean.size > 0) {
-          await this.device.resumeCleanRooms();
+          await this.device.resumeCleanRooms(Array.from(this.roomIdsToClean));
           this.log.info(`INF setPauseState | Resume room cleaning, and the device is in state  ${this.device.property('state')}`);
         } else {
           await this.device.activateCleaning();
