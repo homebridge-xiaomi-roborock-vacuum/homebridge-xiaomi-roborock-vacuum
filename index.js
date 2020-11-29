@@ -100,10 +100,10 @@ class XiaomiRoborockVacuum {
 
   constructor(log, config) {
     this.log = {
-      debug: (msg, meta) => (config.silent ? noop : log.debug(msg, meta)),
-      info: (msg, meta) => (config.silent ? noop : log.info(msg, meta)),
-      warn: (msg, meta) => log.warn(msg, meta),
-      error: (msg, meta) => log.error(msg, meta),
+      debug: (msg, meta) => (config.silent ? noop : log.debug(msg, meta||"")),
+      info: (msg, meta) => (config.silent ? noop : log.info(msg, meta||"")),
+      warn: (msg, meta) => log.warn(msg, meta||""),
+      error: (msg, meta) => log.error(msg, meta||""),
     };
     this.config = config;
     this.config.name = config.name || "Roborock vacuum cleaner";
@@ -122,6 +122,8 @@ class XiaomiRoborockVacuum {
     this.connectingPromise = null;
     this.connectRetry = setTimeout(() => void 0, 100); // Noop timeout only to initialise the property
     this.getStateInterval = setInterval(() => void 0, GET_STATE_INTERVAL_MS); // Noop timeout only to initialise the property
+
+    this.roomIdsToClean = new Set();
 
     if (!this.config.ip) {
       throw new Error("You must provide an ip address of the vacuum cleaner.");
@@ -524,6 +526,9 @@ class XiaomiRoborockVacuum {
           isCleaning ? "ON" : "OFF"
         }.`
       );
+      if (!isCleaning) {
+        this.roomIdsToClean.clear();
+      }
     }
     // We still update the value in Homebridge. If we are calling the changed method is because we want to change it.
     this.services.fan
@@ -862,6 +867,11 @@ class XiaomiRoborockVacuum {
     return XiaomiRoborockVacuum.cleaningStatuses.includes(status);
   }
 
+  get isPaused() {
+    const isPaused = this.device.property("state") === "paused";
+    return isPaused;
+  }
+
   async getCleaning() {
     try {
       const isCleaning = this.isCleaning;
@@ -879,22 +889,37 @@ class XiaomiRoborockVacuum {
     }
   }
 
+  async getCleaningRoom(roomId) {
+    await this.ensureDevice("getCleaningRoom");
+    return this.roomIdsToClean.has(roomId);
+  }
+
   async setCleaning(state) {
     await this.ensureDevice("setCleaning");
-
+    this.log.info(`ACT setCleaning | ${this.model} | Set cleaning to ${state}}`);
     try {
       if (state && !this.isCleaning) {
         // Start cleaning
-        this.log.info(
-          `ACT setCleaning | ${this.model} | Start cleaning, not charging.`
-        );
-        await this.device.activateCleaning();
-      } else if (!state) {
+
+        if(this.roomIdsToClean.size > 0){
+          await this.device.cleanRooms(Array.from(this.roomIdsToClean));
+          this.log.info(
+              `ACT setCleaning | ${this.model} | Start rooms cleaning for rooms ${Array.from(this.roomIdsToClean)}, device is in state ${this.device.property('state')}.`
+          );
+        }else{
+          await this.device.activateCleaning();
+          this.log.info(
+              `ACT setCleaning | ${this.model} | Start full cleaning, device is in state ${this.device.property('state')}.`
+          );
+        }
+      } else if (!state && (this.isCleaning || this.isPaused)) {
         // Stop cleaning
-        this.log.info(
-          `ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`
-        );
         await this.device.activateCharging();
+        this.log.info(
+          `ACT setCleaning | ${this.model} | Stop cleaning and go to charge, device is in state ${this.device.property('state')}`
+        );
+        this.roomIdsToClean.clear();
+
       }
     } catch (err) {
       this.log.error(
@@ -905,26 +930,27 @@ class XiaomiRoborockVacuum {
     }
   }
 
-  async setCleaningRoom(state, room) {
+  async setCleaningRoom(state, roomId) {
     await this.ensureDevice("setCleaning");
 
     try {
-      if (state && !this.isCleaning) {
-        // Start cleaning
+      if (state && !this.isCleaning && !this.isPaused) {
         this.log.info(
-          `ACT setCleaning | ${this.model} | Start cleaning Room ID ${room}, not charging.`
+          `ACT setCleaningRoom | ${this.model} | Enable cleaning Room ID ${roomId}.`
         );
-        await this.device.cleanRooms([room]);
-      } else if (!state) {
-        // Stop cleaning
+        // Delete then add, to maintain the correct order.
+        this.roomIdsToClean.delete(roomId);
+        this.roomIdsToClean.add(roomId)
+
+      } else if (!state && !this.isCleaning && !this.isPaused){
         this.log.info(
-          `ACT setCleaning | ${this.model} | Stop cleaning and go to charge.`
+          `ACT setCleaningRoom | ${this.model} | Disable cleaning Room ID ${roomId}.`
         );
-        await this.device.activateCharging();
+        this.roomIdsToClean.delete(roomId);
       }
     } catch (err) {
       this.log.error(
-        `ERR setCleaning | ${this.model} | Failed to set cleaning to ${state}`,
+        `ERR setCleaningRoom | ${this.model} | Failed to set cleaning to ${state}`,
         err
       );
       throw err;
@@ -1034,17 +1060,19 @@ class XiaomiRoborockVacuum {
     this.log.info(
       `INF createRoom | ${this.model} | Room ${roomName} (${roomId})`
     );
-    this.services[roomName] = new Service.Switch(
+
+    this.services.rooms = this.services.rooms || {};
+    this.services.rooms[roomName] = new Service.Switch(
       `${this.config.cleanword} ${roomName}`,
       "roomService" + roomId
     );
-    this.services[roomName].roomId = roomId;
-    this.services[roomName]
+    this.services.rooms[roomName].roomId = roomId;
+    this.services.rooms[roomName]
       .getCharacteristic(Characteristic.On)
-      .on("get", (cb) => callbackify(() => this.getCleaning(), cb))
+      .on("get", (cb) => callbackify(() => this.getCleaningRoom(roomId), cb))
       .on("set", (newState, cb) =>
         callbackify(
-          () => this.setCleaningRoom(newState, this.services[roomName].roomId),
+          () => this.setCleaningRoom(newState, roomId),
           cb
         )
       )
@@ -1101,6 +1129,8 @@ class XiaomiRoborockVacuum {
   }
 
   async getSpeed() {
+    await this.ensureDevice("getSpeed");
+
     const speed = await this.device.fanSpeed();
     this.log.info(
       `INF getSpeed | ${this.model} | Fanspeed is ${speed} over miIO. Converting to HomeKit`
@@ -1349,10 +1379,17 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("setPauseState");
 
     try {
-      if (state) {
-        await this.device.activateCleaning();
-      } else {
+      if (state && this.isPaused) {
+        if(this.roomIdsToClean.size > 0) {
+          await this.device.resumeCleanRooms(Array.from(this.roomIdsToClean));
+          this.log.info(`INF setPauseState | Resume room cleaning, and the device is in state  ${this.device.property('state')}`);
+        } else {
+          await this.device.activateCleaning();
+          this.log.info(`INF setPauseState | Resume normal cleaning, and the device is in state ${this.device.property('state')}`);
+        }
+      } else if (!state && this.isCleaning) {
         await this.device.pause();
+        this.log.info(`INF setPauseState | Pause cleaning, and the device is in state ${this.device.property('state')}`);
       }
     } catch (err) {
       this.log.error(
@@ -1420,12 +1457,27 @@ class XiaomiRoborockVacuum {
   getServices() {
     if (this.config.delay) this.sleep(5000);
     this.log.debug(`DEB getServices | ${this.model}`);
-    return Object.keys(this.services).map((key) => {
-      if (key !== "fan" && this.services.fan.addLinkedService) {
-        this.services.fan.addLinkedService(this.services[key]);
+    return Object.keys(this.services).reduce((services, key) => {
+
+
+      let currentServices = [];
+
+      if (key === "rooms"){
+        currentServices = Object.values(this.services[key]);
+      }else{
+        currentServices = [this.services[key]];
       }
-      return this.services[key];
-    });
+
+      if (key !== "fan" && this.services.fan.addLinkedService) {
+        let fanService = this.services.fan;
+        currentServices.forEach(currentService =>{
+          fanService.addLinkedService(currentService);
+        });
+      }
+
+      services = services.concat(currentServices);
+      return services;
+    }, []);
   }
 
   sleep(time) {

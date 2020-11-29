@@ -135,6 +135,12 @@ This feature seems to be working on models that support naming the rooms in the 
 
 Even if you have one of these models but you haven't named the Rooms in your App yet, this function will not work! Thanks @domeOo
 
+## Room Clean Mode
+
+To start the Room Clean Mode, you can enable/disable the room switches in the 
+order that they need to be cleaned. Then turn on the main Fan switch to start 
+the actual cleaning.
+
 ## Xiaomi Token
 
 To use this plugin, you have to read the "token" of the xiaomi vacuum robots. Here are some detailed instructions:

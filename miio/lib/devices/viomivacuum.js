@@ -158,6 +158,10 @@ module.exports = class extends Vacuum.with(
     ).then(checkResult);
   }
 
+  resumeCleanRooms(listOfRooms) {
+    return cleanRooms(listOfRooms);
+  }
+
   getTimer() {
     return this.call("get_timer");
   }
