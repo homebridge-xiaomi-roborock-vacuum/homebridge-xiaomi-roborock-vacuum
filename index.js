@@ -1035,7 +1035,7 @@ class XiaomiRoborockVacuum {
       }
       let roomMap = [];
       for (const [i, roomId] of roomIds.entries()) {
-        this.services[this.config.autoroom[i]].roomId = roomId;
+        this.services.rooms[this.config.autoroom[i]].roomId = roomId;
         roomMap.push({ id: roomId, name: this.config.autoroom[i] });
       }
       this.log.info(
