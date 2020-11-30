@@ -113,7 +113,7 @@ class XiaomiRoborockVacuum {
     this.config.findMe = config.findMe || false;
     this.config.findMeWord = config.findMeWord || "where are you";
     this.config.delay = config.delay || false;
-    this.config.roomTimeout = config.roomTimeout == undefined ? 0 : config.roomTimeout;
+    this.config.roomTimeout = config.roomTimeout ?? 0;
     this.services = {};
 
     // Used to store the latest state to reduce logging
@@ -955,23 +955,13 @@ class XiaomiRoborockVacuum {
         // Delete then add, to maintain the correct order.
         this.roomIdsToClean.delete(roomId);
         this.roomIdsToClean.add(roomId);
-        if (this.config.roomTimeout > 0) {
-          this.log.info(`ACT setCleaningRoom | ${this.model} | Start timeout to clean rooms`);
-          clearTimeout(this._roomTimeout)
-          this._roomTimeout = setTimeout(this.setCleaning.bind(this, true), this.config.roomTimeout * 1000)
-        }
+        this.checkRoomTimeout();
       } else if (!state && !this.isCleaning && !this.isPaused) {
         this.log.info(
           `ACT setCleaningRoom | ${this.model} | Disable cleaning Room ID ${roomId}.`
         );
         this.roomIdsToClean.delete(roomId);
-        if (this.config.roomTimeout > 0) {
-          this.log.info(`ACT setCleaningRoom | ${this.model} | Start timeout to clean rooms`);
-          clearTimeout(this._roomTimeout)
-          if (this.roomIdsToClean.size > 0) {
-            this._roomTimeout = setTimeout(this.setCleaning.bind(this, true), this.config.roomTimeout * 1000)
-          }
-        }
+        this.checkRoomTimeout();
       }
     } catch (err) {
       this.log.error(
@@ -979,6 +969,16 @@ class XiaomiRoborockVacuum {
         err
       );
       throw err;
+    }
+  }
+
+  checkRoomTimeout(){
+    if (this.config.roomTimeout > 0) {
+      this.log.info(`ACT setCleaningRoom | ${this.model} | Start timeout to clean rooms`);
+      clearTimeout(this._roomTimeout)
+      if (this.roomIdsToClean.size > 0) {
+        this._roomTimeout = setTimeout(this.setCleaning.bind(this, true), this.config.roomTimeout * 1000)
+      }
     }
   }
 
