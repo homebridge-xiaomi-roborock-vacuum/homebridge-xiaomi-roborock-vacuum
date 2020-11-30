@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.16.0
+
+- [Enhancement] Add the config option `roomTimeout` so the plugin auto-starts the cleaning after the specified number of seconds when a Room switch has been enabled/disabled (#326)
+
+Thank you to @normen for this release!
+
 ## 0.15.2
 
 - [Bug] Refer to the services' attached `.roomId` property (#327)
