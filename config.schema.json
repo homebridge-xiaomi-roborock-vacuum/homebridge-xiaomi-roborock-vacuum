@@ -75,6 +75,12 @@
         "default": "cleaning",
         "required": true
       },
+      "roomTimeout": {
+        "title": "Room autoclean timeout",
+        "type": "integer",
+        "default": 0,
+        "required": false
+      },
       "autoroom": {
         "title": "Automatic Room Detection",
         "type": "boolean",
@@ -150,6 +156,7 @@
     "dock",
     "delay",
     "cleanword",
+    "roomTimeout",
     "autoroom",
     {
       "type": "fieldset",
