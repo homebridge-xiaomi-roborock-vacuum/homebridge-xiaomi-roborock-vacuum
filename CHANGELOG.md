@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.2
+
+- [Bug] Refer to the services' attached `.roomId` property (#327)
+
 ## 0.15.1
 
 - [Bug] Fix `autoroom` bug after rooms Services renamed (#324)
