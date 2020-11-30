@@ -113,7 +113,7 @@ class XiaomiRoborockVacuum {
     this.config.findMe = config.findMe || false;
     this.config.findMeWord = config.findMeWord || "where are you";
     this.config.delay = config.delay || false;
-    this.config.roomTimeout = config.roomTimeout ?? 0;
+    this.config.roomTimeout = config.roomTimeout == undefined ? 0 : config.roomTimeout;
     this.services = {};
 
     // Used to store the latest state to reduce logging
