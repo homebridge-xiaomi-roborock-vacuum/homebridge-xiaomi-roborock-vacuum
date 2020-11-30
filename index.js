@@ -1081,13 +1081,22 @@ class XiaomiRoborockVacuum {
     this.services.rooms[roomName].roomId = roomId;
     this.services.rooms[roomName]
       .getCharacteristic(Characteristic.On)
-      .on("get", (cb) => callbackify(() => this.getCleaningRoom(roomId), cb))
-      .on("set", (newState, cb) =>
-        callbackify(() => this.setCleaningRoom(newState, roomId), cb)
+      .on("get", (cb) =>
+        callbackify(
+          () => this.getCleaningRoom(this.services.rooms[roomName].roomId),
+          cb
+        )
       )
-      .on("change", (oldState, newState) => {
-        this.changedPause(newState);
-      });
+      .on("set", (newState, cb) =>
+        callbackify(
+          () =>
+            this.setCleaningRoom(
+              newState,
+              this.services.rooms[roomName].roomId
+            ),
+          cb
+        )
+      );
   }
 
   createZone(zoneName, zoneParams) {
