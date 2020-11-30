@@ -968,7 +968,9 @@ class XiaomiRoborockVacuum {
         if (this.config.roomTimeout > 0) {
           this.log.info(`ACT setCleaningRoom | ${this.model} | Start timeout to clean rooms`);
           clearTimeout(this._roomTimeout)
-          this._roomTimeout = setTimeout(this.setCleaning.bind(this, true), this.config.roomTimeout * 1000)
+          if (this.roomIdsToClean.size > 0) {
+            this._roomTimeout = setTimeout(this.setCleaning.bind(this, true), this.config.roomTimeout * 1000)
+          }
         }
       }
     } catch (err) {
