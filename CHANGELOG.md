@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.1
+
+- [Bug] Fix `autoroom` bug after rooms Services renamed (#324)
+
 ## 0.15.0
 
 - **[Breaking change]** You can now enable multiple rooms at once! This is a breaking change for users that already used the old behaviour (one room at a time). Read more in the PR that introduced the changes (#317)
