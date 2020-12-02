@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`XiaomiRoborockVacuum Client with minimum config it has the basic services 1`] = `
+Array [
+  "undefined-undefined",
+  "Roborock vacuum cleaner-Speed",
+  "Roborock vacuum cleaner Battery-undefined",
+  "Care indicator sensors-sensors",
+  "Care indicator filter-filter",
+  "Care indicator side brush-side brush",
+  "Care indicator main brush-main brush",
+]
+`;
+
+exports[`XiaomiRoborockVacuum Client with minimum config it has the basic services 2`] = `
+Array [
+  "info",
+  "fan",
+  "battery",
+  "CareSensors",
+  "CareFilter",
+  "CareSideBrush",
+  "CareMainBrush",
+]
+`;

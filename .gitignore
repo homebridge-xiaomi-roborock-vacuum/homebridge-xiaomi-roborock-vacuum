@@ -6,3 +6,4 @@ crashreports/
 debug/
 bugs/
 .bin/
+coverage/
