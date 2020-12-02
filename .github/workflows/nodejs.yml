@@ -26,4 +26,10 @@ jobs:
       - run: npm ci
       - run: npx prettier --check **/*.*
       - run: npm run build --if-present
-      - run: npm test
+      - run: npm test -- --coverage
+        env:
+          CI: true
+      - run: npx codecov@3.7.0
+        env:
+          CI: true
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
