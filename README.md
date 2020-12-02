@@ -130,6 +130,8 @@ To start the Room Clean Mode, you can enable/disable the room switches in the
 order that they need to be cleaned. Then turn on the main Fan switch to start 
 the actual cleaning.
 
+If you want your robot to start cleaning after you enable/disable the room switches, use the config parameter `roomTimeout` to set the number of seconds the robot should wait before starting (this is to allow you to find the other rooms you want to set ON/OFF).
+
 ### How can I set it up
 
 #### Semi automatic
