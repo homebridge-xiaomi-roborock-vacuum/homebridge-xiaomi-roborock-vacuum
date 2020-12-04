@@ -48,8 +48,7 @@ class DeviceInfo {
    * Enrich this device with detailed information about the model. This will
    * simply call miIO.info.
    */
-  enrich() {
-    // TODO: Keep going with refactoring
+  async enrich() {
     if (!this.id) {
       throw new Error("Device has no identifier yet, handshake needed");
     }
@@ -59,70 +58,47 @@ class DeviceInfo {
       return Promise.resolve();
     }
 
-    if (this.enrichPromise) {
-      // If enrichment is already happening
-      return this.enrichPromise;
-    }
-
-    // Check if there is a token available, otherwise try to resolve it
-    let promise;
-    if (!this.packet.token) {
-      // No automatic token found - see if we have a stored one
-      this.debug(
-        "Loading token from storage, device hides token and no token set via options"
-      );
-      this.autoToken = false;
-      promise = tokens.get(this.id).then((token) => {
-        this.debug("Using stored token:", token);
-        this.packet.token = Buffer.from(token, "hex");
-        this.tokenChanged = true;
-      });
-    } else {
+    if (this.packet.token) {
       if (this.tokenChanged) {
         this.autoToken = false;
       } else {
         this.autoToken = true;
         this.debug("Using automatic token:", this.packet.token.toString("hex"));
       }
-      promise = Promise.resolve();
     }
 
-    return (this.enrichPromise = promise
-      .then(() => this.call("miIO.info"))
-      .then((data) => {
-        this.enriched = true;
-        this.model = data.model;
-        this.tokenChanged = false;
+    if (!this.enrichPromise) {
+      this.enrichPromise = this.call("miIO.info");
+    }
 
-        this.enrichPromise = null;
-      })
-      .catch((err) => {
-        this.enrichPromise = null;
-        this.enriched = true;
-
-        if (err.code === "missing-token") {
-          // Rethrow some errors
-          err.device = this;
-          throw err;
-        }
-
-        if (this.packet.token) {
-          // Could not call the info method, this might be either a timeout or a token problem
-          const e = new Error(
-            "Could not connect to device, token might be wrong"
-          );
-          e.code = "connection-failure";
-          e.device = this;
-          throw e;
-        } else {
-          const e = new Error(
-            "Could not connect to device, token needs to be specified"
-          );
-          e.code = "missing-token";
-          e.device = this;
-          throw e;
-        }
-      }));
+    try {
+      const { model } = await this.enrichPromise;
+      this.model = model;
+      this.tokenChanged = false;
+    } catch (err) {
+      if (err.code === "missing-token") {
+        err.device = this;
+        throw err;
+      } else if (this.packet.token) {
+        // Could not call the info method, this might be either a timeout or a token problem
+        const e = new Error(
+          "Could not connect to device, token might be wrong"
+        );
+        e.code = "connection-failure";
+        e.device = this;
+        throw e;
+      } else {
+        const e = new Error(
+          "Could not connect to device, token needs to be specified"
+        );
+        e.code = "missing-token";
+        e.device = this;
+        throw e;
+      }
+    } finally {
+      this.enriched = true;
+      this.enrichPromise = null;
+    }
   }
 
   onMessage(msg) {
@@ -170,7 +146,7 @@ class DeviceInfo {
     }
   }
 
-  handshake() {
+  async handshake() {
     if (!this.packet.needsHandshake) {
       return Promise.resolve(this.token);
     }
@@ -180,9 +156,29 @@ class DeviceInfo {
       return this.handshakePromise;
     }
 
-    return (this.handshakePromise = new Promise((resolve, reject) => {
-      // Create and send the handshake data
-      this.packet.handshake();
+    if (!this.handshakePromise) {
+      this.handshakePromise = Promise.all([
+        this.#sendHandshakePackage(),
+        this.#waitForHandshakeResponse(),
+      ]);
+    }
+
+    try {
+      return await Promise.race([this.handshakePromise, this.#setTimeout()]);
+    } finally {
+      this.handshakeResolve = null;
+      this.handshakePromise = null;
+    }
+  }
+
+  async #sendHandshakePackage() {
+    // Create and send the handshake data
+    this.packet.handshake();
+    return await this.#sendPacket();
+  }
+
+  async #sendPacket() {
+    return await new Promise((resolve, reject) => {
       const data = this.packet.raw;
       this.parent.socket.send(
         data,
@@ -190,16 +186,15 @@ class DeviceInfo {
         data.length,
         this.port,
         this.address,
-        (err) => err && reject(err)
+        (err) => (err ? reject(err) : resolve())
       );
+    });
+  }
 
+  async #waitForHandshakeResponse() {
+    return await new Promise((resolve, reject) => {
       // Handler called when a reply to the handshake is received
       this.handshakeResolve = () => {
-        clearTimeout(this.handshakeTimeout);
-        this.handshakeResolve = null;
-        this.handshakeTimeout = null;
-        this.handshakePromise = null;
-
         if (this.id !== this.packet.deviceId) {
           // Update the identifier if needed
           this.id = this.packet.deviceId;
@@ -208,7 +203,7 @@ class DeviceInfo {
         }
 
         if (this.packet.token) {
-          resolve();
+          resolve(this.token);
         } else {
           const err = new Error(
             "Could not connect to device, token needs to be specified"
@@ -217,25 +212,20 @@ class DeviceInfo {
           reject(err);
         }
       };
+    });
+  }
 
-      // Timeout for the handshake
-      this.handshakeTimeout = setTimeout(() => {
-        this.handshakeResolve = null;
-        this.handshakeTimeout = null;
-        this.handshakePromise = null;
-
+  async #setTimeout() {
+    await new Promise((reject) =>
+      setTimeout(() => {
         const err = new Error("Could not connect to device, handshake timeout");
         err.code = "timeout";
         reject(err);
-      }, 2000);
-    }));
+      }, 2000)
+    );
   }
 
-  call(method, args, options) {
-    if (typeof args === "undefined") {
-      args = [];
-    }
-
+  call(method, args = [], options) {
     const request = {
       method: method,
       params: args,
@@ -246,6 +236,7 @@ class DeviceInfo {
       request.sid = options.sid;
     }
 
+    // TODO: Go on with this refactoring
     return new Promise((resolve, reject) => {
       let resolved = false;
 
@@ -282,7 +273,7 @@ class DeviceInfo {
       let retriesLeft = (options && options.retries) || 5;
       const retry = () => {
         if (retriesLeft-- > 0) {
-          send();
+          return send();
         } else {
           this.debug("Reached maximum number of retries, giving up");
           const err = new Error("Call to device timed out");
@@ -291,77 +282,73 @@ class DeviceInfo {
         }
       };
 
-      const send = () => {
+      const send = async () => {
         if (resolved) return;
 
-        this.handshake()
-          .catch((err) => {
-            if (err.code === "timeout") {
-              this.debug("<- Handshake timed out");
-              retry();
-              return false;
-            } else {
-              throw err;
-            }
-          })
-          .then((token) => {
-            // Token has timed out - handled via retry
-            if (!token) return;
+        try {
+          await this.handshake();
+        } catch (err) {
+          if (err.code === "timeout") {
+            this.debug("<- Handshake timed out");
+            return retry();
+          } else {
+            throw err;
+          }
+        }
 
-            // Assign the identifier before each send
-            let id;
-            if (request.id) {
-              /*
-               * This is a failure, increase the last id. Should
-               * increase the chances of the new request to
-               * succeed. Related to issues with the vacuum
-               * not responding such as described in issue #94.
-               */
-              id = this.lastId + 100;
+        try {
+          if (request.id) {
+            // Make sure to remove previously failed promises (retries)
+            this.promises.delete(request.id);
+          }
 
-              // Make sure to remove the failed promise
-              this.promises.delete(request.id);
-            } else {
-              id = this.lastId + 1;
-            }
+          // Assign the identifier
+          request.id = this.#nextId();
 
-            // Check that the id hasn't rolled over
-            if (id >= 10000) {
-              this.lastId = id = 1;
-            } else {
-              this.lastId = id;
-            }
+          // Store reference to the promise so reply can be received
+          this.promises.set(request.id, promise);
 
-            // Assign the identifier
-            request.id = id;
+          // Create the JSON and send it
+          const json = JSON.stringify(request);
+          this.debug("-> (" + retriesLeft + ")", json);
+          this.packet.data = Buffer.from(json, "utf8");
 
-            // Store reference to the promise so reply can be received
-            this.promises.set(id, promise);
+          // Queue a retry in 2 seconds
+          setTimeout(retry, 2000);
 
-            // Create the JSON and send it
-            const json = JSON.stringify(request);
-            this.debug("-> (" + retriesLeft + ")", json);
-            this.packet.data = Buffer.from(json, "utf8");
-
-            const data = this.packet.raw;
-
-            this.parent.socket.send(
-              data,
-              0,
-              data.length,
-              this.port,
-              this.address,
-              (err) => err && promise.reject(err)
-            );
-
-            // Queue a retry in 2 seconds
-            setTimeout(retry, 2000);
-          })
-          .catch(promise.reject);
+          await this.#sendPacket();
+        } catch (err) {
+          promise.reject(err);
+        }
       };
 
-      send();
+      send().catch(promise.reject);
     });
+  }
+
+  #nextId(request) {
+    let id;
+
+    if (request.id) {
+      /*
+       * This is a failure, increase the last id. Should
+       * increase the chances of the new request to
+       * succeed. Related to issues with the vacuum
+       * not responding such as described in issue #94.
+       */
+      id = this.lastId + 100;
+    } else {
+      id = this.lastId + 1;
+    }
+
+    // Check that the id hasn't rolled over
+    if (id >= 10000) {
+      this.lastId = id = 1;
+    } else {
+      this.lastId = id;
+    }
+
+    return id;
   }
 }
 

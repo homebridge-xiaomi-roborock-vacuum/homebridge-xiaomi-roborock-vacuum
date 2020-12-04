@@ -34,5 +34,23 @@ describe("DeviceInfo", () => {
     });
   });
 
-  xdescribe("enrich");
+  describe("enrich", () => {
+    // const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
+    test("fails if the id is not populated yet", async () => {
+      const device = new DeviceInfo({}, null, "localhost", 1234);
+      await expect(device.enrich()).rejects.toThrow(
+        "Device has no identifier yet, handshake needed"
+      );
+    });
+
+    test("returns undefined undefined because everything is properly initialised already", async () => {
+      const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
+      device.token = "TOKEN";
+      device.tokenChanged = false;
+      device.model = {};
+      await expect(device.enrich()).resolves.toBeUndefined();
+    });
+
+    // TODO: Keep adding use cases
+  });
 });
