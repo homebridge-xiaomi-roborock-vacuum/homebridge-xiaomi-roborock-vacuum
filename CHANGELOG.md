@@ -1,5 +1,9 @@
 # Changelog
 
+## next
+
+- [Bug] Fix `rockrobo.vacuum.v1` speeds (#311) (reverting the changes in #296 because it's breaking some everyone else).
+
 ## 0.16.0
 
 - [Enhancement] Add the config option `roomTimeout` so the plugin auto-starts the cleaning after the specified number of seconds when a Room switch has been enabled/disabled (#326)
