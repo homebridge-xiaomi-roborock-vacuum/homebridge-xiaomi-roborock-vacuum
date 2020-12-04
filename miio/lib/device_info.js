@@ -1,10 +1,7 @@
 "use strict";
 
 const debug = require("debug");
-
 const Packet = require("./packet");
-const tokens = require("./tokens");
-
 const safeishJSON = require("./safeishJSON");
 
 const ERRORS = {
