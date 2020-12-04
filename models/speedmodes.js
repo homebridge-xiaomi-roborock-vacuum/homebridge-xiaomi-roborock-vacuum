@@ -60,6 +60,33 @@ const SPEEDMODES = {
       name: "Max",
     },
   ],
+  "gen2-no_mop": [
+    // 0%      = Off / Aus
+    {
+      miLevel: -1,
+      name: "Off",
+    },
+    // 0-25%  = "Quiet / Leise"
+    {
+      miLevel: 38,
+      name: "Quiet",
+    },
+    // 26-50%  = "Balanced / Standard"
+    {
+      miLevel: 60,
+      name: "Balanced",
+    },
+    // 51-75%  = "Turbo / Stark"
+    {
+      miLevel: 75,
+      name: "Turbo",
+    },
+    // 76-100% = "Full Speed / Max Speed / Max"
+    {
+      miLevel: 100,
+      name: "Max",
+    },
+  ],
   "xiaowa-e202-02": [
     // 0%      = Off / Aus
     {
