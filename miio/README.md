@@ -18,12 +18,6 @@ const miio = require("./miio");
 Resolve a handle to the device:
 
 ```javascript
-// Resolve a device, resolving the token automatically or from storage
-miio
-  .device({ address: "192.168.100.8" })
-  .then((device) => console.log("Connected to", device))
-  .catch((err) => handleErrorHere);
-
 // Resolve a device, specifying the token (see below for how to get the token)
 miio
   .device({ address: "192.168.100.8", token: "token-as-hex" })

@@ -78,7 +78,7 @@ const value = device.property("temp_dec");
 Get information and update the wireless settings of devices via the management
 API.
 
-Discover the token of a device:
+Discover the token of a device (not supported on vacuums):
 
 ```javascript
 device.discover().then((info) => console.log(info.token));
