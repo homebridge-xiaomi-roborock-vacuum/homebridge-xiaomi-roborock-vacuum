@@ -158,26 +158,26 @@ class DeviceInfo {
 
     if (!this.handshakePromise) {
       this.handshakePromise = Promise.all([
-        this.#sendHandshakePackage(),
-        this.#waitForHandshakeResponse(),
+        this._sendHandshakePackage(),
+        this._waitForHandshakeResponse(),
       ]);
     }
 
     try {
-      return await Promise.race([this.handshakePromise, this.#setTimeout()]);
+      return await Promise.race([this.handshakePromise, this._setTimeout()]);
     } finally {
       this.handshakeResolve = null;
       this.handshakePromise = null;
     }
   }
 
-  async #sendHandshakePackage() {
+  async _sendHandshakePackage() {
     // Create and send the handshake data
     this.packet.handshake();
-    return await this.#sendPacket();
+    return await this._sendPacket();
   }
 
-  async #sendPacket() {
+  async _sendPacket() {
     return await new Promise((resolve, reject) => {
       const data = this.packet.raw;
       this.parent.socket.send(
@@ -191,7 +191,7 @@ class DeviceInfo {
     });
   }
 
-  async #waitForHandshakeResponse() {
+  async _waitForHandshakeResponse() {
     return await new Promise((resolve, reject) => {
       // Handler called when a reply to the handshake is received
       this.handshakeResolve = () => {
@@ -215,7 +215,7 @@ class DeviceInfo {
     });
   }
 
-  async #setTimeout() {
+  async _setTimeout() {
     await new Promise((reject) =>
       setTimeout(() => {
         const err = new Error("Could not connect to device, handshake timeout");
@@ -303,7 +303,7 @@ class DeviceInfo {
           }
 
           // Assign the identifier
-          request.id = this.#nextId();
+          request.id = this._nextId();
 
           // Store reference to the promise so reply can be received
           this.promises.set(request.id, promise);
@@ -316,7 +316,7 @@ class DeviceInfo {
           // Queue a retry in 2 seconds
           setTimeout(retry, 2000);
 
-          await this.#sendPacket();
+          await this._sendPacket();
         } catch (err) {
           promise.reject(err);
         }
@@ -326,7 +326,7 @@ class DeviceInfo {
     });
   }
 
-  #nextId(request) {
+  _nextId(request) {
     let id;
 
     if (request.id) {
