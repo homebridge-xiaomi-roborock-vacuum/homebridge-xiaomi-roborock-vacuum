@@ -124,7 +124,7 @@ class DeviceInfo {
       let str = data.toString("utf8");
 
       // Remove non-printable characters to help with invalid JSON from devices
-      str = str.replace(/[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F-\x9F]/g, ""); // eslint-disable-line
+      str = str.replace(/[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F-\x9F]/g, "");
 
       this.debug("<- Message: `" + str + "`");
       try {
@@ -149,15 +149,8 @@ class DeviceInfo {
     }
 
     // If a handshake is already in progress use it
-    if (this.handshakePromise) {
-      return this.handshakePromise;
-    }
-
     if (!this.handshakePromise) {
-      this.handshakePromise = Promise.all([
-        this._sendHandshakePackage(),
-        this._waitForHandshakeResponse(),
-      ]);
+      this.handshakePromise = this._sendHandshakePackage();
     }
 
     try {
@@ -169,9 +162,11 @@ class DeviceInfo {
   }
 
   async _sendHandshakePackage() {
+    const waitForResponse = this._waitForHandshakeResponse();
     // Create and send the handshake data
     this.packet.handshake();
-    return await this._sendPacket();
+    await this._sendPacket();
+    return await waitForResponse;
   }
 
   async _sendPacket() {
@@ -213,7 +208,7 @@ class DeviceInfo {
   }
 
   async _setTimeout() {
-    await new Promise((reject) =>
+    await new Promise((resolve, reject) =>
       setTimeout(() => {
         const err = new Error("Could not connect to device, handshake timeout");
         err.code = "timeout";
