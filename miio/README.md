@@ -111,7 +111,6 @@ devices.on("unavailable", (device) => {
 - `cacheTime`, the maximum amount of seconds a device can be unreachable before it becomes unavailable. Default: `1800`
 - `filter`, function used to filter what devices are connected to. Default: `reg => true`
 - `skipSubDevices`, if sub devices on Aqara gateways should be skipped. Default: `false`
-- `useTokenStorage`, if tokens should be fetched from storage (see device management). Default: `true`
 - `tokens`, object with manual mapping between ids and tokens (advanced, use [Device management](docs/management.md) if possible)
 
 See [Advanced API](docs/advanced-api.md) for details about `miio.browse()`.

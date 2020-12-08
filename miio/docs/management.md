@@ -1,8 +1,7 @@
 # Device management
 
 The `miio-vacuum` command line utility supports many device operations, including
-discovering and configuring devices. It is also the primary tool used for
-managing access to devices by storing tokens of devices.
+discovering and configuring devices.
 
 ## Install the command line tool
 
