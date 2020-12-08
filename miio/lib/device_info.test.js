@@ -1,6 +1,11 @@
 "use strict";
 
-const loggerMock = jest.fn();
+const TOKEN = "e381c97af00985577e8e6a3d94732bbe";
+
+const loggerMock = jest.fn().mockImplementation((a, b) => {
+  // Uncomment when debugging tests
+  // console.debug(a, b);
+});
 const debugMock = jest.fn().mockImplementation((label) => {
   return loggerMock;
 });
@@ -48,7 +53,6 @@ describe("DeviceInfo", () => {
   });
 
   describe("enrich", () => {
-    // const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
     test("fails if the id is not populated yet", async () => {
       const device = new DeviceInfo({}, null, "localhost", 1234);
       await expect(device.enrich()).rejects.toThrow(
@@ -58,7 +62,7 @@ describe("DeviceInfo", () => {
 
     test("returns undefined because everything is properly initialised already", async () => {
       const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
-      device.token = "TOKEN";
+      device.token = TOKEN;
       device.tokenChanged = false;
       device.model = {};
       await expect(device.enrich()).resolves.toBeUndefined();
@@ -67,7 +71,7 @@ describe("DeviceInfo", () => {
     test("happy path", async () => {
       const model = { test: 1 };
       const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
-      device.token = "TOKEN";
+      device.token = TOKEN;
       device.call = jest.fn().mockImplementation(async () => ({ model }));
       await expect(device.enrich()).resolves.toBeUndefined();
       expect(device.tokenChanged).toBe(false);
@@ -78,7 +82,7 @@ describe("DeviceInfo", () => {
 
     test("errors with 'missing-token'", async () => {
       const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
-      device.token = "TOKEN";
+      device.token = TOKEN;
       device.enrichPromise = Promise.reject({ code: "missing-token" });
       await expect(device.enrich()).rejects.toStrictEqual({
         code: "missing-token",
@@ -91,7 +95,7 @@ describe("DeviceInfo", () => {
 
     test("errors with 'connection-failure'", async () => {
       const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
-      device.token = "TOKEN";
+      device.token = TOKEN;
       device.tokenChanged = false;
       device.enrichPromise = Promise.reject("Something went terribly wrong");
       await expect(device.enrich()).rejects.toThrow(
@@ -119,8 +123,8 @@ describe("DeviceInfo", () => {
       const packet = new Packet(false);
       const parent = createParentMock();
       const device = new DeviceInfo(parent, "MY-ID", "localhost", 1234);
-      device.token = "TOKEN";
-      packet.token = "TOKEN";
+      device.token = TOKEN;
+      packet.token = TOKEN;
       parent.socket.send.mockImplementation(
         (data, size, length, port, address, cb) => {
           cb();
@@ -129,17 +133,17 @@ describe("DeviceInfo", () => {
         }
       );
       const token = await device.handshake();
-      expect(token.toString()).toBe("TOKEN");
+      expect(token.toString()).toBe(TOKEN);
       // Second call is not triggered
       const token2 = await device.handshake();
-      expect(token2.toString()).toBe("TOKEN");
+      expect(token2.toString()).toBe(TOKEN);
     });
 
     test("fails because 'missing-token'", async () => {
       const packet = new Packet(false);
       const parent = createParentMock();
       const device = new DeviceInfo(parent, "MY-ID", "localhost", 1234);
-      packet.token = "TOKEN";
+      packet.token = TOKEN;
       parent.socket.send.mockImplementation(
         (data, size, length, port, address, cb) => {
           cb();
@@ -156,7 +160,7 @@ describe("DeviceInfo", () => {
       const packet = new Packet(false);
       const parent = createParentMock();
       const device = new DeviceInfo(parent, "MY-ID", "localhost", 1234);
-      packet.token = "TOKEN";
+      packet.token = TOKEN;
       parent.socket.send.mockImplementation(
         (data, size, length, port, address, cb) => {
           cb(new Error("Something went terribly wrong"));
@@ -170,7 +174,7 @@ describe("DeviceInfo", () => {
     test("timesout after 2 secs", async () => {
       const parent = createParentMock();
       const device = new DeviceInfo(parent, "MY-ID", "localhost", 1234);
-      device.token = "TOKEN";
+      device.token = TOKEN;
       await expect(device.handshake()).rejects.toThrow(
         "Could not connect to device, handshake timeout"
       );
@@ -186,8 +190,8 @@ describe("DeviceInfo", () => {
     test("handshake message but no handler", async () => {
       const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
       const packet = new Packet();
-      device.token = "TOKEN";
-      packet.token = "TOKEN";
+      device.token = TOKEN;
+      packet.token = TOKEN;
       packet.data = null;
       expect(device.onMessage(packet.raw)).toBeUndefined();
     });
@@ -195,8 +199,8 @@ describe("DeviceInfo", () => {
     test("swallows error because data is not a valid JSON", async () => {
       const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
       const packet = new Packet();
-      device.token = "TOKEN";
-      packet.token = "TOKEN";
+      device.token = TOKEN;
+      packet.token = TOKEN;
       packet.data = Buffer.from("test").fill(0);
       expect(device.onMessage(packet.raw)).toBeUndefined();
     });
@@ -204,8 +208,8 @@ describe("DeviceInfo", () => {
     test("does not call the promise resolvers because there's none", async () => {
       const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
       const packet = new Packet();
-      device.token = "TOKEN";
-      packet.token = "TOKEN";
+      device.token = TOKEN;
+      packet.token = TOKEN;
       const response = { id: "1", result: "something" };
       packet.data = Buffer.from(JSON.stringify(response));
       expect(device.onMessage(packet.raw)).toBeUndefined();
@@ -214,8 +218,8 @@ describe("DeviceInfo", () => {
     test("calls the promise resolver when there's a result", async () => {
       const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
       const packet = new Packet();
-      device.token = "TOKEN";
-      packet.token = "TOKEN";
+      device.token = TOKEN;
+      packet.token = TOKEN;
       const response = { id: "1", result: "something" };
       const promiseResolvers = { resolve: jest.fn(), reject: jest.fn() };
       device.promises.set("1", promiseResolvers);
@@ -227,8 +231,8 @@ describe("DeviceInfo", () => {
     test("calls the promise resolver's reject when there's an error", async () => {
       const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
       const packet = new Packet();
-      device.token = "TOKEN";
-      packet.token = "TOKEN";
+      device.token = TOKEN;
+      packet.token = TOKEN;
       const response = { id: "1", error: "something" };
       const promiseResolvers = { resolve: jest.fn(), reject: jest.fn() };
       device.promises.set("1", promiseResolvers);
@@ -238,5 +242,94 @@ describe("DeviceInfo", () => {
     });
   });
 
-  // TODO: Keep adding use cases
+  describe("call", () => {
+    test("happy-path: sends a method 'miIO.info'", async () => {
+      const packet = new Packet(false);
+      const parent = createParentMock();
+      const device = new DeviceInfo(parent, "MY-ID", "localhost", 1234);
+      device.token = TOKEN;
+      packet.token = TOKEN;
+      parent.socket.send.mockImplementation(
+        (data, size, length, port, address, cb) => {
+          cb();
+          // Return what you get embedded in `result`
+          packet.raw = Buffer.from(data);
+          const str = packet.data;
+          if (str !== null) {
+            const json = JSON.parse(str);
+            packet.data = JSON.stringify({ ...json, result: json });
+          }
+          device.onMessage(packet.raw);
+        }
+      );
+      const response = await device.call("miIO.info");
+      expect(response).toStrictEqual({
+        id: device.lastId,
+        method: "miIO.info",
+        params: [],
+      });
+    });
+
+    test("timeout error", async () => {
+      const packet = new Packet(false);
+      const parent = createParentMock();
+      const device = new DeviceInfo(parent, "MY-ID", "localhost", 1234);
+      packet.token = TOKEN;
+      device.token = TOKEN;
+      device.lastId = 10000;
+
+      parent.socket.send.mockImplementation(
+        (data, size, length, port, address, cb) => {
+          cb();
+          // Reply to handshakes only
+          packet.raw = data;
+          const str = packet.data;
+          if (str === null) {
+            device.onMessage(packet.raw);
+          }
+        }
+      );
+      await expect(
+        device.call("miIO.info", [], { retries: 2 })
+      ).rejects.toThrow("Call to device timed out");
+      expect(device.lastId).toBe(101);
+    });
+
+    describe("known errors", () => {
+      const packet = new Packet(false);
+      packet.token = TOKEN;
+
+      test.each`
+        code        | message           | expected
+        ${"-5001"}  | ${"invalid_arg"}  | ${"Invalid argument"}
+        ${"-5001"}  | ${"Test msg"}     | ${"Test msg"}
+        ${"-5005"}  | ${"params error"} | ${"Invalid argument"}
+        ${"-5005"}  | ${"Test msg"}     | ${"Test msg"}
+        ${"-10000"} | ${"Test msg"}     | ${"Method `miIO.info` is not supported"}
+        ${"OTHER"}  | ${"Test msg"}     | ${"Test msg"}
+      `("$code | $message", async ({ code, message, expected }) => {
+        const parent = createParentMock();
+        const device = new DeviceInfo(parent, "MY-ID", "localhost", 1234);
+        device.token = TOKEN;
+
+        parent.socket.send.mockImplementation(
+          (data, size, length, port, address, cb) => {
+            cb();
+            // Return what you get embedded in `result`
+            packet.raw = data;
+            const str = packet.data;
+            if (str !== null) {
+              const json = JSON.parse(str);
+              packet.data = JSON.stringify({
+                ...json,
+                error: { code, message },
+              });
+            }
+            device.onMessage(packet.raw);
+          }
+        );
+        await expect(device.call("miIO.info")).rejects.toThrow(expected);
+      });
+    });
+  });
 });

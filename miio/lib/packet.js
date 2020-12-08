@@ -57,9 +57,15 @@ class Packet {
 
       // Update the stamp to match server
       if (this._serverStampTime) {
-        const secondsPassed =
-          Math.floor(Date.now() - this._serverStampTime) / 1000;
-        this.header.writeUInt32BE(this._serverStamp + secondsPassed, 12);
+        const secondsPassed = Math.floor(
+          (Date.now() - this._serverStampTime) / 1000
+        );
+        try {
+          this.header.writeUInt32BE(this._serverStamp + secondsPassed, 12);
+        } catch (err) {
+          // If it fails to post the difference in seconds, just use the same stamp it previously had
+          this.header.writeUInt32BE(this._serverStamp, 12);
+        }
       }
 
       // Encrypt the data

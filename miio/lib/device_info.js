@@ -155,6 +155,11 @@ class DeviceInfo {
 
     try {
       return await Promise.race([this.handshakePromise, this._setTimeout()]);
+    } catch (err) {
+      if (err.code === "timeout") {
+        this.debug("<- Handshake timed out");
+      }
+      throw err;
     } finally {
       this.handshakeResolve = null;
       this.handshakePromise = null;
@@ -217,120 +222,95 @@ class DeviceInfo {
     );
   }
 
-  call(method, args = [], options) {
-    const request = {
-      method: method,
-      params: args,
-    };
+  async call(method, params = [], options = {}) {
+    const { retries = 5 } = options;
+    return await this._retryOnTimeout(retries, async (retriesLeft) => {
+      await this.handshake(); // Ensure the handshake is done
 
-    if (options && options.sid) {
-      // If we have a sub-device set it (used by Lumi Smart Home Gateway)
-      request.sid = options.sid;
-    }
-
-    // TODO: Go on with this refactoring
-    return new Promise((resolve, reject) => {
-      let resolved = false;
-
-      // Handler for incoming messages
-      const promise = {
-        resolve: (res) => {
-          resolved = true;
-          this.promises.delete(request.id);
-
-          resolve(res);
-        },
-        reject: (err) => {
-          resolved = true;
-          this.promises.delete(request.id);
-
-          if (!(err instanceof Error) && typeof err.code !== "undefined") {
-            const code = err.code;
-
-            const handler = ERRORS[code];
-            let msg;
-            if (handler) {
-              msg = handler(method, args, err.message);
-            } else {
-              msg = err.message || err.toString();
-            }
-
-            err = new Error(msg);
-            err.code = code;
-          }
-          reject(err);
-        },
+      const request = {
+        id: this._nextId(retries === retriesLeft), // Assign the identifier
+        method,
+        params,
+        sid: options.sid, // If we have a sub-device set it (used by Lumi Smart Home Gateway)
       };
 
-      let retriesLeft = (options && options.retries) || 5;
-      const retry = () => {
-        if (retriesLeft-- > 0) {
-          return send();
-        } else {
-          this.debug("Reached maximum number of retries, giving up");
-          const err = new Error("Call to device timed out");
-          err.code = "timeout";
-          promise.reject(err);
+      try {
+        // Enqueue promise listener to this request ID
+        const waitForResponse = this._waitForResponse(request.id);
+
+        // Create the JSON and send it
+        const json = JSON.stringify(request);
+        this.debug("-> (" + retriesLeft + ")", json);
+        this.packet.data = Buffer.from(json, "utf8");
+        await this._sendPacket();
+        return await waitForResponse;
+      } catch (err) {
+        if (!(err instanceof Error) && typeof err.code !== "undefined") {
+          const code = err.code;
+          const handler = ERRORS[code];
+          const msg = handler
+            ? handler(method, params, err)
+            : err.message || err.toString();
+
+          err = new Error(msg);
+          err.code = code;
         }
-      };
-
-      const send = async () => {
-        if (resolved) return;
-
-        try {
-          await this.handshake();
-        } catch (err) {
-          if (err.code === "timeout") {
-            this.debug("<- Handshake timed out");
-            return retry();
-          } else {
-            throw err;
-          }
-        }
-
-        try {
-          if (request.id) {
-            // Make sure to remove previously failed promises (retries)
-            this.promises.delete(request.id);
-          }
-
-          // Assign the identifier
-          request.id = this._nextId();
-
-          // Store reference to the promise so reply can be received
-          this.promises.set(request.id, promise);
-
-          // Create the JSON and send it
-          const json = JSON.stringify(request);
-          this.debug("-> (" + retriesLeft + ")", json);
-          this.packet.data = Buffer.from(json, "utf8");
-
-          // Queue a retry in 2 seconds
-          setTimeout(retry, 2000);
-
-          await this._sendPacket();
-        } catch (err) {
-          promise.reject(err);
-        }
-      };
-
-      send().catch(promise.reject);
+        throw err;
+      } finally {
+        this.promises.delete(request.id);
+      }
     });
   }
 
-  _nextId(request) {
+  async _waitForResponse(requestId) {
+    return new Promise((resolve, reject) => {
+      // Store reference to the promise so reply can be received
+      this.promises.set(requestId, { resolve, reject });
+    });
+  }
+
+  /**
+   * Retries the action defined in `actionPromiseFn` as many times as `retries`,
+   * only if the action fails due to a timeout.
+   * @param retries Max number of attempts
+   * @param actionPromiseFn Method that returns a promise to repeat
+   * @private
+   */
+  async _retryOnTimeout(retries = 5, actionPromiseFn) {
+    while (retries > 0) {
+      try {
+        const result = await Promise.race([
+          actionPromiseFn(retries),
+          this._setTimeout(),
+        ]);
+        return result;
+      } catch (err) {
+        if (err.code !== "timeout") {
+          throw err;
+        }
+        retries--;
+      }
+    }
+    this.debug("Reached maximum number of retries, giving up");
+    const maxRetriesError = new Error("Call to device timed out");
+    maxRetriesError.code = "timeout";
+    throw maxRetriesError;
+  }
+
+  _nextId(isFirstAttempt) {
     let id;
 
-    if (request.id) {
+    if (isFirstAttempt) {
+      id = this.lastId + 1;
+    } else {
       /*
        * This is a failure, increase the last id. Should
        * increase the chances of the new request to
        * succeed. Related to issues with the vacuum
-       * not responding such as described in issue #94.
+       * not responding such as described in issue
+       * https://github.com/aholstenson/miio/issues/94.
        */
       id = this.lastId + 100;
-    } else {
-      id = this.lastId + 1;
     }
 
     // Check that the id hasn't rolled over
