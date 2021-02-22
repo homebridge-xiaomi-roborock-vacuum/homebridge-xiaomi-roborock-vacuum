@@ -559,12 +559,12 @@ class XiaomiRoborockVacuum {
       // We still update the value in Homebridge. If we are calling the changed method is because we want to change it.
       this.services.pause
         .getCharacteristic(Characteristic.On)
-        .updateValue(isCleaning);
+        .updateValue(isCleaning === true);
 
       if (this.config.waterBox) {
         this.services.waterBox
           .getCharacteristic(Characteristic.On)
-          .updateValue(isCleaning);
+          .updateValue(isCleaning === true);
       }
     }
   }
