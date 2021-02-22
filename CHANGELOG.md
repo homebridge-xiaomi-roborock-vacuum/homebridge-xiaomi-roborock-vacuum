@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## 0.16.2
 
 - [Bug] Fix `pause` option not returning a state in some cases (#359).
 
