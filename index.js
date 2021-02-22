@@ -5,12 +5,6 @@ const miio = require("./miio");
 const util = require("util");
 const callbackifyLib = require("./lib/callbackify");
 const safeCall = require("./lib/safeCall");
-let sleep;
-try {
-  sleep = require("system-sleep");
-} catch (e) {
-  // noop
-}
 
 const noop = () => {};
 
@@ -112,7 +106,6 @@ class XiaomiRoborockVacuum {
     this.config.pauseWord = config.pauseWord || "Pause";
     this.config.findMe = config.findMe || false;
     this.config.findMeWord = config.findMeWord || "where are you";
-    this.config.delay = config.delay || false;
     this.config.roomTimeout =
       config.roomTimeout == undefined ? 0 : config.roomTimeout;
     this.services = {};
@@ -1506,7 +1499,6 @@ class XiaomiRoborockVacuum {
   }
 
   getServices() {
-    if (this.config.delay) this.sleep(5000);
     this.log.debug(`DEB getServices | ${this.model}`);
     return Object.keys(this.services).reduce((services, key) => {
       let currentServices = [];
@@ -1527,16 +1519,6 @@ class XiaomiRoborockVacuum {
       services = services.concat(currentServices);
       return services;
     }, []);
-  }
-
-  sleep(time) {
-    if (sleep) {
-      sleep(time);
-    } else {
-      this.log
-        .warn(`Can't use the delay option because the module "system-sleep" failed to install.\n
-      Make sure this optional dependency is properly installed if you want to use the "delay" option.`);
-    }
   }
 
   // CONSUMABLE / CARE
