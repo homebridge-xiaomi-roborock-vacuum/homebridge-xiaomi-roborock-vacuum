@@ -1,2 +1,11 @@
-# Do not publish Webstorm's config
+# Webstorm's config
 .idea/
+
+# Test files
+coverage/
+__snapshots__/
+**.test.js
+mocks.js
+
+# Development configs
+renovate.json
