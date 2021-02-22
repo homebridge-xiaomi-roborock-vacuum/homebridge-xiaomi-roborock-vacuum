@@ -544,7 +544,8 @@ class XiaomiRoborockVacuum {
     }
   }
 
-  changedPause(isCleaning) {
+  changedPause(newValue) {
+    const isCleaning = newValue === true;
     if (this.config.pause) {
       if (this.isNewValue("pause", isCleaning)) {
         this.log.debug(
