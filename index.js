@@ -113,7 +113,8 @@ class XiaomiRoborockVacuum {
     this.config.findMe = config.findMe || false;
     this.config.findMeWord = config.findMeWord || "where are you";
     this.config.delay = config.delay || false;
-    this.config.roomTimeout = config.roomTimeout == undefined ? 0 : config.roomTimeout;
+    this.config.roomTimeout =
+      config.roomTimeout == undefined ? 0 : config.roomTimeout;
     this.services = {};
 
     // Used to store the latest state to reduce logging
@@ -972,12 +973,17 @@ class XiaomiRoborockVacuum {
     }
   }
 
-  checkRoomTimeout(){
+  checkRoomTimeout() {
     if (this.config.roomTimeout > 0) {
-      this.log.info(`ACT setCleaningRoom | ${this.model} | Start timeout to clean rooms`);
-      clearTimeout(this._roomTimeout)
+      this.log.info(
+        `ACT setCleaningRoom | ${this.model} | Start timeout to clean rooms`
+      );
+      clearTimeout(this._roomTimeout);
       if (this.roomIdsToClean.size > 0) {
-        this._roomTimeout = setTimeout(this.setCleaning.bind(this, true), this.config.roomTimeout * 1000)
+        this._roomTimeout = setTimeout(
+          this.setCleaning.bind(this, true),
+          this.config.roomTimeout * 1000
+        );
       }
     }
   }
@@ -1403,6 +1409,7 @@ class XiaomiRoborockVacuum {
         `ERR getPauseState | ${this.model} | Failed getting the cleaning status.`,
         err
       );
+      throw err;
     }
   }
 
