@@ -544,7 +544,8 @@ class XiaomiRoborockVacuum {
     }
   }
 
-  changedPause(isCleaning) {
+  changedPause(newValue) {
+    const isCleaning = newValue === true;
     if (this.config.pause) {
       if (this.isNewValue("pause", isCleaning)) {
         this.log.debug(
@@ -559,12 +560,12 @@ class XiaomiRoborockVacuum {
       // We still update the value in Homebridge. If we are calling the changed method is because we want to change it.
       this.services.pause
         .getCharacteristic(Characteristic.On)
-        .updateValue(isCleaning === true);
+        .updateValue(isCleaning);
 
       if (this.config.waterBox) {
         this.services.waterBox
           .getCharacteristic(Characteristic.On)
-          .updateValue(isCleaning === true);
+          .updateValue(isCleaning);
       }
     }
   }
