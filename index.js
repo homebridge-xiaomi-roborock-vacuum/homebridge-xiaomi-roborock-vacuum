@@ -5,12 +5,6 @@ const miio = require("./miio");
 const util = require("util");
 const callbackifyLib = require("./lib/callbackify");
 const safeCall = require("./lib/safeCall");
-let sleep;
-try {
-  sleep = require("system-sleep");
-} catch (e) {
-  // noop
-}
 
 const noop = () => {};
 
@@ -112,8 +106,8 @@ class XiaomiRoborockVacuum {
     this.config.pauseWord = config.pauseWord || "Pause";
     this.config.findMe = config.findMe || false;
     this.config.findMeWord = config.findMeWord || "where are you";
-    this.config.delay = config.delay || false;
-    this.config.roomTimeout = config.roomTimeout == undefined ? 0 : config.roomTimeout;
+    this.config.roomTimeout =
+      config.roomTimeout == undefined ? 0 : config.roomTimeout;
     this.services = {};
 
     // Used to store the latest state to reduce logging
@@ -543,7 +537,8 @@ class XiaomiRoborockVacuum {
     }
   }
 
-  changedPause(isCleaning) {
+  changedPause(newValue) {
+    const isCleaning = newValue === true;
     if (this.config.pause) {
       if (this.isNewValue("pause", isCleaning)) {
         this.log.debug(
@@ -558,12 +553,12 @@ class XiaomiRoborockVacuum {
       // We still update the value in Homebridge. If we are calling the changed method is because we want to change it.
       this.services.pause
         .getCharacteristic(Characteristic.On)
-        .updateValue(isCleaning);
+        .updateValue(isCleaning === true);
 
       if (this.config.waterBox) {
         this.services.waterBox
           .getCharacteristic(Characteristic.On)
-          .updateValue(isCleaning);
+          .updateValue(isCleaning === true);
       }
     }
   }
@@ -972,12 +967,17 @@ class XiaomiRoborockVacuum {
     }
   }
 
-  checkRoomTimeout(){
+  checkRoomTimeout() {
     if (this.config.roomTimeout > 0) {
-      this.log.info(`ACT setCleaningRoom | ${this.model} | Start timeout to clean rooms`);
-      clearTimeout(this._roomTimeout)
+      this.log.info(
+        `ACT setCleaningRoom | ${this.model} | Start timeout to clean rooms`
+      );
+      clearTimeout(this._roomTimeout);
       if (this.roomIdsToClean.size > 0) {
-        this._roomTimeout = setTimeout(this.setCleaning.bind(this, true), this.config.roomTimeout * 1000)
+        this._roomTimeout = setTimeout(
+          this.setCleaning.bind(this, true),
+          this.config.roomTimeout * 1000
+        );
       }
     }
   }
@@ -1403,6 +1403,7 @@ class XiaomiRoborockVacuum {
         `ERR getPauseState | ${this.model} | Failed getting the cleaning status.`,
         err
       );
+      throw err;
     }
   }
 
@@ -1498,7 +1499,6 @@ class XiaomiRoborockVacuum {
   }
 
   getServices() {
-    if (this.config.delay) this.sleep(5000);
     this.log.debug(`DEB getServices | ${this.model}`);
     return Object.keys(this.services).reduce((services, key) => {
       let currentServices = [];
@@ -1519,16 +1519,6 @@ class XiaomiRoborockVacuum {
       services = services.concat(currentServices);
       return services;
     }, []);
-  }
-
-  sleep(time) {
-    if (sleep) {
-      sleep(time);
-    } else {
-      this.log
-        .warn(`Can't use the delay option because the module "system-sleep" failed to install.\n
-      Make sure this optional dependency is properly installed if you want to use the "delay" option.`);
-    }
   }
 
   // CONSUMABLE / CARE

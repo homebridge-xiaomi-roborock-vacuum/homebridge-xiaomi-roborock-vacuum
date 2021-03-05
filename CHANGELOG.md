@@ -1,5 +1,13 @@
 # Changelog
 
+## Next
+
+- **[Breaking change]** Delete the `delay` option. The reasoning: it slows down the start and `homebridge@1.3.0` marks this plugin as slow (#361). Also, it doesn't work as expected in all the OSs.
+
+## 0.16.2
+
+- [Bug] Fix `pause` option not returning a state in some cases (#359).
+
 ## 0.16.1
 
 - [Bug] Fix `rockrobo.vacuum.v1` speeds (#311) (reverting the changes in #296 because it's breaking some everyone else).
