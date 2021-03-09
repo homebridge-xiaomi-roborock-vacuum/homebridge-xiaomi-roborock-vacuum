@@ -829,7 +829,7 @@ class XiaomiRoborockVacuum {
         `INF getSerialNumber | ${this.model} | Serial Number is ${serialNumber}`
       );
 
-      return serialNumber;
+      return `${serialNumber}`;
     } catch (err) {
       this.log.warn(
         `ERR getSerialNumber | Failed getting the serial number.`,
