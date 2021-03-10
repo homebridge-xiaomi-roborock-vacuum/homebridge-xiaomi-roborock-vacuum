@@ -15,4 +15,4 @@ renovate.json
 
 # Docs
 images/
-**.md
+miio/docs/
