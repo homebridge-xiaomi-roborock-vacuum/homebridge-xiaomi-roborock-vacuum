@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## 0.17.1
 
 - [Bug] Percentages could be over 100% when maintenance is long overdue, returning `Filter Life Level` below 0 (#366).
 
