@@ -9,3 +9,10 @@ mocks.js
 
 # Development configs
 renovate.json
+
+# CI configs
+.github/
+
+# Docs
+images/
+miio/docs/
