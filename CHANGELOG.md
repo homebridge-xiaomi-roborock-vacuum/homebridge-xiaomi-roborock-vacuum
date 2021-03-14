@@ -3,6 +3,8 @@
 ## Next
 
 - [Enhancement] Reduce NPM bundle size (#376)
+- [Enhancement] Revisit `miio` connection layer (#334)    
+  This is an attempt to fix the reconnection issues (#367, #299, #227).
 
 ## 0.17.1
 
