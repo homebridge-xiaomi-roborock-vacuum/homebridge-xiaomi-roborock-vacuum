@@ -32,4 +32,4 @@ jobs:
       - run: npx codecov@3.7.0
         env:
           CI: true
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          CODECOV_TOKEN: eb2ac9d8-8f8f-4901-aaa9-73670a149904
