@@ -18,9 +18,8 @@ First make sure you have installed the `miio-vacuum` app:
 ### Figure out your device token before starting
 
 If you do not have the token of your device yet, run `miio-vacuum --discover` to list
-devices on your network and their auto-extracted tokens. If the token is not
-found, follow the [instructions to find device tokens](management.md). This needs
-to be done before you start your capture or the capture will be useless as
+devices on your network and their auto-extracted tokens. This needs
+to be done before you start your capture, or the capture will be useless as
 resetting the device will generate a new token.
 
 ### Running Wireshark and Mi Home

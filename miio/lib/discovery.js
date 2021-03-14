@@ -29,14 +29,6 @@ const Browser = (module.exports.Browser = class Browser extends TimedDiscovery {
       maxStaleTime: (options.cacheTime || 1800) * 1000,
     });
 
-    if (
-      typeof options.useTokenStorage !== "undefined"
-        ? options.useTokenStorage
-        : true
-    ) {
-      this.tokens = require("./tokens");
-    }
-
     this.manualTokens = options.tokens || {};
     this[tryAdd] = this[tryAdd].bind(this);
 

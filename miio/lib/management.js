@@ -1,7 +1,5 @@
 "use strict";
 
-const tokens = require("./tokens");
-
 /**
  * Management of a device. Supports quering it for information and changing
  * the WiFi settings.
@@ -65,41 +63,6 @@ class DeviceManagement {
    */
   wirelessState() {
     return this.api.call("miIO.wifi_assoc_state");
-  }
-
-  /**
-   * Update the token used to connect to this device.
-   *
-   * @param {string|Buffer} token
-   */
-  updateToken(token) {
-    if (token instanceof Buffer) {
-      token = token.toString("hex");
-    } else if (typeof token !== "string") {
-      return Promise.reject(
-        new Error("Token must be a hex-string or a Buffer")
-      );
-    }
-
-    // Lazily imported to solve recursive dependencies
-    const connectToDevice = require("./connectToDevice");
-
-    return connectToDevice({
-      address: this.address,
-      port: this.port,
-      token: token,
-    })
-      .then((device) => {
-        // Connection to device could be performed
-        return tokens
-          .update(this.api.id, token)
-          .then(() => device.destroy())
-          .then(() => true);
-      })
-      .catch((err) => {
-        // Connection to device failed with the token
-        return false;
-      });
   }
 }
 

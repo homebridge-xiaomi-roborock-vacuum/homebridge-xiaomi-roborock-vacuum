@@ -18,12 +18,6 @@ const miio = require("./miio");
 Resolve a handle to the device:
 
 ```javascript
-// Resolve a device, resolving the token automatically or from storage
-miio
-  .device({ address: "192.168.100.8" })
-  .then((device) => console.log("Connected to", device))
-  .catch((err) => handleErrorHere);
-
 // Resolve a device, specifying the token (see below for how to get the token)
 miio
   .device({ address: "192.168.100.8", token: "token-as-hex" })
@@ -117,7 +111,6 @@ devices.on("unavailable", (device) => {
 - `cacheTime`, the maximum amount of seconds a device can be unreachable before it becomes unavailable. Default: `1800`
 - `filter`, function used to filter what devices are connected to. Default: `reg => true`
 - `skipSubDevices`, if sub devices on Aqara gateways should be skipped. Default: `false`
-- `useTokenStorage`, if tokens should be fetched from storage (see device management). Default: `true`
 - `tokens`, object with manual mapping between ids and tokens (advanced, use [Device management](docs/management.md) if possible)
 
 See [Advanced API](docs/advanced-api.md) for details about `miio.browse()`.

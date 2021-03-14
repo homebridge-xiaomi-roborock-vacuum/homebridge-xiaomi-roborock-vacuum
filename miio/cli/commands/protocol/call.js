@@ -5,7 +5,12 @@ const deviceFinder = require("../../device-finder");
 
 exports.command = "call <idOrIp> <method> [params]";
 exports.description = "Call a raw method on a device";
-exports.builder = {};
+exports.builder = {
+  token: {
+    type: "string",
+    description: "The known token of the device to communicate with",
+  },
+};
 
 exports.handler = function (argv) {
   let target = argv.idOrIp;

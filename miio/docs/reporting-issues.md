@@ -1,6 +1,6 @@
 # Reporting issues
 
-Any report of issues within `miio` library is welcome. This includes both
+Any report of issues within `miio-vacuum` library is welcome. This includes both
 bugs and feature requests, within the generic part of related to a specific
 device.
 
@@ -16,13 +16,13 @@ or if it is listed as Unknown you can read more about figuring out if your
 ## Something with your device does not work
 
 To make debugging an issue with your device easier it helps to include some
-debug information. You will need to have the `miio` command line interface
+debug information. You will need to have the `miio-vacuum` command line interface
 installed to get some of this information. You can install it via `npm` in a
 terminal window:
 
 `npm install -g homebridge-xiaomi-roborock-vacuum`
 
-The `miio` tool comes with a command for inspecting a device. You will need
+The `miio-vacuum` tool comes with a command for inspecting a device. You will need
 either the device id or address of your device. To use the inspect tool run:
 
 `miio-vacuum inspect id-or-address --token tokenAsHex`
@@ -42,6 +42,6 @@ test case including it will be greatly appreciated.
 
 ## Feature requests
 
-Open an issue and describe the feature you want. If its related to a device
+Open an issue and describe the feature you want. If it's related to a device
 you can include the same information as described in the section
 "Something with your device does not work".

@@ -3,8 +3,6 @@
 const log = require("../log");
 const deviceFinder = require("../device-finder");
 
-const tokens = require("../../lib/tokens");
-
 exports.command = "configure <idOrIp>";
 exports.description = "Control a device by invoking the given method";
 exports.builder = {
@@ -40,8 +38,6 @@ exports.handler = function (argv) {
       })
       .then((result) => {
         log.plain("Updated wireless configuration");
-
-        return tokens.update(device.id, device.management.token);
       })
       .catch((err) => {
         log.error("Encountered an error while updating wireless");
