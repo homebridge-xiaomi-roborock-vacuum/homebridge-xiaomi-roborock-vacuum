@@ -41,7 +41,7 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "rimraf ./dist && tsc",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "postpublish": "npm run clean",
     "lint": "prettier --check **/*.*",
     "lint:fix": "prettier --write **/*.*",
