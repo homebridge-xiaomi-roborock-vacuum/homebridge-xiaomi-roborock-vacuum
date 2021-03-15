@@ -35,6 +35,7 @@ export = (homebridge: API) => {
 class XiaomiRoborockVacuumPlugin implements AccessoryPlugin {
   private readonly device: XiaomiRoborockVacuum;
   private readonly services: Record<string, ServiceType> = {};
+
   constructor(
     private readonly log: Logging,
     private readonly config: Partial<Config>,
@@ -102,6 +103,7 @@ class XiaomiRoborockVacuumPlugin implements AccessoryPlugin {
     this.config.findMeWord = this.config.findMeWord || "where are you";
     this.config.roomTimeout = this.config.roomTimeout ?? 0;
   }
+
   private validateConfig() {
     if (!this.config.ip) {
       throw new Error("You must provide an ip address of the vacuum cleaner.");

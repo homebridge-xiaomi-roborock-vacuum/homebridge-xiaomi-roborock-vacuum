@@ -1,5 +1,3 @@
-"use strict";
-
 import type { ModesHomekitVsMiLevel, SpeedModes } from "./types";
 
 type SimplifiedSpeedModes = Record<

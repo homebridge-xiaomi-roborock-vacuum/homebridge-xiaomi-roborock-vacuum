@@ -1,5 +1,3 @@
-"use strict";
-
 import { speedmodes } from "./speedmodes";
 import { watermodes } from "./watermodes";
 import type { ModelDefinition } from "./types";

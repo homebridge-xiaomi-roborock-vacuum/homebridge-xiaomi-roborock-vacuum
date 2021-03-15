@@ -1,5 +1,3 @@
-"use strict";
-
 import type { SpeedModes } from "./types";
 
 export const watermodes: SpeedModes = {

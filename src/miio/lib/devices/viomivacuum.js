@@ -12,18 +12,21 @@ const MiioApi = require("../device");
 const BatteryLevel = require("./capabilities/battery-level");
 const checkResult = require("../checkResult");
 
-module.exports = class extends Vacuum.with(
-  MiioApi,
-  BatteryLevel,
-  AutonomousCharging,
-  AutonomousCleaning,
-  SpotCleaning,
-  AdjustableFanSpeed,
-  ChargingState
+module.exports = class extends (
+  Vacuum.with(
+    MiioApi,
+    BatteryLevel,
+    AutonomousCharging,
+    AutonomousCleaning,
+    SpotCleaning,
+    AdjustableFanSpeed,
+    ChargingState
+  )
 ) {
   static get type() {
     return "miio:vacuum";
   }
+
   constructor(options) {
     super(options);
 
