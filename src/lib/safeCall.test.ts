@@ -1,5 +1,6 @@
 "use strict";
-const safeCall = require("./safeCall");
+
+import { safeCall } from "./safeCall";
 
 describe("safeCall", () => {
   test("call the method if the value is defined", () => {

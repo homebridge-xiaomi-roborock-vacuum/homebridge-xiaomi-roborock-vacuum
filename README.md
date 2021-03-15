@@ -15,19 +15,19 @@ It is currently presented in the Home App in the form of a Fan because Apple don
 
 <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/rockrobo.vacuum.v1.jpg" style="border:1px solid lightgray" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s5.jpg" style="border:1px solid lightgray" alt="Roborock S50 2nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s55.jpg" style="border:1px solid lightgray" alt="Roborock S55 2nd Generation Black" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s6.jpg" style="border:1px solid lightgray" alt="Roborock S6/T6 3nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.c10.jpg" style="border:1px solid lightgray" alt="Roborock Xiaowa Lite C10" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s5.max.jpg" style="border:1px solid lightgray" alt="Roborock S5 Max" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s6.maxv.jpg" style="border:1px solid lightgray" alt="Roborock S6 MaxV" width="300">
 
-For the underlying communication layer, it uses a port of the no-longer maintained library [miio](https://github.com/aholstenson/miio). You'll find the code in the directory [./miio](./miio).
+For the underlying communication layer, it uses a port of the no-longer maintained library [miio](https://github.com/aholstenson/miio). You'll find the code in the directory [./miio](src/miio).
 
 ## Features
 
 - **Fan** as On-/Off-Switch. When switching off, directly back to the charging station.
-  - [Fanspeed levels](./models/speedmodes.js) adjustable via 3D Touch / Force Touch.
+  - [Fanspeed levels](src/models/speedmodes.js) adjustable via 3D Touch / Force Touch.
 - Battery status and condition in the device details. Low battery alert.
 - Pause switch (optional).
 - Room cleaning (optional): Read [Room cleaning](#room-cleaning) to understand how it works.
 - Zone cleaning (optional).
 - Occupancy sensor (similar to motion sensor) for dock status (optional).
 - Second Fan for water box modes (optional).
-  - [Watermode levels](./models/watermodes.js) only when enabled in config, and the device supports it.
+  - [Watermode levels](src/models/watermodes.js) only when enabled in config, and the device supports it.
 
 <img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/screenshot1.jpg?raw=true" alt="Screenshot Apple HomeKit with homebridge-xiaomi-roborock-vacuum" width="350">
 <img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/screenshot2.jpg?raw=true" alt="Screenshot Elgato Eve App with homebridge-xiaomi-roborock-vacuum" width="350">
@@ -167,12 +167,12 @@ NOTE: We are not currently aware of how to retrieve the token from the Roborock 
 
 As new users join our community, and use this plugin, we try to learn from their device, and keep up with the new devices Xiaomi releases. However, the main developer @afharo, only owns the model S5, and he can't test the features on other models. If you wonder whether your device is supported, please:
  
-1. Check the [./models/models.js](./models/models.js) file to see if your device is already in the explicit list.
+1. Check the [./models/models.js](src/models/models.js) file to see if your device is already in the explicit list.
 2. If not, maybe it matches de _default_ behaviour (just try running the plugin and see if it works).
     1. If it works, but the vacuum modes (aka speeds) are wrong: add your model to the list in 1 with the right mapping.
     2. If it doesn't work, please, try making sure the IP and token are correct, by running the command `miio-vacuum inspect id-or-address --token tokenAsHex`.  
     HINT: Try a couple of times, just in case there's a network glitch.
-    3. If you can connect and see the details of your robot, try running the manual commands like explained in [here](./miio/docs/protocol.md#testing-commands).  
+    3. If you can connect and see the details of your robot, try running the manual commands like explained in [here](src/miio/docs/protocol.md#testing-commands).  
     HINT: You can find the list of commands for your device in the Python project [python-miio](https://github.com/rytilahti/python-miio).
 
 ## My model is, allegedly, supported, but it fails to connect

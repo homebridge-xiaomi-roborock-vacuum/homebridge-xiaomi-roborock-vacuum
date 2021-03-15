@@ -1,6 +1,13 @@
 "use strict";
 
-const SPEEDMODES = {
+import type { ModesHomekitVsMiLevel, SpeedModes } from "./types";
+
+type SimplifiedSpeedModes = Record<
+  string,
+  Array<Omit<ModesHomekitVsMiLevel, "homekitTopLevel">>
+>;
+
+const SPEEDMODES: SimplifiedSpeedModes = {
   gen1: [
     // 0%      = Off / Aus
     {
@@ -258,24 +265,20 @@ const SPEEDMODES = {
  *
  * @returns object The SPEEDMODES + the addition of the `homekitTopLevel` property to each entry
  */
-function autoAssignHomekitTopLevel() {
-  const generations = Object.keys(SPEEDMODES);
-  return generations.reduce((acc, gen) => {
-    const speedmodes = SPEEDMODES[gen].map((mode, index, modes) => {
-      const step = Math.floor(100 / (modes.length - 1));
-      return Object.assign(
-        {},
-        {
+function autoAssignHomekitTopLevel(): SpeedModes {
+  return Object.fromEntries(
+    Object.entries(SPEEDMODES).map(([gen, modes]) => {
+      const speedmodes = modes.map((mode, index) => {
+        const step = Math.floor(100 / (modes.length - 1));
+        return {
           // if it's the last element, max it out to 100%
           homekitTopLevel: index === modes.length - 1 ? 100 : index * step,
-        },
-        mode // set later should we want to overwrite this logic in the SPEEDMODES definition
-      );
-    });
-    return Object.assign({}, acc, {
-      [gen]: speedmodes,
-    });
-  }, {});
+          ...mode, // set later should we want to overwrite this logic in the SPEEDMODES definition
+        };
+      });
+      return [gen, speedmodes];
+    })
+  );
 }
 
-module.exports = autoAssignHomekitTopLevel();
+export const speedmodes = autoAssignHomekitTopLevel();
