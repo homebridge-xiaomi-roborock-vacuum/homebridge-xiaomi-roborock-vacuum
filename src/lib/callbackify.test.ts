@@ -1,5 +1,6 @@
 "use strict";
-const callbackify = require("./callbackify");
+
+import { callbackify } from "./callbackify";
 
 describe("callbackify", () => {
   test("resolves the callback with the value from the promise", (done) => {

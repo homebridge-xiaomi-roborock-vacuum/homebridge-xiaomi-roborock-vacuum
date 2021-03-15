@@ -1,6 +1,10 @@
 # Changelog
 
-## Next
+## Next Major
+
+- [Enhancement] Code migrated to Typescript (#170)
+- [Enhancement] Register as platform (#247)
+- [Enhancement] Boost tested code-coverage (#171)
 
 ## 0.18.1
 

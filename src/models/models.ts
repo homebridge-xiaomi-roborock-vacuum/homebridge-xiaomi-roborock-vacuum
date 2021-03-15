@@ -1,12 +1,15 @@
 "use strict";
 
-const speedmodes = require("./speedmodes");
-const watermodes = require("./watermodes");
+import { speedmodes } from "./speedmodes";
+import { watermodes } from "./watermodes";
+import type { ModelDefinition } from "./types";
 
-module.exports = {
-  default: {
-    speed: speedmodes.gen4,
-  },
+export const MODELS: Record<string, ModelDefinition[]> = {
+  default: [
+    {
+      speed: speedmodes.gen4,
+    },
+  ],
   "rockrobo.vacuum.v1": [
     {
       speed: speedmodes["gen2-no_mop"],
@@ -83,9 +86,11 @@ module.exports = {
   ],
 
   // Viomi
-  viomi: {
-    speed: speedmodes.viomi,
-  },
+  viomi: [
+    {
+      speed: speedmodes.viomi,
+    },
+  ],
   "dreame.vacuum.mc1808": [
     {
       speed: speedmodes.viomi,
