@@ -1,5 +1,3 @@
-"use strict";
-
 import { callbackify } from "./callbackify";
 
 describe("callbackify", () => {

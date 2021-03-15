@@ -81,6 +81,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
   private connectingPromise: Promise<void> | null = null;
   private getStateInterval = setTimeout(noop, GET_STATE_INTERVAL_MS);
   private firmware: string | undefined;
+
   constructor(
     private readonly log: Logging,
     private readonly config: Partial<Config>

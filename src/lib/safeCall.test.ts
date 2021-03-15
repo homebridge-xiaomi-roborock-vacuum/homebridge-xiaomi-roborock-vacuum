@@ -1,5 +1,3 @@
-"use strict";
-
 import { safeCall } from "./safeCall";
 
 describe("safeCall", () => {
