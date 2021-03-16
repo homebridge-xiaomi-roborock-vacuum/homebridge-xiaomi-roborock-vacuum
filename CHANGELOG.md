@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.18.1
+
+- [Bug] Private methods starting with `#` do not work in Node.js v12 (#382)
+
 ## 0.18.0
 
 - [Enhancement] Reduce NPM bundle size (#376)
