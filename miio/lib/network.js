@@ -104,7 +104,7 @@ class Network extends EventEmitter {
       }
     }
 
-    const cachedDevice = this.#cacheDevice(device);
+    const cachedDevice = this.cacheDevice(device);
     await cachedDevice.enrich();
     return cachedDevice;
   }
@@ -115,7 +115,7 @@ class Network extends EventEmitter {
    * @param device {@link DeviceInfo}
    * @returns {DeviceInfo} New device or the previously cached one
    */
-  #cacheDevice(device) {
+  cacheDevice(device) {
     if (!this.devices.has(device.id)) {
       // This is a new device, keep track of it
       this.devices.set(device.id, device);
