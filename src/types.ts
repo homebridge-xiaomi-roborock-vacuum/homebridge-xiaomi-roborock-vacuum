@@ -18,10 +18,12 @@ export interface Config {
 
 export interface ConfigRoom {
   name: string;
-  id: number;
+  id: string;
 }
 
 export interface ConfigZone {
   name: string;
-  zone: Array<[number, number, number, number, number]>;
+  zone: Array<
+    [number, number, number, number] | [number, number, number, number, number]
+  >;
 }

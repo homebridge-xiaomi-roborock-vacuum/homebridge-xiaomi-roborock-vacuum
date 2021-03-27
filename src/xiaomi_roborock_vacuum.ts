@@ -1,8 +1,7 @@
-import type { Config } from "./types";
+import type { Config, ConfigZone } from "./types";
 import type { Logging } from "homebridge";
 import * as events from "events";
 import { safeCall } from "./lib/safeCall";
-import { callbackify as callbackifyLib } from "./lib/callbackify";
 import type { ModelDefinition } from "./models";
 import { MODELS } from "./models";
 import semver from "semver";
@@ -75,7 +74,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
   };
 
   private readonly cachedState = new Map<string, unknown>();
-  private roomIdsToClean = new Set<number>();
+  public readonly roomIdsToClean = new Set<string>();
   private device: typeof miio | null = null;
   private connectRetry = setTimeout(noop, 100);
   private connectingPromise: Promise<void> | null = null;
@@ -179,14 +178,6 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
         "STA getDevice | BatteryLevel: " + this.device.property("batteryLevel")
       );
 
-      if (this.config.autoroom) {
-        if (Array.isArray(this.config.autoroom)) {
-          await this.getRoomList();
-        } else {
-          await this.getRoomMap();
-        }
-      }
-
       try {
         const serial = await this.getSerialNumber();
         this.emit("serial_number", serial);
@@ -208,13 +199,12 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
       this.device.on("stateChanged", (state) => {
         if (state.key === "cleaning") {
           this.changedCleaning(state.value);
-          this.changedPause(state.value);
         } else if (state.key === "charging") {
           this.changedCharging(state.value);
         } else if (state.key === "fanSpeed") {
-          this.changedSpeed(state.value);
+          this.emit("changedSpeed", state.value);
         } else if (state.key === "batteryLevel") {
-          this.changedBattery(state.value);
+          this.emit("changedBatteryLevel", state.value);
         } else {
           this.log.debug(
             `DEB stateChanged | ${this.model} | Not supported stateChanged event: ${state.key}:${state.value}`
@@ -282,14 +272,15 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
 
       safeCall(state.cleaning, (cleaning) => this.changedCleaning(cleaning));
       safeCall(state.charging, (charging) => this.changedCharging(charging));
-      safeCall(state.fanSpeed, (fanSpeed) => this.changedSpeed(fanSpeed));
-      safeCall(state.batteryLevel, (batteryLevel) =>
-        this.changedBattery(batteryLevel)
+      safeCall(state.fanSpeed, (fanSpeed) =>
+        this.emit("changedSpeed", fanSpeed)
       );
-      safeCall(state.cleaning, (cleaning) => this.changedPause(cleaning));
+      safeCall(state.batteryLevel, (batteryLevel) =>
+        this.emit("changedBatteryLevel", batteryLevel)
+      );
       if (this.config.waterBox) {
         safeCall(state["water_box_mode"], (waterBoxMode) =>
-          this.changedWaterSpeed(waterBoxMode)
+          this.emit("changedWaterSpeed", waterBoxMode)
         );
       }
 
@@ -338,7 +329,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
     }
   }
 
-  async getCleaning() {
+  public async getCleaning() {
     try {
       const isCleaning = this.isCleaning;
       this.log.info(
@@ -355,12 +346,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
     }
   }
 
-  async getCleaningRoom(roomId) {
-    await this.ensureDevice("getCleaningRoom");
-    return this.roomIdsToClean.has(roomId);
-  }
-
-  async setCleaning(state) {
+  public async setCleaning(state: boolean) {
     await this.ensureDevice("setCleaning");
     this.log.info(
       `ACT setCleaning | ${this.model} | Set cleaning to ${state}}`
@@ -409,54 +395,9 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
     }
   }
 
-  async setCleaningRoom(state, roomId) {
-    await this.ensureDevice("setCleaning");
-
+  public async setCleaningZone(state: boolean, zone: ConfigZone["zone"]) {
     try {
-      if (state && !this.isCleaning && !this.isPaused) {
-        this.log.info(
-          `ACT setCleaningRoom | ${this.model} | Enable cleaning Room ID ${roomId}.`
-        );
-        // Delete then add, to maintain the correct order.
-        this.roomIdsToClean.delete(roomId);
-        this.roomIdsToClean.add(roomId);
-        this.checkRoomTimeout();
-      } else if (!state && !this.isCleaning && !this.isPaused) {
-        this.log.info(
-          `ACT setCleaningRoom | ${this.model} | Disable cleaning Room ID ${roomId}.`
-        );
-        this.roomIdsToClean.delete(roomId);
-        this.checkRoomTimeout();
-      }
-    } catch (err) {
-      this.log.error(
-        `ERR setCleaningRoom | ${this.model} | Failed to set cleaning to ${state}`,
-        err
-      );
-      throw err;
-    }
-  }
-
-  checkRoomTimeout() {
-    if (this.config.roomTimeout > 0) {
-      this.log.info(
-        `ACT setCleaningRoom | ${this.model} | Start timeout to clean rooms`
-      );
-      clearTimeout(this._roomTimeout);
-      if (this.roomIdsToClean.size > 0) {
-        this._roomTimeout = setTimeout(
-          this.setCleaning.bind(this, true),
-          this.config.roomTimeout * 1000
-        );
-      }
-    }
-  }
-
-  async setCleaningZone(state, zone) {
-    await this.ensureDevice("setCleaning");
-
-    try {
-      if (state && !this.isCleaning) {
+      if (state && !this.device.isCleaning) {
         // Start cleaning
         this.log.info(
           `ACT setCleaning | ${this.model} | Start cleaning Zone ${zone}, not charging.`
@@ -485,13 +426,14 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
       );
       throw err;
     }
+    return state;
   }
 
-  async getRoomList() {
+  public async getRoomIDsFromTimer(): Promise<string[]> {
     await this.ensureDevice("getRoomList");
 
     try {
-      const timers = await this.device.getTimer();
+      const timers: any[] = await this.device.getTimer();
 
       // Find specific timer containing the room order
       // Timer needs to be scheduled for 00:00 and inactive
@@ -502,107 +444,26 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
         this.log.error(
           `ERR getRoomList | ${this.model} | Could not find a timer for autoroom`
         );
-        return;
+        return [];
       }
 
-      let roomIds = leetTimer[2][1][1]["segments"].split(`,`).map((x) => +x);
-      this.log.debug(
-        `DEB getRoomList | ${this.model} | Room IDs are ${roomIds}`
-      );
-
-      if (roomIds.length !== this.config.autoroom.length) {
-        this.log.error(
-          `ERR getRoomList | ${this.model} | Number of rooms in config does not match number of rooms in the timer`
-        );
-        return;
-      }
-      let roomMap = [];
-      for (const [i, roomId] of roomIds.entries()) {
-        this.services.rooms[this.config.autoroom[i]].roomId = roomId;
-        roomMap.push({ id: roomId, name: this.config.autoroom[i] });
-      }
-      this.log.info(
-        `INF getRoomList | ${this.model} | Created "rooms": ${JSON.stringify(
-          roomMap
-        )}`
-      );
+      return leetTimer[2][1][1]["segments"].split(`,`);
     } catch (err) {
       this.log.error(`ERR getRoomList | Failed getting the Room List.`, err);
       throw err;
     }
   }
 
-  async getRoomMap() {
+  public async getRoomMap() {
     await this.ensureDevice("getRoomMap");
 
     try {
       const map = await this.device.getRoomMap();
-      this.log.info(`INF getRoomMap | ${this.model} | Map is ${map}`);
-      for (let val of map) {
-        this.createRoom(val[0], val[1]);
-      }
+      return map;
     } catch (err) {
       this.log.error(`ERR getRoomMap | Failed getting the Room Map.`, err);
       throw err;
     }
-  }
-
-  createRoom(roomId, roomName) {
-    // Make sure `this.device` exists before calling any of the methods
-    const callbackify = (fn, cb) =>
-      this.device ? callbackifyLib(fn, cb) : cb(new Error("Not connected yet"));
-
-    this.log.info(
-      `INF createRoom | ${this.model} | Room ${roomName} (${roomId})`
-    );
-
-    this.services.rooms = this.services.rooms || {};
-    this.services.rooms[roomName] = new Service.Switch(
-      `${this.config.cleanword} ${roomName}`,
-      "roomService" + roomId
-    );
-    this.services.rooms[roomName].roomId = roomId;
-    this.services.rooms[roomName]
-      .getCharacteristic(Characteristic.On)
-      .on("get", (cb) =>
-        callbackify(
-          () => this.getCleaningRoom(this.services.rooms[roomName].roomId),
-          cb
-        )
-      )
-      .on("set", (newState, cb) =>
-        callbackify(
-          () =>
-            this.setCleaningRoom(
-              newState,
-              this.services.rooms[roomName].roomId
-            ),
-          cb
-        )
-      );
-  }
-
-  createZone(zoneName, zoneParams) {
-    // Make sure `this.device` exists before calling any of the methods
-    const callbackify = (fn, cb) =>
-      this.device ? callbackifyLib(fn, cb) : cb(new Error("Not connected yet"));
-
-    this.log.info(
-      `INF createRoom | ${this.model} | Zone ${zoneName} (${zoneParams})`
-    );
-    this.services[zoneName] = new Service.Switch(
-      `${this.config.cleanword} ${zoneName}`,
-      "zoneCleaning" + zoneName
-    );
-    this.services[zoneName]
-      .getCharacteristic(Characteristic.On)
-      .on("get", (cb) => callbackify(() => this.getCleaning(), cb))
-      .on("set", (newState, cb) =>
-        callbackify(() => this.setCleaningZone(newState, zoneParams), cb)
-      )
-      .on("change", (oldState, newState) => {
-        this.changedPause(newState);
-      });
   }
 
   public findSpeedModeFromMiio(speed: number) {
@@ -613,7 +474,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
     return speedModes.find((mode) => mode.miLevel === speed);
   }
 
-  async getSpeed() {
+  public async getSpeed() {
     await this.ensureDevice("getSpeed");
 
     const speed = await this.device.fanSpeed();
@@ -621,7 +482,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
       `INF getSpeed | ${this.model} | Fanspeed is ${speed} over miIO. Converting to HomeKit`
     );
 
-    const { homekitTopLevel, name } = this.findSpeedModeFromMiio(speed);
+    const { homekitTopLevel, name } = this.findSpeedModeFromMiio(speed) || {};
 
     this.log.info(
       `INF getSpeed | ${this.model} | Fanspeed is ${speed} over miIO "${name}" > HomeKit speed ${homekitTopLevel}%`
@@ -630,7 +491,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
     return homekitTopLevel || 0;
   }
 
-  async setSpeed(speed) {
+  public async setSpeed(speed: string | number) {
     await this.ensureDevice("setSpeed");
 
     if (typeof speed === "number") {
@@ -640,7 +501,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
     }
 
     // Get the speed modes for this model
-    const speedModes = this.findSpeedModes().speed;
+    const speedModes = this.speedmodes.speed;
 
     let miLevel = null;
     let name = null;
@@ -649,7 +510,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
       // Speed set by number
       // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
       const safeSpeed = Math.min(
-        parseInt(speed),
+        speed,
         speedModes[speedModes.length - 1].homekitTopLevel
       );
 
@@ -657,8 +518,10 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
       const speedMode = speedModes.find(
         (mode) => safeSpeed <= mode.homekitTopLevel
       );
-      miLevel = speedMode.miLevel;
-      name = speedMode.name;
+      if (speedMode) {
+        miLevel = speedMode.miLevel;
+        name = speedMode.name;
+      }
     } else {
       // Set by mode name
       const speedMode = speedModes.find((mode) => mode.name === speed);
@@ -695,7 +558,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
         this.config.waterBox &&
         this.cachedState.get("WaterSpeedName") !== "Custom"
       ) {
-        this.setWaterSpeed("Custom");
+        await this.setWaterSpeed("Custom");
       }
       // If speed is not "custom" remove set the water speed also to a fixed value (for Xiaomi App)
       else if (
@@ -703,20 +566,20 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
         this.config.waterBox &&
         this.cachedState.get("WaterSpeedName") === "Custom"
       ) {
-        this.setWaterSpeed("Medium");
+        await this.setWaterSpeed("Medium");
       }
     }
   }
 
-  findWaterSpeedModeFromMiio(speed) {
+  public findWaterSpeedModeFromMiio(speed: number) {
     // Get the speed modes for this model
-    const speedModes = this.findSpeedModes().waterspeed || [];
+    const speedModes = this.speedmodes.waterspeed || [];
 
     // Find speed mode that matches the miLevel
     return speedModes.find((mode) => mode.miLevel === speed);
   }
 
-  async getWaterSpeed() {
+  public async getWaterSpeed() {
     await this.ensureDevice("getWaterSpeed");
 
     const speed = await this.device.getWaterBoxMode();
@@ -734,13 +597,10 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
       );
       homekitValue = homekitTopLevel || 0;
     }
-    this.services.waterBox
-      .getCharacteristic(Characteristic.On)
-      .updateValue(homekitValue > 0);
     return homekitValue;
   }
 
-  async setWaterSpeed(speed) {
+  async setWaterSpeed(speed: string | number) {
     await this.ensureDevice("setWaterSpeed");
 
     if (typeof speed === "number") {
@@ -750,7 +610,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
     }
 
     // Get the speed modes for this model
-    const speedModes = this.findSpeedModes().waterspeed || [];
+    const speedModes = this.speedmodes.waterspeed || [];
 
     // If the robot does not support water-mode cleaning
     if (speedModes.length === 0) {
@@ -767,7 +627,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
       // Speed set by number
       // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
       const safeSpeed = Math.min(
-        parseInt(speed),
+        speed,
         speedModes[speedModes.length - 1].homekitTopLevel
       );
 
@@ -775,8 +635,10 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
       const speedMode = speedModes.find(
         (mode) => safeSpeed <= mode.homekitTopLevel
       );
-      miLevel = speedMode.miLevel;
-      name = speedMode.name;
+      if (speedMode) {
+        miLevel = speedMode.miLevel;
+        name = speedMode.name;
+      }
     } else {
       // Set by mode name
       const speedMode = speedModes.find((mode) => mode.name === speed);
@@ -806,39 +668,14 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
       name === "Custom" &&
       this.cachedState.get("FanSpeedName") !== "Custom"
     ) {
-      this.setSpeed("Custom");
+      await this.setSpeed("Custom");
     }
     // If speed is not "custom" remove set the water speed also to a fixed value (for Xiaomi App)
     else if (
       name !== "Custom" &&
       this.cachedState.get("FanSpeedName") === "Custom"
     ) {
-      this.setSpeed("Balanced");
-    }
-  }
-
-  changedWaterSpeed(speed) {
-    this.log.info(
-      `MON changedWaterSpeed | ${this.model} | WaterBoxMode is now ${speed}%`
-    );
-
-    const speedMode = this.findWaterSpeedModeFromMiio(speed);
-
-    if (typeof speedMode === "undefined") {
-      this.log.warn(
-        `WAR changedWaterSpeed | ${this.model} | Speed was changed to ${speed}%, this speed is not supported`
-      );
-    } else {
-      const { homekitTopLevel, name } = speedMode;
-      this.log.info(
-        `INF changedWaterSpeed | ${this.model} | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`
-      );
-      this.services.waterBox
-        .getCharacteristic(Characteristic.RotationSpeed)
-        .updateValue(homekitTopLevel);
-      this.services.waterBox
-        .getCharacteristic(Characteristic.On)
-        .updateValue(homekitTopLevel > 0);
+      await this.setSpeed("Balanced");
     }
   }
 
@@ -896,6 +733,7 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
       );
       throw err;
     }
+    return state;
   }
 
   public async getCharging() {
@@ -1035,5 +873,20 @@ export class XiaomiRoborockVacuum extends events.EventEmitter {
       }
     }
     this.emit("changedCleaning", isCleaning);
+  }
+
+  private changedCharging(isCharging: boolean) {
+    const isNewValue = this.isNewValue("charging", isCharging);
+    if (isNewValue) {
+      this.log.info(
+        `MON changedCharging | ${this.device.model} | ChargingState is now ${isCharging}`
+      );
+      this.log.info(
+        `INF changedCharging | ${this.device.model} | Charging is ${
+          isCharging ? "active" : "cancelled"
+        }`
+      );
+    }
+    this.emit("changedCharging", { isCharging, isNewValue });
   }
 }
