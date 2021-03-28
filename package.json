@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum",
   "bin": {
-    "miio-vacuum": "src/miio/cli/index.js"
+    "miio-vacuum": "dist/miio/cli/index.js"
   },
   "main": "dist/index.js",
   "engines": {
