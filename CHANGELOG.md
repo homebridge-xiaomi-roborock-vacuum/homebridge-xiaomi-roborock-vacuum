@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.19.0
+
+- [New model] Added support for `roborock.vacuum.a15`. Thank you @Baggns! (#423)
+
 ## 0.18.1
 
 - [Bug] Private methods starting with `#` do not work in Node.js v12 (#382)
