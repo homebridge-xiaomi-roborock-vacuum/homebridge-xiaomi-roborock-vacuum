@@ -209,6 +209,21 @@ class XiaomiRoborockVacuum {
         );
     }
 
+    if (this.config.dustCollection) {
+      this.services.dustCollection = new Service.Fan(
+        `${this.config.name} Dust Collection`,
+        "Dust Collection"
+      );
+
+      this.services.dustCollection
+        .getCharacteristic(Characteristic.On)
+        .on("get", (cb) => callbackify(() => this.getDustCollectionState(), cb))
+        .on("set", (newState, cb) =>
+          callbackify(() => this.setDustCollectionState(newState), cb)
+        );
+
+    }
+
     this.services.battery = new Service.BatteryService(
       `${this.config.name} Battery`
     );
@@ -868,6 +883,11 @@ class XiaomiRoborockVacuum {
     return isPaused;
   }
 
+  get isDustCollecting() {
+    const isDustCollecting = this.device.property("state") === "dust-collection";
+    return isDustCollecting;
+  }
+
   async getCleaning() {
     try {
       const isCleaning = this.isCleaning;
@@ -1385,6 +1405,62 @@ class XiaomiRoborockVacuum {
       this.services.waterBox
         .getCharacteristic(Characteristic.On)
         .updateValue(homekitTopLevel > 0);
+    }
+  }
+
+  async getDustCollectionState() {
+    await this.ensureDevice("getDustCollectionState");
+
+    try {
+      const isDustCollecting = this.device.property("state") === "dust-collection";
+      this.log.info(
+        `INF getDustCollectionState | ${this.model} | Dust collection is ${isDustCollecting}`
+      );
+      return isDustCollecting;
+    } catch (err) {
+      this.log.error(
+        `ERR getDustCollectionState | ${this.model} | Failed getting the cleaning status.`,
+        err
+      );
+      throw err;
+    }
+  }
+
+  async setDustCollectionState(state) {
+    await this.ensureDevice("setDustCollectionState");
+
+    const isCharging = this.device.property("state") === "charging";
+
+    try {
+      if (state && !this.isDustCollecting && isCharging) {
+        await this.device.startDustCollection();
+        this.log.info(
+          `INF setDustCollectionState | Starting Dust Collection, and the device is in state ${this.device.property(
+            "state"
+          )}`
+        );
+      } else if (!state && this.isDustCollecting) {
+        await this.device.stopDustCollection();
+        this.log.info(
+          `INF setDustCollectionState | Stopping Dust Collection, and the device is in state ${this.device.property(
+            "state"
+          )}`
+        );
+      } else if (state && !this.isDustCollecting && !isCharging) {
+        this.services.dustCollection
+          .getCharacteristic(Characteristic.On)
+          .updateValue(false);
+        this.log.info(
+          `INF setDustCollectionState | Starting Dust Collection not possible, and the device is in state ${this.device.property(
+            "state"
+          )}`
+        );
+      }
+    } catch (err) {
+      this.log.error(
+        `ERR setDustCollectionState | ${this.model} | Failed updating dust collection state ${state}.`,
+        err
+      );
     }
   }
 

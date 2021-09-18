@@ -81,6 +81,8 @@ module.exports = class extends Vacuum.with(
           return "zone-cleaning";
         case 18:
           return "room-cleaning";
+        case 22:
+          return "dust-collection";
         case 100:
           return "full";
       }
@@ -122,6 +124,13 @@ module.exports = class extends Vacuum.with(
       name: "waterBoxMode",
     });
 
+    this.defineProperty("auto_dust_collection", {
+      name: "autoDustCollection",
+    });
+    this.defineProperty("dust_collection_status", {
+      name: "dustCollectionStatus",
+    });
+
     this._monitorInterval = 60000;
   }
 
@@ -133,6 +142,7 @@ module.exports = class extends Vacuum.with(
       switch (value) {
         case "cleaning":
         case "spot-cleaning":
+        case "zone-cleaning":
         case "zone-cleaning":
         case "room-cleaning":
           // The vacuum is cleaning
@@ -264,6 +274,26 @@ module.exports = class extends Vacuum.with(
   activateSpotClean() {
     return this.call("app_spot", [], {
       refresh: ["state"],
+    }).then(checkResult);
+  }
+
+   /**
+   * Start dustCollection.
+   */
+  startDustCollection() {
+    return this.call("app_start_collect_dust", [], {
+      refresh: ["state"],
+      refreshDelay: 1000,
+    }).then(checkResult);
+  }
+
+  /**
+   * Stop dustCollection.
+   */
+  stopDustCollection() {
+    return this.call("app_stop_collect_dust", [], {
+      refresh: ["state"],
+      refreshDelay: 1000,
     }).then(checkResult);
   }
 
