@@ -28,7 +28,7 @@
         "required": false
       },
       "dustCollection": {
-        "title": "Enable the Dust Collection mode",
+        "title": "Enable the Dust Collection mode (beta)",
         "type": "boolean",
         "default": false,
         "required": false
