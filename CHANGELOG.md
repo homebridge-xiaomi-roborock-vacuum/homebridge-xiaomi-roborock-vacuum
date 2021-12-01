@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.20.0
+
+- [Enhancement] Roborock S7 Auto-Empty-Dock Support. Thank you @Skjall! (#438)
+
 ## 0.19.0
 
 - [New model] Added support for `roborock.vacuum.a15`. Thank you @Baggns! (#423)
@@ -13,7 +17,7 @@
 ## 0.18.0
 
 - [Enhancement] Reduce NPM bundle size (#376)
-- [Enhancement] Revisit `miio` connection layer (#334)    
+- [Enhancement] Revisit `miio` connection layer (#334)  
   This is an attempt to fix the reconnection issues (#367, #299, #227).
 
 ## 0.17.1
