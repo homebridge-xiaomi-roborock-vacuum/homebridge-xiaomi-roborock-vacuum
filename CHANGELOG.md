@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Bug] Viomi fails to retrieve the SerialNumber (#456)
+
 ## 0.20.0
 
 - [Enhancement] Roborock S7 Auto-Empty-Dock Support. Thank you @Skjall! (#438)
