@@ -138,8 +138,7 @@ module.exports = class extends Vacuum.with(
   }
 
   async getSerialNumber() {
-    const serial = await this.call("get_serial_number");
-    return serial[0].serial_number;
+    return "Unknown"; // We don't know the command to retrieve this bit of info for these models
   }
 
   getRoomMap() {
