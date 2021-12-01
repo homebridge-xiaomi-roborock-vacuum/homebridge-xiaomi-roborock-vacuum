@@ -2,6 +2,8 @@
 
 ## Next
 
+## 0.20.1
+
 - [Bug] Viomi fails to retrieve the SerialNumber (#456)
 
 ## 0.20.0
