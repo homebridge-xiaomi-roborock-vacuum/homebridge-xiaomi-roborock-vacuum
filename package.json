@@ -52,7 +52,7 @@
   },
   "optionalDependencies": {},
   "devDependencies": {
-    "jest": "27.1.0",
+    "jest": "27.4.2",
     "prettier": "2.3.2"
   }
 }
