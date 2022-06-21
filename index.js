@@ -292,7 +292,7 @@ class XiaomiRoborockVacuum {
     }
 
     // ADDITIONAL HOMEKIT SERVICES
-    if (this.config.disableCareServices)
+    if (!this.config.disableCareServices) {
       this.initialiseCareServices();
     }
   }
