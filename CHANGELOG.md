@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.21.0
+
+- [Enhancement] Add toggle to disable Care Services. Thank you @jasper-seinhorst! (#501)
+
 ## 0.20.1
 
 - [Bug] Viomi fails to retrieve the SerialNumber (#456)
