@@ -25,7 +25,7 @@ module.exports = {
     {
       homekitTopLevel: 100,
       miLevel: 203,
-      name: "Hight",
+      name: "High",
     },
   ],
   // S6-MaxV + Custom
@@ -52,7 +52,7 @@ module.exports = {
     {
       homekitTopLevel: 75,
       miLevel: 203,
-      name: "Hight",
+      name: "High",
     },
     // 76-100% = "Custom"
     {
