@@ -88,6 +88,13 @@ module.exports = {
       waterspeed: watermodes["gen1+custom"],
     },
   ],
+  // S7 MaxV
+  "roborock.vacuum.a27": [
+    {
+      speed: speedmodes["gen4+custom"],
+      waterspeed: watermodes["gen1+custom"],
+    },
+  ],
   // Viomi
   viomi: {
     speed: speedmodes.viomi,
