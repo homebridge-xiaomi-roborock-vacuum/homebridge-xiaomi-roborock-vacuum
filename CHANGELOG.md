@@ -2,6 +2,11 @@
 
 ## Next
 
+## 0.22.0
+
+- [Enhancement] Add support for S7 MaxV. Thank you @khad! (#508)
+- [Bug] Fixed typo `Hight` to `High`. Thank you @khad! (#507)
+
 ## 0.21.0
 
 - [Enhancement] Add toggle to disable Care Services. Thank you @jasper-seinhorst! (#501)
