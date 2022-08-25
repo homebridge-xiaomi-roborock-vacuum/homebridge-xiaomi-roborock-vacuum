@@ -265,7 +265,7 @@ class XiaomiRoborockVacuum {
     }
 
     if (this.config.goTo) {
-      this.services.goTo = new Service.Switch(
+      this.services.goToLocation = new Service.Switch(
         `${this.config.name} ${this.config.goToWord}`,
         "GoTo Switch"
       );
