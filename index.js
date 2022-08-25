@@ -262,6 +262,17 @@ class XiaomiRoborockVacuum {
         .on("set", (newState, cb) => this.identify(cb));
     }
 
+    if (this.config.goTo) {
+      this.services.goTo = new Service.Switch(
+        `${this.config.name} ${this.config.goToWord}`,
+        "GoTo Switch"
+      );
+      this.services.goTo
+        .getCharacteristic(Characteristic.On)
+        .on("get", (cb) => callbackify(() => false, cb))
+        .on("set", (newState, cb) => this.sendToLocation(cb));
+    }
+
     if (this.config.dock) {
       this.services.dock = new Service.OccupancySensor(
         `${this.config.name} Dock`
@@ -1572,6 +1583,19 @@ class XiaomiRoborockVacuum {
       callback();
     } catch (err) {
       this.log.error(`ERR identify | ${this.model} | `, err);
+      callback(err);
+    }
+  }
+
+  async goToLocation(callback) {
+    await this.ensureDevice("goToLocation");
+
+    this.log.info(`ACT goToLocation | ${this.model} | Let's go!`);
+    try {
+      await this.device.goToLocation();
+      callback();
+    } catch (err) {
+      this.log.error(`ERR goToLocation | ${this.model} | `, err);
       callback(err);
     }
   }

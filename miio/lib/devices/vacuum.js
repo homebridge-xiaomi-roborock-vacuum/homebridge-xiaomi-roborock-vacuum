@@ -333,6 +333,13 @@ module.exports = class extends Vacuum.with(
   }
 
   /**
+   * Send the vacuum to a specific location.
+  */
+  sendToLocation(x, y) {
+    return this.call("app_goto_target", [1000,1000]).then(() => null);
+  }
+
+  /**
    * Get information about the cleaning history of the device. Contains
    * information about the number of times it has been started and
    * the days it has been run.
