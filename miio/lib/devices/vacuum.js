@@ -337,6 +337,7 @@ module.exports = class extends Vacuum.with(
   */
   sendToLocation(coordinates) {
     console.log("called sendToLocation()")
+    console.log(coordinates)
     return this.call("app_goto_target", coordinates).then(() => null);
   }
 
