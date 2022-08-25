@@ -14,6 +14,7 @@ const PLUGIN_NAME = "homebridge-xiaomi-roborock-vacuum";
 const ACCESSORY_NAME = "XiaomiRoborockVacuum";
 
 const MODELS = require("./models");
+const { runInThisContext } = require("vm");
 const GET_STATE_INTERVAL_MS = 30000; // 30s
 
 module.exports = function (homebridge) {
@@ -108,7 +109,8 @@ class XiaomiRoborockVacuum {
     this.config.findMeWord = config.findMeWord || "where are you";
     this.config.goTo = config.goTo || false;
     this.config.goToWord = config.goToWord || "time to empty";
-    this.config.goToCoordinates = config.goToCoordinates || "[25500,25500]"
+    this.config.goToX = config.goToX || 25500;
+    this.config.gotoY = config.gotoY || 25500;
     this.config.roomTimeout =
       config.roomTimeout == undefined ? 0 : config.roomTimeout;
     this.services = {};
@@ -1595,7 +1597,7 @@ class XiaomiRoborockVacuum {
 
     this.log.info(`ACT goTo | ${this.model} | Let's go!`);
     try {
-      await this.device.sendToLocation(this.config.goToCoordinates);
+      await this.device.sendToLocation(this.config.goToX,this.config.gotoY);
       callback();
     } catch (err) {
       this.log.error(`ERR goTo | ${this.model} | `, err);
