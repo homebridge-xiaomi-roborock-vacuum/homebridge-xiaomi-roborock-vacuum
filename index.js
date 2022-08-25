@@ -272,7 +272,7 @@ class XiaomiRoborockVacuum {
       this.services.goTo
         .getCharacteristic(Characteristic.On)
         .on("get", (cb) => callbackify(() => false, cb))
-        .on("set", (newState, cb) => this.sendToLocation(cb));
+        .on("set", (newState, cb) => this.goTo(cb));
     }
 
     if (this.config.dock) {
