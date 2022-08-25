@@ -110,7 +110,7 @@ class XiaomiRoborockVacuum {
     this.config.goTo = config.goTo || false;
     this.config.goToWord = config.goToWord || "time to empty";
     this.config.goToX = config.goToX || 25500;
-    this.config.goToY = config.gotoY || 25500;
+    this.config.goToY = config.goToY || 25500;
     this.config.roomTimeout =
       config.roomTimeout == undefined ? 0 : config.roomTimeout;
     this.services = {};
