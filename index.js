@@ -106,6 +106,8 @@ class XiaomiRoborockVacuum {
     this.config.pauseWord = config.pauseWord || "Pause";
     this.config.findMe = config.findMe || false;
     this.config.findMeWord = config.findMeWord || "where are you";
+    this.config.goTo = config.goTo || false;
+    this.config.goToWord = config.goToWord || "time to empty";
     this.config.roomTimeout =
       config.roomTimeout == undefined ? 0 : config.roomTimeout;
     this.services = {};
@@ -267,7 +269,7 @@ class XiaomiRoborockVacuum {
         `${this.config.name} ${this.config.goToWord}`,
         "GoTo Switch"
       );
-      this.services.goTo
+      this.services.goToLocation
         .getCharacteristic(Characteristic.On)
         .on("get", (cb) => callbackify(() => false, cb))
         .on("set", (newState, cb) => this.sendToLocation(cb));
@@ -1592,7 +1594,7 @@ class XiaomiRoborockVacuum {
 
     this.log.info(`ACT goToLocation | ${this.model} | Let's go!`);
     try {
-      await this.device.goToLocation();
+      await this.device.sendToLocation();
       callback();
     } catch (err) {
       this.log.error(`ERR goToLocation | ${this.model} | `, err);
