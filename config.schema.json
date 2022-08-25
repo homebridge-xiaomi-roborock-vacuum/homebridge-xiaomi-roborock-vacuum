@@ -81,10 +81,16 @@
         "default": "time to empty",
         "required": true
       },
-      "goToCoordinates": {
-        "title": "Go To Coordinates",
-        "type": "string",
-        "default": "[25500,25500]",
+      "goToX": {
+        "title": "x-coordinate",
+        "type": "integer",
+        "default": 25500,
+        "required": true
+      },
+      "goToY": {
+        "title": "y-coordinate",
+        "type": "integer",
+        "default": 25500,
         "required": true
       },
       "dock": {
@@ -180,7 +186,11 @@
     "findMeWord",
     "goTo",
     "goToWord",
-    "goToCoordinates",
+    {
+      "type": "flex",
+      "flex-flow": "row wrap",
+      "items": ["gotoX", "goToY"]
+    },
     "dock",
     "cleanword",
     "roomTimeout",
