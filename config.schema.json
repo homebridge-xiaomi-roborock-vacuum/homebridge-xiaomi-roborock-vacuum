@@ -172,6 +172,8 @@
     "pauseWord",
     "findMe",
     "findMeWord",
+    "goTo",
+    "goToWord",
     "dock",
     "cleanword",
     "roomTimeout",
