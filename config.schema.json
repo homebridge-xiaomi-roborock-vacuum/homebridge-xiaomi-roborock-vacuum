@@ -189,7 +189,7 @@
     {
       "type": "flex",
       "flex-flow": "row wrap",
-      "items": ["gotoX", "goToY"]
+      "items": ["goToX", "goToY"]
     },
     "dock",
     "cleanword",
