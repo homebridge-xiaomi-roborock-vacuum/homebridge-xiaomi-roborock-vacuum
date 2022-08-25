@@ -337,7 +337,7 @@ module.exports = class extends Vacuum.with(
   */
   sendToLocation() {
     console.log("called sendToLocation()")
-    return this.call("app_goto_target", [28500,30500]).then(() => null);
+    return this.call("app_goto_target", [28000,31500]).then(() => null);
   }
 
   /**
