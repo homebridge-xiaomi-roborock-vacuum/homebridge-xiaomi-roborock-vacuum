@@ -265,11 +265,11 @@ class XiaomiRoborockVacuum {
     }
 
     if (this.config.goTo) {
-      this.services.goToLocation = new Service.Switch(
+      this.services.goTo = new Service.Switch(
         `${this.config.name} ${this.config.goToWord}`,
         "GoTo Switch"
       );
-      this.services.goToLocation
+      this.services.goTo
         .getCharacteristic(Characteristic.On)
         .on("get", (cb) => callbackify(() => false, cb))
         .on("set", (newState, cb) => this.sendToLocation(cb));
@@ -1589,15 +1589,15 @@ class XiaomiRoborockVacuum {
     }
   }
 
-  async goToLocation(callback) {
-    await this.ensureDevice("goToLocation");
+  async goTo(callback) {
+    await this.ensureDevice("goTo");
 
-    this.log.info(`ACT goToLocation | ${this.model} | Let's go!`);
+    this.log.info(`ACT goTo | ${this.model} | Let's go!`);
     try {
       await this.device.sendToLocation();
       callback();
     } catch (err) {
-      this.log.error(`ERR goToLocation | ${this.model} | `, err);
+      this.log.error(`ERR goTo | ${this.model} | `, err);
       callback(err);
     }
   }
