@@ -1597,7 +1597,7 @@ class XiaomiRoborockVacuum {
 
     this.log.info(`ACT goTo | ${this.model} | Let's go!`);
     try {
-      await this.device.sendToLocation(this.config.goToX,this.config.gotoY);
+      await this.device.sendToLocation(this.config.goToX,this.config.goToY);
       callback();
     } catch (err) {
       this.log.error(`ERR goTo | ${this.model} | `, err);
