@@ -108,6 +108,7 @@ class XiaomiRoborockVacuum {
     this.config.findMeWord = config.findMeWord || "where are you";
     this.config.goTo = config.goTo || false;
     this.config.goToWord = config.goToWord || "time to empty";
+    this.config.goToCoordinates = config.goToCoordinates || "[25500,25500]"
     this.config.roomTimeout =
       config.roomTimeout == undefined ? 0 : config.roomTimeout;
     this.services = {};
@@ -1594,7 +1595,7 @@ class XiaomiRoborockVacuum {
 
     this.log.info(`ACT goTo | ${this.model} | Let's go!`);
     try {
-      await this.device.sendToLocation();
+      await this.device.sendToLocation(this.config.goToCoordinates);
       callback();
     } catch (err) {
       this.log.error(`ERR goTo | ${this.model} | `, err);
