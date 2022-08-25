@@ -81,6 +81,12 @@
         "default": "time to empty",
         "required": true
       },
+      "goToCoordinates": {
+        "title": "Go To Coordinates",
+        "type": "string",
+        "default": "[25500,25500]",
+        "required": true
+      },
       "dock": {
         "title": "Show Dock sensor",
         "type": "boolean",
@@ -174,6 +180,7 @@
     "findMeWord",
     "goTo",
     "goToWord",
+    "goToCoordinates",
     "dock",
     "cleanword",
     "roomTimeout",
