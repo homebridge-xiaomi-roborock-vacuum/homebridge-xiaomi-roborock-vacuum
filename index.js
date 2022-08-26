@@ -107,7 +107,7 @@ class XiaomiRoborockVacuum {
     this.config.findMe = config.findMe || false;
     this.config.findMeWord = config.findMeWord || "where are you";
     this.config.goTo = config.goTo || false;
-    this.config.goToWord = config.goToWord || "time to empty";
+    this.config.goToWord = config.goToWord || "go to coordinates";
     this.config.goToX = config.goToX || 25500;
     this.config.goToY = config.goToY || 25500;
     this.config.roomTimeout =
