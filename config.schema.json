@@ -79,19 +79,28 @@
         "title": "Go To Word",
         "type": "string",
         "default": "time to empty",
-        "required": true
+        "required": true,
+        "condition": {
+          "functionBody": "return model.goTo === true"
+        }
       },
       "goToX": {
         "title": "x-coordinate",
         "type": "integer",
         "default": 25500,
-        "required": true
+        "required": true,
+        "condition": {
+          "functionBody": "return model.goTo === true"
+        }
       },
       "goToY": {
         "title": "y-coordinate",
         "type": "integer",
         "default": 25500,
-        "required": true
+        "required": true,
+        "condition": {
+          "functionBody": "return model.goTo === true"
+        }
       },
       "dock": {
         "title": "Show Dock sensor",
@@ -189,7 +198,7 @@
     {
       "type": "flex",
       "flex-flow": "row wrap",
-      "items": ["goToX", "goToY"]
+      "items": ["goToX", "goToY"]  
     },
     "dock",
     "cleanword",
