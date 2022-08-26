@@ -14,7 +14,6 @@ const PLUGIN_NAME = "homebridge-xiaomi-roborock-vacuum";
 const ACCESSORY_NAME = "XiaomiRoborockVacuum";
 
 const MODELS = require("./models");
-const { runInThisContext } = require("vm");
 const GET_STATE_INTERVAL_MS = 30000; // 30s
 
 module.exports = function (homebridge) {
