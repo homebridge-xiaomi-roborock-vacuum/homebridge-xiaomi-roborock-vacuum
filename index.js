@@ -273,7 +273,7 @@ class XiaomiRoborockVacuum {
       );
       this.services.goTo
         .getCharacteristic(Characteristic.On)
-        .on("get", (cb) => callbackify(() => false, cb))
+        .on("get", (cb) => callbackify(() => this.getGoToState(), cb))
         .on("set", (newState, cb) => this.goTo(cb));
     }
 
@@ -1601,6 +1601,24 @@ class XiaomiRoborockVacuum {
     } catch (err) {
       this.log.error(`ERR goTo | ${this.model} | `, err);
       callback(err);
+    }
+  }
+
+  async getGoToState() {
+    await this.ensureDevice("goTo");
+
+    try {
+      const goingToLocation = this.device.property("state") === "going-to-location";
+      this.log.info(
+        `INF getGoToState | ${this.model} | Going to location is ${goingToLocation}`
+      );
+      return goingToLocation;
+    } catch (err) {
+      this.log.error(
+        `ERR getGoToState | ${this.model} | Failed getting the cleaning status.`,
+        err
+      );
+      throw err;
     }
   }
 

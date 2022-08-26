@@ -77,6 +77,8 @@ module.exports = class extends Vacuum.with(
           return "updating";
         case 15:
           return "docking";
+        case 16:
+          return "going-to-location"
         case 17:
           return "zone-cleaning";
         case 18:
