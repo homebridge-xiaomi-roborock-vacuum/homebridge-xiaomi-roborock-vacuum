@@ -55,7 +55,10 @@
         "title": "Pause Word",
         "type": "string",
         "default": "pause",
-        "required": true
+        "required": true,
+        "condition": {
+          "functionBody": "return model.pause === true"
+        }
       },
       "findMe": {
         "title": "Show switch for \"find me\"",
@@ -67,7 +70,10 @@
         "title": "Find Me Word",
         "type": "string",
         "default": "where are you",
-        "required": true
+        "required": true,
+        "condition": {
+          "functionBody": "return model.findMe === true"
+        }
       },
       "goTo": {
         "title": "Show switch for \"go to\"",
@@ -78,7 +84,7 @@
       "goToWord": {
         "title": "Go To Word",
         "type": "string",
-        "default": "time to empty",
+        "default": "go to coordinates",
         "required": true,
         "condition": {
           "functionBody": "return model.goTo === true"
