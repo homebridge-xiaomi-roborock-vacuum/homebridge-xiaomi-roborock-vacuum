@@ -13,7 +13,7 @@ describe("XiaomiRoborockVacuum", () => {
 
   beforeEach(() => {
     homebridge = createHomebridgeMock();
-  })
+  });
 
   test("Returns the accessory", () => {
     const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);

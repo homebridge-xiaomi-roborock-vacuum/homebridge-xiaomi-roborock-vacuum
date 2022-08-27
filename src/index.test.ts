@@ -1,7 +1,7 @@
-import { API } from 'homebridge';
-import entrypoint from './index';
+import { API } from "homebridge";
+import entrypoint from "./index";
 
-describe('entrypoint', () => {
+describe("entrypoint", () => {
   let api: jest.Mocked<API>;
 
   beforeEach(() => {
@@ -13,7 +13,11 @@ describe('entrypoint', () => {
     expect(() => entrypoint(api)).not.toThrow();
   });
 
-  test('should register the accessory', () => {
-    expect(api.registerAccessory).toHaveBeenCalledWith("homebridge-xiaomi-roborock-vacuum", "XiaomiRoborockVacuum", expect.any(Function))
+  test("should register the accessory", () => {
+    expect(api.registerAccessory).toHaveBeenCalledWith(
+      "homebridge-xiaomi-roborock-vacuum",
+      "XiaomiRoborockVacuum",
+      expect.any(Function)
+    );
   });
 });
