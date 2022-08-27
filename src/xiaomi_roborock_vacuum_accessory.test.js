@@ -6,22 +6,23 @@ const { createHomebridgeMock, miio } = require("./mocks");
 
 jest.doMock("./miio", () => miio.createMock());
 
-const registration = require("./index");
+const getXiaomiRoborockVacuumAccessory = require("./xiaomi_roborock_vacuum_accessory");
 
 describe("XiaomiRoborockVacuum", () => {
-  test("Registers the accessory", () => {
-    const homebridge = createHomebridgeMock();
-    registration(homebridge);
-    expect(homebridge.registerAccessory).toBeCalled();
-    const XiaomiRoborockVacuum = homebridge.registerAccessory.mock.calls[0][2];
+  let homebridge;
+
+  beforeEach(() => {
+    homebridge = createHomebridgeMock();
+  })
+
+  test("Returns the accessory", () => {
+    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
     expect(XiaomiRoborockVacuum).toHaveProperty(["cleaningStatuses"]);
     expect(XiaomiRoborockVacuum).toHaveProperty(["errors"]);
   });
 
   test("Fails if no IP provided", () => {
-    const homebridge = createHomebridgeMock();
-    registration(homebridge);
-    const XiaomiRoborockVacuum = homebridge.registerAccessory.mock.calls[0][2];
+    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
 
     expect(() => new XiaomiRoborockVacuum(console, {})).toThrowError(
       "You must provide an ip address of the vacuum cleaner."
@@ -29,9 +30,7 @@ describe("XiaomiRoborockVacuum", () => {
   });
 
   test("Fails if no token provided", () => {
-    const homebridge = createHomebridgeMock();
-    registration(homebridge);
-    const XiaomiRoborockVacuum = homebridge.registerAccessory.mock.calls[0][2];
+    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
 
     expect(
       () => new XiaomiRoborockVacuum(console, { ip: "192.168.0.1" })
@@ -39,9 +38,7 @@ describe("XiaomiRoborockVacuum", () => {
   });
 
   test("Fails if both `room` and `autoroom` are provided", () => {
-    const homebridge = createHomebridgeMock();
-    registration(homebridge);
-    const XiaomiRoborockVacuum = homebridge.registerAccessory.mock.calls[0][2];
+    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
 
     expect(
       () =>
@@ -57,13 +54,15 @@ describe("XiaomiRoborockVacuum", () => {
   });
 
   describe("Client with minimum config", () => {
-    const homebridge = createHomebridgeMock();
-    registration(homebridge);
-    const XiaomiRoborockVacuum = homebridge.registerAccessory.mock.calls[0][2];
+    let client;
 
-    const client = new XiaomiRoborockVacuum(console, {
-      ip: "192.168.0.1",
-      token: "TOKEN",
+    beforeAll(() => {
+      const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
+
+      client = new XiaomiRoborockVacuum(console, {
+        ip: "192.168.0.1",
+        token: "TOKEN",
+      });
     });
 
     test("the miio library has been called", () => {
@@ -89,7 +88,7 @@ describe("XiaomiRoborockVacuum", () => {
     });
 
     xdescribe("AccessoryInformation", () => {
-      const model = client.services.info.getCharacteristic.mock.calls[1];
+      // const model = client.services.info.getCharacteristic.mock.calls[1];
     });
   });
 });
