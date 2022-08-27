@@ -225,7 +225,6 @@ class XiaomiRoborockVacuum {
         .on("set", (newState, cb) =>
           callbackify(() => this.setDustCollectionState(newState), cb)
         );
-
     }
 
     this.services.battery = new Service.BatteryService(
@@ -408,12 +407,14 @@ class XiaomiRoborockVacuum {
         "get",
         (cb) => callbackify(() => this.getCareFilter(), cb)
       );
-      this.services.Care.getCharacteristic(
-        Characteristic.CareSideBrush
-      ).on("get", (cb) => callbackify(() => this.getCareSideBrush(), cb));
-      this.services.Care.getCharacteristic(
-        Characteristic.CareMainBrush
-      ).on("get", (cb) => callbackify(() => this.getCareMainBrush(), cb));
+      this.services.Care.getCharacteristic(Characteristic.CareSideBrush).on(
+        "get",
+        (cb) => callbackify(() => this.getCareSideBrush(), cb)
+      );
+      this.services.Care.getCharacteristic(Characteristic.CareMainBrush).on(
+        "get",
+        (cb) => callbackify(() => this.getCareMainBrush(), cb)
+      );
     } else {
       this.services.fan
         .getCharacteristic(Characteristic.FilterChangeIndication)
@@ -901,7 +902,8 @@ class XiaomiRoborockVacuum {
   }
 
   get isDustCollecting() {
-    const isDustCollecting = this.device.property("state") === "dust-collection";
+    const isDustCollecting =
+      this.device.property("state") === "dust-collection";
     return isDustCollecting;
   }
 
@@ -1429,7 +1431,8 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("getDustCollectionState");
 
     try {
-      const isDustCollecting = this.device.property("state") === "dust-collection";
+      const isDustCollecting =
+        this.device.property("state") === "dust-collection";
       this.log.info(
         `INF getDustCollectionState | ${this.model} | Dust collection is ${isDustCollecting}`
       );
@@ -1596,7 +1599,7 @@ class XiaomiRoborockVacuum {
 
     this.log.info(`ACT goTo | ${this.model} | Let's go!`);
     try {
-      await this.device.sendToLocation(this.config.goToX,this.config.goToY);
+      await this.device.sendToLocation(this.config.goToX, this.config.goToY);
       callback();
     } catch (err) {
       this.log.error(`ERR goTo | ${this.model} | `, err);
@@ -1608,7 +1611,8 @@ class XiaomiRoborockVacuum {
     await this.ensureDevice("goTo");
 
     try {
-      const goingToLocation = this.device.property("state") === "going-to-location";
+      const goingToLocation =
+        this.device.property("state") === "going-to-location";
       this.log.info(
         `INF getGoToState | ${this.model} | Going to location is ${goingToLocation}`
       );

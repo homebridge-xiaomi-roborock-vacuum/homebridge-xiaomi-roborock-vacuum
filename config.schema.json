@@ -204,7 +204,7 @@
     {
       "type": "flex",
       "flex-flow": "row wrap",
-      "items": ["goToX", "goToY"]  
+      "items": ["goToX", "goToY"]
     },
     "dock",
     "cleanword",

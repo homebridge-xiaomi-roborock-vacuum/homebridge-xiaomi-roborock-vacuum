@@ -1,5 +1,9 @@
-# Webstorm's config
+# IDE's config
 .idea/
+.vscode/
+
+# Source files
+src/
 
 # Test files
 coverage/
@@ -9,6 +13,8 @@ mocks.js
 
 # Development configs
 renovate.json
+.gitignore
+tsconfig.json
 
 # CI configs
 .github/

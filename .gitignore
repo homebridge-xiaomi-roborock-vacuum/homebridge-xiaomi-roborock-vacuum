@@ -7,3 +7,4 @@ debug/
 bugs/
 .bin/
 coverage/
+dist/
