@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "commonjs",
+    "lib": ["ESNext"],
+    "sourceMap": true,
+    "rootDir": "src",
+    "outDir": "dist",
+
+    "allowJs": true,
+    "checkJs": false,
+    "noImplicitAny": false,
+
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"]
+}
