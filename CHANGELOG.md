@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.23.0
+
+- [Enhancement] Add Go To Button. Thank you @luc-ass! (#511)
+
 ## 0.22.0
 
 - [Enhancement] Add support for S7 MaxV. Thank you @khad! (#508)
