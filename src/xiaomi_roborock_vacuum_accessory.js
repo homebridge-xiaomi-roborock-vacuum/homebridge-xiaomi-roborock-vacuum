@@ -8,26 +8,17 @@ const safeCall = require("./lib/safeCall");
 
 const noop = () => {};
 
-let homebrideAPI, Service, Characteristic;
-
-const PLUGIN_NAME = "homebridge-xiaomi-roborock-vacuum";
-const ACCESSORY_NAME = "XiaomiRoborockVacuum";
-
-const MODELS = require("./models");
+const { MODELS } = require("./models");
 const GET_STATE_INTERVAL_MS = 30000; // 30s
 
-module.exports = function (homebridge) {
-  // Accessory = homebridge.platformAccessory;
+let homebrideAPI, Service, Characteristic;
+
+module.exports = (homebridge) => {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
   homebrideAPI = homebridge;
-  // UUIDGen = homebridge.hap.uuid;
 
-  homebridge.registerAccessory(
-    PLUGIN_NAME,
-    ACCESSORY_NAME,
-    XiaomiRoborockVacuum
-  );
+  return XiaomiRoborockVacuum;
 };
 
 class XiaomiRoborockVacuum {
@@ -1176,7 +1167,7 @@ class XiaomiRoborockVacuum {
 
   findSpeedModes() {
     if (this.model.startsWith("viomi.")) {
-      return MODELS.viomi;
+      return MODELS.viomi[0];
     }
 
     return (MODELS[this.model] || []).reduce((acc, option) => {
@@ -1187,7 +1178,7 @@ class XiaomiRoborockVacuum {
       } else {
         return option;
       }
-    }, MODELS.default);
+    }, MODELS.default[0]);
   }
 
   findSpeedModeFromMiio(speed) {

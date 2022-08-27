@@ -1,6 +1,6 @@
-"use strict";
+import type { SpeedModes } from "./types";
 
-module.exports = {
+export const watermodes: SpeedModes = {
   // S5-Max (https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/79#issuecomment-576246934)
   gen1: [
     // 0%      = Off

@@ -1,0 +1,17 @@
+{
+  "prettier.trailingComma": "all",
+  "editor.formatOnSave": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "[markdown]": {
+    "editor.formatOnSave": true
+  },
+  "[html]": {
+    "editor.formatOnSave": true
+  }
+}

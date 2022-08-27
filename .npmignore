@@ -15,6 +15,8 @@ mocks.js
 renovate.json
 .gitignore
 tsconfig.json
+babel.config.js
+jest.config.js
 
 # CI configs
 .github/

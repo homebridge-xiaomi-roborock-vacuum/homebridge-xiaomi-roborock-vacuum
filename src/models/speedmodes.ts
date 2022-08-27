@@ -1,6 +1,11 @@
-"use strict";
+import type { ModesHomekitVsMiLevel, SpeedModes } from "./types";
 
-const SPEEDMODES = {
+type SimplifiedSpeedModes = Record<
+  string,
+  Array<Omit<ModesHomekitVsMiLevel, "homekitTopLevel">>
+>;
+
+const SPEEDMODES: SimplifiedSpeedModes = {
   gen1: [
     // 0%      = Off / Aus
     {
@@ -258,7 +263,7 @@ const SPEEDMODES = {
  *
  * @returns object The SPEEDMODES + the addition of the `homekitTopLevel` property to each entry
  */
-function autoAssignHomekitTopLevel() {
+function autoAssignHomekitTopLevel(): SpeedModes {
   const generations = Object.keys(SPEEDMODES);
   return generations.reduce((acc, gen) => {
     const speedmodes = SPEEDMODES[gen].map((mode, index, modes) => {
@@ -278,4 +283,4 @@ function autoAssignHomekitTopLevel() {
   }, {});
 }
 
-module.exports = autoAssignHomekitTopLevel();
+export const speedmodes = autoAssignHomekitTopLevel();
