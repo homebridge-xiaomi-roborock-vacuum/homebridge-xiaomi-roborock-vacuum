@@ -45,7 +45,7 @@
     "postpublish": "npm run clean",
     "lint": "prettier --check src/*.* **/*.json **/*.md",
     "lint:fix": "prettier --write src/*.* **/*.json **/*.md",
-    "test": "jest"
+    "test": "jest src"
   },
   "dependencies": {
     "abstract-things": "0.9.0",
