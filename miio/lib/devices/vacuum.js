@@ -77,6 +77,8 @@ module.exports = class extends Vacuum.with(
           return "updating";
         case 15:
           return "docking";
+        case 16:
+          return "going-to-location"
         case 17:
           return "zone-cleaning";
         case 18:
@@ -330,6 +332,16 @@ module.exports = class extends Vacuum.with(
    */
   find() {
     return this.call("find_me", [""]).then(() => null);
+  }
+
+  /**
+   * Send the vacuum to a specific location.
+  */
+  sendToLocation(x,y) {
+    return this.call("app_goto_target", [x,y], {
+      refresh: ["state"],
+      refreshDelay: 1000,
+    }).then((checkResult));
   }
 
   /**

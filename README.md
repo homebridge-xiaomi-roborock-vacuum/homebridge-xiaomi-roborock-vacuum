@@ -154,6 +154,13 @@ This feature seems to be working on models that support naming the rooms in the 
 
 Even if you have one of these models but you haven't named the Rooms in your App yet, this function will not work! Thanks @domeOo
 
+## Go to Location
+This plugin allows you to send your vacuum to a specific point on the map. As there is no easy way of figuring out the coordinates of your desired location, here are some steps to help you find the right spot.
+1. The base location (typically the position of the dock when the map was created) is at `[25500,25500]` where these values are in the format `[x-axis/horizontal, y-axis/vertical]`.
+2. Increasing the first value results in going to the top of the map, increasing the second value results in going to the right of the map (as displayed inside the app). The value seems to be in Millimeters.
+3. Knowing this you can approximate the desired location and change it as follows. In our example we want to go one meter up and three meters to the right: `[25500,25500]` --> `[26500,28500]`.
+4. While testing this location you can review the position in your app under `Go To` to fine tune it.
+
 ## Xiaomi Token
 
 To use this plugin, you have to read the "token" of the xiaomi vacuum robots. Here are some detailed instructions:

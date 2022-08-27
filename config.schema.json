@@ -55,7 +55,10 @@
         "title": "Pause Word",
         "type": "string",
         "default": "pause",
-        "required": true
+        "required": true,
+        "condition": {
+          "functionBody": "return model.pause === true"
+        }
       },
       "findMe": {
         "title": "Show switch for \"find me\"",
@@ -67,7 +70,43 @@
         "title": "Find Me Word",
         "type": "string",
         "default": "where are you",
+        "required": true,
+        "condition": {
+          "functionBody": "return model.findMe === true"
+        }
+      },
+      "goTo": {
+        "title": "Show switch for \"go to\"",
+        "type": "boolean",
+        "default": false,
         "required": true
+      },
+      "goToWord": {
+        "title": "Go To Word",
+        "type": "string",
+        "default": "go to coordinates",
+        "required": true,
+        "condition": {
+          "functionBody": "return model.goTo === true"
+        }
+      },
+      "goToX": {
+        "title": "x-coordinate",
+        "type": "integer",
+        "default": 25500,
+        "required": true,
+        "condition": {
+          "functionBody": "return model.goTo === true"
+        }
+      },
+      "goToY": {
+        "title": "y-coordinate",
+        "type": "integer",
+        "default": 25500,
+        "required": true,
+        "condition": {
+          "functionBody": "return model.goTo === true"
+        }
       },
       "dock": {
         "title": "Show Dock sensor",
@@ -160,6 +199,13 @@
     "pauseWord",
     "findMe",
     "findMeWord",
+    "goTo",
+    "goToWord",
+    {
+      "type": "flex",
+      "flex-flow": "row wrap",
+      "items": ["goToX", "goToY"]  
+    },
     "dock",
     "cleanword",
     "roomTimeout",

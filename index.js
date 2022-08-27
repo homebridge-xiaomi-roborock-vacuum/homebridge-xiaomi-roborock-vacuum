@@ -106,6 +106,10 @@ class XiaomiRoborockVacuum {
     this.config.pauseWord = config.pauseWord || "Pause";
     this.config.findMe = config.findMe || false;
     this.config.findMeWord = config.findMeWord || "where are you";
+    this.config.goTo = config.goTo || false;
+    this.config.goToWord = config.goToWord || "go to coordinates";
+    this.config.goToX = config.goToX || 25500;
+    this.config.goToY = config.goToY || 25500;
     this.config.roomTimeout =
       config.roomTimeout == undefined ? 0 : config.roomTimeout;
     this.services = {};
@@ -260,6 +264,17 @@ class XiaomiRoborockVacuum {
         .getCharacteristic(Characteristic.On)
         .on("get", (cb) => callbackify(() => false, cb))
         .on("set", (newState, cb) => this.identify(cb));
+    }
+
+    if (this.config.goTo) {
+      this.services.goTo = new Service.Switch(
+        `${this.config.name} ${this.config.goToWord}`,
+        "GoTo Switch"
+      );
+      this.services.goTo
+        .getCharacteristic(Characteristic.On)
+        .on("get", (cb) => callbackify(() => this.getGoToState(), cb))
+        .on("set", (newState, cb) => this.goTo(cb));
     }
 
     if (this.config.dock) {
@@ -1573,6 +1588,37 @@ class XiaomiRoborockVacuum {
     } catch (err) {
       this.log.error(`ERR identify | ${this.model} | `, err);
       callback(err);
+    }
+  }
+
+  async goTo(callback) {
+    await this.ensureDevice("goTo");
+
+    this.log.info(`ACT goTo | ${this.model} | Let's go!`);
+    try {
+      await this.device.sendToLocation(this.config.goToX,this.config.goToY);
+      callback();
+    } catch (err) {
+      this.log.error(`ERR goTo | ${this.model} | `, err);
+      callback(err);
+    }
+  }
+
+  async getGoToState() {
+    await this.ensureDevice("goTo");
+
+    try {
+      const goingToLocation = this.device.property("state") === "going-to-location";
+      this.log.info(
+        `INF getGoToState | ${this.model} | Going to location is ${goingToLocation}`
+      );
+      return goingToLocation;
+    } catch (err) {
+      this.log.error(
+        `ERR getGoToState | ${this.model} | Failed getting the cleaning status.`,
+        err
+      );
+      throw err;
     }
   }
 
