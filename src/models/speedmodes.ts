@@ -222,6 +222,44 @@ const SPEEDMODES: SimplifiedSpeedModes = {
       name: "Custom",
     },
   ],
+  // S7 MaxV
+  "gen5": [
+    // Off
+    {
+      miLevel: -1,
+      name: "Off",
+    },
+    // 0-16%   = "Quiet"
+    {
+      miLevel: 101,
+      name: "Quiet",
+    },
+    // 17-32%   = "Balanced"
+    {
+      miLevel: 102,
+      name: "Balanced",
+    },
+    // 33-49%  = "Turbo"
+    {
+      miLevel: 103,
+      name: "Turbo",
+    },
+    // 50-66%  = "Max"
+    {
+      miLevel: 104,
+      name: "Max",
+    },
+    // 67-82% = "Max+"
+    {
+      miLevel: 108,
+      name: "Max+",
+    },
+    // 83-100% = "Custom"
+    {
+      miLevel: 106,
+      name: "Custom",
+    },
+  ],
 
   // From https://github.com/rytilahti/python-miio/blob/20f915c9589fed55544a5417abe3fd3d9e12d08d/miio/viomivacuum.py#L16-L20
   viomi: [
