@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.24.1
+
+- [Bug] Broken import after moving to TS fixed (#519)
+
 ## 0.24.0
 
 - [Enhancement] Add support for Max+ speed mode (S7 MaxV). Thank you @nicolasbigot! (#515)
