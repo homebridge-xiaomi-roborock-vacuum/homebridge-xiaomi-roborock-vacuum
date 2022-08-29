@@ -6,6 +6,16 @@ const { createHomebridgeMock, miio } = require("./mocks");
 
 jest.doMock("./miio", () => miio.createMock());
 
+// Mocking getLogger so logs are more silent in the tests
+jest.doMock("./utils/logger", () => ({
+  getLogger: () => ({
+    error: jest.fn(),
+    warn: jest.fn(),
+    info: jest.fn(),
+    debug: jest.fn(),
+  }),
+}));
+
 const getXiaomiRoborockVacuumAccessory = require("./xiaomi_roborock_vacuum_accessory");
 
 describe("XiaomiRoborockVacuum", () => {
