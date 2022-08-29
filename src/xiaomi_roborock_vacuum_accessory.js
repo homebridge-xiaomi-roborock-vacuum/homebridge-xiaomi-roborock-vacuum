@@ -3,8 +3,8 @@
 const semver = require("semver");
 const miio = require("./miio");
 const util = require("util");
-const callbackifyLib = require("./lib/callbackify");
-const safeCall = require("./lib/safeCall");
+const { callbackify: callbackifyLib } = require("./lib/callbackify");
+const { safeCall } = require("./lib/safeCall");
 
 const noop = () => {};
 
