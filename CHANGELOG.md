@@ -5,6 +5,7 @@
 ## 0.24.0
 
 - [Enhancement] Add support for Max+ speed mode (S7 MaxV). Thank you @nicolasbigot! (#515)
+- [tech debt] Initial migration to Typescript (#514)
 
 ## 0.23.0
 
