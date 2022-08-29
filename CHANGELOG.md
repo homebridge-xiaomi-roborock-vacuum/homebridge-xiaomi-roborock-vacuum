@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.24.0
+
+- [Enhancement] Add support for Max+ speed mode (S7 MaxV). Thank you @nicolasbigot! (#515)
+
 ## 0.23.0
 
 - [Enhancement] Add Go To Button. Thank you @luc-ass! (#511)
