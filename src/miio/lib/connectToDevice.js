@@ -24,7 +24,7 @@ module.exports = function (options) {
       // Try to resolve the correct model, otherwise use the generic device
       let d = models[device.model];
 
-      // Hack to accept any vaccuum in the form of 'WORD.vacuum.*'
+      // Hack to accept any vacuum in the form of 'WORD.vacuum.*'
       if (!d && device.model.match(/^\w+\.vacuum\./)) {
         d = Vacuum;
         if (device.model.startsWith("viomi")) {

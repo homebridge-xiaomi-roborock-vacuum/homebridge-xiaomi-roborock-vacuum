@@ -28,6 +28,8 @@ const DeviceInfo = require("./device_info");
 const Packet = require("./packet");
 
 describe("DeviceInfo", () => {
+  jest.useFakeTimers();
+
   describe("constructor", () => {
     test("creates a new DeviceInfo without id", () => {
       const device = new DeviceInfo({}, null, "localhost", 1234);
@@ -175,7 +177,9 @@ describe("DeviceInfo", () => {
       const parent = createParentMock();
       const device = new DeviceInfo(parent, "MY-ID", "localhost", 1234);
       device.token = TOKEN;
-      await expect(device.handshake()).rejects.toThrow(
+      const promise = device.handshake();
+      jest.advanceTimersByTime(2 * 1000);
+      await expect(promise).rejects.toThrow(
         "Could not connect to device, handshake timeout"
       );
     });
@@ -286,12 +290,13 @@ describe("DeviceInfo", () => {
           const str = packet.data;
           if (str === null) {
             device.onMessage(packet.raw);
+          } else {
+            jest.advanceTimersByTime(2 * 1000);
           }
         }
       );
-      await expect(
-        device.call("miIO.info", [], { retries: 2 })
-      ).rejects.toThrow("Call to device timed out");
+      const promise = device.call("miIO.info", [], { retries: 2 });
+      await expect(promise).rejects.toThrow("Call to device timed out");
       expect(device.lastId).toBe(101);
     });
 
