@@ -27,7 +27,23 @@ export class DockService implements PluginService {
       .on("get", (cb) => callbackify(() => this.getDocked(), cb));
   }
 
-  public async init(): Promise<void> {}
+  public async init(): Promise<void> {
+    this.deviceManager.stateChanged$
+      .pipe(
+        filter(({ key }) => key === "charging"),
+        distinct(({ value }) => value)
+      )
+      .subscribe(({ value }) => {
+        const isCharging = value === true;
+        const msg = isCharging
+          ? "Robot was docked"
+          : "Robot not anymore in dock";
+        this.log.info(`changedCharging | ${msg}.`);
+        this.service
+          .getCharacteristic(this.hap.Characteristic.OccupancyDetected)
+          .updateValue(isCharging);
+      });
+  }
 
   public get services(): Service[] {
     return [this.service];

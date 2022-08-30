@@ -6,6 +6,7 @@ import { DeviceManager } from "./device_manager";
 import { callbackify } from "../utils/callbackify";
 import { RoomsService } from "./rooms_service";
 import { distinct, filter } from "rxjs";
+import { CharacteristicValue } from "hap-nodejs/dist/types";
 
 export interface FindMeConfig {
   findMe: boolean;
@@ -40,7 +41,7 @@ export class FindMeService implements PluginService {
     return this.service ? [this.service] : [];
   }
 
-  public async identify(newState) {
+  public async identify(newState: CharacteristicValue) {
     await this.deviceManager.ensureDevice("identify");
 
     this.log.info(`ACT identify | Find me - Hello!`);

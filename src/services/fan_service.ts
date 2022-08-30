@@ -11,13 +11,13 @@ import type { ProductInfo } from "./product_info";
 import { distinct, filter } from "rxjs";
 
 export class FanService implements PluginService {
+  public readonly cachedState = new Map<string, unknown>();
   private readonly service: Service;
   constructor(
     private readonly hap: HAP,
     private readonly log: Logger,
     private readonly config: Config,
     private readonly deviceManager: DeviceManager,
-    private readonly cachedState: Map<string, unknown>,
     private readonly productInfo: ProductInfo,
     private readonly roomsService: RoomsService,
     private readonly setWaterSpeed: (mode: string) => Promise<void>,

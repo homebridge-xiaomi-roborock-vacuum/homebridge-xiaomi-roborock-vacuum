@@ -20,7 +20,6 @@ export class WaterBoxService implements PluginService {
     private readonly log: Logger,
     private readonly config: Config,
     private readonly deviceManager: DeviceManager,
-    private readonly cachedState: Map<string, unknown>,
     private readonly productInfo: ProductInfo,
     private readonly fanService: FanService
   ) {
@@ -151,22 +150,22 @@ export class WaterBoxService implements PluginService {
     );
 
     // Save the latest set speed for handling the "custom" speed later
-    this.cachedState.set("WaterSpeed", miLevel);
-    this.cachedState.set("WaterSpeedName", name);
+    this.fanService.cachedState.set("WaterSpeed", miLevel);
+    this.fanService.cachedState.set("WaterSpeedName", name);
 
     await this.deviceManager.device.setWaterBoxMode(miLevel);
 
     // If speed is "custom", also set the water speed to "custom" (for Xiaomi App)
     if (
       name === "Custom" &&
-      this.cachedState.get("FanSpeedName") !== "Custom"
+      this.fanService.cachedState.get("FanSpeedName") !== "Custom"
     ) {
       await this.fanService.setSpeed("Custom");
     }
     // If speed is not "custom" remove set the water speed also to a fixed value (for Xiaomi App)
     else if (
       name !== "Custom" &&
-      this.cachedState.get("FanSpeedName") === "Custom"
+      this.fanService.cachedState.get("FanSpeedName") === "Custom"
     ) {
       await this.fanService.setSpeed("Balanced");
     }

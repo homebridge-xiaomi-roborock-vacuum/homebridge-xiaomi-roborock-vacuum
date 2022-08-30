@@ -35,6 +35,8 @@ export interface MiioDevice {
   startDustCollection: () => Promise<void>;
   stopDustCollection: () => Promise<void>;
   sendToLocation: (x: number, y: number) => Promise<void>;
+  setRawProperty: (key: string, value: unknown) => Promise<void>;
+  cleanZones: (zonesToClean: number[][]) => Promise<void>;
 }
 
 export interface MiioState {

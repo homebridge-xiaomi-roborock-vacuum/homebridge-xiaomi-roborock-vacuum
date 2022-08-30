@@ -1,10 +1,12 @@
 "use strict";
 
-const util = require("util");
-const { callbackify: callbackifyLib } = require("./utils/callbackify");
+import util from "util";
+import { catchError, concatMap, distinct } from "rxjs";
+import { Service as HomeBridgeService } from "homebridge";
+import { callbackify as callbackifyLib } from "./utils/callbackify";
 
-const { getLogger } = require("./utils/logger");
-const {
+import { getLogger, Logger } from "./utils/logger";
+import {
   applyConfigDefaults,
   DeviceManager,
   RoomsService,
@@ -17,8 +19,12 @@ const {
   FindMeService,
   GoToService,
   DockService,
-} = require("./services");
-const { cleaningStatuses, errors } = require("./utils/constants");
+  Config,
+  PluginService,
+  ZonesService,
+} from "./services";
+import { errors } from "./utils/constants";
+import { ErrorChangedEvent } from "./services/device_manager";
 
 let homebrideAPI, hap, Service, Characteristic;
 
@@ -31,156 +37,119 @@ module.exports = (homebridge) => {
   return XiaomiRoborockVacuum;
 };
 
-class XiaomiRoborockVacuum {
-  static get cleaningStatuses() {
-    return cleaningStatuses;
-  }
+interface PluginServices {
+  productInfo: ProductInfo;
+  rooms: RoomsService;
+  fan: FanService;
+  pause?: PauseSwitch;
+  waterBox?: WaterBoxService;
+  dustCollection?: DustCollection;
+  battery: BatteryInfo;
+  findMe: FindMeService;
+  goTo?: GoToService;
+  dock?: DockService;
+  zones?: ZonesService;
+}
 
-  static get errors() {
-    return errors;
-  }
+class XiaomiRoborockVacuum {
+  private readonly log: Logger;
+  private readonly config: Config;
+  private readonly pluginServices: PluginServices;
+  /** @deprecated */
+  private readonly legacyServices: Record<string, HomeBridgeService>;
+  private readonly deviceManager: DeviceManager;
 
   constructor(log, config) {
     this.log = getLogger(log, config);
     this.config = applyConfigDefaults(config);
 
-    this.pluginServices = {};
     this.legacyServices = {};
-
-    // Used to store the latest state to reduce logging
-    this.cachedState = new Map();
-
-    this.roomIdsToClean = new Set();
 
     this.deviceManager = new DeviceManager(hap, this.log, config);
 
-    this.deviceManager.errorChanged$.subscribe((err) => this.changedError(err));
+    this.deviceManager.errorChanged$
+      .pipe(
+        distinct((robotError) => robotError.id),
+        concatMap((err) => this.changedError(err)),
+        catchError(async (err) =>
+          this.log.error(
+            `Error processing the error reported by the robot`,
+            err
+          )
+        )
+      )
+      .subscribe();
     this.deviceManager.stateChanged$.subscribe(({ key, value }) => {
       this.log.debug(`stateChanged | stateChanged event: ${key}:${value}`);
-      if (key === "charging") {
-        this.changedCharging(value);
-      }
     });
 
     // HOMEKIT SERVICES
-    this.initialiseServices();
-  }
-
-  initialiseServices() {
-    // Make sure `this.device` exists before calling any of the methods
-    const callbackify = (fn, cb) =>
-      this.deviceManager.device
-        ? callbackifyLib(fn, cb)
-        : cb(new Error("Not connected yet"));
-
-    this.pluginServices.productInfo = new ProductInfo(
-      hap,
-      this.log,
-      this.deviceManager
-    );
-
-    this.pluginServices.rooms = new RoomsService(
-      hap,
-      this.log,
-      this.config,
-      this.deviceManager,
-      (clean) => this.setCleaning(clean)
-    );
-
-    if (this.config.pause) {
-      this.pluginServices.pause = new PauseSwitch(
-        hap,
-        this.log,
-        this.config,
-        this.deviceManager,
-        this.pluginServices.rooms
-      );
-    }
-
-    this.pluginServices.fan = new FanService(
-      hap,
-      this.log,
-      this.config,
-      this.deviceManager,
-      this.cachedState,
-      this.pluginServices.productInfo,
-      this.pluginServices.rooms,
-      (mode) => this.pluginServices.waterBox?.setWaterSpeed(mode),
-      (isCleaning) => this.pluginServices.pause?.changedPause(isCleaning)
-    );
-
-    if (this.config.waterBox) {
-      this.pluginServices.waterBox = new WaterBoxService(
-        hap,
-        this.log,
-        this.config,
-        this.deviceManager,
-        this.cachedState,
-        this.pluginServices.productInfo,
-        this.pluginServices.fan
-      );
-    }
-
-    if (this.config.dustCollection) {
-      this.pluginServices.dustCollection = new DustCollection(
-        hap,
-        this.log,
-        this.config,
-        this.deviceManager
-      );
-    }
-
-    this.pluginServices.battery = new BatteryInfo(
-      hap,
-      this.log,
-      this.config,
-      this.deviceManager
-    );
-
-    this.pluginServices.findMe = new FindMeService(
-      hap,
-      this.log,
-      this.config,
-      this.deviceManager
-    );
-
-    if (this.config.goTo) {
-      this.pluginServices.goTo = new GoToService(
-        hap,
-        this.log,
-        this.config,
-        this.deviceManager
-      );
-    }
-
-    if (this.config.dock) {
-      this.pluginServices.dock = new DockService(
-        hap,
-        this.log,
-        this.config,
-        this.deviceManager
-      );
-    }
-
-    if (this.config.zones) {
-      for (var i in this.config.zones) {
-        this.createZone(this.config.zones[i].name, this.config.zones[i].zone);
-      }
-    }
-
-    // ADDITIONAL HOMEKIT SERVICES
-    if (!this.config.disableCareServices) {
-      this.initialiseCareServices();
-    }
+    this.pluginServices = this.initialiseServices();
 
     // Run the init method of all the services, once they are all registered.
     Object.values(this.pluginServices).map((service) => service.init());
   }
 
+  initialiseServices(): PluginServices {
+    const { log, config, deviceManager } = this;
+
+    const productInfo = new ProductInfo(hap, log, deviceManager);
+    const rooms = new RoomsService(hap, log, config, deviceManager, (clean) =>
+      this.pluginServices.fan.setCleaning(clean)
+    );
+    const fan = new FanService(
+      hap,
+      log,
+      config,
+      deviceManager,
+      productInfo,
+      rooms,
+      async (mode) => {
+        await this.pluginServices.waterBox?.setWaterSpeed(mode);
+      },
+      (isCleaning) => this.pluginServices.pause?.changedPause(isCleaning)
+    );
+
+    return {
+      fan,
+      productInfo,
+      rooms,
+      battery: new BatteryInfo(hap, log, config, deviceManager),
+      findMe: new FindMeService(hap, log, config, deviceManager),
+      pause: config.pause
+        ? new PauseSwitch(hap, log, config, deviceManager, rooms)
+        : undefined,
+      waterBox: config.waterBox
+        ? new WaterBoxService(hap, log, config, deviceManager, productInfo, fan)
+        : undefined,
+      dustCollection: config.dustCollection
+        ? new DustCollection(hap, log, config, deviceManager)
+        : undefined,
+      goTo: config.goTo
+        ? new GoToService(hap, log, config, deviceManager)
+        : undefined,
+      dock: config.dock
+        ? new DockService(hap, log, config, deviceManager)
+        : undefined,
+      zones: config.zones
+        ? new ZonesService(hap, log, config, deviceManager, fan, (isCleaning) =>
+            this.pluginServices.pause?.changedPause(isCleaning)
+          )
+        : undefined,
+    };
+
+    // ADDITIONAL HOMEKIT SERVICES
+    if (!this.config.disableCareServices) {
+      this.initialiseCareServices();
+    }
+  }
+
   initialiseCareServices() {
     // Make sure `this.device` exists before calling any of the methods
     const callbackify = (fn, cb) =>
-      this.device ? callbackifyLib(fn, cb) : cb(new Error("Not connected yet"));
+      this.deviceManager.device
+        ? callbackifyLib(fn, cb)
+        : cb(new Error("Not connected yet"));
 
     if (this.config.legacyCareSensors) {
       Characteristic.CareSensors = function () {
@@ -377,27 +346,18 @@ class XiaomiRoborockVacuum {
   }
 
   /**
-   * Returns if the newValue is different to the previously cached one
-   *
-   * @param {string} property
-   * @param {any} newValue
-   * @returns {boolean} Whether the newValue is not the same as the previously cached one.
+   * Reacts to the error emitter from the robot and tries to translate the error code to a human-readable error
+   * @param robotError The robot error that is thrown.
+   * @private
    */
-  isNewValue(property, newValue) {
-    const cachedValue = this.cachedState.get(property);
-    this.cachedState.set(property, newValue);
-    return cachedValue !== newValue;
-  }
-
-  changedError(robotError) {
+  private async changedError(robotError: ErrorChangedEvent) {
     if (!robotError) return;
-    if (!this.isNewValue("error", robotError.id)) return;
     this.log.debug(
       `DEB changedError | ErrorID: ${robotError.id}, ErrorDescription: ${robotError.description}`
     );
-    let robotErrorTxt = XiaomiRoborockVacuum.errors[`id${robotError.id}`]
-      ? XiaomiRoborockVacuum.errors[`id${robotError.id}`].description
-      : `Unknown ERR | errorid can't be mapped. (${robotError.id})`;
+    let robotErrorTxt = errors[`id${robotError.id}`]
+      ? errors[`id${robotError.id}`].description
+      : `Unknown ERR | error id can't be mapped. (${robotError.id})`;
     if (!`${robotError.description}`.toLowerCase().startsWith("unknown")) {
       robotErrorTxt = robotError.description;
     }
@@ -405,85 +365,7 @@ class XiaomiRoborockVacuum {
       `WAR changedError | Robot has an ERROR - ${robotError.id}, ${robotErrorTxt}`
     );
     // Clear the error_code property
-    this.device.setRawProperty("error_code", 0);
-  }
-
-  async ensureDevice(callingMethod) {
-    return this.deviceManager.ensureDevice(callingMethod);
-  }
-
-  changedCharging(isCharging) {
-    const isNewValue = this.isNewValue("charging", isCharging);
-    if (this.config.dock) {
-      if (isNewValue) {
-        const msg = isCharging
-          ? "Robot was docked"
-          : "Robot not anymore in dock";
-        this.log.info(`changedCharging | ${msg}.`);
-      }
-      this.legacyServices.dock
-        .getCharacteristic(Characteristic.OccupancyDetected)
-        .updateValue(isCharging);
-    }
-  }
-
-  async getCleaning() {
-    return this.pluginServices.fan.getCleaning();
-  }
-
-  async setCleaning(state) {
-    return this.pluginServices.fan.setCleaning(state);
-  }
-
-  async setCleaningZone(state, zone) {
-    await this.ensureDevice("setCleaning");
-
-    try {
-      if (state && !this.isCleaning) {
-        // Start cleaning
-        this.log.info(
-          `ACT setCleaning | Start cleaning Zone ${zone}, not charging.`
-        );
-
-        const zoneParams = [];
-        for (const zon of zone) {
-          if (zon.length === 4) {
-            zoneParams.push(zon.concat(1));
-          } else if (zon.length === 5) {
-            zoneParams.push(zon);
-          }
-        }
-        await this.device.cleanZones(zoneParams);
-      } else if (!state) {
-        // Stop cleaning
-        this.log.info(`ACT setCleaning | Stop cleaning and go to charge.`);
-        await this.device.activateCharging();
-      }
-    } catch (err) {
-      this.log.error(`setCleaning | Failed to set cleaning to ${state}`, err);
-      throw err;
-    }
-  }
-
-  createZone(zoneName, zoneParams) {
-    // Make sure `this.device` exists before calling any of the methods
-    const callbackify = (fn, cb) =>
-      this.device ? callbackifyLib(fn, cb) : cb(new Error("Not connected yet"));
-
-    this.log.info(`createRoom | Zone ${zoneName} (${zoneParams})`);
-    this.legacyServices[zoneName] = new Service.Switch(
-      `${this.config.cleanword} ${zoneName}`,
-      "zoneCleaning" + zoneName
-    );
-    this.legacyServices[zoneName]
-      .getCharacteristic(Characteristic.On)
-      .on("get", (cb) => callbackify(() => this.getCleaning(), cb))
-      .on("set", (newState, cb) =>
-        callbackify(() => this.setCleaningZone(newState, zoneParams), cb)
-      )
-      .on("change", (oldState, newState) => {
-        this.changedPause(newState);
-      });
+    await this.deviceManager.device.setRawProperty("error_code", 0);
   }
 
   /**
@@ -491,8 +373,8 @@ class XiaomiRoborockVacuum {
    * when setting up the accessory in the Home app.
    * @param callback The "done" callback.
    */
-  identify(callback) {
-    this.pluginServices.findMe.identify().then(
+  public identify(callback) {
+    this.pluginServices.findMe.identify(true).then(
       () => callback(),
       (err) => callback(err)
     );
@@ -502,10 +384,10 @@ class XiaomiRoborockVacuum {
    * HomeBridge calls this method during initialization to fetch all the services exposed by this Accessory.
    * @returns {Service[]} The list of services (Switches, Fans, Occupancy Detectors, ...) set up by this accessory.
    */
-  getServices() {
+  public getServices() {
     this.log.debug(`DEB getServices`);
 
-    const mainService = this.pluginServices.fan;
+    const mainService = this.pluginServices.fan.services[0];
 
     const fromPluginServices = Object.entries(this.pluginServices).reduce(
       (acc, [serviceName, service]) => {
@@ -514,11 +396,11 @@ class XiaomiRoborockVacuum {
         }
         return [...acc, ...service.services];
       },
-      []
+      [] as HomeBridgeService[]
     );
 
     return Object.keys(this.legacyServices).reduce((services, key) => {
-      let currentServices = [];
+      let currentServices = [] as HomeBridgeService[];
 
       if (key === "rooms") {
         currentServices = Object.values(this.legacyServices[key]);
@@ -541,59 +423,55 @@ class XiaomiRoborockVacuum {
   async getCareSensors() {
     // 30h = sensor_dirty_time
     const lifetime = 108000;
-    const sensorDirtyTime = this.device.property("sensorDirtyTime");
-    const lifetimepercent = (sensorDirtyTime / lifetime) * 100;
+    const sensorDirtyTime =
+      this.deviceManager.property<number>("sensorDirtyTime")!;
+    const lifetimePercent = (sensorDirtyTime / lifetime) * 100;
     this.log.info(
-      `getCareSensors | ${
-        this.model
-      } | Sensors dirtytime is ${sensorDirtyTime} seconds / ${lifetimepercent.toFixed(
+      `getCareSensors | Sensors dirtyTime is ${sensorDirtyTime} seconds / ${lifetimePercent.toFixed(
         2
       )}%.`
     );
-    return Math.min(100, lifetimepercent);
+    return Math.min(100, lifetimePercent);
   }
 
   async getCareFilter() {
     // 150h = filter_work_time
     const lifetime = 540000;
-    const lifetimepercent =
-      (this.device.property("filterWorkTime") / lifetime) * 100;
+    const filterWorkTime =
+      this.deviceManager.property<number>("filterWorkTime")!;
+    const lifetimePercent = (filterWorkTime / lifetime) * 100;
     this.log.info(
-      `getCareFilter | ${
-        this.model
-      } | Filter worktime is ${this.device.property(
-        "filterWorkTime"
-      )} seconds / ${lifetimepercent.toFixed(2)}%.`
+      `getCareFilter | Filter workTime is ${filterWorkTime} seconds / ${lifetimePercent.toFixed(
+        2
+      )}%.`
     );
-    return Math.min(100, lifetimepercent);
+    return Math.min(100, lifetimePercent);
   }
 
   async getCareSideBrush() {
     // 200h = side_brush_work_time
     const lifetime = 720000;
-    const lifetimepercent =
-      (this.device.property("sideBrushWorkTime") / lifetime) * 100;
+    const sideBrushWorkTime =
+      this.deviceManager.property<number>("sideBrushWorkTime")!;
+    const lifetimePercent = (sideBrushWorkTime / lifetime) * 100;
     this.log.info(
-      `getCareSideBrush | ${
-        this.model
-      } | Sidebrush worktime is ${this.device.property(
-        "sideBrushWorkTime"
-      )} seconds / ${lifetimepercent.toFixed(2)}%.`
+      `getCareSideBrush | SideBrush workTime is ${sideBrushWorkTime} seconds / ${lifetimePercent.toFixed(
+        2
+      )}%.`
     );
-    return Math.min(100, lifetimepercent);
+    return Math.min(100, lifetimePercent);
   }
 
   async getCareMainBrush() {
     // 300h = main_brush_work_time
     const lifetime = 1080000;
-    const lifetimepercent =
-      (this.device.property("mainBrushWorkTime") / lifetime) * 100;
+    const mainBrushWorkTime =
+      this.deviceManager.property<number>("mainBrushWorkTime")!;
+    const lifetimepercent = (mainBrushWorkTime / lifetime) * 100;
     this.log.info(
-      `getCareMainBrush | ${
-        this.model
-      } | Mainbrush worktime is ${this.device.property(
-        "mainBrushWorkTime"
-      )} seconds / ${lifetimepercent.toFixed(2)}%.`
+      `getCareMainBrush | MainBrush workTime is ${mainBrushWorkTime} seconds / ${lifetimepercent.toFixed(
+        2
+      )}%.`
     );
     return Math.min(100, lifetimepercent);
   }
