@@ -1,8 +1,9 @@
 import { HAP } from "homebridge";
-import { distinct, exhaustMap, Subject, timer } from "rxjs";
+import { BehaviorSubject, distinct, exhaustMap, Subject, timer } from "rxjs";
 import miio from "../miio";
 import { Logger } from "../utils/logger";
 import { MiioDevice } from "../utils/miio_types";
+import { cleaningStatuses } from "../utils/constants";
 
 export interface DeviceManagerConfig {
   ip?: string;
@@ -22,7 +23,9 @@ export interface StateChangedEvent {
 const GET_STATE_INTERVAL_MS = 30000; // 30s
 
 export class DeviceManager {
-  public internalDevice?: MiioDevice;
+  private readonly internalDevice$ = new BehaviorSubject<
+    MiioDevice | undefined
+  >(undefined);
 
   private readonly ip: string;
   private readonly token: string;
@@ -31,6 +34,7 @@ export class DeviceManager {
   private readonly internalStateChanged$ = new Subject<StateChangedEvent>();
   public readonly errorChanged$ = this.internalErrorChanged$.pipe(distinct());
   public readonly stateChanged$ = this.internalStateChanged$.asObservable();
+  public readonly deviceConnected$ = this.internalDevice$.asObservable();
 
   private connectingPromise: Promise<void> | null = null;
   private connectRetry = setTimeout(() => void 0, 100); // Noop timeout only to initialise the property
@@ -55,14 +59,26 @@ export class DeviceManager {
   }
 
   public get model() {
-    return this.internalDevice?.miioModel || "unknown model";
+    return this.internalDevice$.value?.miioModel || "unknown model";
+  }
+
+  public get state() {
+    return this.property("state") as string;
+  }
+
+  public get isCleaning() {
+    return cleaningStatuses.includes(this.state);
+  }
+
+  public get isPaused() {
+    return this.state === "paused";
   }
 
   public get device() {
-    if (!this.internalDevice) {
+    if (!this.internalDevice$.value) {
       throw new Error("Not connected yet");
     }
-    return this.internalDevice;
+    return this.internalDevice$.value;
   }
 
   public property<T>(propertyName: string) {
@@ -71,7 +87,7 @@ export class DeviceManager {
 
   public async ensureDevice(callingMethod: string) {
     try {
-      if (!this.internalDevice) {
+      if (!this.internalDevice$.value) {
         const errMsg = `${callingMethod} | No vacuum cleaner is discovered yet.`;
         this.log.error(errMsg);
         throw new Error(errMsg);
@@ -79,7 +95,7 @@ export class DeviceManager {
 
       // checking if the device has an open socket it will fail retrieving it if not
       // https://github.com/aholstenson/miio/blob/master/lib/network.js#L227
-      const socket = this.internalDevice.handle.api.parent.socket;
+      const socket = this.internalDevice$.value.handle.api.parent.socket;
       this.log.debug(
         `DEB ensureDevice | ${this.model} | The socket is still on. Reusing it.`
       );
@@ -130,7 +146,7 @@ export class DeviceManager {
     const device = await miio.device({ address: this.ip, token: this.token });
 
     if (device.matches("type:vaccuum")) {
-      this.internalDevice = device;
+      this.internalDevice$.next(device);
 
       this.log.setModel(this.model);
 
@@ -144,29 +160,6 @@ export class DeviceManager {
         "STA getDevice | BatteryLevel: " + this.property("batteryLevel")
       );
 
-      // try {
-      //   const serial = await this.getSerialNumber();
-      //   this.services.info.setCharacteristic(
-      //     Characteristic.SerialNumber,
-      //     `${serial}`
-      //   );
-      //   this.log.info(`STA getDevice | Serialnumber: ${serial}`);
-      // } catch (err) {
-      //   this.log.error(`ERR getDevice | get_serial_number | ${err}`);
-      // }
-
-      // try {
-      //   const firmware = await this.getFirmware();
-      //   this.firmware = firmware;
-      //   this.services.info.setCharacteristic(
-      //     Characteristic.FirmwareRevision,
-      //     `${firmware}`
-      //   );
-      //   this.log.info(`STA getDevice | Firmwareversion: ${firmware}`);
-      // } catch (err) {
-      //   this.log.error(`ERR getDevice | miIO.info | ${err}`);
-      // }
-
       this.device.on<ErrorChangedEvent>("errorChanged", (error) =>
         this.internalErrorChanged$.next(error)
       );
@@ -174,12 +167,6 @@ export class DeviceManager {
         this.internalStateChanged$.next(state)
       );
 
-      //   // Now that we know the model, amend the steps in the Rotation speed (for better usability)
-      //   const minStep = 100 / (this.findSpeedModes().speed.length - 1);
-      //   this.services.fan
-      //     .getCharacteristic(Characteristic.RotationSpeed)
-      //     .setProps({ minStep: minStep });
-      //
       // Refresh the state every 30s so miio maintains a fresh connection (or recovers connection if lost until we fix https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/81)
       timer(0, GET_STATE_INTERVAL_MS).pipe(exhaustMap(() => this.getState()));
     } else {

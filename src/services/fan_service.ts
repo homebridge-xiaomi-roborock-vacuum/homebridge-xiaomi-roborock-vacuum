@@ -20,7 +20,8 @@ export class FanService implements PluginService {
     private readonly cachedState: Map<string, unknown>,
     private readonly productInfo: ProductInfo,
     private readonly roomsService: RoomsService,
-    private readonly setWaterSpeed: (mode: string) => Promise<void>
+    private readonly setWaterSpeed: (mode: string) => Promise<void>,
+    private readonly changedPause: (isCleaning: boolean) => void
   ) {
     this.service = new hap.Service.Fan(this.config.name, "Speed");
     if (this.service.setPrimaryService) {
@@ -31,10 +32,10 @@ export class FanService implements PluginService {
       .on("get", (cb) => callbackify(() => this.getCleaning(), cb))
       .on("set", (newState, cb) =>
         callbackify(() => this.setCleaning(newState), cb)
-      );
-    // .on("change", ({ newValue }) => {
-    //   this.changedPause(newValue);
-    // });
+      )
+      .on("change", ({ newValue }) => {
+        this.changedPause(newValue === true);
+      });
     this.service
       .getCharacteristic(hap.Characteristic.RotationSpeed)
       .on("get", (cb) => callbackify(() => this.getSpeed(), cb))
@@ -44,6 +45,15 @@ export class FanService implements PluginService {
   }
 
   public async init() {
+    this.deviceManager.deviceConnected$.subscribe(() => {
+      // Now that we know the model, amend the steps in the Rotation speed (for better usability)
+      const minStep =
+        100 / (findSpeedModes(this.deviceManager.model).speed.length - 1);
+      this.service
+        .getCharacteristic(this.hap.Characteristic.RotationSpeed)
+        .setProps({ minStep: minStep });
+    });
+
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "cleaning"),

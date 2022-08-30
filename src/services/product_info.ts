@@ -3,6 +3,7 @@ import { Logger } from "../utils/logger";
 import { callbackify } from "../utils/callbackify";
 import { PluginService } from "./types";
 import { DeviceManager } from "./device_manager";
+import { concatMap } from "rxjs";
 
 export class ProductInfo implements PluginService {
   public firmware?: string;
@@ -27,7 +28,36 @@ export class ProductInfo implements PluginService {
       .on("get", (cb) => callbackify(() => this.getSerialNumber(), cb));
   }
 
-  public async init(): Promise<void> {}
+  public async init(): Promise<void> {
+    this.deviceManager.deviceConnected$ // Only run the below once the device is connected
+      .pipe(
+        concatMap(async () => {
+          try {
+            const serial = await this.getSerialNumber();
+            this.service.setCharacteristic(
+              this.hap.Characteristic.SerialNumber,
+              `${serial}`
+            );
+            this.log.info(`STA getDevice | Serial Number: ${serial}`);
+          } catch (err) {
+            this.log.error(`ERR getDevice | get_serial_number | ${err}`);
+          }
+
+          try {
+            const firmware = await this.getFirmware();
+            this.firmware = firmware;
+            this.service.setCharacteristic(
+              this.hap.Characteristic.FirmwareRevision,
+              `${firmware}`
+            );
+            this.log.info(`STA getDevice | Firmware Version: ${firmware}`);
+          } catch (err) {
+            this.log.error(`ERR getDevice | miIO.info | ${err}`);
+          }
+        })
+      )
+      .subscribe();
+  }
 
   public get services() {
     return [this.service];

@@ -1,11 +1,13 @@
 import { CustomLoggerConfig } from "../utils/logger";
 import { RoomsConfig } from "./rooms_service";
 import { DeviceManagerConfig } from "./device_manager";
+import { PauseConfig } from "./pause_switch";
 
 export interface Config
   extends DeviceManagerConfig,
     CustomLoggerConfig,
-    RoomsConfig {
+    RoomsConfig,
+    PauseConfig {
   /**
    * The name of the main service as it will show up in the Home App.
    */

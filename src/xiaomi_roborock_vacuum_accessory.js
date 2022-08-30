@@ -13,6 +13,7 @@ const {
   FanService,
   WaterBoxService,
   DustCollection,
+  PauseSwitch,
 } = require("./services");
 const { cleaningStatuses, errors } = require("./utils/constants");
 
@@ -83,6 +84,16 @@ class XiaomiRoborockVacuum {
       (clean) => this.setCleaning(clean)
     );
 
+    if (this.config.pause) {
+      this.pluginServices.pause = new PauseSwitch(
+        hap,
+        this.log,
+        this.config,
+        this.deviceManager,
+        this.pluginServices.rooms
+      );
+    }
+
     this.pluginServices.fan = new FanService(
       hap,
       this.log,
@@ -91,7 +102,8 @@ class XiaomiRoborockVacuum {
       this.cachedState,
       this.pluginServices.productInfo,
       this.pluginServices.rooms,
-      (mode) => this.pluginServices.waterBox?.setWaterSpeed(mode)
+      (mode) => this.pluginServices.waterBox?.setWaterSpeed(mode),
+      (isCleaning) => this.pluginServices.pause?.changedPause(isCleaning)
     );
 
     if (this.config.waterBox) {
@@ -121,20 +133,6 @@ class XiaomiRoborockVacuum {
       this.config,
       this.deviceManager
     );
-
-    if (this.config.pause) {
-      this.legacyServices.pause = new Service.Switch(
-        `${this.config.name} ${this.config.pauseWord}`,
-        "Pause Switch"
-      );
-      this.legacyServices.pause
-        .getCharacteristic(Characteristic.On)
-        .on("get", (cb) => callbackify(() => this.getPauseState(), cb))
-        .on("set", (newState, cb) =>
-          callbackify(() => this.setPauseState(newState), cb)
-        );
-      // TODO: Add 'change' status?
-    }
 
     if (this.config.findMe) {
       this.legacyServices.findMe = new Service.Switch(
@@ -413,30 +411,6 @@ class XiaomiRoborockVacuum {
     this.device.setRawProperty("error_code", 0);
   }
 
-  changedPause(newValue) {
-    const isCleaning = newValue === true;
-    if (this.config.pause) {
-      if (this.isNewValue("pause", isCleaning)) {
-        this.log.debug(`MON changedPause | CleaningState is now ${isCleaning}`);
-        this.log.info(
-          `changedPause | ${
-            isCleaning ? "Paused possible" : "Paused not possible, no cleaning"
-          }`
-        );
-      }
-      // We still update the value in Homebridge. If we are calling the changed method is because we want to change it.
-      this.legacyServices.pause
-        .getCharacteristic(Characteristic.On)
-        .updateValue(isCleaning === true);
-
-      if (this.config.waterBox) {
-        this.legacyServices.waterBox
-          .getCharacteristic(Characteristic.On)
-          .updateValue(isCleaning === true);
-      }
-    }
-  }
-
   async ensureDevice(callingMethod) {
     return this.deviceManager.ensureDevice(callingMethod);
   }
@@ -454,16 +428,6 @@ class XiaomiRoborockVacuum {
         .getCharacteristic(Characteristic.OccupancyDetected)
         .updateValue(isCharging);
     }
-  }
-
-  get isCleaning() {
-    const status = this.device.property("state");
-    return XiaomiRoborockVacuum.cleaningStatuses.includes(status);
-  }
-
-  get isPaused() {
-    const isPaused = this.device.property("state") === "paused";
-    return isPaused;
   }
 
   async getCleaning() {
@@ -523,59 +487,6 @@ class XiaomiRoborockVacuum {
       .on("change", (oldState, newState) => {
         this.changedPause(newState);
       });
-  }
-
-  async getPauseState() {
-    await this.ensureDevice("getPauseState");
-
-    try {
-      const isPaused = this.device.property("state") === "paused";
-      const canBePaused = this.isCleaning && !isPaused;
-      this.log.info(`getPauseState | Pause possible is ${canBePaused}`);
-      return canBePaused;
-    } catch (err) {
-      this.log.error(
-        `getPauseState | Failed getting the cleaning status.`,
-        err
-      );
-      throw err;
-    }
-  }
-
-  async setPauseState(state) {
-    await this.ensureDevice("setPauseState");
-
-    try {
-      if (state && this.isPaused) {
-        if (this.roomIdsToClean.size > 0) {
-          await this.device.resumeCleanRooms(Array.from(this.roomIdsToClean));
-          this.log.info(
-            `setPauseState | Resume room cleaning, and the device is in state  ${this.device.property(
-              "state"
-            )}`
-          );
-        } else {
-          await this.device.activateCleaning();
-          this.log.info(
-            `setPauseState | Resume normal cleaning, and the device is in state ${this.device.property(
-              "state"
-            )}`
-          );
-        }
-      } else if (!state && this.isCleaning) {
-        await this.device.pause();
-        this.log.info(
-          `setPauseState | Pause cleaning, and the device is in state ${this.device.property(
-            "state"
-          )}`
-        );
-      }
-    } catch (err) {
-      this.log.error(
-        `setPauseState | Failed updating pause state ${state}.`,
-        err
-      );
-    }
   }
 
   async getDocked() {

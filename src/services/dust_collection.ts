@@ -32,12 +32,7 @@ export class DustCollection implements PluginService {
   }
 
   private get isDustCollecting() {
-    const isDustCollecting = this.state === "dust-collection";
-    return isDustCollecting;
-  }
-
-  private get state() {
-    return this.deviceManager.property("state");
+    return this.deviceManager.state === "dust-collection";
   }
 
   private async getDustCollectionState() {
@@ -61,25 +56,25 @@ export class DustCollection implements PluginService {
   private async setDustCollectionState(state) {
     await this.deviceManager.ensureDevice("setDustCollectionState");
 
-    const isCharging = this.state === "charging";
+    const isCharging = this.deviceManager.state;
 
     try {
       if (state && !this.isDustCollecting && isCharging) {
         await this.deviceManager.device.startDustCollection();
         this.log.info(
-          `setDustCollectionState | Starting Dust Collection, and the device is in state ${this.state}`
+          `setDustCollectionState | Starting Dust Collection, and the device is in state ${this.deviceManager.state}`
         );
       } else if (!state && this.isDustCollecting) {
         await this.deviceManager.device.stopDustCollection();
         this.log.info(
-          `setDustCollectionState | Stopping Dust Collection, and the device is in state ${this.state}`
+          `setDustCollectionState | Stopping Dust Collection, and the device is in state ${this.deviceManager.state}`
         );
       } else if (state && !this.isDustCollecting && !isCharging) {
         this.service
           .getCharacteristic(this.hap.Characteristic.On)
           .updateValue(false);
         this.log.info(
-          `setDustCollectionState | Starting Dust Collection not possible, and the device is in state ${this.state}`
+          `setDustCollectionState | Starting Dust Collection not possible, and the device is in state ${this.deviceManager.state}`
         );
       }
     } catch (err) {
