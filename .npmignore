@@ -9,7 +9,7 @@ src/
 coverage/
 __snapshots__/
 **.test.js
-mocks.js
+src/test.mocks.ts
 
 # Development configs
 renovate.json
