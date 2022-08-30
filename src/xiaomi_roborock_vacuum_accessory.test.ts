@@ -1,19 +1,28 @@
 "use strict";
 
+import { API } from "homebridge";
+
 jest.useFakeTimers();
 
-import { createHomebridgeMock, miio } from "./mocks";
+import { createHomebridgeMock, miio } from "./test.mocks";
 
 import getXiaomiRoborockVacuumAccessory from "./xiaomi_roborock_vacuum_accessory";
 
 describe("XiaomiRoborockVacuum", () => {
-  let homebridge;
+  let homebridge: jest.Mocked<API>;
+  let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
     homebridge = createHomebridgeMock();
     // Silencing the logger in the tests to reduce noise.
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
+    jest.spyOn(console, "warn").mockImplementation();
+    jest.spyOn(console, "info").mockImplementation();
     jest.spyOn(console, "debug").mockImplementation();
-    jest.spyOn(console, "error").mockImplementation();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   test("Returns the accessory class", () => {
@@ -55,43 +64,68 @@ describe("XiaomiRoborockVacuum", () => {
       Please, use "autoroom" to retrieve the "rooms" config and remove it when not needed.`);
   });
 
-  describe("Client with minimum config", () => {
-    let client;
+  test("Client with minimum config has the basic services", () => {
+    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
 
-    beforeAll(() => {
-      const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
-
-      client = new XiaomiRoborockVacuum(console, {
-        ip: "192.168.0.1",
-        token: "TOKEN",
-      });
+    const client = new XiaomiRoborockVacuum(console, {
+      ip: "192.168.0.1",
+      token: "TOKEN",
     });
-
-    test("it has the basic services", () => {
-      const initialisedServices = client.getServices();
-      expect(initialisedServices).toHaveLength(7);
-      expect(
-        initialisedServices.map((svc) => `${svc.name}-${svc.type}`)
-      ).toMatchSnapshot();
-      expect(Object.keys(client.pluginServices)).toMatchSnapshot();
-    });
-
-    // These should be moved to the DeviceManager tests
-    // test("the miio library has been called", () => {
-    //   expect(miio.device.matches).toHaveBeenCalledTimes(1);
-    //   expect(miio.device.destroy).toHaveBeenCalledTimes(1);
-    // });
-
-    // test("succeeds in reconnecting", async () => {
-    //   miio.device.matches.mockReturnValueOnce(true);
-    //   await client.connect();
-    //   expect(miio.device.matches).toHaveBeenCalledTimes(2);
-    //   expect(miio.device.on).toHaveBeenCalledTimes(2);
-    //   expect(miio.device.destroy).toHaveBeenCalledTimes(1);
-    // });
-
-    xdescribe("AccessoryInformation", () => {
-      // const model = client.services.info.getCharacteristic.mock.calls[1];
-    });
+    const initialisedServices = client.getServices();
+    expect(initialisedServices).toHaveLength(7);
+    expect(
+      // @ts-expect-error type should exist but TS says it doesn't
+      initialisedServices.map((svc) => `${svc.name}-${svc.type}`)
+    ).toMatchSnapshot();
+    expect(Object.keys(client["pluginServices"])).toMatchSnapshot();
   });
+
+  test("Client with all config has all the services", () => {
+    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
+
+    const client = new XiaomiRoborockVacuum(console, {
+      ip: "192.168.0.1",
+      token: "TOKEN",
+      pause: true,
+      waterBox: true,
+      dustCollection: true,
+      goTo: true,
+      dock: true,
+      zones: [],
+      disableCareServices: true,
+    });
+    const initialisedServices = client.getServices();
+    expect(initialisedServices).toHaveLength(8);
+    expect(
+      // @ts-expect-error type should exist but TS says it doesn't
+      initialisedServices.map((svc) => `${svc.name}-${svc.type}`)
+    ).toMatchSnapshot();
+    expect(Object.keys(client["pluginServices"])).toMatchSnapshot();
+  });
+
+  test("identify API", async () => {
+    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
+
+    const client = new XiaomiRoborockVacuum(console, {
+      ip: "192.168.0.1",
+      token: "TOKEN",
+    });
+    const identifySpy = jest.spyOn(client["pluginServices"].findMe, "identify");
+    expect(client.identify()).toBeUndefined();
+    expect(identifySpy).toHaveBeenCalledTimes(1);
+  });
+
+  // These should be moved to the DeviceManager tests
+  // test("the miio library has been called", () => {
+  //   expect(miio.device.matches).toHaveBeenCalledTimes(1);
+  //   expect(miio.device.destroy).toHaveBeenCalledTimes(1);
+  // });
+
+  // test("succeeds in reconnecting", async () => {
+  //   miio.device.matches.mockReturnValueOnce(true);
+  //   await client.connect();
+  //   expect(miio.device.matches).toHaveBeenCalledTimes(2);
+  //   expect(miio.device.on).toHaveBeenCalledTimes(2);
+  //   expect(miio.device.destroy).toHaveBeenCalledTimes(1);
+  // });
 });

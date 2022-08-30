@@ -1,6 +1,36 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`XiaomiRoborockVacuum Client with minimum config it has the basic services 1`] = `
+exports[`XiaomiRoborockVacuum Client with all config has all the services 1`] = `
+[
+  "Roborock vacuum cleaner-Speed",
+  "undefined-undefined",
+  "Roborock vacuum cleaner Battery-undefined",
+  "Roborock vacuum cleaner Pause-Pause Switch",
+  "Roborock vacuum cleaner Water Box-Water Box",
+  "Roborock vacuum cleaner Dust Collection-Dust Collection",
+  "Roborock vacuum cleaner go to coordinates-GoTo Switch",
+  "Roborock vacuum cleaner Dock-undefined",
+]
+`;
+
+exports[`XiaomiRoborockVacuum Client with all config has all the services 2`] = `
+[
+  "fan",
+  "productInfo",
+  "rooms",
+  "battery",
+  "findMe",
+  "pause",
+  "waterBox",
+  "dustCollection",
+  "goTo",
+  "dock",
+  "zones",
+  "careServices",
+]
+`;
+
+exports[`XiaomiRoborockVacuum Client with minimum config has the basic services 1`] = `
 [
   "Roborock vacuum cleaner-Speed",
   "undefined-undefined",
@@ -12,7 +42,7 @@ exports[`XiaomiRoborockVacuum Client with minimum config it has the basic servic
 ]
 `;
 
-exports[`XiaomiRoborockVacuum Client with minimum config it has the basic services 2`] = `
+exports[`XiaomiRoborockVacuum Client with minimum config has the basic services 2`] = `
 [
   "fan",
   "productInfo",

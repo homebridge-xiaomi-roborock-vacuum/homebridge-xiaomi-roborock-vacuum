@@ -18,17 +18,46 @@ describe("getLogger", () => {
     jest.resetAllMocks();
   });
 
-  test("it should log info messages by default", () => {
-    const infoSpy = jest.spyOn(homebridgeLogger, "info");
-    const logger = getLogger(homebridgeLogger, {});
-    logger.info("Test message");
-    expect(infoSpy).toHaveBeenCalledWith("[Model=unknown] Test message");
-  });
+  test.each(["debug", "info", "warn", "error"] as const)(
+    "it should log %p messages by default",
+    (level) => {
+      const logSpy = jest.spyOn(homebridgeLogger, level);
+      const logger = getLogger(homebridgeLogger, {});
+      logger[level]("Test message");
+      expect(logSpy).toHaveBeenCalledWith("[Model=unknown] Test message");
+    }
+  );
 
-  test("it not should log info messages if silent === true", () => {
-    const infoSpy = jest.spyOn(homebridgeLogger, "info");
-    const logger = getLogger(homebridgeLogger, { silent: true });
-    logger.info("Test message");
-    expect(infoSpy).not.toHaveBeenCalledWith("Test message");
+  test.each(["debug", "info", "warn", "error"] as const)(
+    "it should log %p messages with a model set",
+    (level) => {
+      const logSpy = jest.spyOn(homebridgeLogger, level);
+      const logger = getLogger(homebridgeLogger, {});
+      logger.setModel("test-model");
+      logger[level]("Test message");
+      expect(logSpy).toHaveBeenCalledWith("[Model=test-model] Test message");
+    }
+  );
+
+  describe("if silent === true", () => {
+    test.each(["debug", "info"] as const)(
+      "it not should log %p messages",
+      (level) => {
+        const logSpy = jest.spyOn(homebridgeLogger, level);
+        const logger = getLogger(homebridgeLogger, { silent: true });
+        logger[level]("Test message");
+        expect(logSpy).not.toHaveBeenCalled();
+      }
+    );
+
+    test.each(["warn", "error"] as const)(
+      "it should log %p messages",
+      (level) => {
+        const logSpy = jest.spyOn(homebridgeLogger, level);
+        const logger = getLogger(homebridgeLogger, { silent: true });
+        logger[level]("Test message");
+        expect(logSpy).toHaveBeenCalledWith("[Model=unknown] Test message");
+      }
+    );
   });
 });
