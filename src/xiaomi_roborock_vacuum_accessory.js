@@ -15,6 +15,7 @@ const {
   DustCollection,
   PauseSwitch,
   FindMeService,
+  GoToService,
 } = require("./services");
 const { cleaningStatuses, errors } = require("./utils/constants");
 
@@ -143,14 +144,12 @@ class XiaomiRoborockVacuum {
     );
 
     if (this.config.goTo) {
-      this.legacyServices.goTo = new Service.Switch(
-        `${this.config.name} ${this.config.goToWord}`,
-        "GoTo Switch"
+      this.pluginServices.goTo = new GoToService(
+        hap,
+        this.log,
+        this.config,
+        this.deviceManager
       );
-      this.legacyServices.goTo
-        .getCharacteristic(Characteristic.On)
-        .on("get", (cb) => callbackify(() => this.getGoToState(), cb))
-        .on("set", (newState, cb) => this.goTo(cb));
     }
 
     if (this.config.dock) {
@@ -506,33 +505,6 @@ class XiaomiRoborockVacuum {
       () => callback(),
       (err) => callback(err)
     );
-  }
-
-  async goTo(callback) {
-    await this.ensureDevice("goTo");
-
-    this.log.info(`ACT goTo | Let's go!`);
-    try {
-      await this.device.sendToLocation(this.config.goToX, this.config.goToY);
-      callback();
-    } catch (err) {
-      this.log.error(`goTo | `, err);
-      callback(err);
-    }
-  }
-
-  async getGoToState() {
-    await this.ensureDevice("goTo");
-
-    try {
-      const goingToLocation =
-        this.device.property("state") === "going-to-location";
-      this.log.info(`getGoToState | Going to location is ${goingToLocation}`);
-      return goingToLocation;
-    } catch (err) {
-      this.log.error(`getGoToState | Failed getting the cleaning status.`, err);
-      throw err;
-    }
   }
 
   /**

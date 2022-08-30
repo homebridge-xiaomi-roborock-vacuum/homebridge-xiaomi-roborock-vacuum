@@ -34,6 +34,7 @@ export interface MiioDevice {
   setWaterBoxMode: (miLevel: number) => Promise<void>;
   startDustCollection: () => Promise<void>;
   stopDustCollection: () => Promise<void>;
+  sendToLocation: (x: number, y: number) => Promise<void>;
 }
 
 export interface MiioState {

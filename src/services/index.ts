@@ -4,6 +4,7 @@ export { DeviceManager } from "./device_manager";
 export { DustCollection } from "./dust_collection";
 export { PauseSwitch } from "./pause_switch";
 export { FindMeService } from "./find_me_service";
+export { GoToService } from "./go_to_service";
 export { FanService } from "./fan_service";
 export { ProductInfo } from "./product_info";
 export { RoomsService } from "./rooms_service";
