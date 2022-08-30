@@ -1,3 +1,4 @@
+// From https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L128
 export const cleaningStatuses = [
   "cleaning",
   "spot-cleaning",

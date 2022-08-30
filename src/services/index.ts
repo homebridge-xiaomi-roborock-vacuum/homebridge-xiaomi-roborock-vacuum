@@ -1,6 +1,7 @@
 export { applyConfigDefaults } from "./config_service";
 export { BatteryInfo } from "./battery_info";
 export { DeviceManager } from "./device_manager";
+export { DustCollection } from "./dust_collection";
 export { FanService } from "./fan_service";
 export { ProductInfo } from "./product_info";
 export { RoomsService } from "./rooms_service";

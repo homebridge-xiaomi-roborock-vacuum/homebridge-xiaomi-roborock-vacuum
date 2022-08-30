@@ -7,12 +7,12 @@ import { Config } from "./config_service";
 
 export class BatteryInfo implements PluginService {
   private readonly service: Service;
+  private isCharging?: boolean;
   constructor(
     private readonly hap: HAP,
     private readonly log: Logger,
     private readonly config: Config,
-    private readonly deviceManager: DeviceManager,
-    private readonly cachedState: Map<string, unknown>
+    private readonly deviceManager: DeviceManager
   ) {
     this.service = new hap.Service.BatteryService(
       `${this.config.name} Battery`
@@ -33,6 +33,7 @@ export class BatteryInfo implements PluginService {
       if (key === "batteryLevel") {
         this.changedBattery(value as number);
       } else if (key === "charging") {
+        this.changedCharging(value);
       }
     });
   }
@@ -56,7 +57,7 @@ export class BatteryInfo implements PluginService {
   }
 
   private changedCharging(isCharging) {
-    const isNewValue = this.isNewValue("charging", isCharging);
+    const isNewValue = this.isCharging != isCharging;
     if (isNewValue) {
       this.log.info(`MON changedCharging | ChargingState is now ${isCharging}`);
       this.log.info(
@@ -97,18 +98,5 @@ export class BatteryInfo implements PluginService {
     return isCharging
       ? this.hap.Characteristic.ChargingState.CHARGING
       : this.hap.Characteristic.ChargingState.NOT_CHARGING;
-  }
-
-  /**
-   * Returns if the newValue is different to the previously cached one
-   *
-   * @param {string} property
-   * @param {any} newValue
-   * @returns {boolean} Whether the newValue is not the same as the previously cached one.
-   */
-  private isNewValue(property, newValue) {
-    const cachedValue = this.cachedState.get(property);
-    this.cachedState.set(property, newValue);
-    return cachedValue !== newValue;
   }
 }

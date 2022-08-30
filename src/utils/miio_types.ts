@@ -30,6 +30,8 @@ export interface MiioDevice {
   changeFanSpeed: (miLevel: number) => Promise<void>;
   getWaterBoxMode: () => Promise<number>;
   setWaterBoxMode: (miLevel: number) => Promise<void>;
+  startDustCollection: () => Promise<void>;
+  stopDustCollection: () => Promise<void>;
 }
 
 export interface MiioState {
