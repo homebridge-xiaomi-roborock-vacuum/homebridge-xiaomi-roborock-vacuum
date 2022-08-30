@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CareService legacyCareSensors the custom Care service characteristics call all getters 1`] = `0.009259259259259259`;
+
+exports[`CareService legacyCareSensors the custom Care service characteristics call all getters 2`] = `0.001851851851851852`;
+
+exports[`CareService legacyCareSensors the custom Care service characteristics call all getters 3`] = `0.001388888888888889`;
+
+exports[`CareService legacyCareSensors the custom Care service characteristics call all getters 4`] = `0.000925925925925926`;
+
+exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 1`] = `false`;
+
+exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 2`] = `99.99074074074075`;
+
+exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 3`] = `false`;
+
+exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 4`] = `99.99814814814815`;
+
+exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 5`] = `false`;
+
+exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 6`] = `99.99861111111112`;
+
+exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 7`] = `false`;
+
+exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 8`] = `99.99907407407407`;

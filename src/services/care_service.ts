@@ -75,13 +75,13 @@ export class CareService implements PluginService {
     const lifetime = 1080000;
     const mainBrushWorkTime =
       this.deviceManager.property<number>("mainBrushWorkTime")!;
-    const lifetimepercent = (mainBrushWorkTime / lifetime) * 100;
+    const lifetimePercent = (mainBrushWorkTime / lifetime) * 100;
     this.log.info(
-      `getCareMainBrush | MainBrush workTime is ${mainBrushWorkTime} seconds / ${lifetimepercent.toFixed(
+      `getCareMainBrush | MainBrush workTime is ${mainBrushWorkTime} seconds / ${lifetimePercent.toFixed(
         2
       )}%.`
     );
-    return Math.min(100, lifetimepercent);
+    return Math.min(100, lifetimePercent);
   }
 
   private registerLegacyCustomCareService(): Service[] {
@@ -127,6 +127,7 @@ export class CareService implements PluginService {
             this.getCareSensors(),
             this.getCareFilter(),
             this.getCareSideBrush(),
+            this.getCareMainBrush(),
           ]);
           return 100 - Math.max(...carePercentages);
         }, cb)
