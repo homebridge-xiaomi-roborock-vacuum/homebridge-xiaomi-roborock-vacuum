@@ -2,12 +2,18 @@ import { CustomLoggerConfig } from "../utils/logger";
 import { RoomsConfig } from "./rooms_service";
 import { DeviceManagerConfig } from "./device_manager";
 import { PauseConfig } from "./pause_switch";
+import { WaterBoxConfig } from "./water_box_service";
+import { DustCollectionConfig } from "./dust_collection";
+import { FindMeConfig } from "./find_me_service";
 
 export interface Config
   extends DeviceManagerConfig,
     CustomLoggerConfig,
     RoomsConfig,
-    PauseConfig {
+    PauseConfig,
+    WaterBoxConfig,
+    DustCollectionConfig,
+    FindMeConfig {
   /**
    * The name of the main service as it will show up in the Home App.
    */
@@ -36,6 +42,8 @@ export function applyConfigDefaults(config: Partial<Config>): Config {
     goToX: 25500,
     goToY: 25500,
     roomTimeout: 0,
+    waterBox: false,
+    dustCollection: false,
     ...config,
   };
 }

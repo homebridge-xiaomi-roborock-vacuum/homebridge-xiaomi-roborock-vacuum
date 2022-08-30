@@ -5,6 +5,10 @@ import { Config } from "./config_service";
 import { DeviceManager } from "./device_manager";
 import { callbackify } from "../utils/callbackify";
 
+export interface DustCollectionConfig {
+  dustCollection: boolean;
+}
+
 export class DustCollection implements PluginService {
   private readonly service: Service;
   constructor(

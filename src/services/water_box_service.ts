@@ -9,6 +9,10 @@ import { ProductInfo } from "./product_info";
 import { FanService } from "./fan_service";
 import { distinct, filter } from "rxjs";
 
+export interface WaterBoxConfig {
+  waterBox: boolean;
+}
+
 export class WaterBoxService implements PluginService {
   private readonly service: Service;
   constructor(

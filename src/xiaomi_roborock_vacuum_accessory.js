@@ -14,6 +14,7 @@ const {
   WaterBoxService,
   DustCollection,
   PauseSwitch,
+  FindMeService,
 } = require("./services");
 const { cleaningStatuses, errors } = require("./utils/constants");
 
@@ -54,9 +55,7 @@ class XiaomiRoborockVacuum {
     this.deviceManager.errorChanged$.subscribe((err) => this.changedError(err));
     this.deviceManager.stateChanged$.subscribe(({ key, value }) => {
       this.log.debug(`stateChanged | stateChanged event: ${key}:${value}`);
-      if (key === "cleaning") {
-        this.changedPause(value);
-      } else if (key === "charging") {
+      if (key === "charging") {
         this.changedCharging(value);
       }
     });
@@ -68,7 +67,9 @@ class XiaomiRoborockVacuum {
   initialiseServices() {
     // Make sure `this.device` exists before calling any of the methods
     const callbackify = (fn, cb) =>
-      this.device ? callbackifyLib(fn, cb) : cb(new Error("Not connected yet"));
+      this.deviceManager.device
+        ? callbackifyLib(fn, cb)
+        : cb(new Error("Not connected yet"));
 
     this.pluginServices.productInfo = new ProductInfo(
       hap,
@@ -134,16 +135,12 @@ class XiaomiRoborockVacuum {
       this.deviceManager
     );
 
-    if (this.config.findMe) {
-      this.legacyServices.findMe = new Service.Switch(
-        `${this.config.name} ${this.config.findMeWord}`,
-        "FindMe Switch"
-      );
-      this.legacyServices.findMe
-        .getCharacteristic(Characteristic.On)
-        .on("get", (cb) => callbackify(() => false, cb))
-        .on("set", (newState, cb) => this.identify(cb));
-    }
+    this.pluginServices.findMe = new FindMeService(
+      hap,
+      this.log,
+      this.config,
+      this.deviceManager
+    );
 
     if (this.config.goTo) {
       this.legacyServices.goTo = new Service.Switch(
@@ -490,27 +487,25 @@ class XiaomiRoborockVacuum {
   }
 
   async getDocked() {
-    const status = this.device.property("state");
+    const status = this.deviceManager.state;
+    const isCharging = status === "charging";
     this.log.info(
-      `getDocked | Robot Docked is ${
-        status === "charging"
-      } (Status is ${status})`
+      `getDocked | Robot Docked is ${isCharging} (Status is ${status})`
     );
 
-    return status === "charging";
+    return isCharging;
   }
 
-  async identify(callback) {
-    await this.ensureDevice("identify");
-
-    this.log.info(`ACT identify | Find me - Hello!`);
-    try {
-      await this.deviceManager.device.find();
-      callback();
-    } catch (err) {
-      this.log.error(`identify | `, err);
-      callback(err);
-    }
+  /**
+   * HomeBridge requires this method for the "identify" calls
+   * when setting up the accessory in the Home app.
+   * @param callback The "done" callback.
+   */
+  identify(callback) {
+    this.pluginServices.findMe.identify().then(
+      () => callback(),
+      (err) => callback(err)
+    );
   }
 
   async goTo(callback) {
@@ -540,11 +535,22 @@ class XiaomiRoborockVacuum {
     }
   }
 
+  /**
+   * HomeBridge calls this method during initialization to fetch all the services exposed by this Accessory.
+   * @returns {Service[]} The list of services (Switches, Fans, Occupancy Detectors, ...) set up by this accessory.
+   */
   getServices() {
     this.log.debug(`DEB getServices`);
 
-    const fromPluginServices = Object.values(this.pluginServices).reduce(
-      (acc, service) => [...acc, ...service.services],
+    const mainService = this.pluginServices.fan;
+
+    const fromPluginServices = Object.entries(this.pluginServices).reduce(
+      (acc, [serviceName, service]) => {
+        if (serviceName !== "fan" && mainService.addLinkedService) {
+          service.services.forEach((srv) => mainService.addLinkedService(srv));
+        }
+        return [...acc, ...service.services];
+      },
       []
     );
 
@@ -557,11 +563,10 @@ class XiaomiRoborockVacuum {
         currentServices = [this.legacyServices[key]];
       }
 
-      if (key !== "fan" && this.legacyServices.fan.addLinkedService) {
-        let fanService = this.legacyServices.fan;
-        currentServices.forEach((currentService) => {
-          fanService.addLinkedService(currentService);
-        });
+      if (key !== "fan" && mainService.addLinkedService) {
+        currentServices.forEach((currentService) =>
+          mainService.addLinkedService(currentService)
+        );
       }
 
       services = services.concat(currentServices);
