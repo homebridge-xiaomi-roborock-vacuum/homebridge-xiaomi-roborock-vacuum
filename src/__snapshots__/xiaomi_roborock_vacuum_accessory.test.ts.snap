@@ -2,8 +2,8 @@
 
 exports[`XiaomiRoborockVacuum Client with minimum config it has the basic services 1`] = `
 [
-  "undefined-undefined",
   "Roborock vacuum cleaner-Speed",
+  "undefined-undefined",
   "Roborock vacuum cleaner Battery-undefined",
   "Care indicator sensors-sensors",
   "Care indicator filter-filter",
@@ -14,12 +14,17 @@ exports[`XiaomiRoborockVacuum Client with minimum config it has the basic servic
 
 exports[`XiaomiRoborockVacuum Client with minimum config it has the basic services 2`] = `
 [
-  "info",
   "fan",
+  "productInfo",
+  "rooms",
   "battery",
-  "CareSensors",
-  "CareFilter",
-  "CareSideBrush",
-  "CareMainBrush",
+  "findMe",
+  "pause",
+  "waterBox",
+  "dustCollection",
+  "goTo",
+  "dock",
+  "zones",
+  "careServices",
 ]
 `;

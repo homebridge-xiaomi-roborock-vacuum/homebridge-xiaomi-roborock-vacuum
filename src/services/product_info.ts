@@ -3,7 +3,7 @@ import { Logger } from "../utils/logger";
 import { callbackify } from "../utils/callbackify";
 import { PluginService } from "./types";
 import { DeviceManager } from "./device_manager";
-import { concatMap } from "rxjs";
+import { concatMap, filter } from "rxjs";
 
 export class ProductInfo implements PluginService {
   public firmware?: string;
@@ -31,6 +31,7 @@ export class ProductInfo implements PluginService {
   public async init(): Promise<void> {
     this.deviceManager.deviceConnected$ // Only run the below once the device is connected
       .pipe(
+        filter(Boolean), // Make sure it does not trigger with `undefined`
         concatMap(async () => {
           try {
             const serial = await this.getSerialNumber();

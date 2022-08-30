@@ -83,9 +83,13 @@ class XiaomiRoborockVacuum implements AccessoryPlugin {
     this.pluginServices = this.initialiseServices();
 
     // Run the init method of all the services, once they are all registered.
-    Object.values(this.pluginServices).map((service) => service.init());
+    Object.values(this.pluginServices).map((service) => service?.init());
   }
 
+  /**
+   * Initializes all the PluginServices based on the config.
+   * @private
+   */
   private initialiseServices(): PluginServices {
     const { log, config, deviceManager } = this;
 
@@ -184,6 +188,7 @@ class XiaomiRoborockVacuum implements AccessoryPlugin {
 
     return Object.entries(this.pluginServices).reduce(
       (acc, [serviceName, service]) => {
+        if (!service) return acc;
         if (serviceName !== "fan" && mainService.addLinkedService) {
           service.services.forEach((srv) => mainService.addLinkedService(srv));
         }
