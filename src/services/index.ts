@@ -1,6 +1,7 @@
 export { applyConfigDefaults } from "./config_service";
 export { BatteryInfo } from "./battery_info";
 export { DeviceManager } from "./device_manager";
+export { DockService } from "./dock_service";
 export { DustCollection } from "./dust_collection";
 export { PauseSwitch } from "./pause_switch";
 export { FindMeService } from "./find_me_service";

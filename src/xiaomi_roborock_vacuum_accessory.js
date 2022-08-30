@@ -16,6 +16,7 @@ const {
   PauseSwitch,
   FindMeService,
   GoToService,
+  DockService,
 } = require("./services");
 const { cleaningStatuses, errors } = require("./utils/constants");
 
@@ -153,12 +154,12 @@ class XiaomiRoborockVacuum {
     }
 
     if (this.config.dock) {
-      this.legacyServices.dock = new Service.OccupancySensor(
-        `${this.config.name} Dock`
+      this.pluginServices.dock = new DockService(
+        hap,
+        this.log,
+        this.config,
+        this.deviceManager
       );
-      this.legacyServices.dock
-        .getCharacteristic(Characteristic.OccupancyDetected)
-        .on("get", (cb) => callbackify(() => this.getDocked(), cb));
     }
 
     if (this.config.zones) {
@@ -483,16 +484,6 @@ class XiaomiRoborockVacuum {
       .on("change", (oldState, newState) => {
         this.changedPause(newState);
       });
-  }
-
-  async getDocked() {
-    const status = this.deviceManager.state;
-    const isCharging = status === "charging";
-    this.log.info(
-      `getDocked | Robot Docked is ${isCharging} (Status is ${status})`
-    );
-
-    return isCharging;
   }
 
   /**
