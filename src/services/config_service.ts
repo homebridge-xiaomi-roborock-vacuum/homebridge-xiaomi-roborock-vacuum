@@ -8,6 +8,7 @@ import { FindMeConfig } from "./find_me_service";
 import { GoToConfig } from "./go_to_service";
 import { DockConfig } from "./dock_service";
 import { ZonesConfig } from "./zones_service";
+import { CareConfig } from "./care_service";
 
 export interface Config
   extends DeviceManagerConfig,
@@ -19,7 +20,8 @@ export interface Config
     FindMeConfig,
     GoToConfig,
     DockConfig,
-    ZonesConfig {
+    ZonesConfig,
+    CareConfig {
   /**
    * The name of the main service as it will show up in the Home App.
    */
