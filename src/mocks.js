@@ -18,6 +18,8 @@ const miio = {
   }),
 };
 
+jest.doMock("./miio", () => miio.createMock());
+
 // ============= HOMEBRIDGE MOCKS ================
 
 const createGetCharacteristicMock = () =>

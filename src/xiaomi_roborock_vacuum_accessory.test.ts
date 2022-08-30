@@ -2,9 +2,7 @@
 
 jest.useFakeTimers();
 
-const { createHomebridgeMock, miio } = require("./mocks");
-
-jest.doMock("./miio", () => miio.createMock());
+import { createHomebridgeMock, miio } from "./mocks";
 
 import getXiaomiRoborockVacuumAccessory from "./xiaomi_roborock_vacuum_accessory";
 
@@ -15,6 +13,7 @@ describe("XiaomiRoborockVacuum", () => {
     homebridge = createHomebridgeMock();
     // Silencing the logger in the tests to reduce noise.
     jest.spyOn(console, "debug").mockImplementation();
+    jest.spyOn(console, "error").mockImplementation();
   });
 
   test("Returns the accessory class", () => {

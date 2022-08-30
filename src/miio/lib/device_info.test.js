@@ -275,7 +275,6 @@ describe("DeviceInfo", () => {
     });
 
     test("timeout error", async () => {
-      jest.useRealTimers();
       const packet = new Packet(false);
       const parent = createParentMock();
       const device = new DeviceInfo(parent, "MY-ID", "localhost", 1234);
@@ -291,14 +290,14 @@ describe("DeviceInfo", () => {
           const str = packet.data;
           if (str === null) {
             device.onMessage(packet.raw);
+          } else {
+            jest.advanceTimersByTime(2 * 1000);
           }
         }
       );
       const promise = device.call("miIO.info", [], { retries: 2 });
-      // jest.advanceTimersByTime(40 * 1000);
       await expect(promise).rejects.toThrow("Call to device timed out");
       expect(device.lastId).toBe(101);
-      jest.useFakeTimers();
     });
 
     describe("known errors", () => {
