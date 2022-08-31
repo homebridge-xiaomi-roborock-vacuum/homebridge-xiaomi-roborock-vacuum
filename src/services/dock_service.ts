@@ -1,24 +1,18 @@
-import { HAP, Service } from "homebridge";
-import { PluginService } from "./types";
-import { Logger } from "../utils/logger";
-import { Config } from "./config_service";
-import { DeviceManager } from "./device_manager";
-import { callbackify } from "../utils/callbackify";
-import { RoomsService } from "./rooms_service";
+import { Service } from "homebridge";
 import { distinct, filter } from "rxjs";
+import { CoreContext } from "./types";
+import { callbackify } from "../utils/callbackify";
+import { PluginServiceClass } from "./plugin_service_class";
 
 export interface DockConfig {
   dock: boolean;
 }
 
-export class DockService implements PluginService {
+export class DockService extends PluginServiceClass {
   private readonly service: Service;
-  constructor(
-    private readonly hap: HAP,
-    private readonly log: Logger,
-    private readonly config: Config,
-    private readonly deviceManager: DeviceManager
-  ) {
+  constructor(coreContext: CoreContext) {
+    super(coreContext);
+
     this.service = new this.hap.Service.OccupancySensor(
       `${this.config.name} Dock`
     );

@@ -1,34 +1,30 @@
-import { HAP, Service } from "homebridge";
+import { Service } from "homebridge";
+import { distinct, filter } from "rxjs";
 import { cleaningStatuses } from "../utils/constants";
 import { findSpeedModes } from "../utils/find_speed_modes";
 import { callbackify } from "../utils/callbackify";
-import { Logger } from "../utils/logger";
-import { PluginService } from "./types";
-import { Config } from "./config_service";
-import type { DeviceManager } from "./device_manager";
+import { CoreContext } from "./types";
 import type { RoomsService } from "./rooms_service";
 import type { ProductInfo } from "./product_info";
-import { distinct, filter } from "rxjs";
+import { PluginServiceClass } from "./plugin_service_class";
 
-export class FanService implements PluginService {
+export class MainService extends PluginServiceClass {
   public readonly cachedState = new Map<string, unknown>();
   private readonly service: Service;
   constructor(
-    private readonly hap: HAP,
-    private readonly log: Logger,
-    private readonly config: Config,
-    private readonly deviceManager: DeviceManager,
+    coreContext: CoreContext,
     private readonly productInfo: ProductInfo,
     private readonly roomsService: RoomsService,
     private readonly setWaterSpeed: (mode: string) => Promise<void>,
     private readonly changedPause: (isCleaning: boolean) => void
   ) {
-    this.service = new hap.Service.Fan(this.config.name, "Speed");
+    super(coreContext);
+    this.service = new this.hap.Service.Fan(this.config.name, "Speed");
     if (this.service.setPrimaryService) {
       this.service.setPrimaryService(true);
     }
     this.service
-      .getCharacteristic(hap.Characteristic.On)
+      .getCharacteristic(this.hap.Characteristic.On)
       .on("get", (cb) => callbackify(() => this.getCleaning(), cb))
       .on("set", (newState, cb) =>
         callbackify(() => this.setCleaning(newState), cb)
@@ -37,7 +33,7 @@ export class FanService implements PluginService {
         this.changedPause(newValue === true);
       });
     this.service
-      .getCharacteristic(hap.Characteristic.RotationSpeed)
+      .getCharacteristic(this.hap.Characteristic.RotationSpeed)
       .on("get", (cb) => callbackify(() => this.getSpeed(), cb))
       .on("set", (newState, cb) =>
         callbackify(() => this.setSpeed(newState), cb)

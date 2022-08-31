@@ -1,22 +1,16 @@
-import { HAP, Service } from "homebridge";
-import { PluginService } from "./types";
-import { Logger } from "../utils/logger";
-import { Config } from "./config_service";
-import { DeviceManager } from "./device_manager";
+import { Service } from "homebridge";
+import { CoreContext } from "./types";
 import { callbackify } from "../utils/callbackify";
+import { PluginServiceClass } from "./plugin_service_class";
 
 export interface DustCollectionConfig {
   dustCollection: boolean;
 }
 
-export class DustCollection implements PluginService {
+export class DustCollection extends PluginServiceClass {
   private readonly service: Service;
-  constructor(
-    private readonly hap: HAP,
-    private readonly log: Logger,
-    private readonly config: Config,
-    private readonly deviceManager: DeviceManager
-  ) {
+  constructor(coreContext: CoreContext) {
+    super(coreContext);
     this.service = new this.hap.Service.Switch(
       `${this.config.name} Dust Collection`,
       "Dust Collection"

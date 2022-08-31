@@ -15,7 +15,7 @@ import {
   RoomsService,
   ProductInfo,
   BatteryInfo,
-  FanService,
+  MainService,
   WaterBoxService,
   DustCollection,
   PauseSwitch,
@@ -28,6 +28,7 @@ import {
 } from "./services";
 import { errors } from "./utils/constants";
 import { ErrorChangedEvent } from "./services/device_manager";
+import { CoreContext } from "./services/types";
 
 let hap: HAP;
 
@@ -39,7 +40,7 @@ export default (api: API) => {
 interface PluginServices {
   productInfo: ProductInfo;
   rooms: RoomsService;
-  fan: FanService;
+  mainService: MainService;
   pause?: PauseSwitch;
   waterBox?: WaterBoxService;
   dustCollection?: DustCollection;
@@ -93,15 +94,14 @@ class XiaomiRoborockVacuum implements AccessoryPlugin {
   private initialiseServices(): PluginServices {
     const { log, config, deviceManager } = this;
 
-    const productInfo = new ProductInfo(hap, log, deviceManager);
-    const rooms = new RoomsService(hap, log, config, deviceManager, (clean) =>
-      this.pluginServices.fan.setCleaning(clean)
+    const coreContext: CoreContext = { hap, log, config, deviceManager };
+
+    const productInfo = new ProductInfo(coreContext);
+    const rooms = new RoomsService(coreContext, (clean) =>
+      this.pluginServices.mainService.setCleaning(clean)
     );
-    const fan = new FanService(
-      hap,
-      log,
-      config,
-      deviceManager,
+    const mainService = new MainService(
+      coreContext,
       productInfo,
       rooms,
       async (mode) => {
@@ -111,34 +111,28 @@ class XiaomiRoborockVacuum implements AccessoryPlugin {
     );
 
     return {
-      fan,
+      mainService,
       productInfo,
       rooms,
-      battery: new BatteryInfo(hap, log, config, deviceManager),
-      findMe: new FindMeService(hap, log, config, deviceManager),
-      pause: config.pause
-        ? new PauseSwitch(hap, log, config, deviceManager, rooms)
-        : undefined,
+      battery: new BatteryInfo(coreContext),
+      findMe: new FindMeService(coreContext),
+      pause: config.pause ? new PauseSwitch(coreContext, rooms) : undefined,
       waterBox: config.waterBox
-        ? new WaterBoxService(hap, log, config, deviceManager, productInfo, fan)
+        ? new WaterBoxService(coreContext, productInfo, mainService)
         : undefined,
       dustCollection: config.dustCollection
-        ? new DustCollection(hap, log, config, deviceManager)
+        ? new DustCollection(coreContext)
         : undefined,
-      goTo: config.goTo
-        ? new GoToService(hap, log, config, deviceManager)
-        : undefined,
-      dock: config.dock
-        ? new DockService(hap, log, config, deviceManager)
-        : undefined,
+      goTo: config.goTo ? new GoToService(coreContext) : undefined,
+      dock: config.dock ? new DockService(coreContext) : undefined,
       zones: config.zones
-        ? new ZonesService(hap, log, config, deviceManager, fan, (isCleaning) =>
+        ? new ZonesService(coreContext, mainService, (isCleaning) =>
             this.pluginServices.pause?.changedPause(isCleaning)
           )
         : undefined,
       // ADDITIONAL HOMEKIT SERVICES
       careServices: !config.disableCareServices
-        ? new CareService(hap, log, config, deviceManager, fan)
+        ? new CareService(coreContext, mainService)
         : undefined,
     };
   }
@@ -184,7 +178,7 @@ class XiaomiRoborockVacuum implements AccessoryPlugin {
   public getServices() {
     this.log.debug(`DEB getServices`);
 
-    const mainService = this.pluginServices.fan.services[0];
+    const mainService = this.pluginServices.mainService.services[0];
 
     return Object.entries(this.pluginServices).reduce(
       (acc, [serviceName, service]) => {

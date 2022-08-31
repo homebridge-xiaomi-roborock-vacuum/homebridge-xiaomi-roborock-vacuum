@@ -1,30 +1,25 @@
-import { HAP, Service } from "homebridge";
-import { Logger } from "../utils/logger";
+import { Service } from "homebridge";
 import { callbackify } from "../utils/callbackify";
-import { PluginService } from "./types";
-import { DeviceManager } from "./device_manager";
-import { Config } from "./config_service";
+import { CoreContext } from "./types";
+import { PluginServiceClass } from "./plugin_service_class";
 
-export class BatteryInfo implements PluginService {
+export class BatteryInfo extends PluginServiceClass {
   private readonly service: Service;
   private isCharging?: boolean;
-  constructor(
-    private readonly hap: HAP,
-    private readonly log: Logger,
-    private readonly config: Config,
-    private readonly deviceManager: DeviceManager
-  ) {
-    this.service = new hap.Service.BatteryService(
+  constructor(coreContext: CoreContext) {
+    super(coreContext);
+
+    this.service = new this.hap.Service.BatteryService(
       `${this.config.name} Battery`
     );
     this.service
-      .getCharacteristic(hap.Characteristic.BatteryLevel)
+      .getCharacteristic(this.hap.Characteristic.BatteryLevel)
       .on("get", (cb) => callbackify(() => this.getBattery(), cb));
     this.service
-      .getCharacteristic(hap.Characteristic.ChargingState)
+      .getCharacteristic(this.hap.Characteristic.ChargingState)
       .on("get", (cb) => callbackify(() => this.getCharging(), cb));
     this.service
-      .getCharacteristic(hap.Characteristic.StatusLowBattery)
+      .getCharacteristic(this.hap.Characteristic.StatusLowBattery)
       .on("get", (cb) => callbackify(() => this.getBatteryLow(), cb));
   }
 

@@ -6,7 +6,7 @@ import {
   createDeviceManagerMock,
   DeviceManagerMock,
 } from "./device_manager.mock";
-import { FanService } from "./fan_service";
+import { MainService } from "./main_service";
 import { DeviceManager } from "./device_manager";
 import { HAP } from "homebridge";
 import * as HapJs from "hap-nodejs";
@@ -31,15 +31,17 @@ describe("CareService", () => {
         get services() {
           return fanServices();
         },
-      } as FanService;
+      } as MainService;
 
       const config = applyConfigDefaults({ legacyCareSensors: true });
 
       careService = new CareService(
-        hap,
-        log,
-        config,
-        deviceManagerMock as unknown as DeviceManager,
+        {
+          hap,
+          log,
+          config,
+          deviceManager: deviceManagerMock as unknown as DeviceManager,
+        },
         fan
       );
     });
@@ -90,15 +92,17 @@ describe("CareService", () => {
         get services() {
           return fanServices();
         },
-      } as FanService;
+      } as MainService;
 
       const config = applyConfigDefaults({});
 
       careService = new CareService(
-        hap,
-        log,
-        config,
-        deviceManagerMock as unknown as DeviceManager,
+        {
+          hap,
+          log,
+          config,
+          deviceManager: deviceManagerMock as unknown as DeviceManager,
+        },
         fan
       );
     });

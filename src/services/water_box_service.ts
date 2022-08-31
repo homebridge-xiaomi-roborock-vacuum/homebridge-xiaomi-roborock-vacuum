@@ -1,41 +1,37 @@
-import { PluginService } from "./types";
-import { HAP, Service } from "homebridge";
-import { Logger } from "../utils/logger";
-import { Config } from "./config_service";
-import { DeviceManager } from "./device_manager";
+import { Service } from "homebridge";
+import { distinct, filter } from "rxjs";
+import { CoreContext } from "./types";
 import { callbackify } from "../utils/callbackify";
 import { findSpeedModes } from "../utils/find_speed_modes";
 import { ProductInfo } from "./product_info";
-import { FanService } from "./fan_service";
-import { distinct, filter } from "rxjs";
+import { MainService } from "./main_service";
+import { PluginServiceClass } from "./plugin_service_class";
 
 export interface WaterBoxConfig {
   waterBox: boolean;
 }
 
-export class WaterBoxService implements PluginService {
+export class WaterBoxService extends PluginServiceClass {
   private readonly service: Service;
   constructor(
-    private readonly hap: HAP,
-    private readonly log: Logger,
-    private readonly config: Config,
-    private readonly deviceManager: DeviceManager,
+    coreContext: CoreContext,
     private readonly productInfo: ProductInfo,
-    private readonly fanService: FanService
+    private readonly mainService: MainService
   ) {
-    this.service = new hap.Service.Fan(
+    super(coreContext);
+    this.service = new this.hap.Service.Fan(
       `${this.config.name} Water Box`,
       "Water Box"
     );
     this.service
-      .getCharacteristic(hap.Characteristic.RotationSpeed)
+      .getCharacteristic(this.hap.Characteristic.RotationSpeed)
       .on("get", (cb) => callbackify(() => this.getWaterSpeed(), cb))
       .on("set", (newState, cb) =>
         callbackify(() => this.setWaterSpeed(newState), cb)
       );
     // We need to handle the ON/OFF characteristic (https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/284)
     this.service
-      .getCharacteristic(hap.Characteristic.On)
+      .getCharacteristic(this.hap.Characteristic.On)
       .on("get", (cb) =>
         // If the speed is over 0%, assume it's ON
         callbackify(async () => (await this.getWaterSpeed()) > 0, cb)
@@ -44,7 +40,7 @@ export class WaterBoxService implements PluginService {
         callbackify(async () => {
           // Set to 0% (Off) when receiving an OFF request, do nothing otherwise.
           if (!newState) {
-            await this.fanService.setCleaning(false);
+            await this.mainService.setCleaning(false);
           }
           return newState;
         }, cb)
@@ -150,24 +146,24 @@ export class WaterBoxService implements PluginService {
     );
 
     // Save the latest set speed for handling the "custom" speed later
-    this.fanService.cachedState.set("WaterSpeed", miLevel);
-    this.fanService.cachedState.set("WaterSpeedName", name);
+    this.mainService.cachedState.set("WaterSpeed", miLevel);
+    this.mainService.cachedState.set("WaterSpeedName", name);
 
     await this.deviceManager.device.setWaterBoxMode(miLevel);
 
     // If speed is "custom", also set the water speed to "custom" (for Xiaomi App)
     if (
       name === "Custom" &&
-      this.fanService.cachedState.get("FanSpeedName") !== "Custom"
+      this.mainService.cachedState.get("FanSpeedName") !== "Custom"
     ) {
-      await this.fanService.setSpeed("Custom");
+      await this.mainService.setSpeed("Custom");
     }
     // If speed is not "custom" remove set the water speed also to a fixed value (for Xiaomi App)
     else if (
       name !== "Custom" &&
-      this.fanService.cachedState.get("FanSpeedName") === "Custom"
+      this.mainService.cachedState.get("FanSpeedName") === "Custom"
     ) {
-      await this.fanService.setSpeed("Balanced");
+      await this.mainService.setSpeed("Balanced");
     }
 
     return speed;

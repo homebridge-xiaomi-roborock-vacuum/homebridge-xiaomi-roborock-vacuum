@@ -1,26 +1,22 @@
 import { HAP, Service } from "homebridge";
-import { PluginService } from "./types";
-import { Logger } from "../utils/logger";
-import { Config } from "./config_service";
-import { DeviceManager } from "./device_manager";
+import { CoreContext } from "./types";
 import { callbackify } from "../utils/callbackify";
 import { Care, Characteristic } from "./custom_care_service";
-import { FanService } from "./fan_service";
+import { MainService } from "./main_service";
+import { PluginServiceClass } from "./plugin_service_class";
 
 export interface CareConfig {
   disableCareServices?: boolean;
   legacyCareSensors?: boolean;
 }
 
-export class CareService implements PluginService {
+export class CareService extends PluginServiceClass {
   public readonly services: Service[];
   constructor(
-    private readonly hap: HAP,
-    private readonly log: Logger,
-    private readonly config: Config,
-    private readonly deviceManager: DeviceManager,
-    private readonly fan: FanService
+    coreContext: CoreContext,
+    private readonly mainService: MainService
   ) {
+    super(coreContext);
     this.services = this.config.legacyCareSensors
       ? this.registerLegacyCustomCareService()
       : this.registerNativeCareServices();
@@ -103,7 +99,7 @@ export class CareService implements PluginService {
   }
 
   private registerNativeCareServices(): Service[] {
-    const mainService = this.fan.services[0]; // Hack for now
+    const mainService = this.mainService.services[0]; // Hack for now
 
     // Register the high-level state of the filters to the main device's Characteristics
     mainService
