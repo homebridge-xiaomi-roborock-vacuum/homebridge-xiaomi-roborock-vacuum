@@ -1,26 +1,22 @@
-import { HAP, Service } from "homebridge";
-import { PluginService } from "./types";
-import { Logger } from "../utils/logger";
-import { Config } from "./config_service";
-import { DeviceManager } from "./device_manager";
+import { Service } from "homebridge";
+import { distinct, filter } from "rxjs";
+import { CoreContext } from "./types";
 import { callbackify } from "../utils/callbackify";
 import { RoomsService } from "./rooms_service";
-import { distinct, filter } from "rxjs";
+import { PluginServiceClass } from "./plugin_service_class";
 
 export interface PauseConfig {
   pause: boolean;
   pauseWord: string;
 }
 
-export class PauseSwitch implements PluginService {
+export class PauseSwitch extends PluginServiceClass {
   private readonly service: Service;
   constructor(
-    private readonly hap: HAP,
-    private readonly log: Logger,
-    private readonly config: Config,
-    private readonly deviceManager: DeviceManager,
+    coreContext: CoreContext,
     private readonly roomsService: RoomsService
   ) {
+    super(coreContext);
     this.service = new this.hap.Service.Switch(
       `${this.config.name} ${this.config.pauseWord}`,
       "Pause Switch"

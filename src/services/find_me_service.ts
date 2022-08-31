@@ -1,26 +1,18 @@
-import { HAP, Service } from "homebridge";
-import { PluginService } from "./types";
-import { Logger } from "../utils/logger";
-import { Config } from "./config_service";
-import { DeviceManager } from "./device_manager";
-import { callbackify } from "../utils/callbackify";
-import { RoomsService } from "./rooms_service";
-import { distinct, filter } from "rxjs";
+import { Service } from "homebridge";
 import { CharacteristicValue } from "hap-nodejs/dist/types";
+import { CoreContext } from "./types";
+import { callbackify } from "../utils/callbackify";
+import { PluginServiceClass } from "./plugin_service_class";
 
 export interface FindMeConfig {
   findMe: boolean;
   findMeWord: string;
 }
 
-export class FindMeService implements PluginService {
+export class FindMeService extends PluginServiceClass {
   private readonly service?: Service;
-  constructor(
-    private readonly hap: HAP,
-    private readonly log: Logger,
-    private readonly config: Config,
-    private readonly deviceManager: DeviceManager
-  ) {
+  constructor(coreContext: CoreContext) {
+    super(coreContext);
     if (this.config.findMe) {
       this.service = new this.hap.Service.Switch(
         `${this.config.name} ${this.config.findMeWord}`,

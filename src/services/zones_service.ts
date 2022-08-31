@@ -1,14 +1,8 @@
-import { HAP, Service } from "homebridge";
-import {
-  callbackify as callbackifyLib,
-  callbackify,
-} from "../utils/callbackify";
-import { Logger } from "../utils/logger";
-import type { DeviceManager } from "./device_manager";
-import { PluginService } from "./types";
-import { cleaningStatuses } from "../utils/constants";
-import { Config } from "./config_service";
-import { FanService } from "./fan_service";
+import { Service } from "homebridge";
+import { callbackify } from "../utils/callbackify";
+import { CoreContext } from "./types";
+import { MainService } from "./main_service";
+import { PluginServiceClass } from "./plugin_service_class";
 
 interface ZoneDefinition {
   name: string;
@@ -22,18 +16,15 @@ export interface ZonesConfig {
   zones?: ZoneDefinition[];
 }
 
-export class ZonesService implements PluginService {
-  public readonly roomIdsToClean = new Set<string>();
+export class ZonesService extends PluginServiceClass {
   private readonly zones: Record<string, Service> = {};
 
   constructor(
-    private readonly hap: HAP,
-    private readonly log: Logger,
-    private readonly config: Config,
-    private readonly deviceManager: DeviceManager,
-    private readonly fan: FanService,
+    coreContext: CoreContext,
+    private readonly mainService: MainService,
     private readonly changedPause: (isCleaning: boolean) => void
   ) {
+    super(coreContext);
     if (this.config.zones) {
       for (const { name, zone } of this.config.zones) {
         // Index will be overwritten, when robot is available
@@ -56,7 +47,7 @@ export class ZonesService implements PluginService {
     );
     this.zones[zoneName]
       .getCharacteristic(this.hap.Characteristic.On)
-      .on("get", (cb) => callbackify(() => this.fan.getCleaning(), cb))
+      .on("get", (cb) => callbackify(() => this.mainService.getCleaning(), cb))
       .on("set", (newState, cb) =>
         callbackify(() => this.setCleaningZone(newState, zoneParams), cb)
       )
