@@ -223,7 +223,7 @@ const SPEEDMODES: SimplifiedSpeedModes = {
     },
   ],
   // S7 MaxV
-  "gen5": [
+  gen5: [
     // Off
     {
       miLevel: -1,
