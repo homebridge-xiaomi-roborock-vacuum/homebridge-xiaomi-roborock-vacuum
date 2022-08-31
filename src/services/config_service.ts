@@ -9,9 +9,11 @@ import { GoToConfig } from "./go_to_service";
 import { DockConfig } from "./dock_service";
 import { ZonesConfig } from "./zones_service";
 import { CareConfig } from "./care_service";
+import { MainServiceConfig } from "./main_service";
 
 export interface Config
-  extends DeviceManagerConfig,
+  extends MainServiceConfig,
+    DeviceManagerConfig,
     CustomLoggerConfig,
     RoomsConfig,
     PauseConfig,
@@ -40,6 +42,7 @@ export interface Config
 export function applyConfigDefaults(config: Partial<Config>): Config {
   return {
     name: "Roborock vacuum cleaner",
+    serviceType: "fan",
     cleanword: "cleaning",
     pause: false,
     pauseWord: "Pause",
