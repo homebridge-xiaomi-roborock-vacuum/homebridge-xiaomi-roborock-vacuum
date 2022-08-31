@@ -8,6 +8,10 @@ import type { RoomsService } from "./rooms_service";
 import type { ProductInfo } from "./product_info";
 import { PluginServiceClass } from "./plugin_service_class";
 
+export interface MainServiceConfig {
+  serviceType: "fan" | "switch";
+}
+
 export class MainService extends PluginServiceClass {
   public readonly cachedState = new Map<string, unknown>();
   private readonly service: Service;
@@ -19,10 +23,20 @@ export class MainService extends PluginServiceClass {
     private readonly changedPause: (isCleaning: boolean) => void
   ) {
     super(coreContext);
-    this.service = new this.hap.Service.Fan(this.config.name, "Speed");
-    if (this.service.setPrimaryService) {
-      this.service.setPrimaryService(true);
+    if (this.config.serviceType === "fan") {
+      this.service = new this.hap.Service.Fan(this.config.name, "Vacuum");
+      this.service
+        .getCharacteristic(this.hap.Characteristic.RotationSpeed)
+        .on("get", (cb) => callbackify(() => this.getSpeed(), cb))
+        .on("set", (newState, cb) =>
+          callbackify(() => this.setSpeed(newState), cb)
+        );
+    } else {
+      this.service = new this.hap.Service.Switch(this.config.name, "Vacuum");
     }
+
+    if (this.service.setPrimaryService) this.service.setPrimaryService(true);
+
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
       .on("get", (cb) => callbackify(() => this.getCleaning(), cb))
@@ -32,30 +46,51 @@ export class MainService extends PluginServiceClass {
       .on("change", ({ newValue }) => {
         this.changedPause(newValue === true);
       });
-    this.service
-      .getCharacteristic(this.hap.Characteristic.RotationSpeed)
-      .on("get", (cb) => callbackify(() => this.getSpeed(), cb))
-      .on("set", (newState, cb) =>
-        callbackify(() => this.setSpeed(newState), cb)
-      );
   }
 
   public async init() {
-    this.deviceManager.deviceConnected$.subscribe(() => {
-      // Now that we know the model, amend the steps in the Rotation speed (for better usability)
-      const minStep =
-        100 / (findSpeedModes(this.deviceManager.model).speed.length - 1);
-      this.service
-        .getCharacteristic(this.hap.Characteristic.RotationSpeed)
-        .setProps({ minStep: minStep });
-    });
+    if (this.config.serviceType === "fan") {
+      this.deviceManager.deviceConnected$.subscribe(() => {
+        // Now that we know the model, amend the steps in the Rotation speed (for better usability)
+        const minStep =
+          100 / (findSpeedModes(this.deviceManager.model).speed.length - 1);
+        this.service
+          .getCharacteristic(this.hap.Characteristic.RotationSpeed)
+          .setProps({ minStep: minStep });
+      });
+
+      this.deviceManager.stateChanged$
+        .pipe(
+          filter(({ key }) => key === "fanSpeed"),
+          distinct(({ value }) => value)
+        )
+        .subscribe(({ value: speed }) => {
+          this.log.info(`MON changedSpeed | FanSpeed is now ${speed}%`);
+          const speedMode = this.findSpeedModeFromMiio(speed);
+
+          if (typeof speedMode === "undefined") {
+            this.log.warn(
+              `WAR changedSpeed | Speed was changed to ${speed}%, this speed is not supported`
+            );
+          } else {
+            const { homekitTopLevel, name } = speedMode;
+            this.log.info(
+              `changedSpeed | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`
+            );
+            this.service
+              .getCharacteristic(this.hap.Characteristic.RotationSpeed)
+              .updateValue(homekitTopLevel);
+          }
+        });
+    }
 
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "cleaning"),
         distinct(({ value }) => value)
       )
-      .subscribe(({ value: isCleaning }) => {
+      .subscribe(({ value }) => {
+        const isCleaning = value === true;
         this.log.debug(
           `MON changedCleaning | CleaningState is now ${isCleaning}`
         );
@@ -68,31 +103,7 @@ export class MainService extends PluginServiceClass {
 
         this.service
           .getCharacteristic(this.hap.Characteristic.On)
-          .updateValue(isCleaning as boolean);
-      });
-
-    this.deviceManager.stateChanged$
-      .pipe(
-        filter(({ key }) => key === "fanSpeed"),
-        distinct(({ value }) => value)
-      )
-      .subscribe(({ value: speed }) => {
-        this.log.info(`MON changedSpeed | FanSpeed is now ${speed}%`);
-        const speedMode = this.findSpeedModeFromMiio(speed);
-
-        if (typeof speedMode === "undefined") {
-          this.log.warn(
-            `WAR changedSpeed | Speed was changed to ${speed}%, this speed is not supported`
-          );
-        } else {
-          const { homekitTopLevel, name } = speedMode;
-          this.log.info(
-            `changedSpeed | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`
-          );
-          this.service
-            .getCharacteristic(this.hap.Characteristic.RotationSpeed)
-            .updateValue(homekitTopLevel);
-        }
+          .updateValue(isCleaning);
       });
   }
 

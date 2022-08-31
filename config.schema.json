@@ -21,6 +21,13 @@
         "type": "string",
         "required": true
       },
+      "serviceType": {
+        "title": "Load the vacuum as a fan or a switch (ON/OFF controls but no speed control)",
+        "type": "string",
+        "default": "fan",
+        "enum": ["fan", "switch"],
+        "required": false
+      },
       "waterBox": {
         "title": "Enable the Water Box mode (beta)",
         "type": "boolean",
@@ -192,6 +199,7 @@
       "flex-flow": "row wrap",
       "items": ["ip", "token"]
     },
+    "serviceType",
     "waterBox",
     "dustCollection",
     "silent",

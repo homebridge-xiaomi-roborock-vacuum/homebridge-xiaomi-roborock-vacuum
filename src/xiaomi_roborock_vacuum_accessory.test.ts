@@ -86,6 +86,7 @@ describe("XiaomiRoborockVacuum", () => {
     const client = new XiaomiRoborockVacuum(console, {
       ip: "192.168.0.1",
       token: "TOKEN",
+      serviceType: "switch",
       pause: true,
       waterBox: true,
       dustCollection: true,
