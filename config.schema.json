@@ -22,7 +22,7 @@
         "required": true
       },
       "serviceType": {
-        "title": "Load the vacuum as a fan or a switch (ON/OFF controls but no speed control)",
+        "title": "Load the vacuum as a fan (ON/OFF + speed control) or a switch (ON/OFF only)",
         "type": "string",
         "default": "fan",
         "enum": ["fan", "switch"],
