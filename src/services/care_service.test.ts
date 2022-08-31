@@ -153,5 +153,23 @@ describe("CareService", () => {
         }
       }
     });
+
+    test("handles -1 responses", async () => {
+      for (const service of careService.services) {
+        expect(service.characteristics).toHaveLength(3);
+        const [name, ...characteristics] = service.characteristics;
+        const onCallsHandlers = characteristics.map(
+          (characteristic) => characteristic["_events"].get
+        );
+        for (const listener of onCallsHandlers) {
+          deviceManagerMock.property.mockReturnValueOnce(-1);
+          await expect(
+            new Promise((resolve, reject) =>
+              listener((err, value) => (err ? reject(err) : resolve(value)))
+            )
+          ).resolves.toMatchSnapshot();
+        }
+      }
+    });
   });
 });

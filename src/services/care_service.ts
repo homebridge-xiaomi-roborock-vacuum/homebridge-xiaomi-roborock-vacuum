@@ -1,4 +1,4 @@
-import { HAP, Service } from "homebridge";
+import { Service } from "homebridge";
 import { CoreContext } from "./types";
 import { callbackify } from "../utils/callbackify";
 import { Care, Characteristic } from "./custom_care_service";
@@ -35,7 +35,7 @@ export class CareService extends PluginServiceClass {
         2
       )}%.`
     );
-    return Math.min(100, lifetimePercent);
+    return Math.max(0, Math.min(100, lifetimePercent));
   }
 
   private async getCareFilter() {
@@ -49,7 +49,7 @@ export class CareService extends PluginServiceClass {
         2
       )}%.`
     );
-    return Math.min(100, lifetimePercent);
+    return Math.max(0, Math.min(100, lifetimePercent));
   }
 
   private async getCareSideBrush() {
@@ -63,7 +63,7 @@ export class CareService extends PluginServiceClass {
         2
       )}%.`
     );
-    return Math.min(100, lifetimePercent);
+    return Math.max(0, Math.min(100, lifetimePercent));
   }
 
   private async getCareMainBrush() {
@@ -77,7 +77,7 @@ export class CareService extends PluginServiceClass {
         2
       )}%.`
     );
-    return Math.min(100, lifetimePercent);
+    return Math.max(0, Math.min(100, lifetimePercent));
   }
 
   private registerLegacyCustomCareService(): Service[] {
