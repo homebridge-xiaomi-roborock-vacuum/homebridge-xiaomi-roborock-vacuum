@@ -2,6 +2,8 @@
 
 ## Next
 
+## 0.25.0
+
 - [Enhancement] Add `serviceType: "switch"` config to expose the main service as a switch (only ON/OFF capabilities) instead of a fan (ON/OFF + speed control). (#458)
 - [tech debt] Main file broken down into sub-services for better code maintainability and testability. (#517)
 - [tech debt] Improved test code coverage. (WIP #171)
