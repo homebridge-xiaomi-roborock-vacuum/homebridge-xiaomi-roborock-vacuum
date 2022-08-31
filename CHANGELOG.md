@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Bug] Handle negative responses for the Maintenance indicators of Sensors & Brushes (#366)
+
 ## 0.25.0
 
 - [Enhancement] Add `serviceType: "switch"` config to expose the main service as a switch (only ON/OFF capabilities) instead of a fan (ON/OFF + speed control). (#458)

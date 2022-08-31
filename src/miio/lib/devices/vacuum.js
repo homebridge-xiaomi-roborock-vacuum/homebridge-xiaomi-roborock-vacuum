@@ -16,14 +16,16 @@ const checkResult = require("../checkResult");
  * Implementation of the interface used by the Mi Robot Vacuum. This device
  * doesn't use properties via get_prop but instead has a get_status.
  */
-module.exports = class extends Vacuum.with(
-  MiioApi,
-  BatteryLevel,
-  AutonomousCharging,
-  AutonomousCleaning,
-  SpotCleaning,
-  AdjustableFanSpeed,
-  ChargingState
+module.exports = class extends (
+  Vacuum.with(
+    MiioApi,
+    BatteryLevel,
+    AutonomousCharging,
+    AutonomousCleaning,
+    SpotCleaning,
+    AdjustableFanSpeed,
+    ChargingState
+  )
 ) {
   static get type() {
     return "miio:vacuum";
@@ -78,7 +80,7 @@ module.exports = class extends Vacuum.with(
         case 15:
           return "docking";
         case 16:
-          return "going-to-location"
+          return "going-to-location";
         case 17:
           return "zone-cleaning";
         case 18:
@@ -279,7 +281,7 @@ module.exports = class extends Vacuum.with(
     }).then(checkResult);
   }
 
-   /**
+  /**
    * Start dustCollection.
    */
   startDustCollection() {
@@ -336,12 +338,12 @@ module.exports = class extends Vacuum.with(
 
   /**
    * Send the vacuum to a specific location.
-  */
-  sendToLocation(x,y) {
-    return this.call("app_goto_target", [x,y], {
+   */
+  sendToLocation(x, y) {
+    return this.call("app_goto_target", [x, y], {
       refresh: ["state"],
       refreshDelay: 1000,
-    }).then((checkResult));
+    }).then(checkResult);
   }
 
   /**

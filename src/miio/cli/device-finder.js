@@ -4,7 +4,8 @@ const { EventEmitter } = require("events");
 const { Devices } = require("../lib/discovery");
 const connectToDevice = require("../lib/connectToDevice");
 
-const IP = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+const IP =
+  /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
 function asFilter(filter) {
   if (typeof filter === "number") {

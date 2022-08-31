@@ -8,6 +8,22 @@ exports[`CareService legacyCareSensors the custom Care service characteristics c
 
 exports[`CareService legacyCareSensors the custom Care service characteristics call all getters 4`] = `0.000925925925925926`;
 
+exports[`CareService nativeCareSensors handles -1 responses 1`] = `false`;
+
+exports[`CareService nativeCareSensors handles -1 responses 2`] = `100`;
+
+exports[`CareService nativeCareSensors handles -1 responses 3`] = `false`;
+
+exports[`CareService nativeCareSensors handles -1 responses 4`] = `100`;
+
+exports[`CareService nativeCareSensors handles -1 responses 5`] = `false`;
+
+exports[`CareService nativeCareSensors handles -1 responses 6`] = `100`;
+
+exports[`CareService nativeCareSensors handles -1 responses 7`] = `false`;
+
+exports[`CareService nativeCareSensors handles -1 responses 8`] = `100`;
+
 exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 1`] = `false`;
 
 exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 2`] = `99.99074074074075`;
