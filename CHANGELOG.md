@@ -2,6 +2,8 @@
 
 ## Next
 
+## 0.25.1
+
 - [Bug] Handle negative responses for the Maintenance indicators of Sensors & Brushes (#366)
 
 ## 0.25.0
