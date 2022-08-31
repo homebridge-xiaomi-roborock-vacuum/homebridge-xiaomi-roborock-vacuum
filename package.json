@@ -43,8 +43,8 @@
     "build": "rimraf ./dist && tsc",
     "prepublishOnly": "npm run build",
     "postpublish": "npm run clean",
-    "lint": "prettier --check src/**/*.{js,ts} **/*.json **/*.md",
-    "lint:fix": "prettier --write src/**/*.{js,ts} **/*.json **/*.md",
+    "lint": "prettier --check .",
+    "lint:fix": "prettier --write .",
     "test": "jest"
   },
   "dependencies": {
