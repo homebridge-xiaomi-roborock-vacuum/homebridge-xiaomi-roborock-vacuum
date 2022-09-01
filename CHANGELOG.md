@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Bug] Add dependency to `hap-nodejs` (#531).
+
 ## 0.26.0
 
 - [Enhancement] Add Dust Bin needs to be emptied indicator (#111).
