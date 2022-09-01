@@ -2,6 +2,8 @@
 
 ## Next
 
+## 0.26.0
+
 - [Enhancement] Add Dust Bin needs to be emptied indicator (#111).
 
 ## 0.25.1
