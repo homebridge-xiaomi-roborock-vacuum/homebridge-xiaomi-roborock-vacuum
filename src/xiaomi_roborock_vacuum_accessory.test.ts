@@ -1,16 +1,17 @@
 "use strict";
 
-import { API } from "homebridge";
+import { API, Logging } from "homebridge";
 
 jest.useFakeTimers();
 
-import { createHomebridgeMock, miio } from "./test.mocks";
+import { createHomebridgeMock } from "./test.mocks";
 
-import getXiaomiRoborockVacuumAccessory from "./xiaomi_roborock_vacuum_accessory";
+import { XiaomiRoborockVacuum } from "./xiaomi_roborock_vacuum_accessory";
 
 describe("XiaomiRoborockVacuum", () => {
   let homebridge: jest.Mocked<API>;
   let consoleErrorSpy: jest.SpyInstance;
+  const log: Logging = console as unknown as Logging;
 
   beforeEach(() => {
     homebridge = createHomebridgeMock();
@@ -26,51 +27,50 @@ describe("XiaomiRoborockVacuum", () => {
   });
 
   test("Returns the accessory class", () => {
-    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
     expect(XiaomiRoborockVacuum).toHaveProperty("prototype");
     expect(XiaomiRoborockVacuum.prototype).toHaveProperty("identify");
     expect(XiaomiRoborockVacuum.prototype).toHaveProperty("getServices");
   });
 
   test("Fails if no IP provided", () => {
-    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
-
-    expect(() => new XiaomiRoborockVacuum(console, {})).toThrowError(
+    expect(() => new XiaomiRoborockVacuum(log, {}, homebridge)).toThrowError(
       "You must provide an ip address of the vacuum cleaner."
     );
   });
 
   test("Fails if no token provided", () => {
-    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
-
     expect(
-      () => new XiaomiRoborockVacuum(console, { ip: "192.168.0.1" })
+      () => new XiaomiRoborockVacuum(log, { ip: "192.168.0.1" }, homebridge)
     ).toThrowError("You must provide a token of the vacuum cleaner.");
   });
 
   test("Fails if both `room` and `autoroom` are provided", () => {
-    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
-
     expect(
       () =>
-        new XiaomiRoborockVacuum(console, {
-          ip: "192.168.0.1",
-          token: "TOKEN",
-          rooms: [],
-          autoroom: true,
-        })
+        new XiaomiRoborockVacuum(
+          log,
+          {
+            ip: "192.168.0.1",
+            token: "TOKEN",
+            rooms: [],
+            autoroom: true,
+          },
+          homebridge
+        )
     )
       .toThrowError(`Both "autoroom" and "rooms" config options can't be used at the same time.\n
       Please, use "autoroom" to retrieve the "rooms" config and remove it when not needed.`);
   });
 
   test("Client with minimum config has the basic services", () => {
-    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
-
-    const client = new XiaomiRoborockVacuum(console, {
-      ip: "192.168.0.1",
-      token: "TOKEN",
-    });
+    const client = new XiaomiRoborockVacuum(
+      log,
+      {
+        ip: "192.168.0.1",
+        token: "TOKEN",
+      },
+      homebridge
+    );
     const initialisedServices = client.getServices();
     expect(initialisedServices).toHaveLength(7);
     expect(
@@ -81,21 +81,23 @@ describe("XiaomiRoborockVacuum", () => {
   });
 
   test("Client with all config has all the services", () => {
-    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
-
-    const client = new XiaomiRoborockVacuum(console, {
-      ip: "192.168.0.1",
-      token: "TOKEN",
-      serviceType: "switch",
-      pause: true,
-      waterBox: true,
-      dustBin: true,
-      dustCollection: true,
-      goTo: true,
-      dock: true,
-      zones: [],
-      disableCareServices: true,
-    });
+    const client = new XiaomiRoborockVacuum(
+      log,
+      {
+        ip: "192.168.0.1",
+        token: "TOKEN",
+        serviceType: "switch",
+        pause: true,
+        waterBox: true,
+        dustBin: true,
+        dustCollection: true,
+        goTo: true,
+        dock: true,
+        zones: [],
+        disableCareServices: true,
+      },
+      homebridge
+    );
     const initialisedServices = client.getServices();
     expect(initialisedServices).toHaveLength(9);
     expect(
@@ -106,12 +108,14 @@ describe("XiaomiRoborockVacuum", () => {
   });
 
   test("identify API", async () => {
-    const XiaomiRoborockVacuum = getXiaomiRoborockVacuumAccessory(homebridge);
-
-    const client = new XiaomiRoborockVacuum(console, {
-      ip: "192.168.0.1",
-      token: "TOKEN",
-    });
+    const client = new XiaomiRoborockVacuum(
+      log,
+      {
+        ip: "192.168.0.1",
+        token: "TOKEN",
+      },
+      homebridge
+    );
     const identifySpy = jest.spyOn(client["pluginServices"].findMe, "identify");
     expect(client.identify()).toBeUndefined();
     expect(identifySpy).toHaveBeenCalledTimes(1);

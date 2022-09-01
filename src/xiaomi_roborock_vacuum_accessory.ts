@@ -5,6 +5,7 @@ import {
   AccessoryPlugin,
   API,
   HAP,
+  Logging,
   Service as HomeBridgeService,
 } from "homebridge";
 
@@ -31,13 +32,6 @@ import { errors } from "./utils/constants";
 import { ErrorChangedEvent } from "./services/device_manager";
 import { CoreContext } from "./services/types";
 
-let hap: HAP;
-
-export default (api: API) => {
-  hap = api.hap;
-  return XiaomiRoborockVacuum;
-};
-
 interface PluginServices {
   productInfo: ProductInfo;
   rooms: RoomsService;
@@ -54,17 +48,17 @@ interface PluginServices {
   careServices?: CareService;
 }
 
-class XiaomiRoborockVacuum implements AccessoryPlugin {
+export class XiaomiRoborockVacuum implements AccessoryPlugin {
   private readonly log: Logger;
   private readonly config: Config;
   private readonly pluginServices: PluginServices;
   private readonly deviceManager: DeviceManager;
 
-  constructor(log, config) {
+  constructor(log: Logging, config: Partial<Config>, api: API) {
     this.log = getLogger(log, config);
     this.config = applyConfigDefaults(config);
 
-    this.deviceManager = new DeviceManager(hap, this.log, config);
+    this.deviceManager = new DeviceManager(api.hap, this.log, config);
 
     this.deviceManager.errorChanged$
       .pipe(
@@ -83,7 +77,13 @@ class XiaomiRoborockVacuum implements AccessoryPlugin {
     });
 
     // HOMEKIT SERVICES
-    this.pluginServices = this.initializeServices();
+    const coreContext: CoreContext = {
+      hap: api.hap,
+      log: this.log,
+      config: this.config,
+      deviceManager: this.deviceManager,
+    };
+    this.pluginServices = this.initializeServices(coreContext);
 
     // Run the init method of all the services, once they are all registered.
     Object.values(this.pluginServices).map((service) => service?.init());
@@ -93,10 +93,8 @@ class XiaomiRoborockVacuum implements AccessoryPlugin {
    * Initializes all the PluginServices based on the config.
    * @private
    */
-  private initializeServices(): PluginServices {
+  private initializeServices(coreContext: CoreContext): PluginServices {
     const { log, config, deviceManager } = this;
-
-    const coreContext: CoreContext = { hap, log, config, deviceManager };
 
     const productInfo = new ProductInfo(coreContext);
     const rooms = new RoomsService(coreContext, (clean) =>
