@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Enhancement] Add Dust Bin needs to be emptied indicator (#111).
+
 ## 0.25.1
 
 - [Bug] Handle negative responses for the Maintenance indicators of Sensors & Brushes (#366)

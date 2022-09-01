@@ -89,6 +89,7 @@ describe("XiaomiRoborockVacuum", () => {
       serviceType: "switch",
       pause: true,
       waterBox: true,
+      dustBin: true,
       dustCollection: true,
       goTo: true,
       dock: true,
@@ -96,7 +97,7 @@ describe("XiaomiRoborockVacuum", () => {
       disableCareServices: true,
     });
     const initialisedServices = client.getServices();
-    expect(initialisedServices).toHaveLength(8);
+    expect(initialisedServices).toHaveLength(9);
     expect(
       // @ts-expect-error type should exist but TS says it doesn't
       initialisedServices.map((svc) => `${svc.name}-${svc.type}`)

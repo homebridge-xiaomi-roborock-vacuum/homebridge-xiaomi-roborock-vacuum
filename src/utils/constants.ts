@@ -9,7 +9,7 @@ export const cleaningStatuses = [
 export const errors = {
   id1: {
     description:
-      "Try turning the orange laserhead to make sure it isnt blocked.",
+      "Try turning the orange laser-head to make sure it isn't blocked.",
   },
   id2: { description: "Clean and tap the bumpers lightly." },
   id3: { description: "Try moving the vacuum to a different place." },
@@ -18,7 +18,7 @@ export const errors = {
       "Wipe the cliff sensor clean and move the vacuum to a different place.",
   },
   id5: { description: "Remove and clean the main brush." },
-  id6: { description: "Remove and clean the sidebrushes." },
+  id6: { description: "Remove and clean the side-brushes." },
   id7: {
     description:
       "Make sure the wheels arent blocked. Move the vacuum to a different place and try again.",
@@ -37,15 +37,15 @@ export const errors = {
   id12: { description: "Battery is low, charge your vacuum." },
   id13: {
     description:
-      "Couldnt charge properly. Make sure the charging surfaces are clean.",
+      "Couldn't charge properly. Make sure the charging surfaces are clean.",
   },
   id14: { description: "Battery malfunctioned." },
   id15: { description: "Wipe the wall sensor clean." },
   id16: { description: "Use the vacuum on a flat horizontal surface." },
-  id17: { description: "Sidebrushes malfunctioned. Reboot the system." },
+  id17: { description: "Side-brushes malfunctioned. Reboot the system." },
   id18: { description: "Fan malfunctioned. Reboot the system." },
   id19: { description: "The docking station is not connected to power." },
-  id20: { description: "unkown" },
+  id20: { description: "unknown" },
   id21: {
     description:
       "Please make sure that the top cover of the laser distance sensor is not pinned.",

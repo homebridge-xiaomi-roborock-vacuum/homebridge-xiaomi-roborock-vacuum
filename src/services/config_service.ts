@@ -10,6 +10,7 @@ import { DockConfig } from "./dock_service";
 import { ZonesConfig } from "./zones_service";
 import { CareConfig } from "./care_service";
 import { MainServiceConfig } from "./main_service";
+import { DustBinConfig } from "./dust_bin_service";
 
 export interface Config
   extends MainServiceConfig,
@@ -18,6 +19,7 @@ export interface Config
     RoomsConfig,
     PauseConfig,
     WaterBoxConfig,
+    DustBinConfig,
     DustCollectionConfig,
     FindMeConfig,
     GoToConfig,
@@ -54,6 +56,7 @@ export function applyConfigDefaults(config: Partial<Config>): Config {
     goToY: 25500,
     roomTimeout: 0,
     waterBox: false,
+    dustBin: false,
     dustCollection: false,
     dock: false,
     ...config,
