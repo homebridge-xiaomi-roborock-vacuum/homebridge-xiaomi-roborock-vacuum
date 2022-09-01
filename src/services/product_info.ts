@@ -1,5 +1,4 @@
 import { Service } from "homebridge";
-import { callbackify } from "../utils/callbackify";
 import { CoreContext } from "./types";
 import { concatMap, filter } from "rxjs";
 import { PluginServiceClass } from "./plugin_service_class";
@@ -15,13 +14,13 @@ export class ProductInfo extends PluginServiceClass {
       .setCharacteristic(this.hap.Characteristic.Model, "Roborock");
     this.service
       .getCharacteristic(this.hap.Characteristic.FirmwareRevision)
-      .on("get", (cb) => callbackify(() => this.getFirmware(), cb));
+      .onGet(() => this.getFirmware());
     this.service
       .getCharacteristic(this.hap.Characteristic.Model)
-      .on("get", (cb) => callbackify(() => this.deviceManager.model, cb));
+      .onGet(() => this.deviceManager.model);
     this.service
       .getCharacteristic(this.hap.Characteristic.SerialNumber)
-      .on("get", (cb) => callbackify(() => this.getSerialNumber(), cb));
+      .onGet(() => this.getSerialNumber());
   }
 
   public async init(): Promise<void> {

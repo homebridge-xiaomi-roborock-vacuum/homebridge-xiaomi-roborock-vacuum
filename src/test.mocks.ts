@@ -30,6 +30,8 @@ const createGetCharacteristicMock = () =>
     Object.assign({}, createChainableServiceMethodsMock(), {
       setProps: jest.fn(),
       on: createGetCharacteristicMock(),
+      onGet: createGetCharacteristicMock(),
+      onSet: createGetCharacteristicMock(),
       updateValue: jest.fn(),
     })
   );

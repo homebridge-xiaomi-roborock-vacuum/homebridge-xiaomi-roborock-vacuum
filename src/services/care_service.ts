@@ -1,6 +1,5 @@
 import { Service } from "homebridge";
 import { CoreContext } from "./types";
-import { callbackify } from "../utils/callbackify";
 import { Care, Characteristic } from "./custom_care_service";
 import { MainService } from "./main_service";
 import { PluginServiceClass } from "./plugin_service_class";
@@ -84,16 +83,16 @@ export class CareService extends PluginServiceClass {
     const service = new Care(`${this.config.name} Care`);
     service
       .getCharacteristic(Characteristic.CareSensors)
-      .on("get", (cb) => callbackify(() => this.getCareSensors(), cb));
+      .onGet(() => this.getCareSensors());
     service
       .getCharacteristic(Characteristic.CareFilter)
-      .on("get", (cb) => callbackify(() => this.getCareFilter(), cb));
+      .onGet(() => this.getCareFilter());
     service
       .getCharacteristic(Characteristic.CareSideBrush)
-      .on("get", (cb) => callbackify(() => this.getCareSideBrush(), cb));
+      .onGet(() => this.getCareSideBrush());
     service
       .getCharacteristic(Characteristic.CareMainBrush)
-      .on("get", (cb) => callbackify(() => this.getCareMainBrush(), cb));
+      .onGet(() => this.getCareMainBrush());
 
     return [service];
   }
@@ -104,30 +103,26 @@ export class CareService extends PluginServiceClass {
     // Register the high-level state of the filters to the main device's Characteristics
     mainService
       .getCharacteristic(this.hap.Characteristic.FilterChangeIndication)
-      .on("get", (cb) =>
-        callbackify(async () => {
-          const carePercentages = await Promise.all([
-            this.getCareSensors(),
-            this.getCareFilter(),
-            this.getCareSideBrush(),
-            this.getCareMainBrush(),
-          ]);
-          return carePercentages.some((item) => item >= 100);
-        }, cb)
-      );
+      .onGet(async () => {
+        const carePercentages = await Promise.all([
+          this.getCareSensors(),
+          this.getCareFilter(),
+          this.getCareSideBrush(),
+          this.getCareMainBrush(),
+        ]);
+        return carePercentages.some((item) => item >= 100);
+      });
     mainService
       .getCharacteristic(this.hap.Characteristic.FilterLifeLevel)
-      .on("get", (cb) =>
-        callbackify(async () => {
-          const carePercentages = await Promise.all([
-            this.getCareSensors(),
-            this.getCareFilter(),
-            this.getCareSideBrush(),
-            this.getCareMainBrush(),
-          ]);
-          return 100 - Math.max(...carePercentages);
-        }, cb)
-      );
+      .onGet(async () => {
+        const carePercentages = await Promise.all([
+          this.getCareSensors(),
+          this.getCareFilter(),
+          this.getCareSideBrush(),
+          this.getCareMainBrush(),
+        ]);
+        return 100 - Math.max(...carePercentages);
+      });
 
     // Use Homekit's native FilterMaintenance Service
     const careSensorsService = new this.hap.Service.FilterMaintenance(
@@ -136,16 +131,12 @@ export class CareService extends PluginServiceClass {
     );
     careSensorsService
       .getCharacteristic(this.hap.Characteristic.FilterChangeIndication)
-      .on("get", (cb) =>
-        callbackify(async () => {
-          return (await this.getCareSensors()) >= 100;
-        }, cb)
-      );
+      .onGet(async () => {
+        return (await this.getCareSensors()) >= 100;
+      });
     careSensorsService
       .getCharacteristic(this.hap.Characteristic.FilterLifeLevel)
-      .on("get", (cb) =>
-        callbackify(async () => 100 - (await this.getCareSensors()), cb)
-      );
+      .onGet(async () => 100 - (await this.getCareSensors()));
 
     const careFilterService = new this.hap.Service.FilterMaintenance(
       "Care indicator filter",
@@ -153,16 +144,12 @@ export class CareService extends PluginServiceClass {
     );
     careFilterService
       .getCharacteristic(this.hap.Characteristic.FilterChangeIndication)
-      .on("get", (cb) =>
-        callbackify(async () => {
-          return (await this.getCareFilter()) >= 100;
-        }, cb)
-      );
+      .onGet(async () => {
+        return (await this.getCareFilter()) >= 100;
+      });
     careFilterService
       .getCharacteristic(this.hap.Characteristic.FilterLifeLevel)
-      .on("get", (cb) =>
-        callbackify(async () => 100 - (await this.getCareFilter()), cb)
-      );
+      .onGet(async () => 100 - (await this.getCareFilter()));
 
     const careSideBrushService = new this.hap.Service.FilterMaintenance(
       "Care indicator side brush",
@@ -170,16 +157,12 @@ export class CareService extends PluginServiceClass {
     );
     careSideBrushService
       .getCharacteristic(this.hap.Characteristic.FilterChangeIndication)
-      .on("get", (cb) =>
-        callbackify(async () => {
-          return (await this.getCareSideBrush()) >= 100;
-        }, cb)
-      );
+      .onGet(async () => {
+        return (await this.getCareSideBrush()) >= 100;
+      });
     careSideBrushService
       .getCharacteristic(this.hap.Characteristic.FilterLifeLevel)
-      .on("get", (cb) =>
-        callbackify(async () => 100 - (await this.getCareSideBrush()), cb)
-      );
+      .onGet(async () => 100 - (await this.getCareSideBrush()));
 
     const careMainBrushService = new this.hap.Service.FilterMaintenance(
       "Care indicator main brush",
@@ -187,16 +170,12 @@ export class CareService extends PluginServiceClass {
     );
     careMainBrushService
       .getCharacteristic(this.hap.Characteristic.FilterChangeIndication)
-      .on("get", (cb) =>
-        callbackify(async () => {
-          return (await this.getCareMainBrush()) >= 100;
-        }, cb)
-      );
+      .onGet(async () => {
+        return (await this.getCareMainBrush()) >= 100;
+      });
     careMainBrushService
       .getCharacteristic(this.hap.Characteristic.FilterLifeLevel)
-      .on("get", (cb) =>
-        callbackify(async () => 100 - (await this.getCareMainBrush()), cb)
-      );
+      .onGet(async () => 100 - (await this.getCareMainBrush()));
 
     return [
       careSensorsService,

@@ -1,7 +1,6 @@
 import { Service } from "homebridge";
 import { distinct, filter } from "rxjs";
 import { CoreContext } from "./types";
-import { callbackify } from "../utils/callbackify";
 import { RoomsService } from "./rooms_service";
 import { PluginServiceClass } from "./plugin_service_class";
 
@@ -23,10 +22,8 @@ export class PauseSwitch extends PluginServiceClass {
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
-      .on("get", (cb) => callbackify(() => this.getPauseState(), cb))
-      .on("set", (newState, cb) =>
-        callbackify(() => this.setPauseState(newState), cb)
-      );
+      .onGet(() => this.getPauseState())
+      .onSet((newState) => this.setPauseState(newState));
   }
 
   public async init(): Promise<void> {
@@ -101,6 +98,5 @@ export class PauseSwitch extends PluginServiceClass {
         err
       );
     }
-    return state;
   }
 }

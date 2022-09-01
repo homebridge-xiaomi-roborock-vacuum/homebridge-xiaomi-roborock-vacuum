@@ -1,5 +1,4 @@
 import { Service } from "homebridge";
-import { callbackify } from "../utils/callbackify";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 
@@ -14,13 +13,13 @@ export class BatteryInfo extends PluginServiceClass {
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.BatteryLevel)
-      .on("get", (cb) => callbackify(() => this.getBattery(), cb));
+      .onGet(() => this.getBattery());
     this.service
       .getCharacteristic(this.hap.Characteristic.ChargingState)
-      .on("get", (cb) => callbackify(() => this.getCharging(), cb));
+      .onGet(() => this.getCharging());
     this.service
       .getCharacteristic(this.hap.Characteristic.StatusLowBattery)
-      .on("get", (cb) => callbackify(() => this.getBatteryLow(), cb));
+      .onGet(() => this.getBatteryLow());
   }
 
   public async init(): Promise<void> {

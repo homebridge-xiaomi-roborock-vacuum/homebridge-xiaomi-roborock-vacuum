@@ -1,5 +1,4 @@
 import { Service } from "homebridge";
-import { callbackify } from "../utils/callbackify";
 import { CoreContext } from "./types";
 import { MainService } from "./main_service";
 import { PluginServiceClass } from "./plugin_service_class";
@@ -47,10 +46,8 @@ export class ZonesService extends PluginServiceClass {
     );
     this.zones[zoneName]
       .getCharacteristic(this.hap.Characteristic.On)
-      .on("get", (cb) => callbackify(() => this.mainService.getCleaning(), cb))
-      .on("set", (newState, cb) =>
-        callbackify(() => this.setCleaningZone(newState, zoneParams), cb)
-      )
+      .onGet(() => this.mainService.getCleaning())
+      .onSet((newState) => this.setCleaningZone(newState, zoneParams))
       .on("change", ({ newValue }) => {
         this.changedPause(newValue === true);
       });
@@ -84,6 +81,5 @@ export class ZonesService extends PluginServiceClass {
       this.log.error(`setCleaning | Failed to set cleaning to ${state}`, err);
       throw err;
     }
-    return state;
   }
 }

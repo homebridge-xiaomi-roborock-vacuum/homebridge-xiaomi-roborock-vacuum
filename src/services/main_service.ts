@@ -2,7 +2,6 @@ import { Service } from "homebridge";
 import { distinct, filter } from "rxjs";
 import { cleaningStatuses } from "../utils/constants";
 import { findSpeedModes } from "../utils/find_speed_modes";
-import { callbackify } from "../utils/callbackify";
 import { CoreContext } from "./types";
 import type { RoomsService } from "./rooms_service";
 import type { ProductInfo } from "./product_info";
@@ -27,10 +26,8 @@ export class MainService extends PluginServiceClass {
       this.service = new this.hap.Service.Fan(this.config.name, "Vacuum");
       this.service
         .getCharacteristic(this.hap.Characteristic.RotationSpeed)
-        .on("get", (cb) => callbackify(() => this.getSpeed(), cb))
-        .on("set", (newState, cb) =>
-          callbackify(() => this.setSpeed(newState), cb)
-        );
+        .onGet(() => this.getSpeed())
+        .onSet((newState) => this.setSpeed(newState));
     } else {
       this.service = new this.hap.Service.Switch(this.config.name, "Vacuum");
     }
@@ -39,10 +36,8 @@ export class MainService extends PluginServiceClass {
 
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
-      .on("get", (cb) => callbackify(() => this.getCleaning(), cb))
-      .on("set", (newState, cb) =>
-        callbackify(() => this.setCleaning(newState), cb)
-      )
+      .onGet(() => this.getCleaning())
+      .onSet((newState) => this.setCleaning(newState))
       .on("change", ({ newValue }) => {
         this.changedPause(newValue === true);
       });
@@ -167,7 +162,6 @@ export class MainService extends PluginServiceClass {
         await this.deviceManager.device.activateCharging();
         this.roomsService.roomIdsToClean.clear();
       }
-      return state;
     } catch (err) {
       this.log.error(`setCleaning | Failed to set cleaning to ${state}`, err);
       throw err;
@@ -268,8 +262,6 @@ export class MainService extends PluginServiceClass {
         await this.setWaterSpeed("Medium");
       }
     }
-
-    return speed;
   }
 
   private findSpeedModeFromMiio(speed) {

@@ -1,7 +1,6 @@
 import { Service } from "homebridge";
 import { distinct, filter } from "rxjs";
 import { CoreContext } from "./types";
-import { callbackify } from "../utils/callbackify";
 import { findSpeedModes } from "../utils/find_speed_modes";
 import { ProductInfo } from "./product_info";
 import { MainService } from "./main_service";
@@ -25,26 +24,19 @@ export class WaterBoxService extends PluginServiceClass {
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.RotationSpeed)
-      .on("get", (cb) => callbackify(() => this.getWaterSpeed(), cb))
-      .on("set", (newState, cb) =>
-        callbackify(() => this.setWaterSpeed(newState), cb)
-      );
+      .onGet(() => this.getWaterSpeed())
+      .onSet((newState) => this.setWaterSpeed(newState));
+
     // We need to handle the ON/OFF characteristic (https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/284)
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
-      .on("get", (cb) =>
-        // If the speed is over 0%, assume it's ON
-        callbackify(async () => (await this.getWaterSpeed()) > 0, cb)
-      )
-      .on("set", (newState, cb) =>
-        callbackify(async () => {
-          // Set to 0% (Off) when receiving an OFF request, do nothing otherwise.
-          if (!newState) {
-            await this.mainService.setCleaning(false);
-          }
-          return newState;
-        }, cb)
-      );
+      .onGet(async () => (await this.getWaterSpeed()) > 0)
+      .onSet(async (newState) => {
+        // Set to 0% (Off) when receiving an OFF request, do nothing otherwise.
+        if (!newState) {
+          await this.mainService.setCleaning(false);
+        }
+      });
   }
 
   public async init(): Promise<void> {
@@ -109,7 +101,6 @@ export class WaterBoxService extends PluginServiceClass {
     // If the robot does not support water-mode cleaning
     if (speedModes.length === 0) {
       this.log.info(`setWaterSpeed | Model does not support the water mode`);
-      return;
     }
 
     let miLevel: number | null = null;
@@ -165,8 +156,6 @@ export class WaterBoxService extends PluginServiceClass {
     ) {
       await this.mainService.setSpeed("Balanced");
     }
-
-    return speed;
   }
 
   private async getWaterSpeed() {

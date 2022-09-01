@@ -1,5 +1,4 @@
 import { Service } from "homebridge";
-import { callbackify } from "../utils/callbackify";
 import { CoreContext } from "./types";
 import { cleaningStatuses } from "../utils/constants";
 import { PluginServiceClass } from "./plugin_service_class";
@@ -81,14 +80,9 @@ export class RoomsService extends PluginServiceClass {
     );
     this.rooms[roomName]
       .getCharacteristic(this.hap.Characteristic.On)
-      .on("get", (cb) =>
-        callbackify(() => this.getCleaningRoom(this.rooms[roomName].roomId), cb)
-      )
-      .on("set", (newState, cb) =>
-        callbackify(
-          () => this.setCleaningRoom(newState, this.rooms[roomName].roomId),
-          cb
-        )
+      .onGet(() => this.getCleaningRoom(this.rooms[roomName].roomId))
+      .onSet((newState) =>
+        this.setCleaningRoom(newState, this.rooms[roomName].roomId)
       );
   }
 
@@ -116,8 +110,6 @@ export class RoomsService extends PluginServiceClass {
         this.roomIdsToClean.delete(roomId);
         this.checkRoomTimeout();
       }
-
-      return state;
     } catch (err) {
       this.log.error(
         `ERR setCleaningRoom | Failed to set cleaning to ${state}`,

@@ -1,6 +1,5 @@
 import { Service } from "homebridge";
 import { CoreContext } from "./types";
-import { callbackify } from "../utils/callbackify";
 import { PluginServiceClass } from "./plugin_service_class";
 
 export interface GoToConfig {
@@ -20,8 +19,8 @@ export class GoToService extends PluginServiceClass {
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
-      .on("get", (cb) => callbackify(() => this.getGoToState(), cb))
-      .on("set", (newState, cb) => callbackify(() => this.goTo(newState), cb));
+      .onGet(() => this.getGoToState())
+      .onSet((newState) => this.goTo(newState));
   }
 
   public async init(): Promise<void> {}
@@ -43,7 +42,6 @@ export class GoToService extends PluginServiceClass {
       this.log.error(`goTo | `, err);
       throw err;
     }
-    return newState;
   }
 
   private async getGoToState() {
