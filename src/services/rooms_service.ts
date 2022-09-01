@@ -117,7 +117,7 @@ export class RoomsService extends PluginServiceClass {
         this.checkRoomTimeout();
       }
 
-      return state;
+      return null;
     } catch (err) {
       this.log.error(
         `ERR setCleaningRoom | Failed to set cleaning to ${state}`,

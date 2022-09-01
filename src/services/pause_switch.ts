@@ -101,6 +101,6 @@ export class PauseSwitch extends PluginServiceClass {
         err
       );
     }
-    return state;
+    return null;
   }
 }

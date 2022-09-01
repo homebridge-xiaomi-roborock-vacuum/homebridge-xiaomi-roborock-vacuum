@@ -43,6 +43,6 @@ export class FindMeService extends PluginServiceClass {
       this.log.error(`identify | `, err);
       throw err;
     }
-    return newState;
+    return null;
   }
 }

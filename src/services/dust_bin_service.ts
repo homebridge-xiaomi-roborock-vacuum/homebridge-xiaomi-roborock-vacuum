@@ -58,6 +58,6 @@ export class DustBinService extends PluginServiceClass {
 
   private async setLockedState(value: CharacteristicValue) {
     this.state$.next(value === this.hap.Characteristic.LockTargetState.SECURED);
-    return value;
+    return null;
   }
 }

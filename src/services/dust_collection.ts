@@ -82,6 +82,6 @@ export class DustCollection extends PluginServiceClass {
       );
       throw err;
     }
-    return state;
+    return null;
   }
 }

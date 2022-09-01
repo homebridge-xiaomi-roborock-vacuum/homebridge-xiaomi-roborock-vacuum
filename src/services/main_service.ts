@@ -167,7 +167,7 @@ export class MainService extends PluginServiceClass {
         await this.deviceManager.device.activateCharging();
         this.roomsService.roomIdsToClean.clear();
       }
-      return state;
+      return null;
     } catch (err) {
       this.log.error(`setCleaning | Failed to set cleaning to ${state}`, err);
       throw err;
@@ -229,7 +229,7 @@ export class MainService extends PluginServiceClass {
 
       if (speedMode == null) {
         this.log.info(`setSpeed | Mode "${speed}" does not exist.`);
-        return;
+        return null;
       }
       miLevel = speedMode.miLevel;
       name = speedMode.name;
@@ -269,7 +269,7 @@ export class MainService extends PluginServiceClass {
       }
     }
 
-    return speed;
+    return null;
   }
 
   private findSpeedModeFromMiio(speed) {

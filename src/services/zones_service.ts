@@ -84,6 +84,6 @@ export class ZonesService extends PluginServiceClass {
       this.log.error(`setCleaning | Failed to set cleaning to ${state}`, err);
       throw err;
     }
-    return state;
+    return null;
   }
 }

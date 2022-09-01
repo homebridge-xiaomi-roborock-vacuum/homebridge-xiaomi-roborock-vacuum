@@ -43,7 +43,7 @@ export class GoToService extends PluginServiceClass {
       this.log.error(`goTo | `, err);
       throw err;
     }
-    return newState;
+    return null;
   }
 
   private async getGoToState() {

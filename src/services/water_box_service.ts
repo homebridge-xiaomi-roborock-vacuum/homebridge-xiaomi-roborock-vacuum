@@ -42,7 +42,7 @@ export class WaterBoxService extends PluginServiceClass {
           if (!newState) {
             await this.mainService.setCleaning(false);
           }
-          return newState;
+          return null;
         }, cb)
       );
   }
@@ -109,7 +109,7 @@ export class WaterBoxService extends PluginServiceClass {
     // If the robot does not support water-mode cleaning
     if (speedModes.length === 0) {
       this.log.info(`setWaterSpeed | Model does not support the water mode`);
-      return;
+      return null;
     }
 
     let miLevel: number | null = null;
@@ -135,7 +135,7 @@ export class WaterBoxService extends PluginServiceClass {
 
       if (speedMode == null) {
         this.log.info(`setWaterSpeed | Mode "${speed}" does not exist.`);
-        return;
+        return null;
       }
       miLevel = speedMode.miLevel;
       name = speedMode.name;
@@ -166,7 +166,7 @@ export class WaterBoxService extends PluginServiceClass {
       await this.mainService.setSpeed("Balanced");
     }
 
-    return speed;
+    return null;
   }
 
   private async getWaterSpeed() {
