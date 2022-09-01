@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.26.3
+
+- [Bug] Fix warning _The plugin "\*" defines 'homebridge' and/or 'hap-nodejs' in their 'dependencies'..._ (#533)
+
 ## 0.26.2
 
 - [Bug] Fix warning _SET handler returned write response value_ (#529)
