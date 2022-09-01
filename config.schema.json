@@ -207,6 +207,7 @@
     },
     "serviceType",
     "waterBox",
+    "dustBin",
     "dustCollection",
     "silent",
     "pause",
