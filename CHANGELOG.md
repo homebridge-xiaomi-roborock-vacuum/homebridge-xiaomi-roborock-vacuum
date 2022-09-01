@@ -2,6 +2,8 @@
 
 ## Next
 
+## 0.26.1
+
 - [Bug] Add dependency to `hap-nodejs` (#531).
 
 ## 0.26.0
