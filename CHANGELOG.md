@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.26.2
+
+- [Bug] Fix warning _SET handler returned write response value_ (#529) 
+
 ## 0.26.1
 
 - [Bug] Add dependency to `hap-nodejs` (#531).
