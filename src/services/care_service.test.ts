@@ -59,14 +59,10 @@ describe("CareService", () => {
       expect(service.characteristics).toHaveLength(5);
       const [name, ...characteristics] = service.characteristics;
       const onCallsHandlers = characteristics.map(
-        (characteristic) => characteristic["_events"].get
+        (characteristic) => characteristic["getHandler"]
       );
       for (const listener of onCallsHandlers) {
-        await expect(
-          new Promise((resolve, reject) =>
-            listener((err, value) => (err ? reject(err) : resolve(value)))
-          )
-        ).resolves.toMatchSnapshot();
+        await expect(listener()).resolves.toMatchSnapshot();
       }
     });
   });
@@ -119,22 +115,10 @@ describe("CareService", () => {
       const fanService = fanServices.mock.results[0].value[0];
       expect(fanService.getCharacteristic.mock.results).toHaveLength(2);
       const onCallsHandlers = fanService.getCharacteristic.mock.results.map(
-        ({ value }) => value.on.mock.calls[0][1]
+        ({ value }) => value.onGet.mock.calls[0][0]
       );
-      await expect(
-        new Promise((resolve, reject) =>
-          onCallsHandlers[0]((err, value) =>
-            err ? reject(err) : resolve(value)
-          )
-        )
-      ).resolves.toBe(false);
-      await expect(
-        new Promise((resolve, reject) =>
-          onCallsHandlers[1]((err, value) =>
-            err ? reject(err) : resolve(value)
-          )
-        )
-      ).resolves.toBe(99.99074074074075);
+      await expect(onCallsHandlers[0]()).resolves.toBe(false);
+      await expect(onCallsHandlers[1]()).resolves.toBe(99.99074074074075);
     });
 
     test("the FilterMaintenance services' characteristics call all getters", async () => {
@@ -142,14 +126,10 @@ describe("CareService", () => {
         expect(service.characteristics).toHaveLength(3);
         const [name, ...characteristics] = service.characteristics;
         const onCallsHandlers = characteristics.map(
-          (characteristic) => characteristic["_events"].get
+          (characteristic) => characteristic["getHandler"]
         );
         for (const listener of onCallsHandlers) {
-          await expect(
-            new Promise((resolve, reject) =>
-              listener((err, value) => (err ? reject(err) : resolve(value)))
-            )
-          ).resolves.toMatchSnapshot();
+          await expect(listener()).resolves.toMatchSnapshot();
         }
       }
     });
@@ -159,15 +139,11 @@ describe("CareService", () => {
         expect(service.characteristics).toHaveLength(3);
         const [name, ...characteristics] = service.characteristics;
         const onCallsHandlers = characteristics.map(
-          (characteristic) => characteristic["_events"].get
+          (characteristic) => characteristic["getHandler"]
         );
         for (const listener of onCallsHandlers) {
           deviceManagerMock.property.mockReturnValueOnce(-1);
-          await expect(
-            new Promise((resolve, reject) =>
-              listener((err, value) => (err ? reject(err) : resolve(value)))
-            )
-          ).resolves.toMatchSnapshot();
+          await expect(listener()).resolves.toMatchSnapshot();
         }
       }
     });
