@@ -3,6 +3,7 @@ export { BatteryInfo } from "./battery_info";
 export { CareService } from "./care_service";
 export { DeviceManager } from "./device_manager";
 export { DockService } from "./dock_service";
+export { DustBinService } from "./dust_bin_service";
 export { DustCollection } from "./dust_collection";
 export { PauseSwitch } from "./pause_switch";
 export { FindMeService } from "./find_me_service";

@@ -34,6 +34,12 @@
         "default": false,
         "required": false
       },
+      "dustBin": {
+        "title": "Enable the Dust Bin indicator (beta)",
+        "type": "boolean",
+        "default": false,
+        "required": false
+      },
       "dustCollection": {
         "title": "Enable the Dust Collection mode (beta)",
         "type": "boolean",

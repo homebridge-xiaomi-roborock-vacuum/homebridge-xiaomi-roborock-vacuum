@@ -25,6 +25,7 @@ import {
   Config,
   ZonesService,
   CareService,
+  DustBinService,
 } from "./services";
 import { errors } from "./utils/constants";
 import { ErrorChangedEvent } from "./services/device_manager";
@@ -43,6 +44,7 @@ interface PluginServices {
   mainService: MainService;
   pause?: PauseSwitch;
   waterBox?: WaterBoxService;
+  dustBin?: DustBinService;
   dustCollection?: DustCollection;
   battery: BatteryInfo;
   findMe: FindMeService;
@@ -81,7 +83,7 @@ class XiaomiRoborockVacuum implements AccessoryPlugin {
     });
 
     // HOMEKIT SERVICES
-    this.pluginServices = this.initialiseServices();
+    this.pluginServices = this.initializeServices();
 
     // Run the init method of all the services, once they are all registered.
     Object.values(this.pluginServices).map((service) => service?.init());
@@ -91,7 +93,7 @@ class XiaomiRoborockVacuum implements AccessoryPlugin {
    * Initializes all the PluginServices based on the config.
    * @private
    */
-  private initialiseServices(): PluginServices {
+  private initializeServices(): PluginServices {
     const { log, config, deviceManager } = this;
 
     const coreContext: CoreContext = { hap, log, config, deviceManager };
@@ -120,6 +122,7 @@ class XiaomiRoborockVacuum implements AccessoryPlugin {
       waterBox: config.waterBox
         ? new WaterBoxService(coreContext, productInfo, mainService)
         : undefined,
+      dustBin: config.dustBin ? new DustBinService(coreContext) : undefined,
       dustCollection: config.dustCollection
         ? new DustCollection(coreContext)
         : undefined,
