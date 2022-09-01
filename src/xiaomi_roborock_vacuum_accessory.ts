@@ -4,7 +4,6 @@ import { catchError, concatMap, distinct } from "rxjs";
 import {
   AccessoryPlugin,
   API,
-  HAP,
   Logging,
   Service as HomeBridgeService,
 } from "homebridge";
@@ -94,12 +93,12 @@ export class XiaomiRoborockVacuum implements AccessoryPlugin {
    * @private
    */
   private initializeServices(coreContext: CoreContext): PluginServices {
-    const { log, config, deviceManager } = this;
+    const { config } = this;
 
     const productInfo = new ProductInfo(coreContext);
-    const rooms = new RoomsService(coreContext, (clean) =>
-      this.pluginServices.mainService.setCleaning(clean)
-    );
+    const rooms = new RoomsService(coreContext, async (clean) => {
+      await this.pluginServices.mainService.setCleaning(clean);
+    });
     const mainService = new MainService(
       coreContext,
       productInfo,
