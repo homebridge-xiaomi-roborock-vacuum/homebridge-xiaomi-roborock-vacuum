@@ -1,7 +1,6 @@
 import { Service } from "homebridge";
 import { CharacteristicValue } from "hap-nodejs/dist/types";
 import { CoreContext } from "./types";
-import { callbackify } from "../utils/callbackify";
 import { PluginServiceClass } from "./plugin_service_class";
 
 export interface FindMeConfig {
@@ -20,10 +19,8 @@ export class FindMeService extends PluginServiceClass {
       );
       this.service
         .getCharacteristic(this.hap.Characteristic.On)
-        .on("get", (cb) => cb(null, false))
-        .on("set", (newState, cb) =>
-          callbackify(() => this.identify(newState), cb)
-        );
+        .onGet(() => false)
+        .onSet((newState) => this.identify(newState));
     }
   }
 
@@ -43,6 +40,5 @@ export class FindMeService extends PluginServiceClass {
       this.log.error(`identify | `, err);
       throw err;
     }
-    return null;
   }
 }

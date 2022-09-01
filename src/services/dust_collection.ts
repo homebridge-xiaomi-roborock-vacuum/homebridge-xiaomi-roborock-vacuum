@@ -1,6 +1,5 @@
 import { Service } from "homebridge";
 import { CoreContext } from "./types";
-import { callbackify } from "../utils/callbackify";
 import { PluginServiceClass } from "./plugin_service_class";
 
 export interface DustCollectionConfig {
@@ -17,10 +16,8 @@ export class DustCollection extends PluginServiceClass {
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
-      .on("get", (cb) => callbackify(() => this.getDustCollectionState(), cb))
-      .on("set", (newState, cb) =>
-        callbackify(() => this.setDustCollectionState(newState), cb)
-      );
+      .onGet(() => this.getDustCollectionState())
+      .onSet((newState) => this.setDustCollectionState(newState));
   }
 
   public async init(): Promise<void> {}
@@ -82,6 +79,5 @@ export class DustCollection extends PluginServiceClass {
       );
       throw err;
     }
-    return null;
   }
 }

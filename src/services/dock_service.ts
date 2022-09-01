@@ -1,7 +1,6 @@
 import { Service } from "homebridge";
 import { distinct, filter } from "rxjs";
 import { CoreContext } from "./types";
-import { callbackify } from "../utils/callbackify";
 import { PluginServiceClass } from "./plugin_service_class";
 
 export interface DockConfig {
@@ -18,7 +17,7 @@ export class DockService extends PluginServiceClass {
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.OccupancyDetected)
-      .on("get", (cb) => callbackify(() => this.getDocked(), cb));
+      .onGet(() => this.getDocked());
   }
 
   public async init(): Promise<void> {

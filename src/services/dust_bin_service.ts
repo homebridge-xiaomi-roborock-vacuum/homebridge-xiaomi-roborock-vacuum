@@ -1,7 +1,6 @@
 import { Service } from "homebridge";
 import { BehaviorSubject, distinct, filter } from "rxjs";
 import { CoreContext } from "./types";
-import { callbackify } from "../utils/callbackify";
 import { PluginServiceClass } from "./plugin_service_class";
 import { CharacteristicValue } from "hap-nodejs/dist/types";
 
@@ -23,10 +22,8 @@ export class DustBinService extends PluginServiceClass {
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.LockTargetState)
-      .on("get", (cb) => callbackify(() => this.getLockedState(), cb))
-      .on("set", (value, cb) =>
-        callbackify(() => this.setLockedState(value), cb)
-      );
+      .onGet(() => this.getLockedState())
+      .onSet((value) => this.setLockedState(value));
   }
 
   public async init(): Promise<void> {
@@ -58,6 +55,5 @@ export class DustBinService extends PluginServiceClass {
 
   private async setLockedState(value: CharacteristicValue) {
     this.state$.next(value === this.hap.Characteristic.LockTargetState.SECURED);
-    return null;
   }
 }
