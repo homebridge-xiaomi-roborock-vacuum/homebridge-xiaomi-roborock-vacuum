@@ -183,7 +183,7 @@ NOTE: We are not currently aware of how to retrieve the token from the Roborock 
 As new users join our community, and use this plugin, we try to learn from their device, and keep up with the new devices Xiaomi releases. However, the main developer @afharo, only owns the model S5, and he can't test the features on other models. If you wonder whether your device is supported, please:
 
 1. Check the [./models/models.ts](./models/models.ts) file to see if your device is already in the explicit list.
-2. If not, maybe it matches de _default_ behaviour (just try running the plugin and see if it works).
+2. If not, maybe it matches the _default_ behaviour (just try running the plugin and see if it works).
    1. If it works, but the vacuum modes (aka speeds) are wrong: add your model to the list in 1 with the right mapping.
    2. If it doesn't work, please, try making sure the IP and token are correct, by running the command `miio-vacuum inspect id-or-address --token tokenAsHex`.  
       HINT: Try a couple of times, just in case there's a network glitch.
