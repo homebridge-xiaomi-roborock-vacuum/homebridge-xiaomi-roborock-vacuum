@@ -176,7 +176,7 @@ To use this plugin, you have to read the "token" of the xiaomi vacuum robots. He
 - :de: - [Homematic-Guru.de](https://homematic-guru.de/xiaomi-vacuum-staubsauger-roboter-mit-homematic-steuern)
 - :de: - [Tutorial with token extractor - simon42.com](https://www.simon42.com/roborock-homekit-token-einfach/)
 
-NOTE: We are not currently aware of how to retrieve the token from the Roborock App. Please, share any findings in the issue #104.
+NOTE: We are not currently aware of how to retrieve the token from the Roborock App. Please, share any findings in the issue [#104](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/104).
 
 ## Is my model supported?
 
