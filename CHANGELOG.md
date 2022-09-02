@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.26.4
+
+- [Bug] `dustBin` config not showing on the Config UI. Thank you @luc-ass (#535)
+
 ## 0.26.3
 
 - [Bug] Fix warning _The plugin "\*" defines 'homebridge' and/or 'hap-nodejs' in their 'dependencies'..._ (#533)
