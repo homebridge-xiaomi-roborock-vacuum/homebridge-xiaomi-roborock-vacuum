@@ -20,14 +20,14 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 ## Features
 
 - **Fan** as On-/Off-Switch. When switching off, directly back to the charging station.
-  - [Fanspeed levels](./models/speedmodes.js) adjustable via 3D Touch / Force Touch.
+  - [Fanspeed levels](./models/speedmodes.ts) adjustable via 3D Touch / Force Touch.
 - Battery status and condition in the device details. Low battery alert.
 - Pause switch (optional).
 - Room cleaning (optional): Read [Room cleaning](#room-cleaning) to understand how it works.
 - Zone cleaning (optional).
 - Occupancy sensor (similar to motion sensor) for dock status (optional).
 - Second Fan for water box modes (optional).
-  - [Watermode levels](./models/watermodes.js) only when enabled in config, and the device supports it.
+  - [Watermode levels](./models/watermodes.ts) only when enabled in config, and the device supports it.
 
 <img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/screenshot1.jpg?raw=true" alt="Screenshot Apple HomeKit with homebridge-xiaomi-roborock-vacuum" width="350">
 <img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/screenshot2.jpg?raw=true" alt="Screenshot Elgato Eve App with homebridge-xiaomi-roborock-vacuum" width="350">
@@ -182,7 +182,7 @@ NOTE: We are not currently aware of how to retrieve the token from the Roborock 
 
 As new users join our community, and use this plugin, we try to learn from their device, and keep up with the new devices Xiaomi releases. However, the main developer @afharo, only owns the model S5, and he can't test the features on other models. If you wonder whether your device is supported, please:
 
-1. Check the [./models/models.js](./models/models.js) file to see if your device is already in the explicit list.
+1. Check the [./models/models.ts](./models/models.ts) file to see if your device is already in the explicit list.
 2. If not, maybe it matches de _default_ behaviour (just try running the plugin and see if it works).
    1. If it works, but the vacuum modes (aka speeds) are wrong: add your model to the list in 1 with the right mapping.
    2. If it doesn't work, please, try making sure the IP and token are correct, by running the command `miio-vacuum inspect id-or-address --token tokenAsHex`.  
