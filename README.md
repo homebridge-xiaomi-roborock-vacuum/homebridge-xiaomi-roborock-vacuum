@@ -20,7 +20,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 ## Features
 
 - **Fan** as On-/Off-Switch. When switching off, directly back to the charging station.
-  - [Fanspeed levels](./models/speedmodes.ts) adjustable via 3D Touch / Force Touch.
+  - [Fanspeed levels](./src/models/speedmodes.ts) adjustable via 3D Touch / Force Touch.
 - Battery status and condition in the device details. Low battery alert.
 - Pause switch (optional).
 - Room cleaning (optional): Read [Room cleaning](#room-cleaning) to understand how it works.
