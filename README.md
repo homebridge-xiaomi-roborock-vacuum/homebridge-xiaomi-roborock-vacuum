@@ -27,7 +27,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 - Zone cleaning (optional).
 - Occupancy sensor (similar to motion sensor) for dock status (optional).
 - Second Fan for water box modes (optional).
-  - [Watermode levels](./models/watermodes.ts) only when enabled in config, and the device supports it.
+  - [Watermode levels](./src/models/watermodes.ts) only when enabled in config, and the device supports it.
 
 <img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/screenshot1.jpg?raw=true" alt="Screenshot Apple HomeKit with homebridge-xiaomi-roborock-vacuum" width="350">
 <img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/screenshot2.jpg?raw=true" alt="Screenshot Elgato Eve App with homebridge-xiaomi-roborock-vacuum" width="350">
