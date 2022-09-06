@@ -55,8 +55,7 @@ export class GoToService extends PluginServiceClass {
 
     try {
       const goingToLocation = 
-        this.deviceManager.state === "going-to-location" ||
-        this.deviceManager.state === "waiting";
+        this.deviceManager.state === "going-to-location" || this.deviceManager.state === "waiting";
       this.log.info(`getGoToState | Going to location or waiting is ${goingToLocation}`);
       return goingToLocation;
     } catch (err) {
