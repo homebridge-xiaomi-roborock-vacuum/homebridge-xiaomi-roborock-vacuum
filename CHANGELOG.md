@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.26.5
+
+- [Bug] `goTo` now shows on "waiting". Disabling sends it back to the dock. Thank you @luc-ass (#544)
+
 ## 0.26.4
 
 - [Bug] `dustBin` config not showing on the Config UI. Thank you @luc-ass (#535)
