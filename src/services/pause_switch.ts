@@ -13,12 +13,12 @@ export class PauseSwitch extends PluginServiceClass {
   private readonly service: Service;
   constructor(
     coreContext: CoreContext,
-    private readonly roomsService: RoomsService
+    private readonly roomsService: RoomsService,
   ) {
     super(coreContext);
     this.service = new this.hap.Service.Switch(
       `${this.config.name} ${this.config.pauseWord}`,
-      "Pause Switch"
+      "Pause Switch",
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
@@ -30,7 +30,7 @@ export class PauseSwitch extends PluginServiceClass {
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "cleaning"),
-        distinct(({ value }) => value)
+        distinct(({ value }) => value),
       )
       .subscribe(({ value }) => this.changedPause(value));
   }
@@ -44,7 +44,7 @@ export class PauseSwitch extends PluginServiceClass {
     this.log.info(
       `changedPause | ${
         isCleaning ? "Paused possible" : "Paused not possible, no cleaning"
-      }`
+      }`,
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
@@ -62,7 +62,7 @@ export class PauseSwitch extends PluginServiceClass {
     } catch (err) {
       this.log.error(
         `getPauseState | Failed getting the cleaning status.`,
-        err
+        err,
       );
       throw err;
     }
@@ -75,27 +75,27 @@ export class PauseSwitch extends PluginServiceClass {
       if (state && this.deviceManager.isPaused) {
         if (this.roomsService.roomIdsToClean.size > 0) {
           await this.deviceManager.device.resumeCleanRooms(
-            Array.from(this.roomsService.roomIdsToClean)
+            Array.from(this.roomsService.roomIdsToClean),
           );
           this.log.info(
-            `setPauseState | Resume room cleaning, and the device is in state  ${this.deviceManager.state}`
+            `setPauseState | Resume room cleaning, and the device is in state  ${this.deviceManager.state}`,
           );
         } else {
           await this.deviceManager.device.activateCleaning();
           this.log.info(
-            `setPauseState | Resume normal cleaning, and the device is in state ${this.deviceManager.state}`
+            `setPauseState | Resume normal cleaning, and the device is in state ${this.deviceManager.state}`,
           );
         }
       } else if (!state && this.deviceManager.isCleaning) {
         await this.deviceManager.device.pause();
         this.log.info(
-          `setPauseState | Pause cleaning, and the device is in state ${this.deviceManager.state}`
+          `setPauseState | Pause cleaning, and the device is in state ${this.deviceManager.state}`,
         );
       }
     } catch (err) {
       this.log.error(
         `setPauseState | Failed updating pause state ${state}.`,
-        err
+        err,
       );
     }
   }

@@ -41,7 +41,7 @@ export class DeviceManager {
   constructor(
     private readonly hap: HAP,
     private readonly log: Logger,
-    config: DeviceManagerConfig
+    config: DeviceManagerConfig,
   ) {
     if (!config.ip) {
       throw new Error("You must provide an ip address of the vacuum cleaner.");
@@ -97,7 +97,7 @@ export class DeviceManager {
       // https://github.com/aholstenson/miio/blob/master/lib/network.js#L227
       const socket = this.internalDevice$.value.handle.api.parent.socket;
       this.log.debug(
-        `DEB ensureDevice | ${this.model} | The socket is still on. Reusing it.`
+        `DEB ensureDevice | ${this.model} | The socket is still on. Reusing it.`,
       );
     } catch (error) {
       const err = error as Error;
@@ -106,7 +106,7 @@ export class DeviceManager {
         /No vacuum cleaner is discovered yet/.test(err.message)
       ) {
         this.log.info(
-          `INF ensureDevice | ${this.model} | The socket was destroyed or not initialised, initialising the device`
+          `INF ensureDevice | ${this.model} | The socket was destroyed or not initialised, initialising the device`,
         );
         await this.connect();
       } else {
@@ -121,13 +121,13 @@ export class DeviceManager {
       // if already trying to connect, don't trigger yet another one
       this.connectingPromise = this.initializeDevice().catch((error) => {
         this.log.error(
-          `ERR connect | miio.device, next try in 2 minutes | ${error}`
+          `ERR connect | miio.device, next try in 2 minutes | ${error}`,
         );
         clearTimeout(this.connectRetry);
         // Using setTimeout instead of holding the promise. This way we'll keep retrying but not holding the other actions
         this.connectRetry = setTimeout(
           () => this.connect().catch(() => {}),
-          120000
+          120000,
         );
         throw error;
       });
@@ -157,14 +157,14 @@ export class DeviceManager {
       this.log.info("STA getDevice | State: " + this.property("state"));
       this.log.info("STA getDevice | FanSpeed: " + this.property("fanSpeed"));
       this.log.info(
-        "STA getDevice | BatteryLevel: " + this.property("batteryLevel")
+        "STA getDevice | BatteryLevel: " + this.property("batteryLevel"),
       );
 
       this.device.on<ErrorChangedEvent>("errorChanged", (error) =>
-        this.internalErrorChanged$.next(error)
+        this.internalErrorChanged$.next(error),
       );
       this.device.on<StateChangedEvent>("stateChanged", (state) =>
-        this.internalStateChanged$.next(state)
+        this.internalStateChanged$.next(state),
       );
 
       // Refresh the state every 30s so miio maintains a fresh connection (or recovers connection if lost until we fix https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/81)
@@ -172,7 +172,7 @@ export class DeviceManager {
     } else {
       const model = (device || {}).miioModel;
       this.log.error(
-        `Device "${model}" is not registered as a vacuum cleaner! If you think it should be, please open an issue at https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/new and provide this line.`
+        `Device "${model}" is not registered as a vacuum cleaner! If you think it should be, please open an issue at https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/new and provide this line.`,
       );
       this.log.debug(device);
       device.destroy();
@@ -187,7 +187,7 @@ export class DeviceManager {
       this.log.debug(
         `DEB getState | ${this.model} | State %j | Props %j`,
         state,
-        this.device.properties
+        this.device.properties,
       );
 
       for (const key in state) {

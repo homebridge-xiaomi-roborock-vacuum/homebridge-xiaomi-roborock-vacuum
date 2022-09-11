@@ -15,12 +15,12 @@ export class WaterBoxService extends PluginServiceClass {
   constructor(
     coreContext: CoreContext,
     private readonly productInfo: ProductInfo,
-    private readonly mainService: MainService
+    private readonly mainService: MainService,
   ) {
     super(coreContext);
     this.service = new this.hap.Service.Fan(
       `${this.config.name} Water Box`,
-      "Water Box"
+      "Water Box",
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.RotationSpeed)
@@ -43,7 +43,7 @@ export class WaterBoxService extends PluginServiceClass {
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "cleaning"),
-        distinct(({ value }) => value)
+        distinct(({ value }) => value),
       )
       .subscribe(({ value: isCleaning }) => {
         this.service
@@ -54,7 +54,7 @@ export class WaterBoxService extends PluginServiceClass {
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "water_box_mode"),
-        distinct(({ value }) => value)
+        distinct(({ value }) => value),
       )
       .subscribe(({ value: speed }) => {
         this.log.info(`MON changedWaterSpeed | WaterBoxMode is now ${speed}%`);
@@ -63,12 +63,12 @@ export class WaterBoxService extends PluginServiceClass {
 
         if (typeof speedMode === "undefined") {
           this.log.warn(
-            `WAR changedWaterSpeed | Speed was changed to ${speed}%, this speed is not supported`
+            `WAR changedWaterSpeed | Speed was changed to ${speed}%, this speed is not supported`,
           );
         } else {
           const { homekitTopLevel, name } = speedMode;
           this.log.info(
-            `changedWaterSpeed | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`
+            `changedWaterSpeed | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`,
           );
           this.service
             .getCharacteristic(this.hap.Characteristic.RotationSpeed)
@@ -89,7 +89,7 @@ export class WaterBoxService extends PluginServiceClass {
 
     if (typeof speed === "number") {
       this.log.debug(
-        `ACT setWaterSpeed | Speed got ${speed}% over HomeKit > CLEANUP.`
+        `ACT setWaterSpeed | Speed got ${speed}% over HomeKit > CLEANUP.`,
       );
     }
 
@@ -111,12 +111,12 @@ export class WaterBoxService extends PluginServiceClass {
       // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
       const safeSpeed = Math.min(
         speed,
-        speedModes[speedModes.length - 1].homekitTopLevel
+        speedModes[speedModes.length - 1].homekitTopLevel,
       );
 
       // Find the minimum homekitTopLevel that matches the desired speed
       const speedMode = speedModes.find(
-        (mode) => safeSpeed <= mode.homekitTopLevel
+        (mode) => safeSpeed <= mode.homekitTopLevel,
       )!;
       miLevel = speedMode.miLevel;
       name = speedMode.name;
@@ -133,7 +133,7 @@ export class WaterBoxService extends PluginServiceClass {
     }
 
     this.log.info(
-      `ACT setWaterSpeed | WaterBoxMode set to ${miLevel} over miIO for "${name}".`
+      `ACT setWaterSpeed | WaterBoxMode set to ${miLevel} over miIO for "${name}".`,
     );
 
     // Save the latest set speed for handling the "custom" speed later
@@ -163,7 +163,7 @@ export class WaterBoxService extends PluginServiceClass {
 
     const speed = await this.deviceManager.device.getWaterBoxMode();
     this.log.info(
-      `getWaterSpeed | WaterBoxMode is ${speed} over miIO. Converting to HomeKit`
+      `getWaterSpeed | WaterBoxMode is ${speed} over miIO. Converting to HomeKit`,
     );
 
     const waterSpeed = this.findWaterSpeedModeFromMiio(speed);
@@ -172,7 +172,7 @@ export class WaterBoxService extends PluginServiceClass {
     if (waterSpeed) {
       const { homekitTopLevel, name } = waterSpeed;
       this.log.info(
-        `getWaterSpeed | WaterBoxMode is ${speed} over miIO "${name}" > HomeKit speed ${homekitTopLevel}%`
+        `getWaterSpeed | WaterBoxMode is ${speed} over miIO "${name}" > HomeKit speed ${homekitTopLevel}%`,
       );
       homekitValue = homekitTopLevel || 0;
     }

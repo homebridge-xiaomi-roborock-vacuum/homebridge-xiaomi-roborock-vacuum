@@ -19,7 +19,7 @@ export class MainService extends PluginServiceClass {
     private readonly productInfo: ProductInfo,
     private readonly roomsService: RoomsService,
     private readonly setWaterSpeed: (mode: string) => Promise<void>,
-    private readonly changedPause: (isCleaning: boolean) => void
+    private readonly changedPause: (isCleaning: boolean) => void,
   ) {
     super(coreContext);
     if (this.config.serviceType === "fan") {
@@ -57,7 +57,7 @@ export class MainService extends PluginServiceClass {
       this.deviceManager.stateChanged$
         .pipe(
           filter(({ key }) => key === "fanSpeed"),
-          distinct(({ value }) => value)
+          distinct(({ value }) => value),
         )
         .subscribe(({ value: speed }) => {
           this.log.info(`MON changedSpeed | FanSpeed is now ${speed}%`);
@@ -65,12 +65,12 @@ export class MainService extends PluginServiceClass {
 
           if (typeof speedMode === "undefined") {
             this.log.warn(
-              `WAR changedSpeed | Speed was changed to ${speed}%, this speed is not supported`
+              `WAR changedSpeed | Speed was changed to ${speed}%, this speed is not supported`,
             );
           } else {
             const { homekitTopLevel, name } = speedMode;
             this.log.info(
-              `changedSpeed | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`
+              `changedSpeed | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`,
             );
             this.service
               .getCharacteristic(this.hap.Characteristic.RotationSpeed)
@@ -82,15 +82,15 @@ export class MainService extends PluginServiceClass {
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "cleaning"),
-        distinct(({ value }) => value)
+        distinct(({ value }) => value),
       )
       .subscribe(({ value }) => {
         const isCleaning = value === true;
         this.log.debug(
-          `MON changedCleaning | CleaningState is now ${isCleaning}`
+          `MON changedCleaning | CleaningState is now ${isCleaning}`,
         );
         this.log.info(
-          `changedCleaning | Cleaning is ${isCleaning ? "ON" : "OFF"}.`
+          `changedCleaning | Cleaning is ${isCleaning ? "ON" : "OFF"}.`,
         );
         if (!isCleaning) {
           this.roomsService.roomIdsToClean.clear();
@@ -137,27 +137,27 @@ export class MainService extends PluginServiceClass {
         const roomIdsToClean = this.roomsService.roomIdsToClean;
         if (roomIdsToClean.size > 0) {
           await this.deviceManager.device.cleanRooms(
-            Array.from(roomIdsToClean)
+            Array.from(roomIdsToClean),
           );
           this.log.info(
             `ACT setCleaning | Start rooms cleaning for rooms ${Array.from(
-              roomIdsToClean
-            )}, device is in state ${this.deviceManager.property("state")}.`
+              roomIdsToClean,
+            )}, device is in state ${this.deviceManager.property("state")}.`,
           );
         } else {
           await this.deviceManager.device.activateCleaning();
           this.log.info(
             `ACT setCleaning | Start full cleaning, device is in state ${this.deviceManager.property(
-              "state"
-            )}.`
+              "state",
+            )}.`,
           );
         }
       } else if (!state && (this.isCleaning || this.isPaused)) {
         // Stop cleaning
         this.log.info(
           `ACT setCleaning | Stop cleaning and go to charge, device is in state ${this.deviceManager.property(
-            "state"
-          )}`
+            "state",
+          )}`,
         );
         await this.deviceManager.device.activateCharging();
         this.roomsService.roomIdsToClean.clear();
@@ -173,13 +173,13 @@ export class MainService extends PluginServiceClass {
 
     const speed = await this.deviceManager.device.fanSpeed();
     this.log.info(
-      `getSpeed | Fanspeed is ${speed} over miIO. Converting to HomeKit`
+      `getSpeed | Fanspeed is ${speed} over miIO. Converting to HomeKit`,
     );
 
     const { homekitTopLevel, name } = this.findSpeedModeFromMiio(speed) || {};
 
     this.log.info(
-      `getSpeed | FanSpeed is ${speed} over miIO "${name}" > HomeKit speed ${homekitTopLevel}%`
+      `getSpeed | FanSpeed is ${speed} over miIO "${name}" > HomeKit speed ${homekitTopLevel}%`,
     );
 
     return homekitTopLevel || 0;
@@ -190,14 +190,14 @@ export class MainService extends PluginServiceClass {
 
     if (typeof speed === "number") {
       this.log.debug(
-        `ACT setSpeed | Speed got ${speed}% over HomeKit > CLEANUP.`
+        `ACT setSpeed | Speed got ${speed}% over HomeKit > CLEANUP.`,
       );
     }
 
     // Get the speed modes for this model
     const speedModes = findSpeedModes(
       this.deviceManager.model,
-      this.productInfo.firmware
+      this.productInfo.firmware,
     ).speed;
 
     let miLevel: number | null = null;
@@ -208,12 +208,12 @@ export class MainService extends PluginServiceClass {
       // gen1 has maximum of 91%, so anything over that won't work. Getting safety maximum.
       const safeSpeed = Math.min(
         speed,
-        speedModes[speedModes.length - 1].homekitTopLevel
+        speedModes[speedModes.length - 1].homekitTopLevel,
       );
 
       // Find the minimum homekitTopLevel that matches the desired speed
       const speedMode = speedModes.find(
-        (mode) => safeSpeed <= mode.homekitTopLevel
+        (mode) => safeSpeed <= mode.homekitTopLevel,
       )!;
       miLevel = speedMode.miLevel;
       name = speedMode.name;
@@ -230,7 +230,7 @@ export class MainService extends PluginServiceClass {
     }
 
     this.log.info(
-      `ACT setSpeed | FanSpeed set to ${miLevel} over miIO for "${name}".`
+      `ACT setSpeed | FanSpeed set to ${miLevel} over miIO for "${name}".`,
     );
 
     // Save the latest set speed for handling the "custom" speed later
@@ -239,7 +239,7 @@ export class MainService extends PluginServiceClass {
 
     if (miLevel === -1) {
       this.log.info(
-        `setSpeed | FanSpeed is -1 => Calling setCleaning(false) instead of changing the fan speed`
+        `setSpeed | FanSpeed is -1 => Calling setCleaning(false) instead of changing the fan speed`,
       );
       await this.setCleaning(false);
     } else {
@@ -268,7 +268,7 @@ export class MainService extends PluginServiceClass {
     // Get the speed modes for this model
     const speedModes = findSpeedModes(
       this.deviceManager.model,
-      this.productInfo.firmware
+      this.productInfo.firmware,
     ).speed;
 
     // Find speed mode that matches the miLevel

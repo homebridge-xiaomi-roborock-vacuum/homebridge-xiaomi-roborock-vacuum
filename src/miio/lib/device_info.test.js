@@ -58,7 +58,7 @@ describe("DeviceInfo", () => {
     test("fails if the id is not populated yet", async () => {
       const device = new DeviceInfo({}, null, "localhost", 1234);
       await expect(device.enrich()).rejects.toThrow(
-        "Device has no identifier yet, handshake needed"
+        "Device has no identifier yet, handshake needed",
       );
     });
 
@@ -101,7 +101,7 @@ describe("DeviceInfo", () => {
       device.tokenChanged = false;
       device.enrichPromise = Promise.reject("Something went terribly wrong");
       await expect(device.enrich()).rejects.toThrow(
-        "Could not connect to device, token might be wrong"
+        "Could not connect to device, token might be wrong",
       );
       expect(device.tokenChanged).toBe(false);
       expect(device.enriched).toBe(true);
@@ -112,7 +112,7 @@ describe("DeviceInfo", () => {
       const device = new DeviceInfo({}, "MY-ID", "localhost", 1234);
       device.enrichPromise = Promise.reject("Something went terribly wrong");
       await expect(device.enrich()).rejects.toThrow(
-        "Could not connect to device, token needs to be specified"
+        "Could not connect to device, token needs to be specified",
       );
       expect(device.tokenChanged).toBe(false);
       expect(device.enriched).toBe(true);
@@ -132,7 +132,7 @@ describe("DeviceInfo", () => {
           cb();
           packet.data = null;
           device.onMessage(packet.raw);
-        }
+        },
       );
       const token = await device.handshake();
       expect(token.toString()).toBe(TOKEN);
@@ -151,10 +151,10 @@ describe("DeviceInfo", () => {
           cb();
           packet.data = null;
           device.onMessage(packet.raw);
-        }
+        },
       );
       await expect(device.handshake()).rejects.toThrow(
-        "Could not connect to device, token needs to be specified"
+        "Could not connect to device, token needs to be specified",
       );
     });
 
@@ -166,10 +166,10 @@ describe("DeviceInfo", () => {
       parent.socket.send.mockImplementation(
         (data, size, length, port, address, cb) => {
           cb(new Error("Something went terribly wrong"));
-        }
+        },
       );
       await expect(device.handshake()).rejects.toThrow(
-        "Something went terribly wrong"
+        "Something went terribly wrong",
       );
     });
 
@@ -180,7 +180,7 @@ describe("DeviceInfo", () => {
       const promise = device.handshake();
       jest.advanceTimersByTime(2 * 1000);
       await expect(promise).rejects.toThrow(
-        "Could not connect to device, handshake timeout"
+        "Could not connect to device, handshake timeout",
       );
     });
   });
@@ -264,7 +264,7 @@ describe("DeviceInfo", () => {
             packet.data = JSON.stringify({ ...json, result: json });
           }
           device.onMessage(packet.raw);
-        }
+        },
       );
       const response = await device.call("miIO.info");
       expect(response).toStrictEqual({
@@ -293,7 +293,7 @@ describe("DeviceInfo", () => {
           } else {
             jest.advanceTimersByTime(2 * 1000);
           }
-        }
+        },
       );
       const promise = device.call("miIO.info", [], { retries: 2 });
       await expect(promise).rejects.toThrow("Call to device timed out");
@@ -331,7 +331,7 @@ describe("DeviceInfo", () => {
               });
             }
             device.onMessage(packet.raw);
-          }
+          },
         );
         await expect(device.call("miIO.info")).rejects.toThrow(expected);
       });

@@ -33,7 +33,7 @@ const createGetCharacteristicMock = () =>
       onGet: createGetCharacteristicMock(),
       onSet: createGetCharacteristicMock(),
       updateValue: jest.fn(),
-    })
+    }),
   );
 
 const createChainableServiceMethodsMock = () => ({
@@ -48,7 +48,7 @@ const createServiceMock = () =>
   jest
     .fn()
     .mockImplementation((name, type) =>
-      Object.assign({ name, type }, createChainableServiceMethodsMock())
+      Object.assign({ name, type }, createChainableServiceMethodsMock()),
     );
 
 const Service = Object.assign(createServiceMock(), {

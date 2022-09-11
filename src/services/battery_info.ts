@@ -9,7 +9,7 @@ export class BatteryInfo extends PluginServiceClass {
     super(coreContext);
 
     this.service = new this.hap.Service.BatteryService(
-      `${this.config.name} Battery`
+      `${this.config.name} Battery`,
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.BatteryLevel)
@@ -46,7 +46,7 @@ export class BatteryInfo extends PluginServiceClass {
       .updateValue(
         level < 20
           ? this.hap.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW
-          : this.hap.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL
+          : this.hap.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL,
       );
   }
 
@@ -55,7 +55,7 @@ export class BatteryInfo extends PluginServiceClass {
     if (isNewValue) {
       this.log.info(`MON changedCharging | ChargingState is now ${isCharging}`);
       this.log.info(
-        `changedCharging | Charging is ${isCharging ? "active" : "cancelled"}`
+        `changedCharging | Charging is ${isCharging ? "active" : "cancelled"}`,
       );
     }
     // We still update the value in Homebridge. If we are calling the changed method is because we want to change it.
@@ -64,7 +64,7 @@ export class BatteryInfo extends PluginServiceClass {
       .updateValue(
         isCharging
           ? this.hap.Characteristic.ChargingState.CHARGING
-          : this.hap.Characteristic.ChargingState.NOT_CHARGING
+          : this.hap.Characteristic.ChargingState.NOT_CHARGING,
       );
   }
 
@@ -86,7 +86,7 @@ export class BatteryInfo extends PluginServiceClass {
     const status = this.deviceManager.property("state");
     const isCharging = status === "charging";
     this.log.info(
-      `getCharging | Charging is ${isCharging} (Status is ${status})`
+      `getCharging | Charging is ${isCharging} (Status is ${status})`,
     );
 
     return isCharging

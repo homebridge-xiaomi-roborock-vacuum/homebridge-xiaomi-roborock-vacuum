@@ -73,8 +73,8 @@ const Browser = (module.exports.Browser = class Browser extends TimedDiscovery {
               port: this.port,
               model: this.model,
             },
-            options
-          )
+            options,
+          ),
         );
       },
     };

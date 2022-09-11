@@ -12,5 +12,5 @@ module.exports = Thing.mixin(
 
         super.propertyUpdated(key, value);
       }
-    }
+    },
 );

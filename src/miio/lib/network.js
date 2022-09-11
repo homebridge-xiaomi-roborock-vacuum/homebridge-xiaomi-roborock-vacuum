@@ -66,7 +66,7 @@ class Network extends EventEmitter {
   async findDeviceViaAddress(options) {
     if (!this.socket) {
       throw new Error(
-        "Implementation issue: Using network without a reference"
+        "Implementation issue: Using network without a reference",
       );
     }
 
@@ -77,7 +77,7 @@ class Network extends EventEmitter {
         this,
         null,
         options.address,
-        options.port || PORT
+        options.port || PORT,
       );
       this.addresses.set(options.address, device);
     }
@@ -223,7 +223,7 @@ class Network extends EventEmitter {
   get socket() {
     if (!this._socket) {
       throw new Error(
-        "Network communication is unavailable, device might be destroyed"
+        "Network communication is unavailable, device might be destroyed",
       );
     }
 

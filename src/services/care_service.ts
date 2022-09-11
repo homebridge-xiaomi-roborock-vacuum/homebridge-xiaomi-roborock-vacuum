@@ -13,7 +13,7 @@ export class CareService extends PluginServiceClass {
   public readonly services: Service[];
   constructor(
     coreContext: CoreContext,
-    private readonly mainService: MainService
+    private readonly mainService: MainService,
   ) {
     super(coreContext);
     this.services = this.config.legacyCareSensors
@@ -31,8 +31,8 @@ export class CareService extends PluginServiceClass {
     const lifetimePercent = (sensorDirtyTime / lifetime) * 100;
     this.log.info(
       `getCareSensors | Sensors dirtyTime is ${sensorDirtyTime} seconds / ${lifetimePercent.toFixed(
-        2
-      )}%.`
+        2,
+      )}%.`,
     );
     return Math.max(0, Math.min(100, lifetimePercent));
   }
@@ -45,8 +45,8 @@ export class CareService extends PluginServiceClass {
     const lifetimePercent = (filterWorkTime / lifetime) * 100;
     this.log.info(
       `getCareFilter | Filter workTime is ${filterWorkTime} seconds / ${lifetimePercent.toFixed(
-        2
-      )}%.`
+        2,
+      )}%.`,
     );
     return Math.max(0, Math.min(100, lifetimePercent));
   }
@@ -59,8 +59,8 @@ export class CareService extends PluginServiceClass {
     const lifetimePercent = (sideBrushWorkTime / lifetime) * 100;
     this.log.info(
       `getCareSideBrush | SideBrush workTime is ${sideBrushWorkTime} seconds / ${lifetimePercent.toFixed(
-        2
-      )}%.`
+        2,
+      )}%.`,
     );
     return Math.max(0, Math.min(100, lifetimePercent));
   }
@@ -73,8 +73,8 @@ export class CareService extends PluginServiceClass {
     const lifetimePercent = (mainBrushWorkTime / lifetime) * 100;
     this.log.info(
       `getCareMainBrush | MainBrush workTime is ${mainBrushWorkTime} seconds / ${lifetimePercent.toFixed(
-        2
-      )}%.`
+        2,
+      )}%.`,
     );
     return Math.max(0, Math.min(100, lifetimePercent));
   }
@@ -127,7 +127,7 @@ export class CareService extends PluginServiceClass {
     // Use Homekit's native FilterMaintenance Service
     const careSensorsService = new this.hap.Service.FilterMaintenance(
       "Care indicator sensors",
-      "sensors"
+      "sensors",
     );
     careSensorsService
       .getCharacteristic(this.hap.Characteristic.FilterChangeIndication)
@@ -140,7 +140,7 @@ export class CareService extends PluginServiceClass {
 
     const careFilterService = new this.hap.Service.FilterMaintenance(
       "Care indicator filter",
-      "filter"
+      "filter",
     );
     careFilterService
       .getCharacteristic(this.hap.Characteristic.FilterChangeIndication)
@@ -153,7 +153,7 @@ export class CareService extends PluginServiceClass {
 
     const careSideBrushService = new this.hap.Service.FilterMaintenance(
       "Care indicator side brush",
-      "side brush"
+      "side brush",
     );
     careSideBrushService
       .getCharacteristic(this.hap.Characteristic.FilterChangeIndication)
@@ -166,7 +166,7 @@ export class CareService extends PluginServiceClass {
 
     const careMainBrushService = new this.hap.Service.FilterMaintenance(
       "Care indicator main brush",
-      "main brush"
+      "main brush",
     );
     careMainBrushService
       .getCharacteristic(this.hap.Characteristic.FilterChangeIndication)

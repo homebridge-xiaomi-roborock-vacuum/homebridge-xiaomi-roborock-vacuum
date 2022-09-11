@@ -13,7 +13,7 @@ export class DockService extends PluginServiceClass {
     super(coreContext);
 
     this.service = new this.hap.Service.OccupancySensor(
-      `${this.config.name} Dock`
+      `${this.config.name} Dock`,
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.OccupancyDetected)
@@ -24,7 +24,7 @@ export class DockService extends PluginServiceClass {
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "charging"),
-        distinct(({ value }) => value)
+        distinct(({ value }) => value),
       )
       .subscribe(({ value }) => {
         const isCharging = value === true;
@@ -46,7 +46,7 @@ export class DockService extends PluginServiceClass {
     const status = this.deviceManager.state;
     const isCharging = status === "charging";
     this.log.info(
-      `getDocked | Robot Docked is ${isCharging} (Status is ${status})`
+      `getDocked | Robot Docked is ${isCharging} (Status is ${status})`,
     );
 
     return isCharging;

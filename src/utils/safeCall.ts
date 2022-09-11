@@ -6,7 +6,7 @@
  */
 export function safeCall<ArgumentValue, ReturnedValue>(
   maybeValue: ArgumentValue | undefined,
-  fn: (value: ArgumentValue) => unknown
+  fn: (value: ArgumentValue) => unknown,
 ): void {
   if (typeof maybeValue !== "undefined") {
     fn(maybeValue);

@@ -15,7 +15,7 @@ export class GoToService extends PluginServiceClass {
     super(coreContext);
     this.service = new this.hap.Service.Switch(
       `${this.config.name} ${this.config.goToWord}`,
-      "GoTo Switch"
+      "GoTo Switch",
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
@@ -38,7 +38,7 @@ export class GoToService extends PluginServiceClass {
         //trigger go to location if newState is true
         await this.deviceManager.device.sendToLocation(
           this.config.goToX,
-          this.config.goToY
+          this.config.goToY,
         );
       } else if (!newState) {
         //trigger go to dock if newState is false
@@ -58,7 +58,7 @@ export class GoToService extends PluginServiceClass {
         this.deviceManager.state === "going-to-location" ||
         this.deviceManager.state === "waiting";
       this.log.info(
-        `getGoToState | Going to location or waiting is ${goingToLocation}`
+        `getGoToState | Going to location or waiting is ${goingToLocation}`,
       );
       return goingToLocation;
     } catch (err) {

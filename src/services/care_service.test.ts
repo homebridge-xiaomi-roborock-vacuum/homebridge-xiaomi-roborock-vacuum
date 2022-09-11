@@ -42,7 +42,7 @@ describe("CareService", () => {
           config,
           deviceManager: deviceManagerMock as unknown as DeviceManager,
         },
-        fan
+        fan,
       );
     });
 
@@ -59,7 +59,7 @@ describe("CareService", () => {
       expect(service.characteristics).toHaveLength(5);
       const [name, ...characteristics] = service.characteristics;
       const onCallsHandlers = characteristics.map(
-        (characteristic) => characteristic["getHandler"]
+        (characteristic) => characteristic["getHandler"],
       );
       for (const listener of onCallsHandlers) {
         await expect(listener()).resolves.toMatchSnapshot();
@@ -99,7 +99,7 @@ describe("CareService", () => {
           config,
           deviceManager: deviceManagerMock as unknown as DeviceManager,
         },
-        fan
+        fan,
       );
     });
 
@@ -115,7 +115,7 @@ describe("CareService", () => {
       const fanService = fanServices.mock.results[0].value[0];
       expect(fanService.getCharacteristic.mock.results).toHaveLength(2);
       const onCallsHandlers = fanService.getCharacteristic.mock.results.map(
-        ({ value }) => value.onGet.mock.calls[0][0]
+        ({ value }) => value.onGet.mock.calls[0][0],
       );
       await expect(onCallsHandlers[0]()).resolves.toBe(false);
       await expect(onCallsHandlers[1]()).resolves.toBe(99.99074074074075);
@@ -126,7 +126,7 @@ describe("CareService", () => {
         expect(service.characteristics).toHaveLength(3);
         const [name, ...characteristics] = service.characteristics;
         const onCallsHandlers = characteristics.map(
-          (characteristic) => characteristic["getHandler"]
+          (characteristic) => characteristic["getHandler"],
         );
         for (const listener of onCallsHandlers) {
           await expect(listener()).resolves.toMatchSnapshot();
@@ -139,7 +139,7 @@ describe("CareService", () => {
         expect(service.characteristics).toHaveLength(3);
         const [name, ...characteristics] = service.characteristics;
         const onCallsHandlers = characteristics.map(
-          (characteristic) => characteristic["getHandler"]
+          (characteristic) => characteristic["getHandler"],
         );
         for (const listener of onCallsHandlers) {
           deviceManagerMock.property.mockReturnValueOnce(-1);

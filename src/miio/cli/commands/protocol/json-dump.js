@@ -52,7 +52,7 @@ exports.handler = function (argv) {
         : chalk.bgMagenta.white.bold(" <- "),
       chalk.yellow(layers.ip["ip.src"]),
       chalk.dim("data="),
-      packet.data ? packet.data.toString() : chalk.dim("N/A")
+      packet.data ? packet.data.toString() : chalk.dim("N/A"),
     );
   });
 };

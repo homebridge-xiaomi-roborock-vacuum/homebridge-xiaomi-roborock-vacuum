@@ -22,7 +22,7 @@ exports.handler = function (argv) {
   const data = packet.data;
   if (!data) {
     log.error(
-      "Could not extract data from packet, check your token and packet data"
+      "Could not extract data from packet, check your token and packet data",
     );
   } else {
     log.plain("Hex: ", data.toString("hex"));

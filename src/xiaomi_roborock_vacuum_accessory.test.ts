@@ -34,13 +34,13 @@ describe("XiaomiRoborockVacuum", () => {
 
   test("Fails if no IP provided", () => {
     expect(() => new XiaomiRoborockVacuum(log, {}, homebridge)).toThrowError(
-      "You must provide an ip address of the vacuum cleaner."
+      "You must provide an ip address of the vacuum cleaner.",
     );
   });
 
   test("Fails if no token provided", () => {
     expect(
-      () => new XiaomiRoborockVacuum(log, { ip: "192.168.0.1" }, homebridge)
+      () => new XiaomiRoborockVacuum(log, { ip: "192.168.0.1" }, homebridge),
     ).toThrowError("You must provide a token of the vacuum cleaner.");
   });
 
@@ -55,8 +55,8 @@ describe("XiaomiRoborockVacuum", () => {
             rooms: [],
             autoroom: true,
           },
-          homebridge
-        )
+          homebridge,
+        ),
     )
       .toThrowError(`Both "autoroom" and "rooms" config options can't be used at the same time.\n
       Please, use "autoroom" to retrieve the "rooms" config and remove it when not needed.`);
@@ -69,13 +69,13 @@ describe("XiaomiRoborockVacuum", () => {
         ip: "192.168.0.1",
         token: "TOKEN",
       },
-      homebridge
+      homebridge,
     );
     const initialisedServices = client.getServices();
     expect(initialisedServices).toHaveLength(7);
     expect(
       // @ts-expect-error type should exist but TS says it doesn't
-      initialisedServices.map((svc) => `${svc.name}-${svc.type}`)
+      initialisedServices.map((svc) => `${svc.name}-${svc.type}`),
     ).toMatchSnapshot();
     expect(Object.keys(client["pluginServices"])).toMatchSnapshot();
   });
@@ -96,13 +96,13 @@ describe("XiaomiRoborockVacuum", () => {
         zones: [],
         disableCareServices: true,
       },
-      homebridge
+      homebridge,
     );
     const initialisedServices = client.getServices();
     expect(initialisedServices).toHaveLength(9);
     expect(
       // @ts-expect-error type should exist but TS says it doesn't
-      initialisedServices.map((svc) => `${svc.name}-${svc.type}`)
+      initialisedServices.map((svc) => `${svc.name}-${svc.type}`),
     ).toMatchSnapshot();
     expect(Object.keys(client["pluginServices"])).toMatchSnapshot();
   });
@@ -114,7 +114,7 @@ describe("XiaomiRoborockVacuum", () => {
         ip: "192.168.0.1",
         token: "TOKEN",
       },
-      homebridge
+      homebridge,
     );
     const identifySpy = jest.spyOn(client["pluginServices"].findMe, "identify");
     expect(client.identify()).toBeUndefined();

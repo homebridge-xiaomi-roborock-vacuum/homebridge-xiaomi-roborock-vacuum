@@ -13,13 +13,13 @@ describe("findSpeedModes", () => {
 
   test("should return a known model in the list", () => {
     expect(findSpeedModes("roborock.vacuum.s5")).toStrictEqual(
-      MODELS["roborock.vacuum.s5"][0]
+      MODELS["roborock.vacuum.s5"][0],
     );
   });
 
   test("should apply the firmware version to choose a different set of speeds", () => {
     expect(findSpeedModes("roborock.vacuum.s5", "3.5.7")).toStrictEqual(
-      MODELS["roborock.vacuum.s5"][1]
+      MODELS["roborock.vacuum.s5"][1],
     );
   });
 });

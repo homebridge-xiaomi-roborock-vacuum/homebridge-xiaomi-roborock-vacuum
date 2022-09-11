@@ -79,14 +79,14 @@ class DeviceInfo {
       } else if (this.packet.token) {
         // Could not call the info method, this might be either a timeout or a token problem
         const e = new Error(
-          "Could not connect to device, token might be wrong"
+          "Could not connect to device, token might be wrong",
         );
         e.code = "connection-failure";
         e.device = this;
         throw e;
       } else {
         const e = new Error(
-          "Could not connect to device, token needs to be specified"
+          "Could not connect to device, token needs to be specified",
         );
         e.code = "missing-token";
         e.device = this;
@@ -183,7 +183,7 @@ class DeviceInfo {
         data.length,
         this.port,
         this.address,
-        (err) => (err ? reject(err) : resolve())
+        (err) => (err ? reject(err) : resolve()),
       );
     });
   }
@@ -203,7 +203,7 @@ class DeviceInfo {
           resolve(this.token);
         } else {
           const err = new Error(
-            "Could not connect to device, token needs to be specified"
+            "Could not connect to device, token needs to be specified",
           );
           err.code = "missing-token";
           reject(err);
@@ -218,7 +218,7 @@ class DeviceInfo {
         const err = new Error("Could not connect to device, handshake timeout");
         err.code = "timeout";
         reject(err);
-      }, 2000)
+      }, 2000),
     );
   }
 
