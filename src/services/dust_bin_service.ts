@@ -18,7 +18,7 @@ export class DustBinService extends PluginServiceClass {
 
     this.service = new this.hap.Service.LockMechanism(
       `${this.config.name} Dust Bin Full`,
-      "Dust Bin Full",
+      "Dust Bin Full"
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.LockTargetState)
@@ -30,12 +30,12 @@ export class DustBinService extends PluginServiceClass {
     this.deviceManager.errorChanged$
       .pipe(
         filter(({ id }) => DUST_BIN_FULL_ERROR_CODES.includes(id)),
-        distinct(({ description }) => description),
+        distinct(({ description }) => description)
       )
       .subscribe(() => {
         this.state$.next(true);
         this.log.info(
-          `The Dust Bin is full. Setting the dust bin indicator ON.`,
+          `The Dust Bin is full. Setting the dust bin indicator ON.`
         );
         this.service
           .getCharacteristic(this.hap.Characteristic.LockTargetState)

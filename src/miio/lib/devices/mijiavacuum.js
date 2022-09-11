@@ -15,7 +15,7 @@ module.exports = class extends Vacuum {
         {
           refresh: ["state"],
           refreshDelay: 1000,
-        },
+        }
       ).then(checkResult);
     }
   }

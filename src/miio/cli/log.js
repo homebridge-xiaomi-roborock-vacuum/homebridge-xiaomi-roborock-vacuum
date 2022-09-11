@@ -16,7 +16,7 @@ module.exports = {
   warn(...args) {
     console.log(
       this.indent + chalk.bgYellow.black(" WARNING "),
-      args.join(" "),
+      args.join(" ")
     ); // eslint-disable-line
   },
 
@@ -56,14 +56,14 @@ module.exports = {
         mgmt.token,
         mgmt.autoToken
           ? chalk.green("via auto-token")
-          : chalk.yellow("via stored token"),
+          : chalk.yellow("via stored token")
       );
     } else if (!mgmt.parent) {
       this.plain(chalk.bold("Token:"), "???");
     } else {
       this.plain(
         chalk.bold("Token:"),
-        chalk.green("Automatic via parent device"),
+        chalk.green("Automatic via parent device")
       );
     }
 
@@ -73,7 +73,7 @@ module.exports = {
         ? filteredTypes.length > 0
           ? chalk.green("At least basic")
           : chalk.yellow("At least generic")
-        : chalk.yellow("Unknown"),
+        : chalk.yellow("Unknown")
     );
 
     if (detailed) {

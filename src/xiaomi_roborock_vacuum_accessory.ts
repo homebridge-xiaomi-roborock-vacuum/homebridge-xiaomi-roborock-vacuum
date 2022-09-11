@@ -66,9 +66,9 @@ export class XiaomiRoborockVacuum implements AccessoryPlugin {
         catchError(async (err) =>
           this.log.error(
             `Error processing the error reported by the robot`,
-            err,
-          ),
-        ),
+            err
+          )
+        )
       )
       .subscribe();
     this.deviceManager.stateChanged$.subscribe(({ key, value }) => {
@@ -106,7 +106,7 @@ export class XiaomiRoborockVacuum implements AccessoryPlugin {
       async (mode) => {
         await this.pluginServices.waterBox?.setWaterSpeed(mode);
       },
-      (isCleaning) => this.pluginServices.pause?.changedPause(isCleaning),
+      (isCleaning) => this.pluginServices.pause?.changedPause(isCleaning)
     );
 
     return {
@@ -127,7 +127,7 @@ export class XiaomiRoborockVacuum implements AccessoryPlugin {
       dock: config.dock ? new DockService(coreContext) : undefined,
       zones: config.zones
         ? new ZonesService(coreContext, mainService, (isCleaning) =>
-            this.pluginServices.pause?.changedPause(isCleaning),
+            this.pluginServices.pause?.changedPause(isCleaning)
           )
         : undefined,
       // ADDITIONAL HOMEKIT SERVICES
@@ -145,7 +145,7 @@ export class XiaomiRoborockVacuum implements AccessoryPlugin {
   private async changedError(robotError: ErrorChangedEvent) {
     if (!robotError) return;
     this.log.debug(
-      `DEB changedError | ErrorID: ${robotError.id}, ErrorDescription: ${robotError.description}`,
+      `DEB changedError | ErrorID: ${robotError.id}, ErrorDescription: ${robotError.description}`
     );
     let robotErrorTxt = errors[`id${robotError.id}`]
       ? errors[`id${robotError.id}`].description
@@ -154,7 +154,7 @@ export class XiaomiRoborockVacuum implements AccessoryPlugin {
       robotErrorTxt = robotError.description;
     }
     this.log.warn(
-      `WAR changedError | Robot has an ERROR - ${robotError.id}, ${robotErrorTxt}`,
+      `WAR changedError | Robot has an ERROR - ${robotError.id}, ${robotErrorTxt}`
     );
     // Clear the error_code property
     await this.deviceManager.device.setRawProperty("error_code", 0);
@@ -188,7 +188,7 @@ export class XiaomiRoborockVacuum implements AccessoryPlugin {
         }
         return [...acc, ...service.services];
       },
-      [] as HomeBridgeService[],
+      [] as HomeBridgeService[]
     );
   }
 }

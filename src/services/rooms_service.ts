@@ -21,7 +21,7 @@ export class RoomsService extends PluginServiceClass {
 
   constructor(
     coreContext: CoreContext,
-    private readonly setCleaning: (clean: boolean) => Promise<void>,
+    private readonly setCleaning: (clean: boolean) => Promise<void>
   ) {
     super(coreContext);
     if (this.config.rooms && this.config.autoroom) {
@@ -74,15 +74,15 @@ export class RoomsService extends PluginServiceClass {
     this.rooms[roomName] = Object.assign(
       new this.hap.Service.Switch(
         `${this.config.cleanword} ${roomName}`,
-        "roomService" + roomId,
+        "roomService" + roomId
       ),
-      { roomId },
+      { roomId }
     );
     this.rooms[roomName]
       .getCharacteristic(this.hap.Characteristic.On)
       .onGet(() => this.getCleaningRoom(this.rooms[roomName].roomId))
       .onSet((newState) =>
-        this.setCleaningRoom(newState, this.rooms[roomName].roomId),
+        this.setCleaningRoom(newState, this.rooms[roomName].roomId)
       );
   }
 
@@ -97,7 +97,7 @@ export class RoomsService extends PluginServiceClass {
     try {
       if (state && !this.isCleaning && !this.isPaused) {
         this.log.info(
-          `ACT setCleaningRoom | Enable cleaning Room ID ${roomId}.`,
+          `ACT setCleaningRoom | Enable cleaning Room ID ${roomId}.`
         );
         // Delete then add, to maintain the correct order.
         this.roomIdsToClean.delete(roomId);
@@ -105,7 +105,7 @@ export class RoomsService extends PluginServiceClass {
         this.checkRoomTimeout();
       } else if (!state && !this.isCleaning && !this.isPaused) {
         this.log.info(
-          `ACT setCleaningRoom | Disable cleaning Room ID ${roomId}.`,
+          `ACT setCleaningRoom | Disable cleaning Room ID ${roomId}.`
         );
         this.roomIdsToClean.delete(roomId);
         this.checkRoomTimeout();
@@ -113,7 +113,7 @@ export class RoomsService extends PluginServiceClass {
     } catch (err) {
       this.log.error(
         `ERR setCleaningRoom | Failed to set cleaning to ${state}`,
-        err,
+        err
       );
       throw err;
     }
@@ -126,7 +126,7 @@ export class RoomsService extends PluginServiceClass {
       if (this.roomIdsToClean.size > 0) {
         this.roomTimeout = setTimeout(
           () => this.setCleaning(true),
-          this.config.roomTimeout * 1000,
+          this.config.roomTimeout * 1000
         );
       }
     }
@@ -141,7 +141,7 @@ export class RoomsService extends PluginServiceClass {
       // Find specific timer containing the room order
       // Timer needs to be scheduled for 00:00 and inactive
       let leetTimer = timers.find(
-        (x) => x[2][0].startsWith("0 0") && x[1] == "off",
+        (x) => x[2][0].startsWith("0 0") && x[1] == "off"
       );
       if (typeof leetTimer === "undefined") {
         this.log.error(`getRoomList | Could not find a timer for autoroom`);
@@ -155,7 +155,7 @@ export class RoomsService extends PluginServiceClass {
 
       if (roomIds.length !== autoroom.length) {
         this.log.error(
-          `getRoomList | Number of rooms in config does not match number of rooms in the timer`,
+          `getRoomList | Number of rooms in config does not match number of rooms in the timer`
         );
         return;
       }
@@ -166,8 +166,8 @@ export class RoomsService extends PluginServiceClass {
       }
       this.log.info(
         `getRoomList | Created "rooms": ${JSON.stringify(
-          roomMap,
-        )}. Update your 'rooms' config, remove autoroom, and restart homebridge.`,
+          roomMap
+        )}. Update your 'rooms' config, remove autoroom, and restart homebridge.`
       );
     } catch (err) {
       this.log.error(`getRoomList | Failed getting the Room List.`, err);

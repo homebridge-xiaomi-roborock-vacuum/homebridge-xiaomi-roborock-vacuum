@@ -68,7 +68,7 @@ exports.handler = function (argv) {
               info.ap.ssid,
               chalk.dim("(" + info.ap.bssid + ")"),
               chalk.bold("RSSI:"),
-              info.ap.rssi,
+              info.ap.rssi
             );
           } else {
             log.plain(chalk.bold("WiFi:"), "Not Connected");
@@ -143,7 +143,7 @@ exports.handler = function (argv) {
               log.plain(
                 chalk.bold(group.name),
                 "-",
-                Array.from(seenTags).join(", "),
+                Array.from(seenTags).join(", ")
               );
 
               for (const action of actionsToPrint) {

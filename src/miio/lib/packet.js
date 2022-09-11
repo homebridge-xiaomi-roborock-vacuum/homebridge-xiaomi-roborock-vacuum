@@ -58,7 +58,7 @@ class Packet {
       // Update the stamp to match server
       if (this._serverStampTime) {
         const secondsPassed = Math.floor(
-          (Date.now() - this._serverStampTime) / 1000,
+          (Date.now() - this._serverStampTime) / 1000
         );
         try {
           this.header.writeUInt32BE(this._serverStamp + secondsPassed, 12);
@@ -72,7 +72,7 @@ class Packet {
       let cipher = crypto.createCipheriv(
         "aes-128-cbc",
         this._tokenKey,
-        this._tokenIV,
+        this._tokenIV
       );
       let encrypted = Buffer.concat([cipher.update(this.data), cipher.final()]);
 
@@ -141,14 +141,14 @@ class Packet {
             "<- Invalid packet, checksum was",
             checksum,
             "should be",
-            digest,
+            digest
           );
           this.data = null;
         } else {
           let decipher = crypto.createDecipheriv(
             "aes-128-cbc",
             this._tokenKey,
-            this._tokenIV,
+            this._tokenIV
           );
           this.data = Buffer.concat([
             decipher.update(encrypted),

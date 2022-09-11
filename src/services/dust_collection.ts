@@ -12,7 +12,7 @@ export class DustCollection extends PluginServiceClass {
     super(coreContext);
     this.service = new this.hap.Service.Switch(
       `${this.config.name} Dust Collection`,
-      "Dust Collection",
+      "Dust Collection"
     );
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
@@ -36,13 +36,13 @@ export class DustCollection extends PluginServiceClass {
     try {
       const isDustCollecting = this.isDustCollecting;
       this.log.info(
-        `getDustCollectionState | Dust collection is ${isDustCollecting}`,
+        `getDustCollectionState | Dust collection is ${isDustCollecting}`
       );
       return isDustCollecting;
     } catch (err) {
       this.log.error(
         `getDustCollectionState | Failed getting the cleaning status.`,
-        err,
+        err
       );
       throw err;
     }
@@ -57,25 +57,25 @@ export class DustCollection extends PluginServiceClass {
       if (state && !this.isDustCollecting && isCharging) {
         await this.deviceManager.device.startDustCollection();
         this.log.info(
-          `setDustCollectionState | Starting Dust Collection, and the device is in state ${this.deviceManager.state}`,
+          `setDustCollectionState | Starting Dust Collection, and the device is in state ${this.deviceManager.state}`
         );
       } else if (!state && this.isDustCollecting) {
         await this.deviceManager.device.stopDustCollection();
         this.log.info(
-          `setDustCollectionState | Stopping Dust Collection, and the device is in state ${this.deviceManager.state}`,
+          `setDustCollectionState | Stopping Dust Collection, and the device is in state ${this.deviceManager.state}`
         );
       } else if (state && !this.isDustCollecting && !isCharging) {
         this.service
           .getCharacteristic(this.hap.Characteristic.On)
           .updateValue(false);
         this.log.info(
-          `setDustCollectionState | Starting Dust Collection not possible, and the device is in state ${this.deviceManager.state}`,
+          `setDustCollectionState | Starting Dust Collection not possible, and the device is in state ${this.deviceManager.state}`
         );
       }
     } catch (err) {
       this.log.error(
         `setDustCollectionState | Failed updating dust collection state ${state}.`,
-        err,
+        err
       );
       throw err;
     }

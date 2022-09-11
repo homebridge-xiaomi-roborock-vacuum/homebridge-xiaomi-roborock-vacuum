@@ -24,7 +24,7 @@ module.exports = class extends (
     AutonomousCleaning,
     SpotCleaning,
     AdjustableFanSpeed,
-    ChargingState,
+    ChargingState
   )
 ) {
   static get type() {
@@ -266,7 +266,7 @@ module.exports = class extends (
           this.call("app_charge", [], {
             refresh: ["state"],
             refreshDelay: 1000,
-          }),
+          })
         )
         .then(checkResult)
     );

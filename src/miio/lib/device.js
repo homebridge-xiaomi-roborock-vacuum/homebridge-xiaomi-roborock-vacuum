@@ -86,7 +86,7 @@ module.exports = Thing.type(
                 this._loadProperties(properties)
                   .then(() => resolve(res))
                   .catch(() => resolve(res));
-              }, (options && options.refreshDelay) || 50),
+              }, (options && options.refreshDelay) || 50)
             );
           } else {
             return res;
@@ -222,7 +222,7 @@ module.exports = Thing.type(
       loadProperties(props) {
         // Rewrite property names to device internal ones
         props = props.map(
-          (key) => this._reversePropertyDefinitions[key] || key,
+          (key) => this._reversePropertyDefinitions[key] || key
         );
 
         // Call get_prop to map everything
@@ -283,5 +283,5 @@ module.exports = Thing.type(
 
         return null;
       }
-    },
+    }
 );

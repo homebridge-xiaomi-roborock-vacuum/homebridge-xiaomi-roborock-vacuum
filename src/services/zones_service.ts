@@ -21,7 +21,7 @@ export class ZonesService extends PluginServiceClass {
   constructor(
     coreContext: CoreContext,
     private readonly mainService: MainService,
-    private readonly changedPause: (isCleaning: boolean) => void,
+    private readonly changedPause: (isCleaning: boolean) => void
   ) {
     super(coreContext);
     if (this.config.zones) {
@@ -42,7 +42,7 @@ export class ZonesService extends PluginServiceClass {
     this.log.info(`createRoom | Zone ${zoneName} (${zoneParams})`);
     this.zones[zoneName] = new this.hap.Service.Switch(
       `${this.config.cleanword} ${zoneName}`,
-      "zoneCleaning" + zoneName,
+      "zoneCleaning" + zoneName
     );
     this.zones[zoneName]
       .getCharacteristic(this.hap.Characteristic.On)
@@ -60,7 +60,7 @@ export class ZonesService extends PluginServiceClass {
       if (state && !this.deviceManager.isCleaning) {
         // Start cleaning
         this.log.info(
-          `ACT setCleaning | Start cleaning Zone ${zone}, not charging.`,
+          `ACT setCleaning | Start cleaning Zone ${zone}, not charging.`
         );
 
         const zoneParams: number[][] = [];

@@ -17,7 +17,7 @@ describe("entrypoint", () => {
     expect(api.registerAccessory).toHaveBeenCalledWith(
       "homebridge-xiaomi-roborock-vacuum",
       "XiaomiRoborockVacuum",
-      expect.any(Function),
+      expect.any(Function)
     );
   });
 });

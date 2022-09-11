@@ -11,7 +11,7 @@ describe("getLogger", () => {
       debug: jest.fn(),
       log: jest.fn(),
     },
-    jest.fn(),
+    jest.fn()
   );
 
   beforeEach(() => {
@@ -25,7 +25,7 @@ describe("getLogger", () => {
       const logger = getLogger(homebridgeLogger, {});
       logger[level]("Test message");
       expect(logSpy).toHaveBeenCalledWith("[Model=unknown] Test message");
-    },
+    }
   );
 
   test.each(["debug", "info", "warn", "error"] as const)(
@@ -36,7 +36,7 @@ describe("getLogger", () => {
       logger.setModel("test-model");
       logger[level]("Test message");
       expect(logSpy).toHaveBeenCalledWith("[Model=test-model] Test message");
-    },
+    }
   );
 
   describe("if silent === true", () => {
@@ -47,7 +47,7 @@ describe("getLogger", () => {
         const logger = getLogger(homebridgeLogger, { silent: true });
         logger[level]("Test message");
         expect(logSpy).not.toHaveBeenCalled();
-      },
+      }
     );
 
     test.each(["warn", "error"] as const)(
@@ -57,7 +57,7 @@ describe("getLogger", () => {
         const logger = getLogger(homebridgeLogger, { silent: true });
         logger[level]("Test message");
         expect(logSpy).toHaveBeenCalledWith("[Model=unknown] Test message");
-      },
+      }
     );
   });
 });

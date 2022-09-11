@@ -312,7 +312,7 @@ function autoAssignHomekitTopLevel(): SpeedModes {
           // if it's the last element, max it out to 100%
           homekitTopLevel: index === modes.length - 1 ? 100 : index * step,
         },
-        mode, // set later should we want to overwrite this logic in the SPEEDMODES definition
+        mode // set later should we want to overwrite this logic in the SPEEDMODES definition
       );
     });
     return Object.assign({}, acc, {

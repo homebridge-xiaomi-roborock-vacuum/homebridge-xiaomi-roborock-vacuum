@@ -32,7 +32,7 @@ export class ProductInfo extends PluginServiceClass {
             const serial = await this.getSerialNumber();
             this.service.setCharacteristic(
               this.hap.Characteristic.SerialNumber,
-              `${serial}`,
+              `${serial}`
             );
             this.log.info(`STA getDevice | Serial Number: ${serial}`);
           } catch (err) {
@@ -44,13 +44,13 @@ export class ProductInfo extends PluginServiceClass {
             this.firmware = firmware;
             this.service.setCharacteristic(
               this.hap.Characteristic.FirmwareRevision,
-              `${firmware}`,
+              `${firmware}`
             );
             this.log.info(`STA getDevice | Firmware Version: ${firmware}`);
           } catch (err) {
             this.log.error(`ERR getDevice | miIO.info | ${err}`);
           }
-        }),
+        })
       )
       .subscribe();
   }

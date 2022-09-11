@@ -15,7 +15,7 @@ export class FindMeService extends PluginServiceClass {
     if (this.config.findMe) {
       this.service = new this.hap.Service.Switch(
         `${this.config.name} ${this.config.findMeWord}`,
-        "FindMe Switch",
+        "FindMe Switch"
       );
       this.service
         .getCharacteristic(this.hap.Characteristic.On)

@@ -5,7 +5,7 @@
  */
 export async function callbackify<ReturnedValue>(
   fn: () => ReturnedValue | Promise<ReturnedValue>,
-  callback: (err: Error | null, result?: ReturnedValue) => void,
+  callback: (err: Error | null, result?: ReturnedValue) => void
 ): Promise<void> {
   try {
     const result = await fn();
