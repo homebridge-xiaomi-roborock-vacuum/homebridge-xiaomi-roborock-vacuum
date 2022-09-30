@@ -32,7 +32,7 @@ export class MainService extends PluginServiceClass {
       this.service = new this.hap.Service.Switch(this.config.name, "Vacuum");
     }
 
-    if (this.service.setPrimaryService) this.service.setPrimaryService(true);
+    this.service.setPrimaryService(true);
 
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
