@@ -28,11 +28,11 @@ export class MainService extends PluginServiceClass {
         .getCharacteristic(this.hap.Characteristic.RotationSpeed)
         .onGet(() => this.getSpeed())
         .onSet((newState) => this.setSpeed(newState));
+      this.service.setPrimaryService(true);
     } else {
       this.service = new this.hap.Service.Switch(this.config.name, "Vacuum");
+      this.service.setPrimaryService(true);
     }
-
-    this.service.setPrimaryService(true);
 
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
