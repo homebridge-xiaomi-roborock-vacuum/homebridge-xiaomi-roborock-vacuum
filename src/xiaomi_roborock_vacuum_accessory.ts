@@ -178,17 +178,24 @@ export class XiaomiRoborockVacuum implements AccessoryPlugin {
   public getServices() {
     this.log.debug(`DEB getServices`);
 
-    const mainService = this.pluginServices.mainService.services[0];
+    const { mainService, ...rest } = this.pluginServices;
 
-    return Object.entries(this.pluginServices).reduce(
-      (acc, [serviceName, service]) => {
+    const firstService = mainService.services[0];
+
+    return Object.values(rest).reduce(
+      (acc, service) => {
         if (!service) return acc;
-        if (serviceName !== "fan" && mainService.addLinkedService) {
-          service.services.forEach((srv) => mainService.addLinkedService(srv));
-        }
+        service.services.forEach((srv) => {
+          // Explicitly declare all other services as non-primary
+          if (srv.setPrimaryService) srv.setPrimaryService(false);
+
+          // In case it helps, try to add all services as linked to the main one.
+          if (firstService.addLinkedService) firstService.addLinkedService(srv);
+        });
+
         return [...acc, ...service.services];
       },
-      [] as HomeBridgeService[]
+      [firstService] // Make sure to return the main service first
     );
   }
 }
