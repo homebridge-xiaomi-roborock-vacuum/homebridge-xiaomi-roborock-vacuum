@@ -1,2 +1,1 @@
-export { Care } from "./care_service";
-export * as Characteristic from "./characteristics";
+export { createCareServicesClasses } from "./care_service";

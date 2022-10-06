@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Bug] Remove peer dependency on `hap-nodejs` as some folks had issues (#558)
+
 ## 0.26.5
 
 - [Bug] `goTo` now shows on "waiting". Disabling sends it back to the dock. Thank you @luc-ass (#544)
