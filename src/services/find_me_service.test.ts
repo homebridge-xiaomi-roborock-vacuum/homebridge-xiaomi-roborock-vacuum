@@ -65,4 +65,17 @@ describe("FindMeService", () => {
     expect(deviceManagerMock.ensureDevice).toHaveBeenCalledWith("identify");
     expect(deviceManagerMock.device?.find).toHaveBeenCalledTimes(1);
   });
+
+  test("onSet (with failure)", async () => {
+    jest
+      .spyOn(deviceManagerMock.device, "find")
+      .mockRejectedValue(new Error("Something went terribly wrong"));
+    const [service] = findMeService.services;
+    await expect(
+      service.getCharacteristic(hap.Characteristic.On).handleSetRequest(true)
+    ).rejects.toStrictEqual(-70402);
+    expect(deviceManagerMock.ensureDevice).toHaveBeenCalledTimes(1);
+    expect(deviceManagerMock.ensureDevice).toHaveBeenCalledWith("identify");
+    expect(deviceManagerMock.device?.find).toHaveBeenCalledTimes(1);
+  });
 });
