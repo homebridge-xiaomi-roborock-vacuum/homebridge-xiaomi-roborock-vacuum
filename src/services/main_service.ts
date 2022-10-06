@@ -1,6 +1,5 @@
 import { Service } from "homebridge";
-import { distinct, filter } from "rxjs";
-import { cleaningStatuses } from "../utils/constants";
+import { distinct, filter, map, tap } from "rxjs";
 import { findSpeedModes } from "../utils/find_speed_modes";
 import { CoreContext } from "./types";
 import type { RoomsService } from "./rooms_service";
@@ -82,23 +81,21 @@ export class MainService extends PluginServiceClass {
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "cleaning"),
-        distinct(({ value }) => value)
+        map(({ value }) => value === true),
+        tap((isCleaning) => {
+          this.log.debug(
+            `MON changedCleaning | CleaningState is now ${isCleaning}`
+          );
+          this.service
+            .getCharacteristic(this.hap.Characteristic.On)
+            .updateValue(isCleaning);
+        }),
+        distinct()
       )
-      .subscribe(({ value }) => {
-        const isCleaning = value === true;
-        this.log.debug(
-          `MON changedCleaning | CleaningState is now ${isCleaning}`
-        );
+      .subscribe((isCleaning) => {
         this.log.info(
           `changedCleaning | Cleaning is ${isCleaning ? "ON" : "OFF"}.`
         );
-        if (!isCleaning) {
-          this.roomsService.roomIdsToClean.clear();
-        }
-
-        this.service
-          .getCharacteristic(this.hap.Characteristic.On)
-          .updateValue(isCleaning);
       });
   }
 
@@ -106,19 +103,9 @@ export class MainService extends PluginServiceClass {
     return [this.service];
   }
 
-  private get isPaused() {
-    const isPaused = this.deviceManager.property("state") === "paused";
-    return isPaused;
-  }
-
-  private get isCleaning() {
-    const status = this.deviceManager.property("state");
-    return cleaningStatuses.includes(`${status}`);
-  }
-
   public async getCleaning() {
     try {
-      const isCleaning = this.isCleaning;
+      const isCleaning = this.deviceManager.isCleaning;
       this.log.info(`getCleaning | Cleaning is ${isCleaning}`);
 
       return isCleaning;
@@ -132,7 +119,7 @@ export class MainService extends PluginServiceClass {
     await this.deviceManager.ensureDevice("setCleaning");
     this.log.info(`ACT setCleaning | Set cleaning to ${state}}`);
     try {
-      if (state && !this.isCleaning) {
+      if (state && !this.deviceManager.isCleaning) {
         // Start cleaning
         const roomIdsToClean = this.roomsService.roomIdsToClean;
         if (roomIdsToClean.size > 0) {
@@ -152,7 +139,10 @@ export class MainService extends PluginServiceClass {
             )}.`
           );
         }
-      } else if (!state && (this.isCleaning || this.isPaused)) {
+      } else if (
+        !state &&
+        (this.deviceManager.isCleaning || this.deviceManager.isPaused)
+      ) {
         // Stop cleaning
         this.log.info(
           `ACT setCleaning | Stop cleaning and go to charge, device is in state ${this.deviceManager.property(
@@ -160,7 +150,6 @@ export class MainService extends PluginServiceClass {
           )}`
         );
         await this.deviceManager.device.activateCharging();
-        this.roomsService.roomIdsToClean.clear();
       }
     } catch (err) {
       this.log.error(`setCleaning | Failed to set cleaning to ${state}`, err);

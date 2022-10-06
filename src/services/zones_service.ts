@@ -1,4 +1,5 @@
 import { Service } from "homebridge";
+import { filter } from "rxjs";
 import { CoreContext } from "./types";
 import { MainService } from "./main_service";
 import { PluginServiceClass } from "./plugin_service_class";
@@ -32,7 +33,20 @@ export class ZonesService extends PluginServiceClass {
     }
   }
 
-  public async init() {}
+  public async init() {
+    this.deviceManager.stateChanged$
+      .pipe(filter(({ key }) => key === "cleaning"))
+      .subscribe(({ value }) => {
+        const isCleaning = value === true;
+        if (!isCleaning) {
+          this.services.forEach((zone) => {
+            zone
+              .getCharacteristic(this.hap.Characteristic.On)
+              .updateValue(false);
+          });
+        }
+      });
+  }
 
   public get services(): Service[] {
     return [...Object.values(this.zones)];
