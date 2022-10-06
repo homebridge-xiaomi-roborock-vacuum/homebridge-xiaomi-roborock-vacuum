@@ -138,7 +138,6 @@ export class XiaomiRoborockVacuum implements AccessoryPlugin {
    * @private
    */
   private async changedError(robotError: ErrorChangedEvent) {
-    if (!robotError) return;
     this.log.debug(
       `DEB changedError | ErrorID: ${robotError.id}, ErrorDescription: ${robotError.description}`
     );

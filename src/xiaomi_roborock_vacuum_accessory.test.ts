@@ -5,7 +5,7 @@ import { Subject } from "rxjs";
 
 jest.useFakeTimers();
 
-import { createHomebridgeMock } from "./test.mocks";
+import { createHomebridgeMock, miio } from "./test.mocks";
 import { deviceManagerMock } from "./xiaomi_roborock_vacuum_accessory.test.mock";
 
 import { XiaomiRoborockVacuum } from "./xiaomi_roborock_vacuum_accessory";
@@ -14,6 +14,7 @@ describe("XiaomiRoborockVacuum", () => {
   let homebridge: jest.Mocked<API>;
   let consoleErrorSpy: jest.SpyInstance;
   let consoleWarnSpy: jest.SpyInstance;
+  let consoleDebugSpy: jest.SpyInstance;
   const log: Logging = console as unknown as Logging;
 
   beforeEach(() => {
@@ -22,7 +23,7 @@ describe("XiaomiRoborockVacuum", () => {
     consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
     consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
     jest.spyOn(console, "info").mockImplementation();
-    jest.spyOn(console, "debug").mockImplementation();
+    consoleDebugSpy = jest.spyOn(console, "debug").mockImplementation();
   });
 
   afterEach(() => {
@@ -107,6 +108,9 @@ describe("XiaomiRoborockVacuum", () => {
       },
       homebridge
     );
+    miio.device.find.mockRejectedValue(
+      new Error("Something went terribly wrong")
+    );
     const identifySpy = jest.spyOn(client["pluginServices"].findMe, "identify");
     expect(client.identify()).toBeUndefined();
     expect(identifySpy).toHaveBeenCalledTimes(1);
@@ -121,13 +125,27 @@ describe("XiaomiRoborockVacuum", () => {
     );
   });
 
-  test("errorChanged$ (known error)", () => {
+  test("errorChanged$ (known error)", async () => {
+    miio.device.setRawProperty.mockRejectedValue(
+      new Error("Something went terribly wrong")
+    );
+
     (deviceManagerMock.errorChanged$ as Subject<unknown>).next({
       id: "1",
       description: "unknown",
     });
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       `[Model=unknown] WAR changedError | Robot has an ERROR - 1, Try turning the orange laser-head to make sure it isn't blocked.`
+    );
+  });
+
+  test("stateChanged$ are logged to debug", () => {
+    (deviceManagerMock.stateChanged$ as Subject<unknown>).next({
+      key: "charging",
+      value: false,
+    });
+    expect(consoleDebugSpy).toHaveBeenCalledWith(
+      `[Model=unknown] stateChanged | stateChanged event: charging:false`
     );
   });
 
