@@ -1,12 +1,7 @@
 "use strict";
 
 import { catchError, concatMap, distinct } from "rxjs";
-import {
-  AccessoryPlugin,
-  API,
-  Logging,
-  Service as HomeBridgeService,
-} from "homebridge";
+import { AccessoryPlugin, API, Logging } from "homebridge";
 
 import { getLogger, Logger } from "./utils/logger";
 import {
