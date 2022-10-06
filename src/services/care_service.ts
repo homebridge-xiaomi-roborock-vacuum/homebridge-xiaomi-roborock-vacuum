@@ -1,6 +1,6 @@
 import { Service } from "homebridge";
 import { CoreContext } from "./types";
-import { Care, Characteristic } from "./custom_care_service";
+import { createCareServicesClasses } from "./custom_care_service";
 import { MainService } from "./main_service";
 import { PluginServiceClass } from "./plugin_service_class";
 
@@ -80,6 +80,7 @@ export class CareService extends PluginServiceClass {
   }
 
   private registerLegacyCustomCareService(): Service[] {
+    const { Care, Characteristic } = createCareServicesClasses(this.hap);
     const service = new Care(`${this.config.name} Care`);
     service
       .getCharacteristic(Characteristic.CareSensors)
