@@ -1,5 +1,5 @@
 import { Service } from "homebridge";
-import { distinct, filter } from "rxjs";
+import { distinct, filter, map, tap } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 
@@ -24,17 +24,19 @@ export class DockService extends PluginServiceClass {
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "charging"),
-        distinct(({ value }) => value)
+        map(({ value }) => value === true),
+        tap((isCharging) => {
+          this.service
+            .getCharacteristic(this.hap.Characteristic.OccupancyDetected)
+            .updateValue(isCharging);
+        }),
+        distinct()
       )
-      .subscribe(({ value }) => {
-        const isCharging = value === true;
+      .subscribe((isCharging) => {
         const msg = isCharging
           ? "Robot was docked"
           : "Robot not anymore in dock";
         this.log.info(`changedCharging | ${msg}.`);
-        this.service
-          .getCharacteristic(this.hap.Characteristic.OccupancyDetected)
-          .updateValue(isCharging);
       });
   }
 

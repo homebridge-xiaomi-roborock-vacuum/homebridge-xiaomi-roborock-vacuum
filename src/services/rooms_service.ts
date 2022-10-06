@@ -1,6 +1,6 @@
 import { Service } from "homebridge";
+import { filter } from "rxjs";
 import { CoreContext } from "./types";
-import { cleaningStatuses } from "../utils/constants";
 import { PluginServiceClass } from "./plugin_service_class";
 
 export interface RoomsConfig {
@@ -45,6 +45,20 @@ export class RoomsService extends PluginServiceClass {
   }
 
   public async init() {
+    this.deviceManager.stateChanged$
+      .pipe(filter(({ key }) => key === "cleaning"))
+      .subscribe(({ value }) => {
+        const isCleaning = value === true;
+        if (!isCleaning) {
+          this.services.forEach((zone) => {
+            zone
+              .getCharacteristic(this.hap.Characteristic.On)
+              .updateValue(false);
+          });
+          this.roomIdsToClean.clear();
+        }
+      });
+
     if (this.config.autoroom) {
       if (Array.isArray(this.config.autoroom)) {
         await this.getRoomList();
@@ -56,16 +70,6 @@ export class RoomsService extends PluginServiceClass {
 
   public get services(): Service[] {
     return [...Object.values(this.rooms)];
-  }
-
-  private get isCleaning() {
-    const status = this.deviceManager.property<string>("state");
-    return cleaningStatuses.includes(`${status}`);
-  }
-
-  private get isPaused() {
-    const isPaused = this.deviceManager.property("state") === "paused";
-    return isPaused;
   }
 
   private createRoom(roomId: string, roomName: string) {
@@ -95,7 +99,11 @@ export class RoomsService extends PluginServiceClass {
     await this.deviceManager.ensureDevice("setCleaning");
 
     try {
-      if (state && !this.isCleaning && !this.isPaused) {
+      if (
+        state &&
+        !this.deviceManager.isCleaning &&
+        !this.deviceManager.isPaused
+      ) {
         this.log.info(
           `ACT setCleaningRoom | Enable cleaning Room ID ${roomId}.`
         );
@@ -103,7 +111,11 @@ export class RoomsService extends PluginServiceClass {
         this.roomIdsToClean.delete(roomId);
         this.roomIdsToClean.add(roomId);
         this.checkRoomTimeout();
-      } else if (!state && !this.isCleaning && !this.isPaused) {
+      } else if (
+        !state &&
+        !this.deviceManager.isCleaning &&
+        !this.deviceManager.isPaused
+      ) {
         this.log.info(
           `ACT setCleaningRoom | Disable cleaning Room ID ${roomId}.`
         );

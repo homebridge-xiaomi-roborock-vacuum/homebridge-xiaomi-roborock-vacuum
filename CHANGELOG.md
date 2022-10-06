@@ -4,6 +4,7 @@
 
 - [Bug] Remove peer dependency on `hap-nodejs` as some folks had issues (#558)
 - [Bug] Accessories are randomly presented so the main service loses the primary status (#542)
+- [Bug] Reset cleaning status of Rooms and Zones after cleaning is completed (#546)
 
 ## 0.26.5
 
