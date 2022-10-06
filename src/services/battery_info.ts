@@ -51,7 +51,7 @@ export class BatteryInfo extends PluginServiceClass {
   }
 
   private changedCharging(isCharging) {
-    const isNewValue = this.isCharging != isCharging;
+    const isNewValue = this.isCharging !== isCharging;
     if (isNewValue) {
       this.log.info(`MON changedCharging | ChargingState is now ${isCharging}`);
       this.log.info(
@@ -83,7 +83,7 @@ export class BatteryInfo extends PluginServiceClass {
   }
 
   private async getCharging() {
-    const status = this.deviceManager.property("state");
+    const status = this.deviceManager.state;
     const isCharging = status === "charging";
     this.log.info(
       `getCharging | Charging is ${isCharging} (Status is ${status})`

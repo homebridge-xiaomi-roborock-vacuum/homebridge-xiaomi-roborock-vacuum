@@ -2,12 +2,12 @@ import { Subject } from "rxjs";
 import { DeviceManager } from "./device_manager";
 import { miio } from "../test.mocks";
 
-export type DeviceManagerMock = jest.Mocked<
-  Pick<DeviceManager, keyof DeviceManager>
->;
+export type DeviceManagerMock = jest.Mocked<DeviceManager>;
 
 export const createDeviceManagerMock = (): DeviceManagerMock => {
-  return {
+  const deviceManagerMock: jest.Mocked<
+    Pick<DeviceManager, keyof DeviceManager>
+  > = {
     errorChanged$: new Subject(),
     stateChanged$: new Subject(),
     deviceConnected$: new Subject(),
@@ -15,8 +15,10 @@ export const createDeviceManagerMock = (): DeviceManagerMock => {
     state: "cleaning",
     isCleaning: true,
     isPaused: false,
-    device: miio.device as any, // TODO: Replace this with actual miio mock
+    device: miio.device,
     property: jest.fn(),
     ensureDevice: jest.fn(),
   };
+
+  return deviceManagerMock as DeviceManagerMock;
 };

@@ -11,6 +11,7 @@ export interface MiioDevice {
       };
     };
   };
+  destroy: () => void;
   property: <T>(propertyName: string) => T | undefined;
   properties: Record<string, unknown>;
   on: <T>(eventName: string, cb: (value: T) => void) => void;

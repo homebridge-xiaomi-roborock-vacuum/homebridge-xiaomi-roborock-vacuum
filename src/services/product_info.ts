@@ -28,16 +28,12 @@ export class ProductInfo extends PluginServiceClass {
       .pipe(
         filter(Boolean), // Make sure it does not trigger with `undefined`
         concatMap(async () => {
-          try {
-            const serial = await this.getSerialNumber();
-            this.service.setCharacteristic(
-              this.hap.Characteristic.SerialNumber,
-              `${serial}`
-            );
-            this.log.info(`STA getDevice | Serial Number: ${serial}`);
-          } catch (err) {
-            this.log.error(`ERR getDevice | get_serial_number | ${err}`);
-          }
+          const serial = await this.getSerialNumber();
+          this.service.setCharacteristic(
+            this.hap.Characteristic.SerialNumber,
+            `${serial}`
+          );
+          this.log.info(`STA getDevice | Serial Number: ${serial}`);
 
           try {
             const firmware = await this.getFirmware();
