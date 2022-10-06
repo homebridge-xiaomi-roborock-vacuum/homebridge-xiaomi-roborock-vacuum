@@ -1,3 +1,5 @@
+import { HAP } from "homebridge";
+import * as HapJs from "hap-nodejs";
 import { CareService } from "./care_service";
 import { createHomebridgeMock } from "../test.mocks";
 import { getLoggerMock } from "../utils/logger.mock";
@@ -8,8 +10,6 @@ import {
 } from "./device_manager.mock";
 import { MainService } from "./main_service";
 import { DeviceManager } from "./device_manager";
-import { HAP } from "homebridge";
-import * as HapJs from "hap-nodejs";
 
 describe("CareService", () => {
   describe("legacyCareSensors", () => {
@@ -39,7 +39,7 @@ describe("CareService", () => {
           hap,
           log,
           config,
-          deviceManager: deviceManagerMock as unknown as DeviceManager,
+          deviceManager: deviceManagerMock,
         },
         fan
       );

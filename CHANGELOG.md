@@ -2,6 +2,8 @@
 
 ## Next
 
+- [tech debt] Improved code coverage (#171)
+
 ## 0.27.0
 
 - [Bug] Remove peer dependency on `hap-nodejs` as some folks had issues (#558)
