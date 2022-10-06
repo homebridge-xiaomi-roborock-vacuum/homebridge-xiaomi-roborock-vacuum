@@ -16,11 +16,10 @@ describe("CareService", () => {
     let careService: CareService;
     let deviceManagerMock: DeviceManagerMock;
     let fanServices: jest.Mock;
-    let hap: jest.Mocked<HAP>;
+    let hap: HAP;
 
     beforeEach(() => {
-      const hbMock = createHomebridgeMock();
-      hap = hbMock.hap as any;
+      hap = HapJs;
       const log = getLoggerMock();
 
       deviceManagerMock = createDeviceManagerMock();
