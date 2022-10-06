@@ -1,23 +1,26 @@
 "use strict";
 
 import { API, Logging } from "homebridge";
+import { Subject } from "rxjs";
 
 jest.useFakeTimers();
 
 import { createHomebridgeMock } from "./test.mocks";
+import { deviceManagerMock } from "./xiaomi_roborock_vacuum_accessory.test.mock";
 
 import { XiaomiRoborockVacuum } from "./xiaomi_roborock_vacuum_accessory";
 
 describe("XiaomiRoborockVacuum", () => {
   let homebridge: jest.Mocked<API>;
   let consoleErrorSpy: jest.SpyInstance;
+  let consoleWarnSpy: jest.SpyInstance;
   const log: Logging = console as unknown as Logging;
 
   beforeEach(() => {
     homebridge = createHomebridgeMock();
     // Silencing the logger in the tests to reduce noise.
     consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
-    jest.spyOn(console, "warn").mockImplementation();
+    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
     jest.spyOn(console, "info").mockImplementation();
     jest.spyOn(console, "debug").mockImplementation();
   });
@@ -30,18 +33,6 @@ describe("XiaomiRoborockVacuum", () => {
     expect(XiaomiRoborockVacuum).toHaveProperty("prototype");
     expect(XiaomiRoborockVacuum.prototype).toHaveProperty("identify");
     expect(XiaomiRoborockVacuum.prototype).toHaveProperty("getServices");
-  });
-
-  test("Fails if no IP provided", () => {
-    expect(() => new XiaomiRoborockVacuum(log, {}, homebridge)).toThrowError(
-      "You must provide an ip address of the vacuum cleaner."
-    );
-  });
-
-  test("Fails if no token provided", () => {
-    expect(
-      () => new XiaomiRoborockVacuum(log, { ip: "192.168.0.1" }, homebridge)
-    ).toThrowError("You must provide a token of the vacuum cleaner.");
   });
 
   test("Fails if both `room` and `autoroom` are provided", () => {
@@ -119,6 +110,25 @@ describe("XiaomiRoborockVacuum", () => {
     const identifySpy = jest.spyOn(client["pluginServices"].findMe, "identify");
     expect(client.identify()).toBeUndefined();
     expect(identifySpy).toHaveBeenCalledTimes(1);
+  });
+
+  test("errorChanged$ (unknown error)", () => {
+    (deviceManagerMock.errorChanged$ as Subject<unknown>).next({
+      id: "error",
+    });
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      `[Model=unknown] WAR changedError | Robot has an ERROR - error, undefined`
+    );
+  });
+
+  test("errorChanged$ (known error)", () => {
+    (deviceManagerMock.errorChanged$ as Subject<unknown>).next({
+      id: "1",
+      description: "unknown",
+    });
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      `[Model=unknown] WAR changedError | Robot has an ERROR - 1, Try turning the orange laser-head to make sure it isn't blocked.`
+    );
   });
 
   // These should be moved to the DeviceManager tests

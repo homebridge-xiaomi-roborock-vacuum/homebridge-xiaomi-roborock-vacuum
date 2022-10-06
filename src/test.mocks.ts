@@ -44,8 +44,6 @@ export const miio = {
   }),
 };
 
-jest.doMock("./miio", () => miio.createMock());
-
 // ============= HOMEBRIDGE MOCKS ================
 
 const createGetCharacteristicMock = () =>
@@ -61,6 +59,7 @@ const createGetCharacteristicMock = () =>
 
 const createChainableServiceMethodsMock = () => ({
   addLinkedService: jest.fn(),
+  setPrimaryService: jest.fn(),
   getCharacteristic: createGetCharacteristicMock(),
   setCharacteristic: jest
     .fn()
