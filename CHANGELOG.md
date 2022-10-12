@@ -2,6 +2,7 @@
 
 ## Next
 
+- [New Model] Improved support to Viomi models based on the implementation from `python-miio` (#580)
 - [tech debt] Improved code coverage (#171)
 
 ## 0.27.0
