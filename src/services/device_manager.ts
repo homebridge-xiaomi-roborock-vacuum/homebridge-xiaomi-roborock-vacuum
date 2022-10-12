@@ -150,8 +150,6 @@ export class DeviceManager {
 
       this.log.setModel(this.model);
 
-      // this.services.info.setCharacteristic(Characteristic.Model, this.model);
-
       this.log.info("STA getDevice | Connected to: %s", this.ip);
       this.log.info("STA getDevice | Model: " + this.model);
       this.log.info("STA getDevice | State: " + this.property("state"));

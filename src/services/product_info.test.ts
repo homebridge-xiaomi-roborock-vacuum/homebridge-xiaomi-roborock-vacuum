@@ -36,11 +36,11 @@ describe("ProductInfo", () => {
   });
 
   describe("deviceConnected$", () => {
-    let setCharacteristicSpy: jest.SpyInstance;
+    let updateCharacteristicSpy: jest.SpyInstance;
 
     beforeEach(() => {
       const [service] = productInfo.services;
-      setCharacteristicSpy = jest.spyOn(service, "setCharacteristic");
+      updateCharacteristicSpy = jest.spyOn(service, "updateCharacteristic");
     });
 
     test("fetches the serial number and firmware on first connection", async () => {
@@ -55,11 +55,19 @@ describe("ProductInfo", () => {
 
       await new Promise((resolve) => process.nextTick(resolve));
 
-      expect(setCharacteristicSpy).toHaveBeenCalledWith(
+      expect(updateCharacteristicSpy).toHaveBeenCalledTimes(3);
+      expect(updateCharacteristicSpy).toHaveBeenNthCalledWith(
+        1,
+        hap.Characteristic.Model,
+        "test-model"
+      );
+      expect(updateCharacteristicSpy).toHaveBeenNthCalledWith(
+        2,
         hap.Characteristic.SerialNumber,
         "1234"
       );
-      expect(setCharacteristicSpy).toHaveBeenCalledWith(
+      expect(updateCharacteristicSpy).toHaveBeenNthCalledWith(
+        3,
         hap.Characteristic.FirmwareRevision,
         "1.2.3"
       );
@@ -78,8 +86,14 @@ describe("ProductInfo", () => {
 
       await new Promise((resolve) => process.nextTick(resolve));
 
-      expect(setCharacteristicSpy).toHaveBeenCalledTimes(1);
-      expect(setCharacteristicSpy).toHaveBeenCalledWith(
+      expect(updateCharacteristicSpy).toHaveBeenCalledTimes(2);
+      expect(updateCharacteristicSpy).toHaveBeenNthCalledWith(
+        1,
+        hap.Characteristic.Model,
+        "test-model"
+      );
+      expect(updateCharacteristicSpy).toHaveBeenNthCalledWith(
+        2,
         hap.Characteristic.SerialNumber,
         "Unknown"
       );

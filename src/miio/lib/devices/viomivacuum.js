@@ -29,6 +29,21 @@ module.exports = class extends (
   constructor(options) {
     super(options);
 
+    this.defineProperty("err_state", {
+      name: "error",
+      mapper: (e) => {
+        switch (e) {
+          case 0:
+            return null;
+          default:
+            return {
+              code: e,
+              message: "Unknown error " + e,
+            };
+        }
+      },
+    });
+
     this.defineProperty("run_state", {
       name: "state",
       mapper: (s) => {
@@ -41,10 +56,12 @@ module.exports = class extends (
             return "waiting";
           case 3:
             return "cleaning";
-          case 5:
-            return "charging";
           case 4:
             return "returning";
+          case 5:
+            return "charging";
+          case 6:
+            return "cleaning-and-mopping";
         }
         return "unknown-" + s;
       },
@@ -78,13 +95,11 @@ module.exports = class extends (
       name: "filterWorkTime",
     });
     this.defineProperty("mop_life", {
-      // ? not sure about this one
       name: "mopWorkTime",
     });
-    this.defineProperty("sensor_dirty_time", {
-      // ? not sure about this one
-      name: "sensorDirtyTime",
-    });
+
+    // Monitor the property as is
+    this.defineProperty("hw_info");
 
     this._monitorInterval = 60000;
   }
@@ -140,7 +155,7 @@ module.exports = class extends (
   }
 
   async getSerialNumber() {
-    return "Unknown"; // We don't know the command to retrieve this bit of info for these models
+    return this.property("hw_info") || "Unknown"; // We don't know the command to retrieve this bit of info for these models
   }
 
   getRoomMap() {
@@ -164,7 +179,7 @@ module.exports = class extends (
   }
 
   getTimer() {
-    return this.call("get_timer");
+    return this.call("get_ordertime");
   }
 
   /**

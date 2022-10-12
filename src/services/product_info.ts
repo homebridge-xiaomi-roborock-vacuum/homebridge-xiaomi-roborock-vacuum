@@ -28,8 +28,13 @@ export class ProductInfo extends PluginServiceClass {
       .pipe(
         filter(Boolean), // Make sure it does not trigger with `undefined`
         concatMap(async () => {
+          this.service.updateCharacteristic(
+            this.hap.Characteristic.Model,
+            this.deviceManager.model
+          );
+
           const serial = await this.getSerialNumber();
-          this.service.setCharacteristic(
+          this.service.updateCharacteristic(
             this.hap.Characteristic.SerialNumber,
             `${serial}`
           );
@@ -38,7 +43,7 @@ export class ProductInfo extends PluginServiceClass {
           try {
             const firmware = await this.getFirmware();
             this.firmware = firmware;
-            this.service.setCharacteristic(
+            this.service.updateCharacteristic(
               this.hap.Characteristic.FirmwareRevision,
               `${firmware}`
             );

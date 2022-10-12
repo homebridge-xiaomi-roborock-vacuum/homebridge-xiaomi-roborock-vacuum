@@ -4,6 +4,8 @@ export const cleaningStatuses = [
   "spot-cleaning",
   "zone-cleaning",
   "room-cleaning",
+  // Specific to Viomi models (TODO: move cleaning statuses and errors to each device's files)
+  "cleaning-and-mopping",
 ];
 
 export const errors = {
@@ -58,4 +60,34 @@ export const errors = {
     description:
       "Robot stuck in a blocked area. Manually move it and resume the cleaning.",
   },
+  // Specific to Viomi models (TODO: Move them to the device's class)
+  id0: {
+    description: "Sleeping and not charging",
+  },
+  id500: { description: "Radar timed out" },
+  id501: { description: "Wheels stuck" },
+  id502: { description: "Low battery" },
+  id503: { description: "Dust bin missing" },
+  id508: { description: "Uneven ground" },
+  id509: { description: "Cliff sensor error" },
+  id510: { description: "Collision sensor error" },
+  id511: { description: "Could not return to dock" },
+  id512: { description: "Could not return to dock" },
+  id513: { description: "Could not navigate" },
+  id514: { description: "Vacuum stuck" },
+  id515: { description: "Charging error" },
+  id516: { description: "Mop temperature error" },
+  id521: { description: "Water tank is not installed" },
+  id522: { description: "Mop is not installed" },
+  id525: { description: "Insufficient water in water tank" },
+  id527: { description: "Remove mop" },
+  id528: { description: "Dust bin missing" },
+  id529: { description: "Mop and water tank missing" },
+  id530: { description: "Mop and water tank missing" },
+  id531: { description: "Water tank is not installed" },
+  id2101: {
+    description: "Insufficient battery, continuing cleaning after recharge",
+  },
+  id2103: { description: "Charging" },
+  id2105: { description: "Fully charged" },
 };
