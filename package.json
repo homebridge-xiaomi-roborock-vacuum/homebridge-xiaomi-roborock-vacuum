@@ -65,7 +65,7 @@
     "@types/node": "18.11.9",
     "@types/semver": "7.3.13",
     "babel-jest": "29.3.1",
-    "homebridge": "1.5.1",
+    "homebridge": "1.6.0",
     "jest": "29.3.1",
     "prettier": "2.8.0",
     "rimraf": "3.0.2",
