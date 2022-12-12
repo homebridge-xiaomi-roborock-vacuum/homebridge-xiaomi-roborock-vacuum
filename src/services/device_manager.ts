@@ -1,5 +1,12 @@
 import { HAP } from "homebridge";
-import { BehaviorSubject, distinct, exhaustMap, Subject, timer } from "rxjs";
+import {
+  BehaviorSubject,
+  distinct,
+  exhaustMap,
+  filter,
+  Subject,
+  timer,
+} from "rxjs";
 import miio from "../miio";
 import { Logger } from "../utils/logger";
 import { MiioDevice } from "../utils/miio_types";
@@ -34,7 +41,7 @@ export class DeviceManager {
   private readonly internalStateChanged$ = new Subject<StateChangedEvent>();
   public readonly errorChanged$ = this.internalErrorChanged$.pipe(distinct());
   public readonly stateChanged$ = this.internalStateChanged$.asObservable();
-  public readonly deviceConnected$ = this.internalDevice$.asObservable();
+  public readonly deviceConnected$ = this.internalDevice$.pipe(filter(Boolean));
 
   private connectingPromise: Promise<void> | null = null;
   private connectRetry = setTimeout(() => void 0, 100); // Noop timeout only to initialise the property

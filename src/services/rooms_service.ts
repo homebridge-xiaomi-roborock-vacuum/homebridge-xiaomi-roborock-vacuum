@@ -1,5 +1,5 @@
 import { Service } from "homebridge";
-import { filter } from "rxjs";
+import { filter, firstValueFrom } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 
@@ -58,6 +58,9 @@ export class RoomsService extends PluginServiceClass {
           this.roomIdsToClean.clear();
         }
       });
+
+    // Await for the device to be connected
+    await firstValueFrom(this.deviceManager.deviceConnected$);
 
     if (this.config.autoroom) {
       if (Array.isArray(this.config.autoroom)) {
