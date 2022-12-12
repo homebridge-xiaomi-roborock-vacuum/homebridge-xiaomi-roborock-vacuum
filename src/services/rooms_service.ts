@@ -50,8 +50,8 @@ export class RoomsService extends PluginServiceClass {
       .subscribe(({ value }) => {
         const isCleaning = value === true;
         if (!isCleaning) {
-          this.services.forEach((zone) => {
-            zone
+          this.services.forEach((room) => {
+            room
               .getCharacteristic(this.hap.Characteristic.On)
               .updateValue(false);
           });
@@ -59,10 +59,10 @@ export class RoomsService extends PluginServiceClass {
         }
       });
 
-    // Await for the device to be connected
-    await firstValueFrom(this.deviceManager.deviceConnected$);
-
     if (this.config.autoroom) {
+      // Await for the device to be connected
+      await firstValueFrom(this.deviceManager.deviceConnected$);
+
       if (Array.isArray(this.config.autoroom)) {
         await this.getRoomList();
       } else {
