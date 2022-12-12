@@ -2,6 +2,8 @@
 
 ## Next
 
+## 0.28.1
+
 - [Bug] Room Service: Wait for connection before applying the auto-room discovery (#618)
 
 ## 0.28.0
