@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Bug] Room Service: Wait for connection before applying the auto-room discovery (#618)
+
 ## 0.28.0
 
 - [New Model] Improved support to Viomi models based on the implementation from `python-miio` (#580)
