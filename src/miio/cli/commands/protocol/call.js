@@ -3,7 +3,7 @@
 const log = require("../../log");
 const deviceFinder = require("../../device-finder");
 
-exports.command = "call <idOrIp> <method> [params]";
+exports.command = "call <idOrIp> <method> [params...]";
 exports.description = "Call a raw method on a device";
 exports.builder = {
   token: {
@@ -29,7 +29,12 @@ exports.handler = function (argv) {
     log.info("Device found, making call");
     log.plain();
 
-    const parsedArgs = argv.params ? JSON.parse(argv.params) : [];
+    const parsedArgs = argv.params
+      ? Array.isArray(argv.params)
+        ? argv.params
+        : JSON.parse(argv.params)
+      : [];
+    log.plain(parsedArgs);
     device
       .miioCall(argv.method, parsedArgs)
       .then((result) => {
