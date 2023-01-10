@@ -10,7 +10,7 @@ export interface ModesHomekitVsMiLevel {
 }
 
 export interface ModelDefinition {
-  speed: typeof speedmodes[string];
-  waterspeed?: typeof watermodes[string];
+  speed: (typeof speedmodes)[string];
+  waterspeed?: (typeof watermodes)[string];
   firmware?: string;
 }
