@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [current]
 
     steps:
       - uses: actions/checkout@v3
@@ -31,7 +31,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [current]
 
     steps:
       - uses: actions/checkout@v3
@@ -49,7 +49,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x]
+        # Run the tests for the previous and current LTS version + the current version
+        node-version: [lts/-1, lts/*, current]
 
     steps:
       - uses: actions/checkout@v3
