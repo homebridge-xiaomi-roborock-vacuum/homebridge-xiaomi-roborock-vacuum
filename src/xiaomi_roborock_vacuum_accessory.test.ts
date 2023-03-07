@@ -27,7 +27,7 @@ describe("XiaomiRoborockVacuum", () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   test("Returns the accessory class", () => {
