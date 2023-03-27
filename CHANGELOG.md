@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.29.0
+
+- [New Model] Added support for Roborock S8. Thank you @Gundika (#696)
+
 ## 0.28.1
 
 - [Bug] Room Service: Wait for connection before applying the auto-room discovery (#618)
