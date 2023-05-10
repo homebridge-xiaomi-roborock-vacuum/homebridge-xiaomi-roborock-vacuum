@@ -62,7 +62,7 @@
     "@babel/preset-env": "7.21.5",
     "@babel/preset-typescript": "7.21.5",
     "@types/jest": "29.5.1",
-    "@types/node": "18.16.6",
+    "@types/node": "18.16.7",
     "@types/semver": "7.5.0",
     "babel-jest": "29.5.0",
     "homebridge": "1.6.1",
