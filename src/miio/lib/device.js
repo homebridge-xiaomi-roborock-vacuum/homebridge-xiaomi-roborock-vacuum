@@ -78,15 +78,18 @@ module.exports = Thing.type(
             // Special case for loading properties after setting values
             // - delay a bit to make sure the device has time to respond
             return new Promise((resolve) =>
-              setTimeout(() => {
-                const properties = Array.isArray(options.refresh)
-                  ? options.refresh
-                  : this._propertiesToMonitor;
+              setTimeout(
+                () => {
+                  const properties = Array.isArray(options.refresh)
+                    ? options.refresh
+                    : this._propertiesToMonitor;
 
-                this._loadProperties(properties)
-                  .then(() => resolve(res))
-                  .catch(() => resolve(res));
-              }, (options && options.refreshDelay) || 50)
+                  this._loadProperties(properties)
+                    .then(() => resolve(res))
+                    .catch(() => resolve(res));
+                },
+                (options && options.refreshDelay) || 50
+              )
             );
           } else {
             return res;

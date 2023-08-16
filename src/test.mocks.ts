@@ -86,4 +86,4 @@ export const createHomebridgeMock = () =>
   ({
     registerAccessory: jest.fn(),
     hap: { Characteristic, Service },
-  } as unknown as jest.Mocked<API>);
+  }) as unknown as jest.Mocked<API>;
