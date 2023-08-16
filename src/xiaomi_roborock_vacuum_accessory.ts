@@ -121,8 +121,10 @@ export class XiaomiRoborockVacuum implements AccessoryPlugin {
       goTo: config.goTo ? new GoToService(coreContext) : undefined,
       dock: config.dock ? new DockService(coreContext) : undefined,
       zones: config.zones
-        ? new ZonesService(coreContext, mainService, (isCleaning) =>
-            this.pluginServices.pause?.changedPause(isCleaning)
+        ? new ZonesService(
+            coreContext,
+            mainService,
+            (isCleaning) => this.pluginServices.pause?.changedPause(isCleaning)
           )
         : undefined,
       // ADDITIONAL HOMEKIT SERVICES
