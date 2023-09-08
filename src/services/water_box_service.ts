@@ -34,7 +34,7 @@ export class WaterBoxService extends PluginServiceClass {
       .onSet(async (newState) => {
         // Set to 0% (Off) when receiving an OFF request, do nothing otherwise.
         if (!newState) {
-          await this.mainService.setCleaning(false);
+          await this.setWaterSpeed(0);
         }
       });
   }
@@ -101,6 +101,7 @@ export class WaterBoxService extends PluginServiceClass {
     // If the robot does not support water-mode cleaning
     if (speedModes.length === 0) {
       this.log.info(`setWaterSpeed | Model does not support the water mode`);
+      return;
     }
 
     let miLevel: number | null = null;
