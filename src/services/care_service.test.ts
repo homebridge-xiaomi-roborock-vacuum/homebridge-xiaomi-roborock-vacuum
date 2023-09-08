@@ -8,8 +8,8 @@ import {
   createDeviceManagerMock,
   DeviceManagerMock,
 } from "./device_manager.mock";
-import { MainService } from "./main_service";
-import { DeviceManager } from "./device_manager";
+import type { MainService } from "./main_service";
+import type { DeviceManager } from "./device_manager";
 
 describe("CareService", () => {
   describe("legacyCareSensors", () => {

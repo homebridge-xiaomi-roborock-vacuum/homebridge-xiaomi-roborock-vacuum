@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Bug] Allow turning off the Waterbox (#788)
+
 ## 0.29.0
 
 - [New Model] Added support for Roborock S8. Thank you @Gundika (#696)
