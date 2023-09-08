@@ -2,6 +2,8 @@
 
 ## Next
 
+## 0.30.0
+
 - [New Model] Add support for Roborock Q Revo (#790)
 
 ## 0.29.1
