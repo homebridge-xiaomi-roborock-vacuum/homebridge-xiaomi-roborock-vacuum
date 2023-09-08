@@ -2,6 +2,8 @@
 
 ## Next
 
+- [New Model] Add support for Roborock Q Revo (#790)
+
 ## 0.29.1
 
 - [Bug] Allow turning off the Waterbox (#788)
