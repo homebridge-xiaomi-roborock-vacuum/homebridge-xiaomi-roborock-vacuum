@@ -2,6 +2,8 @@
 
 ## Next
 
+## 0.29.1
+
 - [Bug] Allow turning off the Waterbox (#788)
 
 ## 0.29.0
