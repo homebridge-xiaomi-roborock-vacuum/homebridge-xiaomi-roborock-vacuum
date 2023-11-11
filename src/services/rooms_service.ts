@@ -86,6 +86,10 @@ export class RoomsService extends PluginServiceClass {
 
     room.addOptionalCharacteristic(this.hap.Characteristic.ConfiguredName);
     room.setCharacteristic(this.hap.Characteristic.ConfiguredName, switchName);
+    room.updateCharacteristic(
+      this.hap.Characteristic.ConfiguredName,
+      switchName
+    );
 
     room
       .getCharacteristic(this.hap.Characteristic.On)
