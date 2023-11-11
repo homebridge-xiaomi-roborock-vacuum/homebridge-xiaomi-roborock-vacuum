@@ -78,19 +78,25 @@ export class RoomsService extends PluginServiceClass {
   private createRoom(roomId: string, roomName: string) {
     this.log.info(`INF createRoom | Room ${roomName} (${roomId})`);
 
-    this.rooms[roomName] = Object.assign(
-      new this.hap.Service.Switch(
-        `${this.config.cleanword} ${roomName}`,
-        "roomService" + roomId
-      ),
+    const switchName = `${this.config.cleanword} ${roomName}`;
+    const room = Object.assign(
+      new this.hap.Service.Switch(switchName, "roomService" + roomId),
       { roomId }
     );
-    this.rooms[roomName]
+
+    room.addOptionalCharacteristic(this.hap.Characteristic.ConfiguredName);
+    room.setCharacteristic(this.hap.Characteristic.ConfiguredName, switchName);
+    room.updateCharacteristic(
+      this.hap.Characteristic.ConfiguredName,
+      switchName
+    );
+
+    room
       .getCharacteristic(this.hap.Characteristic.On)
-      .onGet(() => this.getCleaningRoom(this.rooms[roomName].roomId))
-      .onSet((newState) =>
-        this.setCleaningRoom(newState, this.rooms[roomName].roomId)
-      );
+      .onGet(() => this.getCleaningRoom(room.roomId))
+      .onSet((newState) => this.setCleaningRoom(newState, room.roomId));
+
+    this.rooms[roomName] = room;
   }
 
   private async getCleaningRoom(roomId: string) {

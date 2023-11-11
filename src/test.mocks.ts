@@ -64,6 +64,7 @@ const createChainableServiceMethodsMock = () => ({
   setCharacteristic: jest
     .fn()
     .mockImplementation(createChainableServiceMethodsMock),
+  addOptionalCharacteristic: jest.fn(),
 });
 
 const createServiceMock = () =>
