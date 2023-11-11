@@ -24,12 +24,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github..com/yoerivd/homebridge-xiaomi-roborock-vacuum.git"
+    "url": "git+https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum.git"
   },
   "bugs": {
-    "url": "https://github..com/yoerivd/homebridge-xiaomi-roborock-vacuum/issues"
+    "url": "https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues"
   },
-  "homepage": "https://github..com/yoerivd/homebridge-xiaomi-roborock-vacuum",
+  "homepage": "https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum",
   "bin": {
     "miio-vacuum": "dist/miio/cli/index.js"
   },
