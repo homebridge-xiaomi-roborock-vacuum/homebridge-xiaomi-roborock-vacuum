@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.31.0
+
+- [Bug] Fixed: push room names from settings to homekit (#829) (thank you, @YoeriVD)
+
 ## 0.30.0
 
 - [New Model] Add support for Roborock Q Revo (#790)
