@@ -4,149 +4,149 @@
 
 ## 0.31.0
 
-- [Bug] Fixed: push room names from settings to homekit (#829) (thank you, @YoeriVD)
+- [Bug] Fixed: push room names from settings to homekit ([#829](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/829)) (thank you, @YoeriVD)
 
 ## 0.30.0
 
-- [New Model] Add support for Roborock Q Revo (#790)
+- [New Model] Add support for Roborock Q Revo ([#790](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/790))
 
 ## 0.29.1
 
-- [Bug] Allow turning off the Waterbox (#788)
+- [Bug] Allow turning off the Waterbox ([#788](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/788))
 
 ## 0.29.0
 
-- [New Model] Added support for Roborock S8. Thank you @Gundika (#696)
+- [New Model] Added support for Roborock S8. Thank you @Gundika ([#696](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/696))
 
 ## 0.28.1
 
-- [Bug] Room Service: Wait for connection before applying the auto-room discovery (#618)
+- [Bug] Room Service: Wait for connection before applying the auto-room discovery ([#618](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/618))
 
 ## 0.28.0
 
-- [New Model] Improved support to Viomi models based on the implementation from `python-miio` (#580)
-- [tech debt] Improved code coverage (#171)
+- [New Model] Improved support to Viomi models based on the implementation from `python-miio` ([#580](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/580))
+- [tech debt] Improved code coverage ([#171](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/171))
 
 ## 0.27.0
 
-- [Bug] Remove peer dependency on `hap-nodejs` as some folks had issues (#558)
-- [Bug] Accessories are randomly presented so the main service loses the primary status (#542)
-- [Bug] Reset cleaning status of Rooms and Zones after cleaning is completed (#546)
+- [Bug] Remove peer dependency on `hap-nodejs` as some folks had issues ([#558](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/558))
+- [Bug] Accessories are randomly presented so the main service loses the primary status ([#542](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/542))
+- [Bug] Reset cleaning status of Rooms and Zones after cleaning is completed ([#546](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/546))
 
 ## 0.26.5
 
-- [Bug] `goTo` now shows on "waiting". Disabling sends it back to the dock. Thank you @luc-ass (#544)
+- [Bug] `goTo` now shows on "waiting". Disabling sends it back to the dock. Thank you @luc-ass ([#544](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/544))
 
 ## 0.26.4
 
-- [Bug] `dustBin` config not showing on the Config UI. Thank you @luc-ass (#535)
+- [Bug] `dustBin` config not showing on the Config UI. Thank you @luc-ass ([#535](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/535))
 
 ## 0.26.3
 
-- [Bug] Fix warning _The plugin "\*" defines 'homebridge' and/or 'hap-nodejs' in their 'dependencies'..._ (#533)
+- [Bug] Fix warning _The plugin "\*" defines 'homebridge' and/or 'hap-nodejs' in their 'dependencies'..._ ([#533](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/533))
 
 ## 0.26.2
 
-- [Bug] Fix warning _SET handler returned write response value_ (#529)
+- [Bug] Fix warning _SET handler returned write response value_ ([#529](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/529))
 
 ## 0.26.1
 
-- [Bug] Add dependency to `hap-nodejs` (#531).
+- [Bug] Add dependency to `hap-nodejs` ([#531](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/531)).
 
 ## 0.26.0
 
-- [Enhancement] Add Dust Bin needs to be emptied indicator (#111).
+- [Enhancement] Add Dust Bin needs to be emptied indicator ([#111](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/111)).
 
 ## 0.25.1
 
-- [Bug] Handle negative responses for the Maintenance indicators of Sensors & Brushes (#366)
+- [Bug] Handle negative responses for the Maintenance indicators of Sensors & Brushes ([#366](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/366))
 
 ## 0.25.0
 
-- [Enhancement] Add `serviceType: "switch"` config to expose the main service as a switch (only ON/OFF capabilities) instead of a fan (ON/OFF + speed control). (#458)
-- [tech debt] Main file broken down into sub-services for better code maintainability and testability. (#517)
+- [Enhancement] Add `serviceType: "switch"` config to expose the main service as a switch (only ON/OFF capabilities) instead of a fan (ON/OFF + speed control). ([#458](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/458))
+- [tech debt] Main file broken down into sub-services for better code maintainability and testability. ([#517](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/517))
 - [tech debt] Improved test code coverage. (WIP #171)
 
 ## 0.24.1
 
-- [Bug] Broken import after moving to TS fixed (#519)
+- [Bug] Broken import after moving to TS fixed ([#519](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/519))
 
 ## 0.24.0
 
-- [Enhancement] Add support for Max+ speed mode (S7 MaxV). Thank you @nicolasbigot! (#515)
-- [tech debt] Initial migration to Typescript (#514)
+- [Enhancement] Add support for Max+ speed mode (S7 MaxV). Thank you @nicolasbigot! ([#515](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/515))
+- [tech debt] Initial migration to Typescript ([#514](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/514))
 
 ## 0.23.0
 
-- [Enhancement] Add Go To Button. Thank you @luc-ass! (#511)
+- [Enhancement] Add Go To Button. Thank you @luc-ass! ([#511](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/511))
 
 ## 0.22.0
 
-- [Enhancement] Add support for S7 MaxV. Thank you @khad! (#508)
-- [Bug] Fixed typo `Hight` to `High`. Thank you @khad! (#507)
+- [Enhancement] Add support for S7 MaxV. Thank you @khad! ([#508](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/508))
+- [Bug] Fixed typo `Hight` to `High`. Thank you @khad! ([#507](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/507))
 
 ## 0.21.0
 
-- [Enhancement] Add toggle to disable Care Services. Thank you @jasper-seinhorst! (#501)
+- [Enhancement] Add toggle to disable Care Services. Thank you @jasper-seinhorst! ([#501](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/501))
 
 ## 0.20.1
 
-- [Bug] Viomi fails to retrieve the SerialNumber (#456)
+- [Bug] Viomi fails to retrieve the SerialNumber ([#456](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/456))
 
 ## 0.20.0
 
-- [Enhancement] Roborock S7 Auto-Empty-Dock Support. Thank you @Skjall! (#438)
+- [Enhancement] Roborock S7 Auto-Empty-Dock Support. Thank you @Skjall! ([#438](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/438))
 
 ## 0.19.0
 
-- [New model] Added support for `roborock.vacuum.a15`. Thank you @Baggns! (#423)
+- [New model] Added support for `roborock.vacuum.a15`. Thank you @Baggns! ([#423](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/423))
 
 ## 0.18.1
 
-- [Bug] Private methods starting with `#` do not work in Node.js v12 (#382)
+- [Bug] Private methods starting with `#` do not work in Node.js v12 ([#382](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/382))
 
 ## 0.18.0
 
-- [Enhancement] Reduce NPM bundle size (#376)
-- [Enhancement] Revisit `miio` connection layer (#334)  
-  This is an attempt to fix the reconnection issues (#367, #299, #227).
+- [Enhancement] Reduce NPM bundle size ([#376](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/376))
+- [Enhancement] Revisit `miio` connection layer ([#334](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/334))  
+  This is an attempt to fix the reconnection issues ([#367](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/367), [#299](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/299), [#227](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/227)).
 
 ## 0.17.1
 
-- [Bug] Percentages could be over 100% when maintenance is long overdue, returning `Filter Life Level` below 0 (#366).
+- [Bug] Percentages could be over 100% when maintenance is long overdue, returning `Filter Life Level` below 0 ([#366](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/366)).
 
 ## 0.17.0
 
-- **[Breaking change]** Delete the `delay` option. The reasoning: it slows down the start and `homebridge@1.3.0` marks this plugin as slow (#361). Also, it doesn't work as expected in all the OSs.
-- [Bug] Ensure SerialNumber is returned as string (#373)
+- **[Breaking change]** Delete the `delay` option. The reasoning: it slows down the start and `homebridge@1.3.0` marks this plugin as slow ([#361](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/361)). Also, it doesn't work as expected in all the OSs.
+- [Bug] Ensure SerialNumber is returned as string ([#373](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/373))
 
 ## 0.16.2
 
-- [Bug] Fix `pause` option not returning a state in some cases (#359).
+- [Bug] Fix `pause` option not returning a state in some cases ([#359](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/359)).
 
 ## 0.16.1
 
-- [Bug] Fix `rockrobo.vacuum.v1` speeds (#311) (reverting the changes in #296 because it's breaking some everyone else).
+- [Bug] Fix `rockrobo.vacuum.v1` speeds ([#311](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/311)) (reverting the changes in #296 because it's breaking some everyone else).
 
 ## 0.16.0
 
-- [Enhancement] Add the config option `roomTimeout` so the plugin auto-starts the cleaning after the specified number of seconds when a Room switch has been enabled/disabled (#326)
+- [Enhancement] Add the config option `roomTimeout` so the plugin auto-starts the cleaning after the specified number of seconds when a Room switch has been enabled/disabled ([#326](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/326))
 
 Thank you to @normen for this release!
 
 ## 0.15.2
 
-- [Bug] Refer to the services' attached `.roomId` property (#327)
+- [Bug] Refer to the services' attached `.roomId` property ([#327](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/327))
 
 ## 0.15.1
 
-- [Bug] Fix `autoroom` bug after rooms Services renamed (#324)
+- [Bug] Fix `autoroom` bug after rooms Services renamed ([#324](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/324))
 
 ## 0.15.0
 
-- **[Breaking change]** You can now enable multiple rooms at once! This is a breaking change for users that already used the old behaviour (one room at a time). Read more in the PR that introduced the changes (#317)
-- [Models] Model `roborock.vacuum.a9` is renamed to `roborock.vacuum.a09` (#314)
-- [Bug] Fix bug introduced in 0.14.1 that printed `undefined` at the end of the logs (#316)
+- **[Breaking change]** You can now enable multiple rooms at once! This is a breaking change for users that already used the old behaviour (one room at a time). Read more in the PR that introduced the changes ([#317](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/317))
+- [Models] Model `roborock.vacuum.a9` is renamed to `roborock.vacuum.a09` ([#314](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/314))
+- [Bug] Fix bug introduced in 0.14.1 that printed `undefined` at the end of the logs ([#316](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/316))
 
 Thank you to @ileodo por this release!
 
@@ -156,19 +156,19 @@ Thank you to @ileodo por this release!
 
 ## 0.14.0 - Broken
 
-- [Enhancement] Add `silent` log config to stop logging `info` and `debug` messages (#307)
+- [Enhancement] Add `silent` log config to stop logging `info` and `debug` messages ([#307](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/307))
 
 ## 0.13.6
 
-- [Bug] Fix speed mappings for rockrobo.vacuum.v1 (#296)
+- [Bug] Fix speed mappings for rockrobo.vacuum.v1 ([#296](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/296))
 
 ## 0.13.5
 
-- [Bug] WaterMode doesn't register OFF requests (#284)
+- [Bug] WaterMode doesn't register OFF requests ([#284](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/284))
 
 ## 0.13.4
 
-- [Enhancement] Validate if autoroom and rooms are used at the same time (#270)
+- [Enhancement] Validate if autoroom and rooms are used at the same time ([#270](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/270))
 
 ## 0.13.3
 
@@ -176,11 +176,11 @@ Thank you to @ileodo por this release!
 
 ## 0.13.2
 
-- [Models] Add Roborock T7 (#265)
+- [Models] Add Roborock T7 ([#265](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/265))
 
 ## 0.13.1
 
-- [Enhancement] Add support for token in the params of the CLI `miio-vacuum` (#262)
+- [Enhancement] Add support for token in the params of the CLI `miio-vacuum` ([#262](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/262))
 
 ## 0.13.0
 
@@ -193,19 +193,19 @@ Thank you @L-C-P for all these additions.
 
 ## 0.12.2
 
-- [Bug] Callbackify is missing (#254)
+- [Bug] Callbackify is missing ([#254](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/254))
 
 ## 0.12.1
 
-- [Bug] Avoid services requests while the device is not connected yet (#251)
+- [Bug] Avoid services requests while the device is not connected yet ([#251](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/251))
 
 ## 0.12.0
 
 - [Models] Add Roborock S6 MaxV to list of models
-- [Bug] Roborock S6 MaxV | Model report 106% FanSpeed (#235)
-- [Bug] Roborock S6 MaxV | Model stop cleaning is throwing an error (#236)
-- [Bug] Xiaomi App modesetting update is wrong, if only fan speed or water speed is changed from custom to fixed value or vice versa (#238)
-- [Bug] Install binary as `miio-vacuum` to avoid clashing with the deprecated `miio` library (#222)
+- [Bug] Roborock S6 MaxV | Model report 106% FanSpeed ([#235](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/235))
+- [Bug] Roborock S6 MaxV | Model stop cleaning is throwing an error ([#236](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/236))
+- [Bug] Xiaomi App modesetting update is wrong, if only fan speed or water speed is changed from custom to fixed value or vice versa ([#238](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/238))
+- [Bug] Install binary as `miio-vacuum` to avoid clashing with the deprecated `miio` library ([#222](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/222))
 
 ## 0.11.9
 
@@ -213,23 +213,23 @@ Thank you @L-C-P for all these additions.
 
 ## 0.11.8
 
-- [Bug] Fix zones layout in `config.schema.json` (#218)
+- [Bug] Fix zones layout in `config.schema.json` ([#218](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/218))
 
 ## 0.11.7
 
-- [Bug] Fix zones definition in `config.schema.json` (#218)
+- [Bug] Fix zones definition in `config.schema.json` ([#218](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/218))
 
 ## 0.11.6
 
-- [Bug] Viomi: Add consumable status (main/side brush lives) (#216)
+- [Bug] Viomi: Add consumable status (main/side brush lives) ([#216](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/216))
 
 ## 0.11.5
 
-- [Bug] Viomi: Fix charging state and battery level (#216)
+- [Bug] Viomi: Fix charging state and battery level ([#216](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/216))
 
 ## 0.11.4
 
-- [Bug] Only show errors the first time they happen (#162)
+- [Bug] Only show errors the first time they happen ([#162](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/162))
 
 ## 0.11.3
 
@@ -245,10 +245,10 @@ Thank you @L-C-P for all these additions.
 
 ## 0.11.0
 
-- [Models] S5 should use the gen4 speeds (#131)
+- [Models] S5 should use the gen4 speeds ([#131](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/131))
 - [Models] Add support for Viomi models (#100 #199 #150)
-- [Models] Some Mijia models use a mix of a set of commands of Viomi and Roborock :scream: (#141)
-- [Bug] Set `error_code` to `0` after logging it to clear it up (#193)
+- [Models] Some Mijia models use a mix of a set of commands of Viomi and Roborock :scream: ([#141](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/141))
+- [Bug] Set `error_code` to `0` after logging it to clear it up ([#193](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/193))
 
 ## 0.10.1
 
@@ -256,15 +256,15 @@ Thank you @L-C-P for all these additions.
 
 ## 0.10.0
 
-- [Enhancement] Move `nicoh88-miio` library to this module (#196)
-- [Feature] Provide aggregated `FilterLifeLevel` characteristic in the fan service (#145)
+- [Enhancement] Move `nicoh88-miio` library to this module ([#196](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/196))
+- [Feature] Provide aggregated `FilterLifeLevel` characteristic in the fan service ([#145](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/145))
 
 ## 0.9.0
 
-- [Bug] Xiaowa E202-02 fails to go back to the dock (#181) - Thanks @bedrin
+- [Bug] Xiaowa E202-02 fails to go back to the dock ([#181](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/181)) - Thanks @bedrin
 - [Bug] Xiaowa E202-02 successful response is upper-cased "OK" - Thanks @bedrin
-- [Bug] Pause before going to dock (#180) - Thanks @bedrin
-- [Bug] Fixes connection drops and outdated statuses (#146) - Thanks @bedrin
+- [Bug] Pause before going to dock ([#180](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/180)) - Thanks @bedrin
+- [Bug] Fixes connection drops and outdated statuses ([#146](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/146)) - Thanks @bedrin
 
 ## 0.8.4
 
@@ -272,17 +272,17 @@ Thank you @L-C-P for all these additions.
 
 ## 0.8.3
 
-- [Bug] Fix the `minStep` maths (#190) - Thank you @bedrin
+- [Bug] Fix the `minStep` maths ([#190](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/190)) - Thank you @bedrin
 
 ## 0.8.2
 
-- [Models] Fix Xiaowa E202-02 modes (#179) - Thank you @bedrin
-- [Bug] Fix Xiaowa E202-02 fail to go to the dock (#180)
-- [Bug] Fix stalled updates (#146)
+- [Models] Fix Xiaowa E202-02 modes ([#179](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/179)) - Thank you @bedrin
+- [Bug] Fix Xiaowa E202-02 fail to go to the dock ([#180](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/180))
+- [Bug] Fix stalled updates ([#146](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/146))
 
 ## 0.8.1
 
-- [Bug] Avoid calling `homebridge@1.x.x` new methods if they are not available (#185)
+- [Bug] Avoid calling `homebridge@1.x.x` new methods if they are not available ([#185](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/185))
 
 ## 0.8.0
 
@@ -290,15 +290,15 @@ Thank you @L-C-P for all these additions.
   - If 5 possible states => 0%, 25%, 50%, 75% and 100%
   - If 6 possible states => 0%, 20%, 40%, 60%, 80% and 100%
   - If 7 possible states => 0%, 16%, 32%, 48%, 64%, 80% and 96%
-- [Models] Add Roborock S6 Pure to list of models (#176)
+- [Models] Add Roborock S6 Pure to list of models ([#176](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/176))
 - [Feature] Report native `FilterMaintenance` services for the care indicators
-- [Bug] Fix error duplication in logs (#162)
+- [Bug] Fix error duplication in logs ([#162](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/162))
 
 ## 0.7.7
 
-- [Models] Add "Mop" mode for model S6 (#144)
-- [Models] Add "Custom" mode for model S5-Max (#110)
-- [Fix] Move `system-sleep` to optional dependencies to fix installation errors that fail to compile it (#151)
+- [Models] Add "Mop" mode for model S6 ([#144](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/144))
+- [Models] Add "Custom" mode for model S5-Max ([#110](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/110))
+- [Fix] Move `system-sleep` to optional dependencies to fix installation errors that fail to compile it ([#151](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/151))
 
 ## 0.7.6
 
