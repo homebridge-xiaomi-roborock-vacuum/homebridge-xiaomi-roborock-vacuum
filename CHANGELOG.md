@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.31.1
+
+- [Bug] Fix iOS16 naming issues but preserving user overrides ([#845](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/845))
+
 ## 0.31.0
 
 - [Bug] Fixed: push room names from settings to homekit ([#829](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/829)) (thank you, @YoeriVD)

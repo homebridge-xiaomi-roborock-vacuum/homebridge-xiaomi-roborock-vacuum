@@ -2,6 +2,7 @@ import { Service } from "homebridge";
 import { distinct, filter, map, tap } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
+import { ensureName } from "../utils/ensure_name";
 
 export interface DockConfig {
   dock: boolean;
@@ -12,9 +13,9 @@ export class DockService extends PluginServiceClass {
   constructor(coreContext: CoreContext) {
     super(coreContext);
 
-    this.service = new this.hap.Service.OccupancySensor(
-      `${this.config.name} Dock`
-    );
+    const name = `${this.config.name} Dock`;
+    this.service = new this.hap.Service.OccupancySensor(name);
+    ensureName(this.hap, this.service, name);
     this.service
       .getCharacteristic(this.hap.Characteristic.OccupancyDetected)
       .onGet(() => this.getDocked());

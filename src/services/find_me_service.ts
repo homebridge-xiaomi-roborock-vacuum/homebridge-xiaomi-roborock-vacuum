@@ -2,6 +2,7 @@ import { Service } from "homebridge";
 import { CharacteristicValue } from "hap-nodejs/dist/types";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
+import { ensureName } from "../utils/ensure_name";
 
 export interface FindMeConfig {
   findMe: boolean;
@@ -13,10 +14,9 @@ export class FindMeService extends PluginServiceClass {
   constructor(coreContext: CoreContext) {
     super(coreContext);
     if (this.config.findMe) {
-      this.service = new this.hap.Service.Switch(
-        `${this.config.name} ${this.config.findMeWord}`,
-        "FindMe Switch"
-      );
+      const name = `${this.config.name} ${this.config.findMeWord}`;
+      this.service = new this.hap.Service.Switch(name, "FindMe Switch");
+      ensureName(this.hap, this.service, name);
       this.service
         .getCharacteristic(this.hap.Characteristic.On)
         .onGet(() => false)

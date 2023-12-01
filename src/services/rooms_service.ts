@@ -2,6 +2,7 @@ import { Service } from "homebridge";
 import { filter, firstValueFrom } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
+import { ensureName } from "../utils/ensure_name";
 
 export interface RoomsConfig {
   cleanword: string;
@@ -84,12 +85,7 @@ export class RoomsService extends PluginServiceClass {
       { roomId }
     );
 
-    room.addOptionalCharacteristic(this.hap.Characteristic.ConfiguredName);
-    room.setCharacteristic(this.hap.Characteristic.ConfiguredName, switchName);
-    room.updateCharacteristic(
-      this.hap.Characteristic.ConfiguredName,
-      switchName
-    );
+    ensureName(this.hap, room, switchName);
 
     room
       .getCharacteristic(this.hap.Characteristic.On)

@@ -3,6 +3,7 @@ import { distinct, filter } from "rxjs";
 import { CoreContext } from "./types";
 import { RoomsService } from "./rooms_service";
 import { PluginServiceClass } from "./plugin_service_class";
+import { ensureName } from "../utils/ensure_name";
 
 export interface PauseConfig {
   pause: boolean;
@@ -16,10 +17,9 @@ export class PauseSwitch extends PluginServiceClass {
     private readonly roomsService: RoomsService
   ) {
     super(coreContext);
-    this.service = new this.hap.Service.Switch(
-      `${this.config.name} ${this.config.pauseWord}`,
-      "Pause Switch"
-    );
+    const name = `${this.config.name} ${this.config.pauseWord}`;
+    this.service = new this.hap.Service.Switch(name, "Pause Switch");
+    ensureName(this.hap, this.service, name);
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
       .onGet(() => this.getPauseState())
