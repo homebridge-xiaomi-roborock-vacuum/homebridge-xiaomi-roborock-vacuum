@@ -1,6 +1,7 @@
 import { Service } from "homebridge";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
+import { ensureName } from "../utils/ensure_name";
 
 export interface DustCollectionConfig {
   dustCollection: boolean;
@@ -10,10 +11,9 @@ export class DustCollection extends PluginServiceClass {
   private readonly service: Service;
   constructor(coreContext: CoreContext) {
     super(coreContext);
-    this.service = new this.hap.Service.Switch(
-      `${this.config.name} Dust Collection`,
-      "Dust Collection"
-    );
+    const name = `${this.config.name} Dust Collection`;
+    this.service = new this.hap.Service.Switch(name, "Dust Collection");
+    ensureName(this.hap, this.service, name);
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
       .onGet(() => this.getDustCollectionState())

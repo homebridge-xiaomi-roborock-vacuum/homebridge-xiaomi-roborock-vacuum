@@ -3,6 +3,7 @@ import { filter } from "rxjs";
 import { CoreContext } from "./types";
 import { MainService } from "./main_service";
 import { PluginServiceClass } from "./plugin_service_class";
+import { ensureName } from "../utils/ensure_name";
 
 interface ZoneDefinition {
   name: string;
@@ -54,10 +55,12 @@ export class ZonesService extends PluginServiceClass {
 
   private createZone(zoneName: string, zoneParams: ZoneDefinition["zone"]) {
     this.log.info(`createRoom | Zone ${zoneName} (${zoneParams})`);
+    const name = `${this.config.cleanword} ${zoneName}`;
     this.zones[zoneName] = new this.hap.Service.Switch(
-      `${this.config.cleanword} ${zoneName}`,
+      name,
       "zoneCleaning" + zoneName
     );
+    ensureName(this.hap, this.zones[zoneName], name);
     this.zones[zoneName]
       .getCharacteristic(this.hap.Characteristic.On)
       .onGet(() => this.mainService.getCleaning())

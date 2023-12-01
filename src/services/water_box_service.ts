@@ -5,6 +5,7 @@ import { findSpeedModes } from "../utils/find_speed_modes";
 import { ProductInfo } from "./product_info";
 import { MainService } from "./main_service";
 import { PluginServiceClass } from "./plugin_service_class";
+import { ensureName } from "../utils/ensure_name";
 
 export interface WaterBoxConfig {
   waterBox: boolean;
@@ -18,10 +19,9 @@ export class WaterBoxService extends PluginServiceClass {
     private readonly mainService: MainService
   ) {
     super(coreContext);
-    this.service = new this.hap.Service.Fan(
-      `${this.config.name} Water Box`,
-      "Water Box"
-    );
+    const name = `${this.config.name} Water Box`;
+    this.service = new this.hap.Service.Fan(name, "Water Box");
+    ensureName(this.hap, this.service, name);
     this.service
       .getCharacteristic(this.hap.Characteristic.RotationSpeed)
       .onGet(() => this.getWaterSpeed())

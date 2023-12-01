@@ -1,6 +1,7 @@
 import { Service } from "homebridge";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
+import { ensureName } from "../utils/ensure_name";
 
 export interface GoToConfig {
   goTo: boolean;
@@ -13,10 +14,9 @@ export class GoToService extends PluginServiceClass {
   private readonly service: Service;
   constructor(coreContext: CoreContext) {
     super(coreContext);
-    this.service = new this.hap.Service.Switch(
-      `${this.config.name} ${this.config.goToWord}`,
-      "GoTo Switch"
-    );
+    const name = `${this.config.name} ${this.config.goToWord}`;
+    this.service = new this.hap.Service.Switch(name, "GoTo Switch");
+    ensureName(this.hap, this.service, name);
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
       .onGet(() => this.getGoToState())

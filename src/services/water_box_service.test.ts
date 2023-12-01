@@ -52,9 +52,9 @@ describe("WaterBoxService", () => {
     expect(waterboxService.services).toHaveLength(1);
   });
 
-  test("registers 3 characteristics", () => {
+  test("registers 4 characteristics", () => {
     const service = waterboxService.services[0];
-    expect(service.characteristics).toHaveLength(3);
+    expect(service.characteristics).toHaveLength(4);
   });
 
   describe("Characteristic getters", () => {

@@ -8,3 +8,4 @@ bugs/
 .bin/
 coverage/
 dist/
+persist/
