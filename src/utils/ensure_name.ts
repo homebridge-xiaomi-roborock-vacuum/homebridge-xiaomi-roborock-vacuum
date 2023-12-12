@@ -6,7 +6,13 @@ export function ensureName(hap: HAP, service: Service, name: string) {
     `configured-name`,
     name.replaceAll(" ", "_"),
   ].join("-");
+  if (service.getCharacteristic(hap.Characteristic.ConfiguredName)) {
+    // Let's assume the listener is already added
+    return;
+  }
+
   service.addOptionalCharacteristic(hap.Characteristic.ConfiguredName);
+
   if (!hap.HAPStorage.storage().getItemSync(key)) {
     service.setCharacteristic(hap.Characteristic.ConfiguredName, name);
   }

@@ -48,11 +48,17 @@ export class XiaomiRoborockVacuum implements AccessoryPlugin {
   private readonly pluginServices: PluginServices;
   private readonly deviceManager: DeviceManager;
 
-  constructor(log: Logging, config: Partial<Config>, api: API) {
+  constructor(
+    log: Logging | Logger,
+    config: Partial<Config>,
+    api: API,
+    deviceManager?: DeviceManager
+  ) {
     this.log = getLogger(log, config);
     this.config = applyConfigDefaults(config);
 
-    this.deviceManager = new DeviceManager(api.hap, this.log, config);
+    this.deviceManager =
+      deviceManager || new DeviceManager(api.hap, this.log, config);
 
     this.deviceManager.errorChanged$
       .pipe(
