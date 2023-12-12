@@ -2,6 +2,7 @@
 
 ## Next
 
+- [Enhancement] Register as platform for dynamically adding services after connecting ([#855](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/855))
 - [Chore] Exclude test and mock files from the final NPM package ([#856](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/856))
 
 ## 0.31.1
