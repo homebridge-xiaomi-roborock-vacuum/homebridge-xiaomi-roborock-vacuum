@@ -105,37 +105,61 @@ describe("XiaomiRoborockVacuumPlatform", () => {
     });
   });
 
-  describe("unregisterRemovedAccessories", () => {
-    test("unregisters all devices because the config has an empty array", () => {
-      homebridge.platformAccessory.mockImplementationOnce(newAccessory);
+  test("unregisters all devices because the config has an empty array", () => {
+    homebridge.platformAccessory.mockImplementationOnce(newAccessory);
 
-      const platform = new XiaomiRoborockVacuumPlatform(
-        log,
-        {
-          platform: ACCESSORY_NAME,
-          devices: [
-            applyConfigDefaults({
-              name: "other-name",
-              ip: "my.ip",
-              token: "super-secret",
-            }),
-          ],
-        },
-        homebridge
-      );
-      expect(platform["accessories"].size).toBe(0);
-      // Registers a cached service
-      const accessory = newAccessory();
-      platform.configureAccessory(accessory);
-      expect(platform["accessories"].size).toBe(1);
-      // Trigger the handler
-      homebridge.on.mock.calls[0][1]();
-      expect(platform["accessories"].size).toBe(1);
-      // Unregisters one accessory
-      expect(homebridge.unregisterPlatformAccessories).toHaveBeenCalledTimes(1);
-      // Tries to register the accessory
-      expect(homebridge.platformAccessory).toHaveBeenCalledTimes(1);
-      expect(homebridge.registerPlatformAccessories).toHaveBeenCalledTimes(1);
-    });
+    const platform = new XiaomiRoborockVacuumPlatform(
+      log,
+      {
+        platform: ACCESSORY_NAME,
+        devices: [],
+      },
+      homebridge
+    );
+    expect(platform["accessories"].size).toBe(0);
+    // Registers a cached service
+    const accessory = newAccessory();
+    platform.configureAccessory(accessory);
+    expect(platform["accessories"].size).toBe(1);
+    // Trigger the handler
+    homebridge.on.mock.calls[0][1]();
+    expect(platform["accessories"].size).toBe(0);
+    // Unregisters one accessory
+    expect(homebridge.unregisterPlatformAccessories).toHaveBeenCalledTimes(1);
+    // Tries to register the accessory
+    expect(homebridge.platformAccessory).toHaveBeenCalledTimes(0);
+    expect(homebridge.registerPlatformAccessories).toHaveBeenCalledTimes(0);
+  });
+
+  test("unregisters all cached devices and creates some others because their configs have changed", () => {
+    homebridge.platformAccessory.mockImplementationOnce(newAccessory);
+
+    const platform = new XiaomiRoborockVacuumPlatform(
+      log,
+      {
+        platform: ACCESSORY_NAME,
+        devices: [
+          applyConfigDefaults({
+            name: "other-name",
+            ip: "my.ip",
+            token: "super-secret",
+          }),
+        ],
+      },
+      homebridge
+    );
+    expect(platform["accessories"].size).toBe(0);
+    // Registers a cached service
+    const accessory = newAccessory();
+    platform.configureAccessory(accessory);
+    expect(platform["accessories"].size).toBe(1);
+    // Trigger the handler
+    homebridge.on.mock.calls[0][1]();
+    expect(platform["accessories"].size).toBe(1);
+    // Unregisters one accessory
+    expect(homebridge.unregisterPlatformAccessories).toHaveBeenCalledTimes(1);
+    // Tries to register the accessory
+    expect(homebridge.platformAccessory).toHaveBeenCalledTimes(1);
+    expect(homebridge.registerPlatformAccessories).toHaveBeenCalledTimes(1);
   });
 });
