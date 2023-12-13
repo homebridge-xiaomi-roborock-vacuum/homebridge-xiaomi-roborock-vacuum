@@ -1,6 +1,9 @@
 import { API, Categories, Logging } from "homebridge";
-import { createHomebridgeMock, miio } from "../test.mocks";
 
+// jest.useFakeTimers();
+
+import { createHomebridgeMock, miio } from "../test.mocks";
+import "./platform.test.mock";
 import {
   XiaomiRoborockVacuumPlatform,
   XiaomiRoborockVacuumPlatformAccessory,
@@ -132,7 +135,7 @@ describe("XiaomiRoborockVacuumPlatform", () => {
       expect(homebridge.unregisterPlatformAccessories).toHaveBeenCalledTimes(1);
       // Tries to register the accessory
       expect(homebridge.platformAccessory).toHaveBeenCalledTimes(1);
-      expect(homebridge.registerPlatformAccessories).toHaveBeenCalledTimes(0);
+      expect(homebridge.registerPlatformAccessories).toHaveBeenCalledTimes(1);
     });
   });
 });
