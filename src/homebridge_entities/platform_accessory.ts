@@ -1,6 +1,5 @@
 import type { Logging, API, Service } from "homebridge";
 import { Subject, first } from "rxjs";
-import { PLUGIN_NAME, ACCESSORY_NAME } from "../constants";
 import { type Config, DeviceManager } from "../services";
 import { findSpeedModes } from "../utils/find_speed_modes";
 import { type Logger, getLogger } from "../utils/logger";
