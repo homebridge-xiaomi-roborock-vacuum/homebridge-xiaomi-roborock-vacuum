@@ -8,8 +8,10 @@ src/
 # Test files
 coverage/
 __snapshots__/
-**.test.js
-src/test.mocks.ts
+**.test.{js,js.map}
+**.test.mock.{js,js.map}
+**.mock.{js,js.map}
+test.mocks.{js,js.map}
 persist/
 
 # Development configs
@@ -18,6 +20,8 @@ renovate.json
 tsconfig.json
 babel.config.js
 jest.config.js
+.prettierignore
+.prettierrc
 
 # CI configs
 .github/
