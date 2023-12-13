@@ -1,7 +1,5 @@
 import { API, Categories, Logging } from "homebridge";
 
-// jest.useFakeTimers();
-
 import { createHomebridgeMock, miio } from "../test.mocks";
 import "./platform.test.mock";
 import {
