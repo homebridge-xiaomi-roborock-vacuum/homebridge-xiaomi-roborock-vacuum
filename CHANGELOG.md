@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Chore] Exclude test and mock files from the final NPM package ([#856](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/856))
+
 ## 0.31.1
 
 - [Bug] Fix iOS16 naming issues but preserving user overrides ([#845](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/845))
