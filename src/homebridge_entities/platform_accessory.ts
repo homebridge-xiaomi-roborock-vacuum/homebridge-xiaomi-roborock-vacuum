@@ -1,11 +1,11 @@
 import type { Logging, API, Service } from "homebridge";
-import { first } from "rxjs";
-import { PLUGIN_NAME, ACCESSORY_NAME } from "./constants";
-import { type Config, DeviceManager } from "./services";
-import { findSpeedModes } from "./utils/find_speed_modes";
-import { type Logger, getLogger } from "./utils/logger";
-import { XiaomiRoborockVacuum } from "./xiaomi_roborock_vacuum_accessory";
-import type { XiaomiRoborockVacuumPlatformAccessory } from "./xiaomi_roborock_vacuum_platform";
+import { Subject, first } from "rxjs";
+import { PLUGIN_NAME, ACCESSORY_NAME } from "../constants";
+import { type Config, DeviceManager } from "../services";
+import { findSpeedModes } from "../utils/find_speed_modes";
+import { type Logger, getLogger } from "../utils/logger";
+import { XiaomiRoborockVacuumAccessory } from "./accessory";
+import type { XiaomiRoborockVacuumPlatformAccessory } from "./platform";
 
 /**
  * Dynamic Device Accessory:
@@ -17,21 +17,21 @@ import type { XiaomiRoborockVacuumPlatformAccessory } from "./xiaomi_roborock_va
  * 4. Assign the listeners and services to the accessory
  */
 export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
+  public readonly initialized$ = new Subject<void>();
   private readonly log: Logger;
 
   constructor(
     log: Logging,
     config: Partial<Config>,
     api: API,
-    private readonly accessory: XiaomiRoborockVacuumPlatformAccessory,
-    isCached: boolean
+    private readonly accessory: XiaomiRoborockVacuumPlatformAccessory
   ) {
     this.log = getLogger(log, config);
     const deviceManager = new DeviceManager(api.hap, this.log, config);
     deviceManager.deviceConnected$.pipe(first()).subscribe(() => {
       // For now, let's simply reuse the accessory class to bootstrap the services.
       // In the future, we can move to smarter logic: calculate the rooms first, then create the services.
-      const vacuumService = new XiaomiRoborockVacuum(
+      const vacuumService = new XiaomiRoborockVacuumAccessory(
         this.log,
         this.applyDefaultsBasedOnModel(config, deviceManager.model),
         api,
@@ -77,12 +77,7 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
         }
       });
 
-      // Finally, register the accessory if not cached
-      if (!isCached) {
-        api.registerPlatformAccessories(PLUGIN_NAME, ACCESSORY_NAME, [
-          this.accessory,
-        ]);
-      }
+      this.initialized$.next();
     });
   }
 

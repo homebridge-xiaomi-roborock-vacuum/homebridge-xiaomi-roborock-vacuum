@@ -5,10 +5,10 @@ import { Subject } from "rxjs";
 
 jest.useFakeTimers();
 
-import { createHomebridgeMock, miio } from "./test.mocks";
-import { deviceManagerMock } from "./xiaomi_roborock_vacuum_accessory.test.mock";
+import { createHomebridgeMock, miio } from "../test.mocks";
+import { deviceManagerMock } from "./accessory.test.mock";
 
-import { XiaomiRoborockVacuum } from "./xiaomi_roborock_vacuum_accessory";
+import { XiaomiRoborockVacuumAccessory } from "./accessory";
 
 describe("XiaomiRoborockVacuum", () => {
   let homebridge: jest.Mocked<API>;
@@ -31,15 +31,17 @@ describe("XiaomiRoborockVacuum", () => {
   });
 
   test("Returns the accessory class", () => {
-    expect(XiaomiRoborockVacuum).toHaveProperty("prototype");
-    expect(XiaomiRoborockVacuum.prototype).toHaveProperty("identify");
-    expect(XiaomiRoborockVacuum.prototype).toHaveProperty("getServices");
+    expect(XiaomiRoborockVacuumAccessory).toHaveProperty("prototype");
+    expect(XiaomiRoborockVacuumAccessory.prototype).toHaveProperty("identify");
+    expect(XiaomiRoborockVacuumAccessory.prototype).toHaveProperty(
+      "getServices"
+    );
   });
 
   test("Fails if both `room` and `autoroom` are provided", () => {
     expect(
       () =>
-        new XiaomiRoborockVacuum(
+        new XiaomiRoborockVacuumAccessory(
           log,
           {
             ip: "192.168.0.1",
@@ -50,12 +52,12 @@ describe("XiaomiRoborockVacuum", () => {
           homebridge
         )
     )
-      .toThrowError(`Both "autoroom" and "rooms" config options can't be used at the same time.\n
+      .toThrow(`Both "autoroom" and "rooms" config options can't be used at the same time.\n
       Please, use "autoroom" to retrieve the "rooms" config and remove it when not needed.`);
   });
 
   test("Client with minimum config has the basic services", () => {
-    const client = new XiaomiRoborockVacuum(
+    const client = new XiaomiRoborockVacuumAccessory(
       log,
       {
         ip: "192.168.0.1",
@@ -73,7 +75,7 @@ describe("XiaomiRoborockVacuum", () => {
   });
 
   test("Client with all config has all the services", () => {
-    const client = new XiaomiRoborockVacuum(
+    const client = new XiaomiRoborockVacuumAccessory(
       log,
       {
         ip: "192.168.0.1",
@@ -100,7 +102,7 @@ describe("XiaomiRoborockVacuum", () => {
   });
 
   test("identify API", async () => {
-    const client = new XiaomiRoborockVacuum(
+    const client = new XiaomiRoborockVacuumAccessory(
       log,
       {
         ip: "192.168.0.1",

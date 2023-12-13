@@ -3,7 +3,7 @@
 import { catchError, concatMap, distinct } from "rxjs";
 import { AccessoryPlugin, API, Logging } from "homebridge";
 
-import { getLogger, Logger } from "./utils/logger";
+import { getLogger, Logger } from "../utils/logger";
 import {
   applyConfigDefaults,
   DeviceManager,
@@ -21,10 +21,10 @@ import {
   ZonesService,
   CareService,
   DustBinService,
-} from "./services";
-import { errors } from "./utils/constants";
-import { ErrorChangedEvent } from "./services/device_manager";
-import { CoreContext } from "./services/types";
+} from "../services";
+import { errors } from "../utils/constants";
+import { ErrorChangedEvent } from "../services/device_manager";
+import { CoreContext } from "../services/types";
 
 interface PluginServices {
   productInfo: ProductInfo;
@@ -42,7 +42,7 @@ interface PluginServices {
   careServices?: CareService;
 }
 
-export class XiaomiRoborockVacuum implements AccessoryPlugin {
+export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
   private readonly log: Logger;
   private readonly config: Config;
   private readonly pluginServices: PluginServices;
