@@ -5,9 +5,10 @@ import type {
   PlatformAccessory,
   PlatformConfig,
 } from "homebridge";
-import { type Config, applyConfigDefaults } from "./services";
-import { ACCESSORY_NAME, PLUGIN_NAME } from "./constants";
-import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./xiaomi_roborock_vacuum_platform_accessory";
+import { type Config, applyConfigDefaults } from "../services";
+import { ACCESSORY_NAME, PLUGIN_NAME } from "../constants";
+import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory";
+import { first } from "rxjs";
 
 interface XiaomiRoborockVacuumPlatformConfig extends PlatformConfig {
   devices: Partial<Config>[];
@@ -84,27 +85,36 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
    */
   private initializeDevices() {
     this.config.devices.forEach((config) => {
-      let cached = true;
+      let isCached = true;
       const uuid = this.api.hap.uuid.generate(
         `${PLUGIN_NAME}-accessory-${config.name}`
       );
       let accessory = [...this.accessories].find(({ UUID }) => UUID === uuid);
 
       if (!accessory) {
-        cached = false;
+        isCached = false;
         const name = applyConfigDefaults(config).name;
         accessory = new this.api.platformAccessory(name, uuid);
         accessory.context.name = name;
         this.accessories.add(accessory);
       }
 
-      new XiaomiRoborockVacuumPlatformAccessoryInitializer(
-        this.log,
-        config,
-        this.api,
-        accessory,
-        cached
-      );
+      const platformInitializer =
+        new XiaomiRoborockVacuumPlatformAccessoryInitializer(
+          this.log,
+          config,
+          this.api,
+          accessory
+        );
+
+      // Finally, register the accessory if not cached
+      if (!isCached) {
+        platformInitializer.initialized$.pipe(first()).subscribe(() => {
+          this.api.registerPlatformAccessories(PLUGIN_NAME, ACCESSORY_NAME, [
+            accessory!,
+          ]);
+        });
+      }
     });
   }
 }

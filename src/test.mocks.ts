@@ -86,5 +86,10 @@ const Service = Object.assign(createServiceMock(), {
 export const createHomebridgeMock = () =>
   ({
     registerAccessory: jest.fn(),
-    hap: { Characteristic, Service, HAPStorage },
+    hap: { Characteristic, Service, HAPStorage, uuid: { generate: jest.fn() } },
+    // Platform methods
+    on: jest.fn(),
+    platformAccessory: jest.fn(),
+    registerPlatformAccessories: jest.fn(),
+    unregisterPlatformAccessories: jest.fn(),
   }) as unknown as jest.Mocked<API>;
