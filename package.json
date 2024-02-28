@@ -58,8 +58,8 @@
     "yargs": "15.4.1"
   },
   "devDependencies": {
-    "@babel/core": "7.23.9",
-    "@babel/preset-env": "7.23.9",
+    "@babel/core": "7.24.0",
+    "@babel/preset-env": "7.24.0",
     "@babel/preset-typescript": "7.23.3",
     "@types/jest": "29.5.12",
     "@types/node": "20.11.21",
