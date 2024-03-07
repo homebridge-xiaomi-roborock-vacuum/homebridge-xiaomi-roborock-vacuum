@@ -15,4 +15,8 @@ export function ensureName(hap: HAP, service: Service, name: string) {
     .on("change", ({ newValue }) => {
       hap.HAPStorage.storage().setItemSync(key, newValue);
     });
+
+  service.setCharacteristic(hap.Characteristic.Name, name);
+
+  
 }
