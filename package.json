@@ -53,7 +53,7 @@
     "debug": "4.3.4",
     "deep-equal": "2.2.3",
     "rxjs": "^7.5.6",
-    "semver": "7.6.0",
+    "semver": "7.6.1",
     "tinkerhub-discovery": "0.3.1",
     "yargs": "15.4.1"
   },
