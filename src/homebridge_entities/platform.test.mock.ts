@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory";
 
 export const XiaomiRoborockVacuumPlatformAccessoryInitializerMock = jest
