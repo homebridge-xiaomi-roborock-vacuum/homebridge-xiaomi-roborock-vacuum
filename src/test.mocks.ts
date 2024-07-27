@@ -79,7 +79,7 @@ const Service = Object.assign(createServiceMock(), {
   FilterMaintenance: createServiceMock(),
   AccessoryInformation: createServiceMock(),
   Fan: createServiceMock(),
-  BatteryService: createServiceMock(),
+  Battery: createServiceMock(),
   OccupancySensor: createServiceMock(),
   LockMechanism: createServiceMock(),
 });

@@ -8,9 +8,7 @@ export class BatteryInfo extends PluginServiceClass {
   constructor(coreContext: CoreContext) {
     super(coreContext);
 
-    this.service = new this.hap.Service.BatteryService(
-      `${this.config.name} Battery`
-    );
+    this.service = new this.hap.Service.Battery(`${this.config.name} Battery`);
     this.service
       .getCharacteristic(this.hap.Characteristic.BatteryLevel)
       .onGet(() => this.getBattery());
