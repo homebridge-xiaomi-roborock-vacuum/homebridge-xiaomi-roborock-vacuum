@@ -1,6 +1,6 @@
 {
   "name": "homebridge-xiaomi-roborock-vacuum",
-  "version": "0.31.1",
+  "version": "0.32.0-beta.0",
   "description": "Xiaomi Vacuum Cleaner - 1st (Mi Robot), 2nd (Roborock S50 + S55), 3rd Generation (Roborock S6) and S5 Max - plugin for Homebridge.",
   "license": "MIT",
   "keywords": [
@@ -43,6 +43,10 @@
     "build": "rimraf ./dist && tsc",
     "prepublishOnly": "npm run build",
     "postpublish": "npm run clean",
+    "preversion": "npm run build && npm test",
+    "//": "Ideally, 👇 'version' should update the file CHANGELOG.md (replace Next with the current version)",
+    "version": "git add .",
+    "postversion": "git push && git push --tags",
     "lint": "prettier --check .",
     "lint:fix": "prettier --write .",
     "test": "jest"
