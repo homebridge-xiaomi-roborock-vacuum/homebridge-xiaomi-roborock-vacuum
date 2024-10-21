@@ -1,7 +1,7 @@
 // ============= MIIO MOCKS ================
 
 import { API } from "homebridge";
-import { Characteristic, HAPStorage } from "hap-nodejs";
+import * as HapJs from "hap-nodejs";
 import { Socket } from "net";
 import { MiioDevice } from "./utils/miio_types";
 
@@ -46,47 +46,10 @@ export const miio = {
 
 // ============= HOMEBRIDGE MOCKS ================
 
-const createGetCharacteristicMock = () =>
-  jest.fn().mockImplementation(() =>
-    Object.assign({}, createChainableServiceMethodsMock(), {
-      setProps: jest.fn(),
-      on: createGetCharacteristicMock(),
-      onGet: createGetCharacteristicMock(),
-      onSet: createGetCharacteristicMock(),
-      updateValue: jest.fn(),
-    })
-  );
-
-const createChainableServiceMethodsMock = () => ({
-  addLinkedService: jest.fn(),
-  setPrimaryService: jest.fn(),
-  getCharacteristic: createGetCharacteristicMock(),
-  setCharacteristic: jest
-    .fn()
-    .mockImplementation(createChainableServiceMethodsMock),
-  addOptionalCharacteristic: jest.fn(),
-});
-
-const createServiceMock = () =>
-  jest
-    .fn()
-    .mockImplementation((name, type) =>
-      Object.assign({ name, type }, createChainableServiceMethodsMock())
-    );
-
-const Service = Object.assign(createServiceMock(), {
-  Switch: createServiceMock(),
-  FilterMaintenance: createServiceMock(),
-  AccessoryInformation: createServiceMock(),
-  Fan: createServiceMock(),
-  Battery: createServiceMock(),
-  OccupancySensor: createServiceMock(),
-  LockMechanism: createServiceMock(),
-});
 export const createHomebridgeMock = () =>
   ({
     registerAccessory: jest.fn(),
-    hap: { Characteristic, Service, HAPStorage, uuid: { generate: jest.fn() } },
+    hap: HapJs,
     // Platform methods
     on: jest.fn(),
     platformAccessory: jest.fn(),
