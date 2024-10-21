@@ -1,29 +1,37 @@
 import { API, Categories, Logging } from "homebridge";
 import { Service } from "hap-nodejs";
+import { Subject } from "rxjs";
 
 import { createHomebridgeMock, miio } from "../test.mocks";
-import { XiaomiRoborockVacuumAccessoryMock } from "./platform_accessory.test.mock";
+import {
+  createXiaomiRoborockVacuumAccessoryMock,
+  XiaomiRoborockVacuumAccessoryMock,
+} from "./platform_accessory.test.mock";
 import { deviceManagerMock } from "./accessory.test.mock";
 import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory";
 import { XiaomiRoborockVacuumPlatformAccessory } from "./platform";
-import { Subject } from "rxjs";
 import { MiioDevice } from "../utils/miio_types";
 
 function newAccessory(): XiaomiRoborockVacuumPlatformAccessory {
   const name = "test";
   const uuid = "test-test";
-  return {
+  const accessory = {
     context: { name },
     on: jest.fn(),
     emit: jest.fn(),
     displayName: name,
     UUID: uuid,
     category: Categories.FAN,
-    services: [],
+    services: [
+      new Service.AccessoryInformation("Preexisting info", "info"),
+      new Service.Switch("Preexisting"),
+    ],
     addListener: jest.fn(),
     addService: jest.fn(),
-    getServices: jest.fn(() => []),
+    getServices: jest.fn(() => accessory.services),
+    getServiceById: jest.fn(),
   } as unknown as XiaomiRoborockVacuumPlatformAccessory;
+  return accessory;
 }
 
 describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
@@ -56,12 +64,30 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
       ip: "my.ip",
     };
 
-    // Can't make it work yet
-    test.skip("after connect, adds services to the accessory", async () => {
+    test("after connect, adds services to the accessory", async () => {
       const accessory = newAccessory();
-      XiaomiRoborockVacuumAccessoryMock.mockReturnValue([
+      const instanceMock = createXiaomiRoborockVacuumAccessoryMock();
+      jest
+        .spyOn(accessory, "getServiceById")
+        .mockReturnValueOnce(accessory.services[0]);
+
+      instanceMock.getServices.mockReturnValue([
+        ...accessory.services,
         new Service.Switch("Test", "super cool"),
+        new Service.Switch("Test 2"),
       ]);
+
+      const accessorySpy = jest.spyOn(
+        accessory.services[0],
+        "replaceCharacteristicsFromService"
+      );
+
+      const setPrimaryServiceSpy = jest.spyOn(
+        accessory.services[1],
+        "setPrimaryService"
+      );
+
+      XiaomiRoborockVacuumAccessoryMock.mockReturnValue(instanceMock);
       const platformAccessory =
         new XiaomiRoborockVacuumPlatformAccessoryInitializer(
           log,
@@ -73,6 +99,10 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
         miio.device
       );
 
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(accessorySpy).toHaveBeenCalledTimes(1);
+      expect(setPrimaryServiceSpy).toHaveBeenCalledTimes(2);
       expect(accessory.addService).toHaveBeenCalledTimes(1);
     });
   });

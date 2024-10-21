@@ -68,8 +68,7 @@ describe("XiaomiRoborockVacuum", () => {
     const initialisedServices = client.getServices();
     expect(initialisedServices).toHaveLength(7);
     expect(
-      // @ts-expect-error type should exist but TS says it doesn't
-      initialisedServices.map((svc) => `${svc.name}-${svc.type}`)
+      initialisedServices.map((svc) => `${svc.displayName}-${svc.subtype}`)
     ).toMatchSnapshot();
     expect(Object.keys(client["pluginServices"])).toMatchSnapshot();
   });
@@ -95,8 +94,7 @@ describe("XiaomiRoborockVacuum", () => {
     const initialisedServices = client.getServices();
     expect(initialisedServices).toHaveLength(9);
     expect(
-      // @ts-expect-error type should exist but TS says it doesn't
-      initialisedServices.map((svc) => `${svc.name}-${svc.type}`)
+      initialisedServices.map((svc) => `${svc.displayName}-${svc.subtype}`)
     ).toMatchSnapshot();
     expect(Object.keys(client["pluginServices"])).toMatchSnapshot();
   });
