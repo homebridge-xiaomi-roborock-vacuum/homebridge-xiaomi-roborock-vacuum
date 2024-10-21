@@ -6,9 +6,9 @@ export function createCareFilterClass(hap: HAP) {
 
     constructor() {
       super("Care indicator filter", CareFilter.UUID, {
-        format: hap.Characteristic.Formats.FLOAT,
+        format: hap.Formats.FLOAT,
         unit: "%",
-        perms: [hap.Characteristic.Perms.READ, hap.Characteristic.Perms.NOTIFY],
+        perms: [hap.Perms.PAIRED_READ, hap.Perms.NOTIFY],
       });
       this.value = this.getDefaultValue();
     }
