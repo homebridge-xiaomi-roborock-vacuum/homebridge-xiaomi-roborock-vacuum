@@ -35,8 +35,8 @@
   },
   "main": "dist/index.js",
   "engines": {
-    "node": ">=14.0.0",
-    "homebridge": ">=0.4.45"
+    "homebridge": "^1.6.0 || ^2.0.0-beta.0",
+    "node": "^18.20.4 || ^20.15.1"
   },
   "scripts": {
     "clean": "rimraf ./dist",
@@ -69,7 +69,7 @@
     "@types/node": "22.10.1",
     "@types/semver": "7.5.8",
     "babel-jest": "29.7.0",
-    "homebridge": "1.8.5",
+    "homebridge": "^2.0.0-beta.23",
     "jest": "29.7.0",
     "prettier": "3.4.1",
     "rimraf": "6.0.1",
