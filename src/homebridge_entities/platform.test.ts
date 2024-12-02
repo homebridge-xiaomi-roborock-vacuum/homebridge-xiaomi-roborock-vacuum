@@ -1,4 +1,5 @@
-import { API, Categories, Logging } from "homebridge";
+import type { API, Logging } from "homebridge";
+import { Categories } from "hap-nodejs";
 
 import { createHomebridgeMock, miio } from "../test.mocks";
 import "./platform.test.mock";

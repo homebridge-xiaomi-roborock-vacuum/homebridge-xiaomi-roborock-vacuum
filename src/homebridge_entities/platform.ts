@@ -50,10 +50,8 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
    * Required by Homebridge - Called for each cached accessory.
    * @param accessory
    */
-  public configureAccessory(
-    accessory: XiaomiRoborockVacuumPlatformAccessory
-  ): void {
-    this.accessories.add(accessory);
+  public configureAccessory(accessory: PlatformAccessory): void {
+    this.accessories.add(accessory as XiaomiRoborockVacuumPlatformAccessory);
   }
 
   /**
