@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.32.1
+
+- [Chore] Prepare for Homebridge v2 ([#958](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/958)) - Explicitly claim the compatiblity.
+
 ## 0.32.0
 
 - [Chore] Prepare for Homebridge v2 ([#958](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/958))
