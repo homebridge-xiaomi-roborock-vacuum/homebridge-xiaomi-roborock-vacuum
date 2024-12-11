@@ -5,13 +5,25 @@
 [![dependencies Status](https://david-dm.org/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/status.svg)](https://david-dm.org/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum)
 [![codecov](https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/branch/master/graph/badge.svg?token=1VW1RV7MCT)](https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum)
 
+> [!NOTE]
+> **Maintainer's pledge:**
+> This plugin is "sort of" stable in what it does. There are many improvements that I'd like to include and that the community is asking for. And I can't wait to solve them all. However, I'm a father of 2 kids (1 and 3 y/o), so my availability is spare (apologies for not being as active as I'd love to).
+> 
+> I prioritize hot-fixes and compatibility issues (like the recent [Homebridge v2 upgrade works](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/958)). My "closer" roadmap is detailed in [#966](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/966).
+> 
+> I'm happy to review any contributions. So **PRs are more than welcome**.
+
 # homebridge-xiaomi-roborock-vacuum
+
+> [!IMPORTANT]  
+> This plugin is only able to integrate with devices linked to the Mi Home app.
+> Devices controlled via the Roborock app change their authentication and methods and are currently not supported by this plugin. Refer to [#104](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/104) for more information.
 
 ## Homebridge plugin for Xiaomi / Roborock Vacuum Cleaner's
 
 This [homebridge](https://github.com/homebridge/homebridge) plugin allows you to control the Xiaomi vacuum robots in your Apple Home App (HomeKit).
 
-It is currently presented in the Home App in the form of a Fan because Apple don't officially support Vacuums in Homekit (we can't wait for this moment to arrive)!
+It is currently presented in the Home App in the form of a Fan because Apple doesn't officially support Vacuums in Homekit (we can't wait for this moment to arrive)! Refer to [#934](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/934) to know more about that.
 
 <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/rockrobo.vacuum.v1.jpg" style="border:1px solid lightgray" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s5.jpg" style="border:1px solid lightgray" alt="Roborock S50 2nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s55.jpg" style="border:1px solid lightgray" alt="Roborock S55 2nd Generation Black" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s6.jpg" style="border:1px solid lightgray" alt="Roborock S6/T6 3nd Generation" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.c10.jpg" style="border:1px solid lightgray" alt="Roborock Xiaowa Lite C10" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s5.max.jpg" style="border:1px solid lightgray" alt="Roborock S5 Max" width="300">&nbsp;&nbsp;&nbsp;<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s6.maxv.jpg" style="border:1px solid lightgray" alt="Roborock S6 MaxV" width="300">
 
