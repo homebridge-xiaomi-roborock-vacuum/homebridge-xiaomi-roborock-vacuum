@@ -5,12 +5,13 @@
 [![dependencies Status](https://david-dm.org/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/status.svg)](https://david-dm.org/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum)
 [![codecov](https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/branch/master/graph/badge.svg?token=1VW1RV7MCT)](https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum)
 
+<!-- prettier-ignore -->
 > [!NOTE]
 > **Maintainer's pledge:**
 > This plugin is "sort of" stable in what it does. There are many improvements that I'd like to include and that the community is asking for. And I can't wait to solve them all. However, I'm a father of 2 kids (1 and 3 y/o), so my availability is spare (apologies for not being as active as I'd love to).
-> 
+>
 > I prioritize hot-fixes and compatibility issues (like the recent [Homebridge v2 upgrade works](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/958)). My "closer" roadmap is detailed in [#966](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/966).
-> 
+>
 > I'm happy to review any contributions. So **PRs are more than welcome**.
 
 # homebridge-xiaomi-roborock-vacuum
