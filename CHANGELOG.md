@@ -4,7 +4,7 @@
 
 ## 0.33.0
 
-- - [New Model] Add waterbox support for Roborock Q8 Max+ Thank you @jmago17 ([#1026](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1026))
+- [New Model] Add waterbox support for Roborock Q8 Max+ Thank you @jmago17 ([#1026](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1026))
 
 ## 0.32.1
 
