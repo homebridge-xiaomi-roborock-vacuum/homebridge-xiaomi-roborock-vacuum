@@ -106,6 +106,13 @@ export const MODELS: Record<string, ModelDefinition[]> = {
       waterspeed: watermodes["gen1+custom"],
     },
   ],
+  // Q8S Max+
+  "roborock.vacuum.a73": [
+    {
+      speed: speedmodes["gen4+custom"],
+      waterspeed: watermodes["gen1+custom"],
+    },
+  ],
   // Q Revo
   "roborock.vacuum.a75": [
     {
