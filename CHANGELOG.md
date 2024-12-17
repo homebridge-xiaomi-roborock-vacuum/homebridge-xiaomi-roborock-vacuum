@@ -2,7 +2,7 @@
 
 ## Next
 
-- [New Model] Add waterbox support for Roborock S7 Max Ultra. ([#TBD](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/TBD))
+- [New Model] Add waterbox support for Roborock S7 Max Ultra. ([#1027](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1027))
 
 ## 0.33.0
 
