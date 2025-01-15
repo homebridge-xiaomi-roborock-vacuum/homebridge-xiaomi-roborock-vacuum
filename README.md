@@ -62,7 +62,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
       "platform": "XiaomiRoborockVacuum",
       "devices": [
         {
-          "name": "Xiaomi Mi Robot Vaccum 1st Generation",
+          "name": "Xiaomi Mi Robot Vacuum 1st Generation",
           "ip": "192.168.1.150",
           "token": "abcdef1234567890abcdef1234567890",
           "serviceType": "fan",
@@ -104,7 +104,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
   "accessories": [
     {
       "accessory": "XiaomiRoborockVacuum",
-      "name": "Xiaomi Mi Robot Vaccum 1st Generation",
+      "name": "Xiaomi Mi Robot Vacuum 1st Generation",
       "ip": "192.168.1.150",
       "token": "abcdef1234567890abcdef1234567890",
       "serviceType": "fan",
@@ -152,7 +152,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 | `findMe`              | `false`               | when set to true, HomeKit shows an additional switch for "find me" - if switched on, the vacuum will say "Hi, I am over here"                                                                                                                                                                                                                                                                                                                                                               |
 | `findMeWord`          | `"where are you"`     | used for autonaming the "find me" command. E.g: Hey Siri, NameOfYourVacuum where are you                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `goTo`                | `false`               | when set to true, HomeKit shows an additional switch for "go to" - if switched on, you will be able to send your vacuum to the specified location                                                                                                                                                                                                                                                                                                                                           |
-| `goToWord`            | `"go to coordiantes"` | used for autonaming the "go to" command. E.g: Hey Siri, NameOfYourVacuum to to coordinates                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `goToWord`            | `"go to coordinates"` | used for autonaming the "go to" command. E.g: Hey Siri, NameOfYourVacuum to to coordinates                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `goToX`               | `25500`               | x-coordinate of the specified location                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `goToY`               | `25500`               | y-coordinate of the specified location                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | `dock`                | `false`               | when set to true, HomeKit shows an occupancy sensor, if robot is in the charging dock                                                                                                                                                                                                                                                                                                                                                                                                       |
@@ -227,7 +227,7 @@ As new users join our community, and use this plugin, we try to learn from their
    1. If it works, but the vacuum modes (aka speeds) are wrong: add your model to the list in 1 with the right mapping.
    2. If it doesn't work, please, try making sure the IP and token are correct, by running the command `miio-vacuum inspect id-or-address --token tokenAsHex`.  
       HINT: Try a couple of times, just in case there's a network glitch.
-   3. If you can connect and see the details of your robot, try running the manual commands like explained in [here](./miio/docs/protocol.md#testing-commands).  
+   3. If you can connect and see the details of your robot, try running the manual commands like explained in [here](./src/miio/docs/protocol.md#testing-commands).  
       HINT: You can find the list of commands for your device in the Python project [python-miio](https://github.com/rytilahti/python-miio).
 
 ## My model is, allegedly, supported, but it fails to connect
