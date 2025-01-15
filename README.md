@@ -141,6 +141,59 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 }
 ```
 
+- Example `config.json` with two vacuums:
+
+```JSONC
+{
+  // Recommended: Define it as a platform.
+  "platforms": [
+    {
+      "platform": "XiaomiRoborockVacuum",
+      "devices": [
+        {
+          "name": "Xiaomi Mi Robot Vacuum 1st Generation",
+          "ip": "192.168.1.150",
+          "token": "abcdef1234567890abcdef1234567890",
+          "pause": false,
+          "dock": true,
+          "waterBox": false
+        },
+        {
+          "name": "Xiaomi Roborock S50 Vacuum 2nd Generation",
+          "ip": "192.168.1.151",
+          "token": "1234567890abcdef1234567890abcdef",
+          "pause": false,
+          "dock": true,
+          "waterBox": false
+        }
+      ]
+    },
+  ],
+
+  // Legacy: define it as an accessory.
+  "accessories": [
+    {
+      "accessory": "XiaomiRoborockVacuum",
+      "name": "Xiaomi Mi Robot Vaccum 1st Generation",
+      "ip": "192.168.1.150",
+      "token": "abcdef1234567890abcdef1234567890",
+      "pause": false,
+      "dock": true,
+      "waterBox": false
+    },
+    {
+      "accessory": "XiaomiRoborockVacuum",
+      "name": "Xiaomi Roborock S50 Vaccum 2nd Generation",
+      "ip": "192.168.1.151",
+      "token": "1234567890abcdef1234567890abcdef",
+      "pause": false,
+      "dock": true,
+      "waterBox": false
+    }
+  ],
+}
+```
+
 ## Optional parameters
 
 | Name of parameter     | Default value         | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
