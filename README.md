@@ -37,7 +37,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 - Battery status and condition in the device details. Low battery alert.
 - Pause switch (optional).
 - Room cleaning (optional): Read [Room cleaning](#room-cleaning) to understand how it works.
-- Zone-cleaning (optional): Read [Zone cleaning](#zone-cleaning) to understand how it works.
+- Zone cleaning (optional): Read [Zone cleaning](#zone-cleaning) to understand how it works.
 - Occupancy sensor (similar to motion sensor) for dock status (optional).
 - Second Fan for water box modes (optional).
   - [Watermode levels](./src/models/watermodes.ts) only when enabled in config, and the device supports it.
