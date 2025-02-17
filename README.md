@@ -37,7 +37,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 - Battery status and condition in the device details. Low battery alert.
 - Pause switch (optional).
 - Room cleaning (optional): Read [Room cleaning](#room-cleaning) to understand how it works.
-- Zone cleaning (optional).
+- Zone cleaning (optional): Read [Zone cleaning](#zone-cleaning) to understand how it works.
 - Occupancy sensor (similar to motion sensor) for dock status (optional).
 - Second Fan for water box modes (optional).
   - [Watermode levels](./src/models/watermodes.ts) only when enabled in config, and the device supports it.
@@ -173,6 +173,57 @@ This feature seems to work with all models which offer room cleaning, but may no
 This feature seems to be working on models that support naming the rooms in the Xiaomi / Roborock App. This is known to include the Roborock S6 as well as the S4 with firmware version 3.5.8_0358 or newer.
 
 Even if you have one of these models but you haven't named the Rooms in your App yet, this function will not work! Thanks @domeOo
+
+## Zone cleaning
+
+This plugin supports Zone cleaning (only models that support zone cleaning via the Xiaomi Mi Home app). Keep reading to understand how it works and how to set it up.
+
+### How it works
+
+To start the Zone Clean Mode, you can enable the zone switch for the zone to be cleaned.
+
+### How can I set it up
+
+Open terminal and run:
+`pip install python-miio`
+After proper installation run:
+`mirobo --ip 192.168.1.XX --token xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx goto X_COORD Y_COORD`
+repeat the goto command until you figure out the bottom-left and top-right position of the zone.
+
+when you have your zone. Go back to the JSON configuration in homberidge and add this lines.</br>
+zone: [[bottom-left X, bottom-left Y, top-right X, top-right Y, # of cleanings]]
+
+```
+"zones": [
+  {
+    "name": "Bed room",
+    "zone": [
+      [
+        24500,
+        27000,
+        28000,
+        30000,
+        1
+      ]
+    ]
+  }
+]
+```
+
+<img src="https://github.com/user-attachments/assets/33176d50-ccc2-4c29-97db-4a63e7ab3a92" alt="drawing" width="200"/>
+
+Additional hint:
+
+- The position near the docking station is 25500 25500 (X/Y)
+- Driving downwards the map is possible by decreasing Y (i.e. 25000)
+- Driving upwards the map is possible by increasing Y (i.e. 26000)
+- Driving left of the map is possible by decreasing X (i.e. 25000)
+- Driving right the map is possible by increasing X (i.e. 26000)
+- If you prefer not to install python-miio or encounter issues during installation, you can configure your vacuum directly in Homebridge. Go to the JSON Config section, find your vacuum settings, and add or modify goToX and goToY with different values. Then, toggle the switch in your Home app. Repeat this until you determine the correct values for your zone.
+
+  `"goToX": 24500, "goToY": 29000`
+
+  <img width="291" alt="Screenshot 2025-02-14 at 22 16 23" src="https://github.com/user-attachments/assets/55f74a41-e45e-4828-a063-d804c7b2d16b" />
 
 ## Go to Location
 
