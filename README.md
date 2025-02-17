@@ -184,10 +184,10 @@ To start the Zone Clean Mode, you can enable the zone switch for the zone to be 
 
 ### How can I set it up
 
-Open terminal and run: 
-```pip install python-miio```
+Open terminal and run:
+`pip install python-miio`
 After proper installation run:
-``` mirobo --ip 192.168.1.XX --token xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx goto X_COORD Y_COORD ```
+`mirobo --ip 192.168.1.XX --token xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx goto X_COORD Y_COORD`
 repeat the goto command until you figure out the bottom-left and top-right position of the zone.
 
 when you have your zone. Go back to the JSON configuration in homberidge and add this lines.</br>
@@ -221,10 +221,9 @@ Additional hint:
 - Driving right the map is possible by increasing X (i.e. 26000)
 - If you prefer not to install python-miio or encounter issues during installation, you can configure your vacuum directly in Homebridge. Go to the JSON Config section, find your vacuum settings, and add or modify goToX and goToY with different values. Then, toggle the switch in your Home app. Repeat this until you determine the correct values for your zone.
 
-  ```"goToX": 24500, "goToY": 29000```
+  `"goToX": 24500, "goToY": 29000`
 
   <img width="291" alt="Screenshot 2025-02-14 at 22 16 23" src="https://github.com/user-attachments/assets/55f74a41-e45e-4828-a063-d804c7b2d16b" />
-
 
 ## Go to Location
 
