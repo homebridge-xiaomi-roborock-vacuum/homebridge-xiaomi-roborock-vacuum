@@ -3,7 +3,7 @@
 exports[`XiaomiRoborockVacuum Client with all config has all the services 1`] = `
 [
   "Roborock vacuum cleaner-Vacuum",
-  "undefined-undefined",
+  "Roborock vacuum cleaner-undefined",
   "Roborock vacuum cleaner Battery-undefined",
   "Roborock vacuum cleaner Pause-Pause Switch",
   "Roborock vacuum cleaner Water Box-Water Box",
@@ -35,7 +35,7 @@ exports[`XiaomiRoborockVacuum Client with all config has all the services 2`] = 
 exports[`XiaomiRoborockVacuum Client with minimum config has the basic services 1`] = `
 [
   "Roborock vacuum cleaner-Vacuum",
-  "undefined-undefined",
+  "Roborock vacuum cleaner-undefined",
   "Roborock vacuum cleaner Battery-undefined",
   "Care indicator sensors-sensors",
   "Care indicator filter-filter",
