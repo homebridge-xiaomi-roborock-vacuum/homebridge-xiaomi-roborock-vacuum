@@ -8,6 +8,7 @@ describe("entrypoint", () => {
     api = {
       hap: {},
       registerAccessory: jest.fn(),
+      registerPlatform: jest.fn(),
     } as unknown as jest.Mocked<API>; // No need to mock everything for these tests
 
     expect(() => entrypoint(api)).not.toThrow();
@@ -15,6 +16,14 @@ describe("entrypoint", () => {
 
   test("should register the accessory", () => {
     expect(api.registerAccessory).toHaveBeenCalledWith(
+      "homebridge-xiaomi-roborock-vacuum",
+      "XiaomiRoborockVacuum",
+      expect.any(Function)
+    );
+  });
+
+  test("should register the platform", () => {
+    expect(api.registerPlatform).toHaveBeenCalledWith(
       "homebridge-xiaomi-roborock-vacuum",
       "XiaomiRoborockVacuum",
       expect.any(Function)
