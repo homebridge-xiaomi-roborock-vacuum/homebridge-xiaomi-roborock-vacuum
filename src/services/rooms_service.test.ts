@@ -54,7 +54,7 @@ describe("RoomsService", () => {
   test("throws an error if rooms and autoroom are present at the same time", async () => {
     await expect(
       createRoomService({ rooms: [], autoroom: true })
-    ).rejects.toThrowError();
+    ).rejects.toThrow();
   });
 
   test("creates a declared room", async () => {
