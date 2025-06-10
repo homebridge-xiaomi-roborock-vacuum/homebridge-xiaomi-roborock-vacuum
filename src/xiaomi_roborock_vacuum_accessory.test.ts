@@ -50,7 +50,7 @@ describe("XiaomiRoborockVacuum", () => {
           homebridge
         )
     )
-      .toThrowError(`Both "autoroom" and "rooms" config options can't be used at the same time.\n
+      .toThrow(`Both "autoroom" and "rooms" config options can't be used at the same time.\n
       Please, use "autoroom" to retrieve the "rooms" config and remove it when not needed.`);
   });
 

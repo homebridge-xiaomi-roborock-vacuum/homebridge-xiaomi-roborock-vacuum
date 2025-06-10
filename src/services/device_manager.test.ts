@@ -10,7 +10,7 @@ describe("DeviceManager", () => {
     test("Fails if no IP provided", () => {
       expect(
         () => new DeviceManager(createHomebridgeMock().hap, log, {})
-      ).toThrowError("You must provide an ip address of the vacuum cleaner.");
+      ).toThrow("You must provide an ip address of the vacuum cleaner.");
     });
 
     test("Fails if no token provided", () => {
@@ -19,7 +19,7 @@ describe("DeviceManager", () => {
           new DeviceManager(createHomebridgeMock().hap, log, {
             ip: "192.168.0.1",
           })
-      ).toThrowError("You must provide a token of the vacuum cleaner.");
+      ).toThrow("You must provide a token of the vacuum cleaner.");
     });
 
     test("Does not fail if ip and token are provided (but fails to connects)", () => {
@@ -40,9 +40,9 @@ describe("DeviceManager", () => {
         token: "token",
       });
       expect(deviceManager.model).toStrictEqual("unknown model");
-      expect(() => deviceManager.state).toThrowError("Not connected yet");
-      expect(() => deviceManager.isCleaning).toThrowError("Not connected yet");
-      expect(() => deviceManager.isPaused).toThrowError("Not connected yet");
+      expect(() => deviceManager.state).toThrow("Not connected yet");
+      expect(() => deviceManager.isCleaning).toThrow("Not connected yet");
+      expect(() => deviceManager.isPaused).toThrow("Not connected yet");
     });
 
     test("connects and loads", async () => {
