@@ -71,7 +71,7 @@
     "babel-jest": "30.0.2",
     "homebridge": "^2.0.0-beta.23",
     "jest": "30.0.2",
-    "prettier": "3.5.3",
+    "prettier": "3.6.0",
     "rimraf": "6.0.1",
     "typescript": "5.8.3"
   }
