@@ -65,7 +65,7 @@
     "@babel/core": "7.27.4",
     "@babel/preset-env": "7.27.2",
     "@babel/preset-typescript": "7.27.1",
-    "@types/jest": "29.5.14",
+    "@types/jest": "30.0.0",
     "@types/node": "22.15.33",
     "@types/semver": "7.7.0",
     "babel-jest": "30.0.2",
