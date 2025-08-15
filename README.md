@@ -53,69 +53,145 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 
 - Example `config.json` with one vacuum and room cleaning:
 
-```
-"accessories": [
- {
-  "accessory": "XiaomiRoborockVacuum",
-  "name": "Xiaomi Mi Robot Vacuum 1st Generation",
-  "ip": "192.168.1.150",
-  "token": "abcdef1234567890abcdef1234567890",
-  "serviceType": "fan",
-  "pause": false,
-  "dock": true,
-  "waterBox": false,
-  "cleanword": "cleaning",
-  "rooms": [
+```JSONC
+{
+  // Recommended: Define it as a platform.
+  // Better handling of discover, and model-specific features.
+  "platforms": [
     {
-      "id": 16,
-      "name": "Livingroom"
-    },
-    {
-      "id": 17,
-      "name": "Kitchen"
+      "platform": "XiaomiRoborockVacuum",
+      "devices": [
+        {
+          "name": "Xiaomi Mi Robot Vacuum 1st Generation",
+          "ip": "192.168.1.150",
+          "token": "abcdef1234567890abcdef1234567890",
+          "serviceType": "fan",
+          "pause": false,
+          "dock": true,
+          "waterBox": false,
+          "cleanword": "cleaning",
+          "rooms": [
+            {
+              "id": 16,
+              "name": "Livingroom"
+            },
+            {
+              "id": 17,
+              "name": "Kitchen"
+            }
+          ],
+          "zones": [
+            {
+              "name":"Family Room (x2)",
+              "zone":[[25000,25000,32000,32000,2]]
+            },
+            {
+              "name":"Bedroom",
+              "zone":[[21000,32000,24000,37000,1]]
+            },
+            {
+              "name":"Bedroom & Family Room",
+              "zone":[ [21000,32000,24000,37000,1],  [25000,25000,32000,32000,1]]
+            }
+          ]
+        }
+      ]
     }
   ],
-  "zones": [
+
+  // Legacy: define it as an accessory.
+  // Everything is preset, and the plugin tries to connect and address the commands based on the info provided here.
+  "accessories": [
     {
-      "name":"Family Room (x2)",
-      "zone":[[25000,25000,32000,32000,2]]
-    },
-    {
-      "name":"Bedroom",
-      "zone":[[21000,32000,24000,37000,1]]
-    },
-    {
-      "name":"Bedroom & Family Room",
-      "zone":[ [21000,32000,24000,37000,1],  [25000,25000,32000,32000,1]]
+      "accessory": "XiaomiRoborockVacuum",
+      "name": "Xiaomi Mi Robot Vacuum 1st Generation",
+      "ip": "192.168.1.150",
+      "token": "abcdef1234567890abcdef1234567890",
+      "serviceType": "fan",
+      "pause": false,
+      "dock": true,
+      "waterBox": false,
+      "cleanword": "cleaning",
+      "rooms": [
+        {
+          "id": 16,
+          "name": "Livingroom"
+        },
+        {
+          "id": 17,
+          "name": "Kitchen"
+        }
+      ],
+      "zones": [
+        {
+          "name":"Family Room (x2)",
+          "zone":[[25000,25000,32000,32000,2]]
+        },
+        {
+          "name":"Bedroom",
+          "zone":[[21000,32000,24000,37000,1]]
+        },
+        {
+          "name":"Bedroom & Family Room",
+          "zone":[ [21000,32000,24000,37000,1],  [25000,25000,32000,32000,1]]
+        }
+      ]
     }
-  ]
- }
-],
+  ],
+}
 ```
 
 - Example `config.json` with two vacuums:
 
-```
-"accessories": [
- {
-  "accessory": "XiaomiRoborockVacuum",
-  "name": "Xiaomi Mi Robot Vacuum 1st Generation",
-  "ip": "192.168.1.150",
-  "token": "abcdef1234567890abcdef1234567890",
-  "pause": false,
-  "dock": true,
-  "waterBox": false
- },
- {
-  "accessory": "XiaomiRoborockVacuum",
-  "name": "Xiaomi Roborock S50 Vacuum 2nd Generation",
-  "ip": "192.168.1.151",
-  "token": "1234567890abcdef1234567890abcdef",
-  "pause": false,
-  "dock": true,
-  "waterBox": false
- }
-],
+```JSONC
+{
+  // Recommended: Define it as a platform.
+  "platforms": [
+    {
+      "platform": "XiaomiRoborockVacuum",
+      "devices": [
+        {
+          "name": "Xiaomi Mi Robot Vacuum 1st Generation",
+          "ip": "192.168.1.150",
+          "token": "abcdef1234567890abcdef1234567890",
+          "pause": false,
+          "dock": true,
+          "waterBox": false
+        },
+        {
+          "name": "Xiaomi Roborock S50 Vacuum 2nd Generation",
+          "ip": "192.168.1.151",
+          "token": "1234567890abcdef1234567890abcdef",
+          "pause": false,
+          "dock": true,
+          "waterBox": false
+        }
+      ]
+    },
+  ],
+
+  // Legacy: define it as an accessory.
+  "accessories": [
+    {
+      "accessory": "XiaomiRoborockVacuum",
+      "name": "Xiaomi Mi Robot Vaccum 1st Generation",
+      "ip": "192.168.1.150",
+      "token": "abcdef1234567890abcdef1234567890",
+      "pause": false,
+      "dock": true,
+      "waterBox": false
+    },
+    {
+      "accessory": "XiaomiRoborockVacuum",
+      "name": "Xiaomi Roborock S50 Vaccum 2nd Generation",
+      "ip": "192.168.1.151",
+      "token": "1234567890abcdef1234567890abcdef",
+      "pause": false,
+      "dock": true,
+      "waterBox": false
+    }
+  ],
+}
 ```
 
 ## Optional parameters
