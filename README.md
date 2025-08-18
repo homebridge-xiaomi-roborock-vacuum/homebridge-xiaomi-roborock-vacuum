@@ -6,6 +6,13 @@
 [![codecov](https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/branch/master/graph/badge.svg?token=1VW1RV7MCT)](https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum)
 
 <!-- prettier-ignore -->
+> [!TIP]
+> **Matter Vacuum Alternative:**
+> 
+> If you want to use a Matter Vacuum instead of the current HomeKit's Fan workaround, 
+> take a look at [matterbridge-xiaomi-roborock](https://github.com/afharo/matterbridge-xiaomi-roborock).
+
+<!-- prettier-ignore -->
 > [!NOTE]
 > **Maintainer's pledge:**
 > This plugin is "sort of" stable in what it does. There are many improvements that I'd like to include and that the community is asking for. And I can't wait to solve them all. However, I'm a father of 2 kids (1 and 3 y/o), so my availability is spare (apologies for not being as active as I'd love to).
