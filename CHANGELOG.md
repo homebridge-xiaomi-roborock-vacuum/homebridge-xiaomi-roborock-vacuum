@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.34.1
+
+- [Chore] Releasing a new version to show the callout to the [new Matterbridge alternative](https://github.com/afharo/matterbridge-xiaomi-roborock).
+
 ## 0.34.0
 
 - [New Model] Add waterbox support for Roborock S7 Max Ultra. ([#1027](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1027))
