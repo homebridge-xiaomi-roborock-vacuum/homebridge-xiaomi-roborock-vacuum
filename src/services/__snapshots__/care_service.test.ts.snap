@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`CareService legacyCareSensors the custom Care service characteristics call all getters 1`] = `0.009259259259259259`;
 
