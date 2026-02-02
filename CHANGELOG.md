@@ -2,6 +2,10 @@
 
 ## Next
 
+## 0.35.0
+
+- [New Model] Add support for Roborock Q5 Pro. Thank you @kirylvolkau ([#1178](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1178))
+
 ## 0.34.1
 
 - [Chore] Releasing a new version to show the callout to the [new Matterbridge alternative](https://github.com/afharo/matterbridge-xiaomi-roborock).
