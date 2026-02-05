@@ -59,7 +59,7 @@
     "deep-equal": "2.2.3",
     "rxjs": "^7.5.6",
     "semver": "7.7.4",
-    "tinkerhub-discovery": "0.3.1",
+    "tinkerhub-discovery": "0.6.0",
     "yargs": "15.4.1"
   },
   "devDependencies": {
