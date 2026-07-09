@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Enhancement] Register as platform for dynamically adding services after connecting ([#855](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/855))
+
 ## 0.35.0
 
 - [New Model] Add support for Roborock Q5 Pro. Thank you @kirylvolkau ([#1178](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1178))
