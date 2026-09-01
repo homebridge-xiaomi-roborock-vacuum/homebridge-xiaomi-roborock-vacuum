@@ -4,6 +4,7 @@ import {
   distinct,
   exhaustMap,
   filter,
+  Subscription,
   Subject,
   timer,
 } from "rxjs";
@@ -44,6 +45,7 @@ export class DeviceManager {
   public readonly deviceConnected$ = this.internalDevice$.pipe(filter(Boolean));
 
   private connectingPromise: Promise<void> | null = null;
+  private statePollingSubscription: Subscription | null = null;
   private connectRetry = setTimeout(() => void 0, 100); // Noop timeout only to initialise the property
   constructor(
     private readonly hap: HAP,
@@ -173,7 +175,10 @@ export class DeviceManager {
       );
 
       // Refresh the state every 30s so miio maintains a fresh connection (or recovers connection if lost until we fix https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/81)
-      timer(0, GET_STATE_INTERVAL_MS).pipe(exhaustMap(() => this.getState()));
+      this.statePollingSubscription?.unsubscribe();
+      this.statePollingSubscription = timer(0, GET_STATE_INTERVAL_MS)
+        .pipe(exhaustMap(() => this.getState()))
+        .subscribe();
     } else {
       const model = (device || {}).miioModel;
       this.log.error(

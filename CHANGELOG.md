@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Bug] Restore periodic vacuum state polling and connection recovery.
+
 ## 0.35.0
 
 - [New Model] Add support for Roborock Q5 Pro. Thank you @kirylvolkau ([#1178](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1178))
