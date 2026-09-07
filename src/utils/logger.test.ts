@@ -18,6 +18,23 @@ describe("getLogger", () => {
     jest.resetAllMocks();
   });
 
+  test("it should create a new logger out of the Logging structure", () => {
+    const logger = getLogger(homebridgeLogger, {});
+    expect(logger).toMatchObject({
+      debug: expect.any(Function),
+      info: expect.any(Function),
+      warn: expect.any(Function),
+      error: expect.any(Function),
+      setModel: expect.any(Function),
+    });
+  });
+
+  test("it should return the logger as-is if log is already a logger", () => {
+    const firstLogger = getLogger(homebridgeLogger, {});
+    const secondLogger = getLogger(firstLogger, {});
+    expect(secondLogger).toStrictEqual(firstLogger);
+  });
+
   test.each(["debug", "info", "warn", "error"] as const)(
     "it should log %p messages by default",
     (level) => {

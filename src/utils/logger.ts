@@ -14,7 +14,14 @@ export interface Logger
   setModel: (modelName: string) => void;
 }
 
-export function getLogger(log: Logging, config: CustomLoggerConfig): Logger {
+export function getLogger(
+  log: Logging | Logger,
+  config: CustomLoggerConfig
+): Logger {
+  if ("setModel" in log) {
+    return log;
+  }
+
   let model = "unknown";
 
   function buildMsg(message: string) {

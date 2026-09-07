@@ -8,7 +8,9 @@ export class ProductInfo extends PluginServiceClass {
   private readonly service: Service;
   constructor(coreContext: CoreContext) {
     super(coreContext);
-    this.service = new this.hap.Service.AccessoryInformation();
+    this.service = new this.hap.Service.AccessoryInformation(
+      coreContext.config.name
+    );
     this.service
       .setCharacteristic(this.hap.Characteristic.Manufacturer, "Xiaomi")
       .setCharacteristic(this.hap.Characteristic.Model, "Roborock");
