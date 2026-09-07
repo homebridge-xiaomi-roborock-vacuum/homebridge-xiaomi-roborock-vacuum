@@ -2,6 +2,8 @@
 
 ## Next
 
+## 0.36.0
+
 - [Bug] Restore periodic vacuum state polling and connection recovery.
 - [Bug] Fix incompatibility issue with Homebridge v2.3.0 ([#1217](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1217))
 
