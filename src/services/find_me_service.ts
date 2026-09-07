@@ -1,5 +1,4 @@
-import { Service } from "homebridge";
-import { CharacteristicValue } from "hap-nodejs/dist/types";
+import { Service, CharacteristicValue } from "homebridge";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";

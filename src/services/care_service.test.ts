@@ -1,5 +1,5 @@
 import { HAP } from "homebridge";
-import * as HapJs from "hap-nodejs";
+import * as HapJs from "@homebridge/hap-nodejs";
 import { CareService } from "./care_service";
 import { createHomebridgeMock } from "../test.mocks";
 import { getLoggerMock } from "../utils/logger.mock";

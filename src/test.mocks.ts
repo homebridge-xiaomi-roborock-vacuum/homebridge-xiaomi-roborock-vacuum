@@ -1,7 +1,7 @@
 // ============= MIIO MOCKS ================
 
 import { API } from "homebridge";
-import * as HapJs from "hap-nodejs";
+import * as HapJs from "@homebridge/hap-nodejs";
 import { Socket } from "net";
 import { MiioDevice } from "./utils/miio_types";
 

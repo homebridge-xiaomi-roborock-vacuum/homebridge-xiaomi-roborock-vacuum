@@ -11,6 +11,7 @@
     "allowJs": true,
     "checkJs": false,
     "noImplicitAny": false,
+    "skipLibCheck": true,
 
     "strict": true,
     "esModuleInterop": true,

@@ -1,5 +1,5 @@
 import { HAP } from "homebridge";
-import * as HapJs from "hap-nodejs";
+import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
 import { BatteryInfo } from "./battery_info";
 import {

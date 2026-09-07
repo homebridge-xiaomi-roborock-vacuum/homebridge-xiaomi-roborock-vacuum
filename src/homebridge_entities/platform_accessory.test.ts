@@ -1,5 +1,5 @@
 import type { API, Logging } from "homebridge";
-import { Service, Categories } from "hap-nodejs";
+import { Service, Categories } from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
 
 import { createHomebridgeMock, miio } from "../test.mocks";

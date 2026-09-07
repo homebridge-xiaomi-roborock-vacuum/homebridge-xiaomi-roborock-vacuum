@@ -4,6 +4,11 @@
 
 - [Enhancement] Register as platform for dynamically adding services after connecting ([#855](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/855))
 
+## 0.36.0
+
+- [Bug] Restore periodic vacuum state polling and connection recovery.
+- [Bug] Fix incompatibility issue with Homebridge v2.3.0 ([#1217](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1217))
+
 ## 0.35.0
 
 - [New Model] Add support for Roborock Q5 Pro. Thank you @kirylvolkau ([#1178](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1178))
