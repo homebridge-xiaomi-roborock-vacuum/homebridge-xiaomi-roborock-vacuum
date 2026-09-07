@@ -1,5 +1,5 @@
 import { HAP } from "homebridge";
-import * as HapJs from "hap-nodejs";
+import * as HapJs from "@homebridge/hap-nodejs";
 import { findSpeedModesMock } from "./water_box_service.test.mock";
 import { WaterBoxService } from "./water_box_service";
 import { getLoggerMock, LoggerMock } from "../utils/logger.mock";

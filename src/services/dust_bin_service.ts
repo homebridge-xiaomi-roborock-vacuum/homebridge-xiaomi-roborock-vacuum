@@ -1,8 +1,7 @@
-import { Service } from "homebridge";
+import { Service, CharacteristicValue } from "homebridge";
 import { BehaviorSubject, distinct, filter } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
-import { CharacteristicValue } from "hap-nodejs/dist/types";
 
 export interface DustBinConfig {
   dustBin: boolean;

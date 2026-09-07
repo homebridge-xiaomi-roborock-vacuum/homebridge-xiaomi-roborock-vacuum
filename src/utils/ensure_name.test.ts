@@ -1,8 +1,8 @@
-import * as hap from "hap-nodejs";
+import * as hap from "@homebridge/hap-nodejs";
 import { ensureName } from "./ensure_name";
 
 describe("ensureName", () => {
-  const getItemSpy = jest.spyOn(hap.HAPStorage.storage(), "getItemSync");
+  const getItemSpy = jest.spyOn(hap.HAPStorage.storage(), "getItem");
   const setItemSpy = jest.spyOn(hap.HAPStorage.storage(), "setItemSync");
 
   const service = new hap.Service.Switch("test", "test");
