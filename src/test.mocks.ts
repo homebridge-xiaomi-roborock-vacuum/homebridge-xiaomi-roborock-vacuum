@@ -1,7 +1,7 @@
 // ============= MIIO MOCKS ================
 
 import { API } from "homebridge";
-import { Characteristic, HAPStorage } from "hap-nodejs";
+import { Characteristic, HAPStorage } from "@homebridge/hap-nodejs";
 import { Socket } from "net";
 import { MiioDevice } from "./utils/miio_types";
 
