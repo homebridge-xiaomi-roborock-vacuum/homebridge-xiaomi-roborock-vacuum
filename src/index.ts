@@ -1,9 +1,22 @@
 import { API } from "homebridge";
-import { XiaomiRoborockVacuum } from "./xiaomi_roborock_vacuum_accessory";
-
-const PLUGIN_NAME = "homebridge-xiaomi-roborock-vacuum";
-const ACCESSORY_NAME = "XiaomiRoborockVacuum";
+import { PLUGIN_NAME, ACCESSORY_NAME } from "./constants";
+import {
+  XiaomiRoborockVacuumAccessory,
+  XiaomiRoborockVacuumPlatform,
+} from "./homebridge_entities";
 
 export default (api: API) => {
-  api.registerAccessory(PLUGIN_NAME, ACCESSORY_NAME, XiaomiRoborockVacuum);
+  // Register the "legacy" standalone accessory
+  api.registerAccessory(
+    PLUGIN_NAME,
+    ACCESSORY_NAME,
+    XiaomiRoborockVacuumAccessory
+  );
+
+  // Register the "dynamic" platform
+  api.registerPlatform(
+    PLUGIN_NAME,
+    ACCESSORY_NAME,
+    XiaomiRoborockVacuumPlatform
+  );
 };
