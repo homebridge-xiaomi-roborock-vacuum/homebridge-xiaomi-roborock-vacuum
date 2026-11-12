@@ -5,6 +5,7 @@ import { CoreContext } from "./types";
 import type { RoomsService } from "./rooms_service";
 import type { ProductInfo } from "./product_info";
 import { PluginServiceClass } from "./plugin_service_class";
+import { ensureName } from "../utils/ensure_name";
 
 export interface MainServiceConfig {
   serviceType: "fan" | "switch";
@@ -30,13 +31,7 @@ export class MainService extends PluginServiceClass {
     } else {
       this.service = new this.hap.Service.Switch(this.config.name, "Vacuum");
     }
-    this.service.addOptionalCharacteristic(
-      this.hap.Characteristic.ConfiguredName
-    );
-    this.service.setCharacteristic(
-      this.hap.Characteristic.ConfiguredName,
-      this.config.name
-    );
+    ensureName(this.hap, this.service, this.config.name);
 
     if (this.service.setPrimaryService) this.service.setPrimaryService(true);
 
