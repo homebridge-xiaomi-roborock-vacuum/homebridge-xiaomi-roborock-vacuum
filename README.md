@@ -1,3 +1,13 @@
+<!-- prettier-ignore -->
+> [!WARNING]
+> **Looking for a new maintainer**
+>
+> I no longer own a device supported by this project (my new vacuum supports Matter natively), so I can't test changes against real hardware anymore.
+> I'm happy to hand over ownership of the repository and the npm package to anyone who wants to continue its development.
+>
+> In the meantime, I'll keep addressing the reported issues with AI-assisted development, relying on the automated tests and **your feedback**: please, try the beta releases and report back.
+> Interested in taking over? Please, comment on [this issue](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1232).
+
 [![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
 [![GitHub last commit](https://img.shields.io/github/last-commit/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum.svg)](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum)
 [![npm](https://img.shields.io/npm/dt/homebridge-xiaomi-roborock-vacuum.svg)](https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum)
@@ -11,15 +21,6 @@
 > 
 > If you want to use a Matter Vacuum instead of the current HomeKit's Fan workaround, 
 > take a look at [matterbridge-xiaomi-roborock](https://github.com/afharo/matterbridge-xiaomi-roborock).
-
-<!-- prettier-ignore -->
-> [!NOTE]
-> **Maintainer's pledge:**
-> This plugin is "sort of" stable in what it does. There are many improvements that I'd like to include and that the community is asking for. And I can't wait to solve them all. However, I'm a father of 2 kids (1 and 3 y/o), so my availability is spare (apologies for not being as active as I'd love to).
->
-> I prioritize hot-fixes and compatibility issues (like the recent [Homebridge v2 upgrade works](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/958)). My "closer" roadmap is detailed in [#966](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/966).
->
-> I'm happy to review any contributions. So **PRs are more than welcome**.
 
 # homebridge-xiaomi-roborock-vacuum
 
