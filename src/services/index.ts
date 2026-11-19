@@ -14,5 +14,6 @@ export { MopDockService } from "./mop_dock_service";
 export { ProductInfo } from "./product_info";
 export { RoomsService } from "./rooms_service";
 export { WaterBoxService } from "./water_box_service";
+export { WaterTankService } from "./water_tank_service";
 export { ZonesService } from "./zones_service";
 export { PluginService } from "./types";

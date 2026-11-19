@@ -66,6 +66,12 @@
               "default": false,
               "required": false
             },
+            "waterTankEmpty": {
+              "title": "Show a sensor for \"water tank empty\" (only models that report it, usually with a self-refilling dock)",
+              "type": "boolean",
+              "default": false,
+              "required": false
+            },
             "disableCareServices": {
               "title": "Disable Care Services",
               "type": "boolean",
@@ -259,6 +265,7 @@
             "devices[].dustCollection",
             "devices[].mopWash",
             "devices[].mopDrying",
+            "devices[].waterTankEmpty",
             "devices[].silent",
             "devices[].pause",
             "devices[].pauseWord",
