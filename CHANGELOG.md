@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Bug] Room cleaning: send numeric room IDs as numbers. Some models (e.g. the S5) failed to start the room cleaning when they received them as strings ([#1032](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1032)).
+
 ## 1.0.0
 
 > [!WARNING]

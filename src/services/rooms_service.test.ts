@@ -152,4 +152,23 @@ describe("RoomsService", () => {
       expect(roomsService.resolvedRooms).toEqual([]);
     });
   });
+
+  describe("roomIdsForDevice (#1032)", () => {
+    test("sends numeric room IDs as numbers, in the selected order", async () => {
+      await createRoomService({});
+      roomsService.roomIdsToClean.add("17");
+      roomsService.roomIdsToClean.add("16");
+      expect(roomsService.roomIdsForDevice).toStrictEqual([17, 16]);
+    });
+
+    test("keeps non-numeric IDs as they are", async () => {
+      await createRoomService({});
+      roomsService.roomIdsToClean.add("kitchen");
+      roomsService.roomIdsToClean.add("990001105814");
+      expect(roomsService.roomIdsForDevice).toStrictEqual([
+        "kitchen",
+        990001105814,
+      ]);
+    });
+  });
 });

@@ -75,7 +75,7 @@ export class PauseSwitch extends PluginServiceClass {
       if (state && this.deviceManager.isPaused) {
         if (this.roomsService.roomIdsToClean.size > 0) {
           await this.deviceManager.device.resumeCleanRooms(
-            Array.from(this.roomsService.roomIdsToClean)
+            this.roomsService.roomIdsForDevice
           );
           this.log.info(
             `setPauseState | Resume room cleaning, and the device is in state  ${this.deviceManager.state}`

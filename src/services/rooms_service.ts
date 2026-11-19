@@ -27,6 +27,16 @@ interface Room extends Service {
 
 export class RoomsService extends PluginServiceClass {
   public readonly roomIdsToClean = new Set<string>();
+
+  /**
+   * The room IDs to send to the device: numeric IDs must be sent as numbers, otherwise some models (e.g. S5)
+   * fail to start the room cleaning (#1032).
+   */
+  public get roomIdsForDevice(): Array<number | string> {
+    return Array.from(this.roomIdsToClean, (id) =>
+      /^\d+$/.test(`${id}`) ? Number(id) : id
+    );
+  }
   private readonly rooms: Record<string, Room> = {};
   private roomTimeout = setTimeout(() => {}, 0);
   /** The rooms resolved from the device (when using `autoroom`) */

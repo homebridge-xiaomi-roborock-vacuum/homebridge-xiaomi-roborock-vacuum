@@ -132,7 +132,7 @@ export class MainService extends PluginServiceClass {
         const roomIdsToClean = this.roomsService.roomIdsToClean;
         if (roomIdsToClean.size > 0) {
           await this.deviceManager.device.cleanRooms(
-            Array.from(roomIdsToClean)
+            this.roomsService.roomIdsForDevice
           );
           this.log.info(
             `ACT setCleaning | Start rooms cleaning for rooms ${Array.from(
