@@ -28,6 +28,7 @@ function newAccessory(): XiaomiRoborockVacuumPlatformAccessory {
     ],
     addListener: jest.fn(),
     addService: jest.fn(),
+    removeService: jest.fn(),
     getServices: jest.fn(() => accessory.services),
     getServiceById: jest.fn(),
   } as unknown as XiaomiRoborockVacuumPlatformAccessory;
@@ -104,6 +105,140 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
       expect(accessorySpy).toHaveBeenCalledTimes(1);
       expect(setPrimaryServiceSpy).toHaveBeenCalledTimes(2);
       expect(accessory.addService).toHaveBeenCalledTimes(1);
+    });
+
+    const connect = async (
+      accessory: XiaomiRoborockVacuumPlatformAccessory,
+      instanceMock: ReturnType<typeof createXiaomiRoborockVacuumAccessoryMock>
+    ) => {
+      XiaomiRoborockVacuumAccessoryMock.mockReturnValue(instanceMock);
+      new XiaomiRoborockVacuumPlatformAccessoryInitializer(
+        log,
+        config,
+        homebridge,
+        accessory
+      );
+      (deviceManagerMock.deviceConnected$ as Subject<MiioDevice>).next(
+        miio.device
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    };
+
+    test("passes the cached rooms and persists the resolved ones", async () => {
+      const accessory = newAccessory();
+      accessory.context.rooms = [{ id: "16", name: "Kitchen" }];
+      const instanceMock = createXiaomiRoborockVacuumAccessoryMock();
+      instanceMock.resolvedRooms = [
+        { id: "16", name: "Kitchen" },
+        { id: "17", name: "Bedroom" },
+      ];
+      await connect(accessory, instanceMock);
+
+      expect(XiaomiRoborockVacuumAccessoryMock).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          cachedRooms: [{ id: "16", name: "Kitchen" }],
+        }),
+        homebridge,
+        expect.anything()
+      );
+      expect(accessory.context.rooms).toEqual(instanceMock.resolvedRooms);
+    });
+
+    test("keeps the cached rooms when none could be resolved", async () => {
+      const accessory = newAccessory();
+      accessory.context.rooms = [{ id: "16", name: "Kitchen" }];
+      await connect(accessory, createXiaomiRoborockVacuumAccessoryMock());
+      expect(accessory.context.rooms).toEqual([{ id: "16", name: "Kitchen" }]);
+    });
+
+    test("waits for the rooms before registering the services", async () => {
+      const accessory = newAccessory();
+      const instanceMock = createXiaomiRoborockVacuumAccessoryMock();
+      let resolveRooms = () => {};
+      instanceMock.roomsReady = new Promise<void>((resolve) => {
+        resolveRooms = resolve;
+      });
+      instanceMock.getServices.mockReturnValue([
+        new Service.Switch("Room", "roomService16"),
+      ]);
+      await connect(accessory, instanceMock);
+      expect(instanceMock.getServices).not.toHaveBeenCalled();
+      expect(accessory.addService).not.toHaveBeenCalled();
+
+      resolveRooms();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(accessory.addService).toHaveBeenCalledTimes(1);
+    });
+
+    test("removes the cached services that are no longer exposed", async () => {
+      const accessory = newAccessory();
+      const staleRoom = new Service.Switch("Old room", "roomService99");
+      accessory.services.push(staleRoom);
+      const instanceMock = createXiaomiRoborockVacuumAccessoryMock();
+      instanceMock.getServices.mockReturnValue([accessory.services[1]]);
+      await connect(accessory, instanceMock);
+
+      expect(accessory.removeService).toHaveBeenCalledTimes(1);
+      expect(accessory.removeService).toHaveBeenCalledWith(staleRoom);
+    });
+
+    describe("waterBox auto-detection", () => {
+      const configFor = () =>
+        XiaomiRoborockVacuumAccessoryMock.mock.calls[0][1] as Record<
+          string,
+          unknown
+        >;
+
+      afterEach(() => {
+        (deviceManagerMock as { reportedModes?: unknown }).reportedModes =
+          undefined;
+      });
+
+      test("enables it when the model supports water levels", async () => {
+        (deviceManagerMock as { reportedModes?: unknown }).reportedModes = {
+          fanSpeeds: [{ value: 1, name: "Quiet" }],
+          waterBoxModes: [{ value: 1, name: "Level1" }],
+        };
+        await connect(
+          newAccessory(),
+          createXiaomiRoborockVacuumAccessoryMock()
+        );
+        expect(configFor().waterBox).toBe(true);
+      });
+
+      test("keeps it disabled when the model doesn't support it", async () => {
+        (deviceManagerMock as { reportedModes?: unknown }).reportedModes = {
+          fanSpeeds: [{ value: 1, name: "Quiet" }],
+          waterBoxModes: [],
+        };
+        await connect(
+          newAccessory(),
+          createXiaomiRoborockVacuumAccessoryMock()
+        );
+        expect(configFor().waterBox).toBe(false);
+      });
+
+      test("an explicit config wins", async () => {
+        (deviceManagerMock as { reportedModes?: unknown }).reportedModes = {
+          fanSpeeds: [{ value: 1, name: "Quiet" }],
+          waterBoxModes: [{ value: 1, name: "Level1" }],
+        };
+        XiaomiRoborockVacuumAccessoryMock.mockReturnValue(
+          createXiaomiRoborockVacuumAccessoryMock()
+        );
+        new XiaomiRoborockVacuumPlatformAccessoryInitializer(
+          log,
+          { ...config, waterBox: false },
+          homebridge,
+          newAccessory()
+        );
+        (deviceManagerMock.deviceConnected$ as Subject<MiioDevice>).next(
+          miio.device
+        );
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        expect(configFor().waterBox).toBe(false);
+      });
     });
   });
 });

@@ -1,195 +1,206 @@
 {
   "pluginAlias": "XiaomiRoborockVacuum",
-  "pluginType": "accessory",
+  "pluginType": "platform",
+  "singular": true,
+  "headerDisplay": "Add one entry per vacuum cleaner. Existing `accessories` configs keep working, but only the platform format can be edited here.",
   "schema": {
     "type": "object",
     "properties": {
-      "name": {
-        "title": "Name",
-        "type": "string",
-        "default": "Xiaomi Mi Robot Vaccum 1st Generation",
-        "minLength": 1,
-        "required": true
-      },
-      "ip": {
-        "title": "IP",
-        "type": "string",
-        "required": true
-      },
-      "token": {
-        "title": "Token",
-        "type": "string",
-        "required": true
-      },
-      "serviceType": {
-        "title": "Load the vacuum as a fan (ON/OFF + speed control) or a switch (ON/OFF only)",
-        "type": "string",
-        "default": "fan",
-        "enum": ["fan", "switch"],
-        "required": false
-      },
-      "waterBox": {
-        "title": "Enable the Water Box mode (beta)",
-        "type": "boolean",
-        "default": false,
-        "required": false
-      },
-      "dustBin": {
-        "title": "Enable the Dust Bin indicator (beta)",
-        "type": "boolean",
-        "default": false,
-        "required": false
-      },
-      "dustCollection": {
-        "title": "Enable the Dust Collection mode (beta)",
-        "type": "boolean",
-        "default": false,
-        "required": false
-      },
-      "disableCareServices": {
-        "title": "Disable Care Services",
-        "type": "boolean",
-        "default": false,
-        "required": false
-      },
-      "silent": {
-        "title": "Do not log info and debug messages (only log warn and error messages)",
-        "type": "boolean",
-        "default": false,
-        "required": false
-      },
-      "pause": {
-        "title": "Show switch for \"pause\"",
-        "type": "boolean",
-        "default": false,
-        "required": true
-      },
-      "pauseWord": {
-        "title": "Pause Word",
-        "type": "string",
-        "default": "pause",
-        "required": true,
-        "condition": {
-          "functionBody": "return model.pause === true"
-        }
-      },
-      "findMe": {
-        "title": "Show switch for \"find me\"",
-        "type": "boolean",
-        "default": false,
-        "required": true
-      },
-      "findMeWord": {
-        "title": "Find Me Word",
-        "type": "string",
-        "default": "where are you",
-        "required": true,
-        "condition": {
-          "functionBody": "return model.findMe === true"
-        }
-      },
-      "goTo": {
-        "title": "Show switch for \"go to\"",
-        "type": "boolean",
-        "default": false,
-        "required": true
-      },
-      "goToWord": {
-        "title": "Go To Word",
-        "type": "string",
-        "default": "go to coordinates",
-        "required": true,
-        "condition": {
-          "functionBody": "return model.goTo === true"
-        }
-      },
-      "goToX": {
-        "title": "x-coordinate",
-        "type": "integer",
-        "default": 25500,
-        "required": true,
-        "condition": {
-          "functionBody": "return model.goTo === true"
-        }
-      },
-      "goToY": {
-        "title": "y-coordinate",
-        "type": "integer",
-        "default": 25500,
-        "required": true,
-        "condition": {
-          "functionBody": "return model.goTo === true"
-        }
-      },
-      "dock": {
-        "title": "Show Dock sensor",
-        "type": "boolean",
-        "default": true,
-        "required": true
-      },
-      "cleanword": {
-        "title": "Cleaning Word",
-        "type": "string",
-        "default": "cleaning",
-        "required": true
-      },
-      "roomTimeout": {
-        "title": "Room autoclean timeout",
-        "type": "integer",
-        "default": 0,
-        "required": false
-      },
-      "autoroom": {
-        "title": "Automatic Room Detection",
-        "type": "boolean",
-        "default": false,
-        "required": true
-      },
-      "rooms": {
-        "title": "Room cleaning",
+      "devices": {
+        "title": "Vacuum cleaners",
         "type": "array",
-        "required": false,
         "items": {
-          "title": "Rooms",
           "type": "object",
           "properties": {
             "name": {
-              "name": "Room Name",
-              "type": "string"
+              "title": "Name",
+              "type": "string",
+              "default": "Xiaomi Mi Robot Vaccum 1st Generation",
+              "minLength": 1,
+              "required": true
             },
-            "id": {
-              "name": "Room ID",
-              "type": "integer"
-            }
-          }
-        }
-      },
-      "zones": {
-        "title": "Zone cleaning",
-        "type": "array",
-        "required": false,
-        "items": {
-          "title": "Zones",
-          "type": "object",
-          "properties": {
-            "name": {
-              "name": "Name",
+            "ip": {
+              "title": "IP",
               "type": "string",
               "required": true
             },
-            "zone": {
-              "name": "Zone's Coordinates",
+            "token": {
+              "title": "Token",
+              "type": "string",
+              "required": true
+            },
+            "serviceType": {
+              "title": "Load the vacuum as a fan (ON/OFF + speed control) or a switch (ON/OFF only)",
+              "type": "string",
+              "default": "fan",
+              "enum": ["fan", "switch"],
+              "required": false
+            },
+            "waterBox": {
+              "title": "Enable the Water Box mode (beta)",
+              "type": "boolean",
+              "required": false,
+              "description": "Leave it unset to enable it automatically on the models that support it (platform only)."
+            },
+            "dustBin": {
+              "title": "Enable the Dust Bin indicator (beta)",
+              "type": "boolean",
+              "default": false,
+              "required": false
+            },
+            "dustCollection": {
+              "title": "Enable the Dust Collection mode (beta)",
+              "type": "boolean",
+              "default": false,
+              "required": false
+            },
+            "disableCareServices": {
+              "title": "Disable Care Services",
+              "type": "boolean",
+              "default": false,
+              "required": false
+            },
+            "silent": {
+              "title": "Do not log info and debug messages (only log warn and error messages)",
+              "type": "boolean",
+              "default": false,
+              "required": false
+            },
+            "pause": {
+              "title": "Show switch for \"pause\"",
+              "type": "boolean",
+              "default": false,
+              "required": true
+            },
+            "pauseWord": {
+              "title": "Pause Word",
+              "type": "string",
+              "default": "pause",
               "required": true,
+              "condition": {
+                "functionBody": "return model.pause === true"
+              }
+            },
+            "findMe": {
+              "title": "Show switch for \"find me\"",
+              "type": "boolean",
+              "default": false,
+              "required": true
+            },
+            "findMeWord": {
+              "title": "Find Me Word",
+              "type": "string",
+              "default": "where are you",
+              "required": true,
+              "condition": {
+                "functionBody": "return model.findMe === true"
+              }
+            },
+            "goTo": {
+              "title": "Show switch for \"go to\"",
+              "type": "boolean",
+              "default": false,
+              "required": true
+            },
+            "goToWord": {
+              "title": "Go To Word",
+              "type": "string",
+              "default": "go to coordinates",
+              "required": true,
+              "condition": {
+                "functionBody": "return model.goTo === true"
+              }
+            },
+            "goToX": {
+              "title": "x-coordinate",
+              "type": "integer",
+              "default": 25500,
+              "required": true,
+              "condition": {
+                "functionBody": "return model.goTo === true"
+              }
+            },
+            "goToY": {
+              "title": "y-coordinate",
+              "type": "integer",
+              "default": 25500,
+              "required": true,
+              "condition": {
+                "functionBody": "return model.goTo === true"
+              }
+            },
+            "dock": {
+              "title": "Show Dock sensor",
+              "type": "boolean",
+              "default": true,
+              "required": true
+            },
+            "cleanword": {
+              "title": "Cleaning Word",
+              "type": "string",
+              "default": "cleaning",
+              "required": true
+            },
+            "roomTimeout": {
+              "title": "Room autoclean timeout",
+              "type": "integer",
+              "default": 0,
+              "required": false
+            },
+            "autoroom": {
+              "title": "Automatic Room Detection",
+              "type": "boolean",
+              "default": false,
+              "required": false
+            },
+            "rooms": {
+              "title": "Room cleaning",
               "type": "array",
-              "minItems": 1,
+              "required": false,
               "items": {
-                "title": "Coordinates (Bottom-Left X, Bottom-Left Y, Top-Right X, Top-Right Y, # Repeats)",
-                "type": "array",
-                "minItems": 5,
-                "maxItems": 5,
-                "items": {
-                  "type": "number",
-                  "required": true
+                "title": "Rooms",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "name": "Room Name",
+                    "type": "string"
+                  },
+                  "id": {
+                    "name": "Room ID",
+                    "type": "integer"
+                  }
+                }
+              }
+            },
+            "zones": {
+              "title": "Zone cleaning",
+              "type": "array",
+              "required": false,
+              "items": {
+                "title": "Zones",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "name": "Name",
+                    "type": "string",
+                    "required": true
+                  },
+                  "zone": {
+                    "name": "Zone's Coordinates",
+                    "required": true,
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "title": "Coordinates (Bottom-Left X, Bottom-Left Y, Top-Right X, Top-Right Y, # Repeats)",
+                      "type": "array",
+                      "minItems": 5,
+                      "maxItems": 5,
+                      "items": {
+                        "type": "number",
+                        "required": true
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -199,103 +210,117 @@
     }
   },
   "layout": [
-    "name",
     {
-      "type": "flex",
-      "flex-flow": "row wrap",
-      "items": ["ip", "token"]
-    },
-    "serviceType",
-    "waterBox",
-    "dustBin",
-    "dustCollection",
-    "silent",
-    "pause",
-    "pauseWord",
-    "findMe",
-    "findMeWord",
-    "goTo",
-    "goToWord",
-    {
-      "type": "flex",
-      "flex-flow": "row wrap",
-      "items": ["goToX", "goToY"]
-    },
-    "dock",
-    "cleanword",
-    "roomTimeout",
-    "autoroom",
-    {
-      "type": "fieldset",
-      "title": "Rooms",
-      "description": "Room Mapping",
-      "expandable": true,
-      "expanded": false,
+      "key": "devices",
+      "type": "array",
+      "orderable": false,
+      "buttonText": "Add vacuum cleaner",
       "items": [
         {
-          "notitle": true,
-          "key": "rooms",
-          "type": "array",
+          "type": "fieldset",
+          "title": "{{ value.name || 'Vacuum cleaner' }}",
           "items": [
+            "devices[].name",
             {
-              "type": "div",
-              "displayFlex": true,
-              "flex-direction": "row",
+              "type": "flex",
+              "flex-flow": "row wrap",
+              "items": ["devices[].ip", "devices[].token"]
+            },
+            "devices[].serviceType",
+            "devices[].waterBox",
+            "devices[].dustBin",
+            "devices[].dustCollection",
+            "devices[].silent",
+            "devices[].pause",
+            "devices[].pauseWord",
+            "devices[].findMe",
+            "devices[].findMeWord",
+            "devices[].goTo",
+            "devices[].goToWord",
+            {
+              "type": "flex",
+              "flex-flow": "row wrap",
+              "items": ["devices[].goToX", "devices[].goToY"]
+            },
+            "devices[].dock",
+            "devices[].cleanword",
+            "devices[].roomTimeout",
+            "devices[].autoroom",
+            {
+              "type": "fieldset",
+              "title": "Rooms",
+              "description": "Room Mapping",
+              "expandable": true,
+              "expanded": false,
               "items": [
                 {
-                  "key": "rooms[].id",
-                  "flex": "1 1 50px",
                   "notitle": true,
-                  "placeholder": "Room ID"
-                },
-                {
-                  "key": "rooms[].name",
-                  "flex": "4 4 200px",
-                  "notitle": true,
-                  "placeholder": "Room Name"
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "fieldset",
-      "title": "Zones",
-      "description": "Zone cleaning",
-      "expandable": true,
-      "expanded": false,
-      "items": [
-        {
-          "notitle": true,
-          "key": "zones",
-          "type": "array",
-          "items": [
-            {
-              "type": "div",
-              "displayFlex": true,
-              "flex-direction": "row",
-              "items": [
-                {
-                  "key": "zones[].name",
-                  "flex": "1 1 100px",
-                  "placeholder": "Zone Name"
-                },
-                {
-                  "key": "zones[].zone",
-                  "notitle": true,
-                  "flex": "4 4 150px",
+                  "key": "devices[].rooms",
                   "type": "array",
                   "items": [
                     {
-                      "key": "zones[].zone[]",
-                      "type": "array",
+                      "type": "div",
                       "displayFlex": true,
                       "flex-direction": "row",
                       "items": [
                         {
-                          "type": "number"
+                          "key": "devices[].rooms[].id",
+                          "flex": "1 1 50px",
+                          "notitle": true,
+                          "placeholder": "Room ID"
+                        },
+                        {
+                          "key": "devices[].rooms[].name",
+                          "flex": "4 4 200px",
+                          "notitle": true,
+                          "placeholder": "Room Name"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "fieldset",
+              "title": "Zones",
+              "description": "Zone cleaning",
+              "expandable": true,
+              "expanded": false,
+              "items": [
+                {
+                  "notitle": true,
+                  "key": "devices[].zones",
+                  "type": "array",
+                  "items": [
+                    {
+                      "type": "div",
+                      "displayFlex": true,
+                      "flex-direction": "row",
+                      "items": [
+                        {
+                          "key": "devices[].zones[].name",
+                          "flex": "1 1 100px",
+                          "placeholder": "Zone Name"
+                        },
+                        {
+                          "key": "devices[].zones[].zone",
+                          "notitle": true,
+                          "flex": "4 4 150px",
+                          "type": "array",
+                          "items": [
+                            {
+                              "key": "devices[].zones[].zone[]",
+                              "type": "array",
+                              "displayFlex": true,
+                              "flex-direction": "row",
+                              "items": [
+                                {
+                                  "type": "number"
+                                }
+                              ]
+                            }
+                          ]
                         }
                       ]
                     }

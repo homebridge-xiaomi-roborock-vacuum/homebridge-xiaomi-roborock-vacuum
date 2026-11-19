@@ -9,6 +9,7 @@ import { type Config, applyConfigDefaults } from "../services";
 import { ACCESSORY_NAME, PLUGIN_NAME } from "../constants";
 import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory";
 import { first } from "rxjs";
+import type { ResolvedRoom } from "../services/rooms_service";
 
 interface XiaomiRoborockVacuumPlatformConfig extends PlatformConfig {
   devices: Partial<Config>[];
@@ -16,6 +17,8 @@ interface XiaomiRoborockVacuumPlatformConfig extends PlatformConfig {
 
 interface PlatformAccessoryContext {
   name: string;
+  /** Rooms resolved in a previous run (when using `autoroom`), used as a fallback */
+  rooms?: ResolvedRoom[];
 }
 
 export type XiaomiRoborockVacuumPlatformAccessory =

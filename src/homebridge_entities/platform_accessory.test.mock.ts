@@ -2,10 +2,18 @@ import type { XiaomiRoborockVacuumAccessory } from "./accessory";
 
 export const createXiaomiRoborockVacuumAccessoryMock = () => {
   const mock: jest.Mocked<
-    Pick<XiaomiRoborockVacuumAccessory, keyof XiaomiRoborockVacuumAccessory>
-  > = {
+    Omit<
+      Pick<XiaomiRoborockVacuumAccessory, keyof XiaomiRoborockVacuumAccessory>,
+      "resolvedRooms" | "roomsReady"
+    >
+  > & {
+    roomsReady: Promise<void>;
+    resolvedRooms: Array<{ id: string; name: string }>;
+  } = {
     identify: jest.fn(),
     getServices: jest.fn().mockReturnValue([]),
+    roomsReady: Promise.resolve(),
+    resolvedRooms: [],
   };
 
   return mock;
