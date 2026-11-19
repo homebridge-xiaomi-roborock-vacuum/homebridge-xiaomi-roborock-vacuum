@@ -24,7 +24,7 @@ Guidance for AI coding agents (and humans) working on `homebridge-xiaomi-roboroc
 ```sh
 npm ci
 npm run lint    # prettier --check .
-npm test        # jest (babel-jest: tests are not type-checked)
+npm test        # jest via `node --experimental-vm-modules` (needed to load ESM-only deps like @homebridge/hap-nodejs ≥ 2.3); not type-checked
 npm run build   # tsc (type-checks everything, tests included)
 node dist/bin/miio-vacuum.js --help   # the CLI is a thin wrapper around node-miio's
 ```
