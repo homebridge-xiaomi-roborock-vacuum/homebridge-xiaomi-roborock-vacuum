@@ -13,12 +13,11 @@ Guidance for AI coding agents (and humans) working on `homebridge-xiaomi-roboroc
 
 ## Branches and PRs
 
-- `master`: current stable line (0.x, registered as an _accessory_).
-- `next`: v1 work (registered as a _platform_, PR #1037). **Changes must land on both branches**:
-  one PR against `master`, and another one against `next`, which usually cherry-picks the same commits.
+- `master` is the only branch: it includes the v1 work (registered as a _platform_, #1037). The old `next` branch was merged into it.
 - PRs come from the maintainer's fork (`origin`) into the org repo (`upstream`).
 - Label every PR when creating it: `enhancement`, `bug`, `dependencies` (and `New Model` when adding a device).
   This repo has no `documentation` label.
+- Releases: a "Prepare for vX.Y.Z" commit with the CHANGELOG, then `npm version <patch|minor|major>` (it creates the commit and the tag).
 
 ## Commands
 
@@ -32,7 +31,7 @@ node dist/bin/miio-vacuum.js --help   # the CLI is a thin wrapper around node-mi
 
 ## Layout
 
-- `src/index.ts`: registers the plugin. `src/xiaomi_roborock_vacuum_accessory.ts` (master) or `src/homebridge_entities/` (next): the HomeKit entities.
+- `src/index.ts`: registers the plugin both as a platform (recommended) and as a legacy accessory. `src/homebridge_entities/`: the HomeKit entities (`platform.ts`, `platform_accessory.ts`, `accessory.ts`).
 - `src/services/device_manager.ts`: connects with `miio.device({ address, token })` from node-miio, polls the state and emits changes.
   - `device.matches("type:vaccuum")` is intentional: it's how abstract-things (used by node-miio) spells the type.
   - `reportedModes`: fan speeds / water levels from node-miio (`device.fanSpeeds()` / `waterBoxModes()`), loaded once after connecting.
