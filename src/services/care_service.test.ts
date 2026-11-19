@@ -45,6 +45,11 @@ describe("CareService", () => {
       );
     });
 
+    afterEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+    });
+
     test("fan is not called", () => {
       expect(fanServices).not.toHaveBeenCalled();
     });
@@ -70,6 +75,7 @@ describe("CareService", () => {
     let careService: CareService;
     let deviceManagerMock: DeviceManagerMock;
     let fanServices: jest.Mock;
+    let fanGetCaracteristicSpy: jest.SpyInstance;
     let hap: HAP;
 
     beforeEach(() => {
@@ -80,9 +86,18 @@ describe("CareService", () => {
       deviceManagerMock = createDeviceManagerMock();
       deviceManagerMock.property.mockReturnValue(10);
 
-      fanServices = jest
-        .fn()
-        .mockImplementation(() => [new hbMock.hap.Service.Fan()]);
+      fanServices = jest.fn().mockImplementation(() => {
+        const fan = new hbMock.hap.Service.Fan();
+        const originalGetCharacteristic = fan.getCharacteristic.bind(fan);
+        fanGetCaracteristicSpy = jest
+          .spyOn(fan, "getCharacteristic")
+          .mockImplementation((...args) => {
+            const result = originalGetCharacteristic(...args);
+            jest.spyOn(result!, "onGet");
+            return result;
+          });
+        return [fan];
+      });
       const fan = {
         get services() {
           return fanServices();
@@ -112,8 +127,8 @@ describe("CareService", () => {
 
     test("the fan's service characteristic calls all getters", async () => {
       const fanService = fanServices.mock.results[0].value[0];
-      expect(fanService.getCharacteristic.mock.results).toHaveLength(2);
-      const onCallsHandlers = fanService.getCharacteristic.mock.results.map(
+      expect(fanGetCaracteristicSpy.mock.results).toHaveLength(2);
+      const onCallsHandlers = fanGetCaracteristicSpy.mock.results.map(
         ({ value }) => value.onGet.mock.calls[0][0]
       );
       await expect(onCallsHandlers[0]()).resolves.toBe(false);
