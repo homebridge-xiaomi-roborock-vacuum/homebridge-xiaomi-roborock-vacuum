@@ -47,11 +47,12 @@ export class DockService extends PluginServiceClass {
 
   private async getDocked() {
     const status = this.deviceManager.state;
-    const isCharging = status === "charging";
+    // When the battery is full, the robot is still on the dock
+    const isDocked = status === "charging" || status === "fully-charged";
     this.log.info(
-      `getDocked | Robot Docked is ${isCharging} (Status is ${status})`
+      `getDocked | Robot Docked is ${isDocked} (Status is ${status})`
     );
 
-    return isCharging;
+    return isDocked;
   }
 }

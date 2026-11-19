@@ -74,6 +74,49 @@ describe("DeviceManager", () => {
     });
   });
 
+  describe("reported modes", () => {
+    afterEach(() => {
+      delete (miio.device as Partial<typeof miio.device>).fanSpeeds;
+      delete (miio.device as Partial<typeof miio.device>).waterBoxModes;
+      jest.useRealTimers();
+    });
+
+    const connect = async () => {
+      jest.useFakeTimers();
+      miio.device.matches.mockReturnValue(true);
+      const deviceManager = new DeviceManager(createHomebridgeMock().hap, log, {
+        ip: "192.168.0.1",
+        token: "token",
+      });
+      await jest.advanceTimersByTimeAsync(0);
+      return deviceManager;
+    };
+
+    test("loads the fan speeds and water levels from node-miio", async () => {
+      const fanSpeeds = [{ value: 1, name: "Quiet" }];
+      const waterBoxModes = [{ value: 200, name: "Off" }];
+      miio.device.fanSpeeds = jest.fn().mockResolvedValue(fanSpeeds);
+      miio.device.waterBoxModes = jest.fn().mockResolvedValue(waterBoxModes);
+      const deviceManager = await connect();
+      expect(deviceManager.reportedModes).toStrictEqual({
+        fanSpeeds,
+        waterBoxModes,
+      });
+    });
+
+    test("is undefined when node-miio fails", async () => {
+      miio.device.fanSpeeds = jest.fn().mockRejectedValue(new Error("timeout"));
+      const deviceManager = await connect();
+      expect(deviceManager.device).toBe(miio.device);
+      expect(deviceManager.reportedModes).toBeUndefined();
+    });
+
+    test("is undefined with older node-miio versions", async () => {
+      const deviceManager = await connect();
+      expect(deviceManager.reportedModes).toBeUndefined();
+    });
+  });
+
   describe("state polling", () => {
     beforeEach(() => {
       jest.useFakeTimers();

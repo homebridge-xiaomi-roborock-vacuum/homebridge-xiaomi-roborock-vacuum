@@ -336,11 +336,11 @@ As new users join our community, and use this plugin, we try to learn from their
 
 1. Check the [models.ts](./src/models/models.ts) file to see if your device is already in the explicit list.
 2. If not, maybe it matches the _default_ behaviour (just try running the plugin and see if it works).
-   1. If it works, but the vacuum modes (aka speeds) are wrong: add your model to the list in 1 with the right mapping.
-   2. If it doesn't work, please, try making sure the IP and token are correct, by running the command `miio-vacuum inspect id-or-address --token tokenAsHex`.  
+   1. Newer (MIoT) models are driven by their spec from [miot-spec.org](https://home.miot-spec.com) via [node-miio](https://github.com/afharo/node-miio), including their fan speeds and water levels. Run `npx node-miio spec your.model.id` to see what it resolves for your model, and attach the output to your bug report.
+   2. If it works, but the vacuum modes (aka speeds) are wrong: please, open an issue (or a PR in [node-miio](https://github.com/afharo/node-miio)) with the right mapping.
+   3. If it doesn't work, please, try making sure the IP and token are correct, by running the command `miio-vacuum inspect id-or-address --token tokenAsHex`.  
       HINT: Try a couple of times, just in case there's a network glitch.
-   3. If you can connect and see the details of your robot, try running the manual commands like explained in [here](./src/miio/docs/protocol.md#testing-commands).  
-      HINT: You can find the list of commands for your device in the Python project [python-miio](https://github.com/rytilahti/python-miio).
+   4. If you can connect and see the details of your robot, try running the manual commands like explained in [here](https://github.com/afharo/node-miio/blob/main/docs/protocol.md#testing-commands).
 
 ## My model is, allegedly, supported, but it fails to connect
 
