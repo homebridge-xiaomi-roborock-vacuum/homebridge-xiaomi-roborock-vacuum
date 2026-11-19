@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@v7
         with:
           # Node 24 ships npm 11 (Trusted Publishing requires npm >= 11.5.1)
-          node-version: "24.x"
+          node-version: "26.x"
           registry-url: "https://registry.npmjs.org"
 
       - name: Verify Node.js and npm versions
