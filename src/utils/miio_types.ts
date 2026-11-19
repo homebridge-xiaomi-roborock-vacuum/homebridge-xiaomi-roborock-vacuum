@@ -38,6 +38,12 @@ export interface MiioDevice {
   sendToLocation: (x: number, y: number) => Promise<void>;
   setRawProperty: (key: string, value: unknown) => Promise<void>;
   cleanZones: (zonesToClean: number[][]) => Promise<void>;
+  /** Roborock docks with mop washing (node-miio ≥ 0.3.0) */
+  startMopWash?: () => Promise<void>;
+  stopMopWash?: () => Promise<void>;
+  /** Roborock docks with a mop dryer (node-miio ≥ 0.4.0) */
+  startMopDrying?: () => Promise<void>;
+  stopMopDrying?: () => Promise<void>;
   /** Available since node-miio 0.3.0-beta.4 */
   fanSpeeds?: () => Promise<MiioVacuumMode[]>;
   /** Available since node-miio 0.3.0-beta.4 (empty if the model doesn't support it) */
