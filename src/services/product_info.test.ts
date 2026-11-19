@@ -49,7 +49,7 @@ describe("ProductInfo", () => {
         .mockResolvedValue("1234");
       jest
         .spyOn(deviceManagerMock.device, "getDeviceInfo")
-        .mockResolvedValue({ fw_ver: "1.2.3" });
+        .mockResolvedValue({ fw_ver: "1.2.3" } as never);
 
       (deviceManagerMock.deviceConnected$ as Subject<unknown>).next({});
 
@@ -103,7 +103,7 @@ describe("ProductInfo", () => {
   test("getFirmware", async () => {
     jest
       .spyOn(deviceManagerMock.device, "getDeviceInfo")
-      .mockResolvedValue({ fw_ver: "1.2.3" });
+      .mockResolvedValue({ fw_ver: "1.2.3" } as never);
     const [service] = productInfo.services;
     await expect(
       service

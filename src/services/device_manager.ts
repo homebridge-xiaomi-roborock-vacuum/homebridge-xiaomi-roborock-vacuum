@@ -9,8 +9,13 @@ import {
   timer,
 } from "rxjs";
 import * as miio from "node-miio";
+import {
+  isVacuum,
+  type ErrorChangedEvent,
+  type StateChangedEvent,
+  type VacuumDevice,
+} from "node-miio";
 import { Logger } from "../utils/logger";
-import { MiioDevice } from "../utils/miio_types";
 import { cleaningStatuses } from "../utils/constants";
 import type { ReportedModes } from "../utils/find_speed_modes";
 
@@ -19,21 +24,14 @@ export interface DeviceManagerConfig {
   token?: string;
 }
 
-export interface ErrorChangedEvent {
-  id: string;
-  description: unknown;
-}
-
-export interface StateChangedEvent {
-  key: string;
-  value: unknown;
-}
+/** `null` when the error is cleared (node-miio >= 0.5.0) */
+export type { ErrorChangedEvent, StateChangedEvent };
 
 const GET_STATE_INTERVAL_MS = 30000; // 30s
 
 export class DeviceManager {
   private readonly internalDevice$ = new BehaviorSubject<
-    MiioDevice | undefined
+    VacuumDevice | undefined
   >(undefined);
 
   private readonly ip: string;
@@ -103,9 +101,9 @@ export class DeviceManager {
         throw new Error(errMsg);
       }
 
-      // checking if the device has an open socket it will fail retrieving it if not
-      // https://github.com/aholstenson/miio/blob/master/lib/network.js#L227
-      const socket = this.internalDevice$.value.handle.api.parent.socket;
+      if (!this.internalDevice$.value.connected) {
+        throw new Error("The socket was destroyed");
+      }
       this.log.debug(
         `DEB ensureDevice | ${this.model} | The socket is still on. Reusing it.`
       );
@@ -155,18 +153,16 @@ export class DeviceManager {
 
     // node-miio's debug messages go to the plugin's logger (shown with the `debug` option or Homebridge's `-D`)
     const miioLogger = { debug: (msg: string) => this.log.debug(msg) };
-    // Messages not tied to a device (network, MIoT specs…). Available since node-miio 0.5.0.
+    // Messages not tied to a device (network, MIoT specs…).
     // With several vacuums, the last one to connect wins: it's only used for debugging.
-    if (typeof miio.configureLogging === "function") {
-      miio.configureLogging({ logger: miioLogger });
-    }
+    miio.configureLogging({ logger: miioLogger });
     const device = await miio.device({
       address: this.ip,
       token: this.token,
       logger: miioLogger,
     });
 
-    if (device.matches("type:vaccuum")) {
+    if (isVacuum(device)) {
       this.reportedModes = await this.loadReportedModes(device);
       this.internalDevice$.next(device);
 
@@ -180,10 +176,10 @@ export class DeviceManager {
         "STA getDevice | BatteryLevel: " + this.property("batteryLevel")
       );
 
-      this.device.on<ErrorChangedEvent>("errorChanged", (error) =>
+      this.device.on("errorChanged", (error: ErrorChangedEvent) =>
         this.internalErrorChanged$.next(error)
       );
-      this.device.on<StateChangedEvent>("stateChanged", (state) =>
+      this.device.on("stateChanged", (state: StateChangedEvent) =>
         this.internalStateChanged$.next(state)
       );
 
@@ -193,12 +189,12 @@ export class DeviceManager {
         .pipe(exhaustMap(() => this.getState()))
         .subscribe();
     } else {
-      const model = (device || {}).miioModel;
+      const model = device?.miioModel;
       this.log.error(
         `Device "${model}" is not registered as a vacuum cleaner! If you think it should be, please open an issue at https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/new and provide this line.`
       );
-      this.log.debug(device);
-      device.destroy();
+      this.log.debug("DEB getDevice | %o", device);
+      device?.destroy();
     }
   }
 
@@ -208,7 +204,7 @@ export class DeviceManager {
   public reportedModes?: ReportedModes;
 
   private async loadReportedModes(
-    device: MiioDevice
+    device: VacuumDevice
   ): Promise<ReportedModes | undefined> {
     if (typeof device.fanSpeeds !== "function") return undefined;
     try {
@@ -242,7 +238,7 @@ export class DeviceManager {
 
       for (const key in state) {
         if (key === "error") {
-          this.internalErrorChanged$.next(state[key]);
+          this.internalErrorChanged$.next(state[key] as ErrorChangedEvent);
         } else {
           this.internalStateChanged$.next({ key, value: state[key] });
         }

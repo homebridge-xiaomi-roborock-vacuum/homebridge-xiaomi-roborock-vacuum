@@ -1,6 +1,6 @@
 "use strict";
 
-import { catchError, concatMap, distinct } from "rxjs";
+import { catchError, concatMap, distinct, filter } from "rxjs";
 import { AccessoryPlugin, API, Logging } from "homebridge";
 
 import { getLogger, Logger } from "../utils/logger";
@@ -92,14 +92,21 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
 
     this.deviceManager.errorChanged$
       .pipe(
+        // `null` when the error is cleared: nothing to report
+        filter((robotError) => robotError !== null),
         distinct((robotError) => robotError.id),
-        concatMap((err) => this.changedError(err)),
-        catchError(async (err) =>
-          this.log.error(
-            `Error processing the error reported by the robot`,
-            err
-          )
-        )
+        // Catch each failure here: a `catchError` after `concatMap` would complete the stream, and no later error
+        // would ever be reported
+        concatMap(async (err) => {
+          try {
+            await this.changedError(err);
+          } catch (error) {
+            this.log.error(
+              `Error processing the error reported by the robot`,
+              error
+            );
+          }
+        })
       )
       .subscribe();
     this.deviceManager.stateChanged$.subscribe(({ key, value }) => {
@@ -193,7 +200,7 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
    * @param robotError The robot error that is thrown.
    * @private
    */
-  private async changedError(robotError: ErrorChangedEvent) {
+  private async changedError(robotError: NonNullable<ErrorChangedEvent>) {
     this.log.debug(
       `DEB changedError | ErrorID: ${robotError.id}, ErrorDescription: ${robotError.description}`
     );

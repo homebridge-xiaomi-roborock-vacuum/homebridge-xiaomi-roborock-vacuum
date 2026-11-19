@@ -173,7 +173,7 @@ describe("XiaomiRoborockVacuum", () => {
   });
 
   test("errorChanged$ (known error)", async () => {
-    miio.device.setRawProperty.mockRejectedValue(
+    (miio.device.setRawProperty as jest.Mock).mockRejectedValue(
       new Error("Something went terribly wrong")
     );
 
@@ -183,6 +183,32 @@ describe("XiaomiRoborockVacuum", () => {
     });
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       `[Model=unknown] WAR changedError | Robot has an ERROR - 1, Try turning the orange laser-head to make sure it isn't blocked.`
+    );
+  });
+
+  test("errorChanged$ (cleared: null) is ignored, and later errors are still reported", async () => {
+    new XiaomiRoborockVacuumAccessory(
+      log,
+      { ip: "192.168.0.1", token: "TOKEN" },
+      homebridge
+    );
+    miio.device.setRawProperty.mockImplementationOnce(() => {
+      throw new Error("Something went terribly wrong");
+    });
+    const errors$ = deviceManagerMock.errorChanged$ as Subject<unknown>;
+    errors$.next({ id: "error1" }); // processing it fails
+    errors$.next(null);
+    errors$.next({ id: "error2" });
+    // Let `concatMap` process the errors (`process.nextTick` is faked in this file)
+    for (let i = 0; i < 10; i++) await Promise.resolve();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Error processing the error reported by the robot"
+      ),
+      expect.any(Error)
+    );
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      `[Model=unknown] WAR changedError | Robot has an ERROR - error2, undefined`
     );
   });
 

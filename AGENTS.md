@@ -38,7 +38,11 @@ node dist/bin/miio-vacuum.js --help   # the CLI is a thin wrapper around node-mi
 - `src/services/*`: one HomeKit service each (main fan/switch, battery, dock, rooms, zones, water box, care…).
 - `src/utils/find_speed_modes.ts`: models listed in `src/models/` keep the local tables. Any other model uses `reportedModes`
   (an "Off" -1 speed is prepended, which stops the cleaning). The plan is to remove `src/models/` once node-miio's lists are confirmed.
-- `src/utils/miio_types.ts`: hand-written types for node-miio (it doesn't ship `.d.ts` files yet).
+- node-miio ships its own types (since 0.5.0). The device is a `VacuumDevice` (union of node-miio's vacuum classes): only their
+  shared API is available. Guard the class-specific methods (dust collection, zones, go-to, water box, mop wash/dry…) with
+  `supports(device, "method")` (`src/utils/supports.ts`): it narrows the type and logs instead of crashing on other models.
+  `src/utils/miio_responses.ts` types the legacy Roborock responses that node-miio returns untyped (room mapping, timers).
+- `errorChanged` emits `{ id, description }` (`id` is a number for Roborock), and `null` when the error is cleared.
 - State names come from node-miio. Notably for Roborock: state 2 = `sleeping`, 3 = `idle` (previously `waiting`), 100 = `fully-charged`.
 
 ## Tests

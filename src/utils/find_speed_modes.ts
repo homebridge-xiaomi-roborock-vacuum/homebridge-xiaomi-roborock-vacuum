@@ -1,12 +1,12 @@
 import { MODELS } from "../models";
 import semver from "semver";
 import type { ModelDefinition, ModesHomekitVsMiLevel } from "../models/types";
-import type { MiioVacuumMode } from "./miio_types";
+import type { VacuumMode } from "node-miio";
 
 /** Fan speeds and water levels reported by node-miio (e.g. from the device's MIoT spec) */
 export interface ReportedModes {
-  fanSpeeds: MiioVacuumMode[];
-  waterBoxModes: MiioVacuumMode[];
+  fanSpeeds: VacuumMode[];
+  waterBoxModes: VacuumMode[];
 }
 
 /**
