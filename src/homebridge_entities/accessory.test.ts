@@ -137,7 +137,7 @@ describe("XiaomiRoborockVacuum", () => {
       homebridge
     );
     const initialisedServices = client.getServices();
-    expect(initialisedServices).toHaveLength(10);
+    expect(initialisedServices).toHaveLength(11);
     expect(
       initialisedServices.map((svc) => `${svc.displayName}-${svc.subtype}`)
     ).toMatchSnapshot();
