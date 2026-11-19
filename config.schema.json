@@ -54,6 +54,18 @@
               "default": false,
               "required": false
             },
+            "mopWash": {
+              "title": "Show a switch to wash the mop (docks with mop washing only)",
+              "type": "boolean",
+              "default": false,
+              "required": false
+            },
+            "mopDrying": {
+              "title": "Show a switch to dry the mop (docks with a mop dryer only)",
+              "type": "boolean",
+              "default": false,
+              "required": false
+            },
             "disableCareServices": {
               "title": "Disable Care Services",
               "type": "boolean",
@@ -230,6 +242,8 @@
             "devices[].waterBox",
             "devices[].dustBin",
             "devices[].dustCollection",
+            "devices[].mopWash",
+            "devices[].mopDrying",
             "devices[].silent",
             "devices[].pause",
             "devices[].pauseWord",

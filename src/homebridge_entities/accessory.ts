@@ -18,6 +18,7 @@ import {
   FindMeService,
   GoToService,
   DockService,
+  MopDockService,
   Config,
   ZonesService,
   CareService,
@@ -39,6 +40,7 @@ interface PluginServices {
   findMe: FindMeService;
   goTo?: GoToService;
   dock?: DockService;
+  mopDock?: MopDockService;
   zones?: ZonesService;
   careServices?: CareService;
 }
@@ -162,6 +164,10 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
         : undefined,
       goTo: config.goTo ? new GoToService(coreContext) : undefined,
       dock: config.dock ? new DockService(coreContext) : undefined,
+      mopDock:
+        config.mopWash || config.mopDrying
+          ? new MopDockService(coreContext)
+          : undefined,
       zones: config.zones
         ? new ZonesService(coreContext, mainService, (isCleaning) =>
             this.pluginServices.pause?.changedPause(isCleaning)

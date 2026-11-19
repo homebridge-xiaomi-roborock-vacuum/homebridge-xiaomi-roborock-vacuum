@@ -7,6 +7,7 @@ import { DustCollectionConfig } from "./dust_collection";
 import { FindMeConfig } from "./find_me_service";
 import { GoToConfig } from "./go_to_service";
 import { DockConfig } from "./dock_service";
+import { MopDockConfig } from "./mop_dock_service";
 import { ZonesConfig } from "./zones_service";
 import { CareConfig } from "./care_service";
 import { MainServiceConfig } from "./main_service";
@@ -25,6 +26,7 @@ export interface Config
     FindMeConfig,
     GoToConfig,
     DockConfig,
+    MopDockConfig,
     ZonesConfig,
     CareConfig {
   /**
@@ -81,6 +83,8 @@ export function applyConfigDefaults(config: Partial<Config>): Config {
     dustBin: false,
     dustCollection: false,
     dock: false,
+    mopWash: false,
+    mopDrying: false,
     ...config,
   };
 }
