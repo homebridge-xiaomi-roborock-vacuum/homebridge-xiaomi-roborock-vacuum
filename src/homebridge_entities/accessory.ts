@@ -19,6 +19,7 @@ import {
   GoToService,
   GoToDockService,
   DockService,
+  MopDockService,
   WaterTankService,
   Config,
   ZonesService,
@@ -42,6 +43,7 @@ interface PluginServices {
   goTo?: GoToService;
   goToDock?: GoToDockService;
   dock?: DockService;
+  mopDock?: MopDockService;
   waterTank?: WaterTankService;
   zones?: ZonesService;
   careServices?: CareService;
@@ -167,6 +169,10 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
       goTo: config.goTo ? new GoToService(coreContext) : undefined,
       goToDock: config.goToDock ? new GoToDockService(coreContext) : undefined,
       dock: config.dock ? new DockService(coreContext) : undefined,
+      mopDock:
+        config.mopWash || config.mopDrying
+          ? new MopDockService(coreContext)
+          : undefined,
       waterTank: config.waterTankEmpty
         ? new WaterTankService(coreContext)
         : undefined,
