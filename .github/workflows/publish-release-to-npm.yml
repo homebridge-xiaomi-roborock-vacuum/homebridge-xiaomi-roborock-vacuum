@@ -1,0 +1,67 @@
+name: Publish to npm on release
+
+on:
+  release:
+    types: [published]
+
+# Publishing uses npm's Trusted Publishing (OIDC): no NPM_TOKEN needed.
+# https://docs.npmjs.com/trusted-publishers
+permissions:
+  contents: read
+  id-token: write # Required to request the OIDC token used by `npm publish` (it also generates provenance)
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          # Node 24 ships npm 11 (Trusted Publishing requires npm >= 11.5.1)
+          node-version: "24.x"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Verify Node.js and npm versions
+        run: node -v && npm -v
+
+      - name: Check the release tag matches package.json
+        id: version
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [ "v$VERSION" != "$TAG_NAME" ] && [ "$VERSION" != "$TAG_NAME" ]; then
+            echo "::error::The release tag ($TAG_NAME) doesn't match the version in package.json ($VERSION)"
+            exit 1
+          fi
+          # Prereleases are published under their identifier (1.1.0-beta.0 → `beta`),
+          # or `dev` when it's numeric (0.37.0-0), never under `latest`
+          PRERELEASE=$(node -p "(require('./package.json').version.split('-')[1] || '').split('.')[0]")
+          if [ -z "$PRERELEASE" ]; then
+            DIST_TAG=latest
+          elif [[ "$PRERELEASE" =~ ^[0-9]+$ ]]; then
+            DIST_TAG=dev
+          else
+            DIST_TAG=$PRERELEASE
+          fi
+          echo "dist_tag=$DIST_TAG" >> "$GITHUB_OUTPUT"
+          echo "Publishing $VERSION under the \`$DIST_TAG\` dist-tag"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      - name: Publish to npm
+        run: npm publish --tag "${{ steps.version.outputs.dist_tag }}"
