@@ -4,6 +4,7 @@ import { catchError, concatMap, distinct } from "rxjs";
 import { AccessoryPlugin, API, Logging } from "homebridge";
 
 import { getLogger, Logger } from "../utils/logger";
+import { fromUiPlatformForm } from "../services/config_service";
 import {
   applyConfigDefaults,
   DeviceManager,
@@ -56,8 +57,21 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
     api: API,
     deviceManager?: DeviceManager
   ) {
+    // Legacy "accessory" mode only: an `accessories` block edited with the Homebridge UI's platform form (#1248)
+    const uiForm = deviceManager ? undefined : fromUiPlatformForm(config);
+    if (uiForm) config = uiForm.config;
+
     this.log = getLogger(log, config);
     this.config = applyConfigDefaults(config);
+
+    if (uiForm) {
+      this.log.warn(
+        `WARN init | This "accessories" block has a "devices" list, as the Homebridge UI saves the new platform format. ` +
+          `Using its first device${uiForm.ignoredDevices > 0 ? ` (the other ${uiForm.ignoredDevices} are ignored)` : ""}. ` +
+          `To fix it, edit config.json: move this block from "accessories" to "platforms", and rename ` +
+          `"accessory": "XiaomiRoborockVacuum" to "platform": "XiaomiRoborockVacuum".`
+      );
+    }
 
     this.deviceManager =
       deviceManager || new DeviceManager(api.hap, this.log, config);

@@ -56,6 +56,49 @@ describe("XiaomiRoborockVacuum", () => {
       Please, use "autoroom" to retrieve the "rooms" config and remove it when not needed.`);
   });
 
+  describe("an accessories block saved with the platform form of the UI (#1248)", () => {
+    test("uses the first device and explains how to fix the config", () => {
+      const client = new XiaomiRoborockVacuumAccessory(
+        log,
+        {
+          accessory: "XiaomiRoborockVacuum",
+          devices: [
+            { name: "Robi", ip: "192.168.0.1", token: "TOKEN", pause: true },
+            { name: "Other", ip: "192.168.0.2", token: "TOKEN2" },
+          ],
+        } as never,
+        homebridge
+      );
+      expect(client["config"]).toMatchObject({
+        name: "Robi",
+        ip: "192.168.0.1",
+        token: "TOKEN",
+        pause: true,
+      });
+      expect(client["pluginServices"].pause).toBeDefined();
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'move this block from "accessories" to "platforms"'
+        )
+      );
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining("the other 1 are ignored")
+      );
+    });
+
+    test("regular accessory configs are untouched", () => {
+      const client = new XiaomiRoborockVacuumAccessory(
+        log,
+        { ip: "192.168.0.1", token: "TOKEN" },
+        homebridge
+      );
+      expect(client["config"]).toMatchObject({ ip: "192.168.0.1" });
+      expect(consoleWarnSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining('"devices" list')
+      );
+    });
+  });
+
   test("Client with minimum config has the basic services", () => {
     const client = new XiaomiRoborockVacuumAccessory(
       log,
