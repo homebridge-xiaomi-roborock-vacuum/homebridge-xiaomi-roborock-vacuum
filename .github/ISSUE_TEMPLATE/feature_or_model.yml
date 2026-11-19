@@ -1,0 +1,52 @@
+name: New model or feature
+description: Support for your model, or something your vacuum can do that the plugin doesn't expose
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The maintainer can't test most models, so a new feature depends on what your vacuum reports and on you testing a beta.
+        See [CONTRIBUTING.md](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/CONTRIBUTING.md#request-support-for-a-model-or-a-feature) for how to get the details below.
+        **Remove your token, serial number, MAC and IP addresses** before posting.
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      placeholder: roborock.vacuum.a75
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware version
+    validations:
+      required: true
+  - type: input
+    id: dock
+    attributes:
+      label: Dock
+      placeholder: "e.g. charging only, auto-empty, wash & dry"
+  - type: textarea
+    id: request
+    attributes:
+      label: What would you like to do?
+      description: And how you do it in the Mi Home app (screenshots help).
+    validations:
+      required: true
+  - type: textarea
+    id: capture
+    attributes:
+      label: Raw status
+      description: |
+        Roborock: `miio-vacuum protocol call <ip> get_status --token <token>`, ideally twice: before and after doing the action in the app.
+        Other brands: `miio-vacuum spec <model>`.
+      render: json
+    validations:
+      required: true
+  - type: checkboxes
+    id: beta
+    attributes:
+      label: Testing
+      options:
+        - label: I can test a beta on my vacuum (a feature can't be released without that).
+          required: true
