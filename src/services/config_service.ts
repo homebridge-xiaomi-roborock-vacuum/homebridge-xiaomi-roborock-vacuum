@@ -37,6 +37,27 @@ export interface Config
 }
 
 /**
+ * The Homebridge UI shows pre-1.0 `accessories` blocks with the platform form, which moves their settings into
+ * `devices: [...]` and keeps `"accessory": "XiaomiRoborockVacuum"` (#1248). The legacy accessory can only run one
+ * device: it uses the first one.
+ *
+ * @param config The config of an `accessories` block.
+ * @returns The config of the first device and how many devices were ignored, or `undefined` if it isn't such a block.
+ */
+export function fromUiPlatformForm(
+  config: Partial<Config> & { devices?: unknown }
+): { config: Partial<Config>; ignoredDevices: number } | undefined {
+  const { devices, ...rest } = config;
+  if (!Array.isArray(devices) || devices.length === 0 || config.ip) {
+    return undefined;
+  }
+  return {
+    config: { ...rest, ...(devices[0] as Partial<Config>) },
+    ignoredDevices: devices.length - 1,
+  };
+}
+
+/**
  * Applies the default configuration values to the config provided by the user.
  * @param config The config provided by the user.
  *
