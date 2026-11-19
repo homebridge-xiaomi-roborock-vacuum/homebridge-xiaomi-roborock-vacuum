@@ -42,7 +42,7 @@ body:
     id: logs
     attributes:
       label: Debug logs
-      description: "With Homebridge's debug mode (-D) on. The `DEB getState` lines show what the vacuum reports."
+      description: "With the plugin's `debug` option (_Show debug logs_) enabled. The `DEB getState` lines show what the vacuum reports."
       render: shell
     validations:
       required: true
