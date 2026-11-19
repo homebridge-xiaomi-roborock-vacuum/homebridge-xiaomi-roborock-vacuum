@@ -6,6 +6,7 @@ import { WaterBoxConfig } from "./water_box_service";
 import { DustCollectionConfig } from "./dust_collection";
 import { FindMeConfig } from "./find_me_service";
 import { GoToConfig } from "./go_to_service";
+import { GoToDockConfig } from "./go_to_dock_service";
 import { DockConfig } from "./dock_service";
 import { ZonesConfig } from "./zones_service";
 import { CareConfig } from "./care_service";
@@ -24,6 +25,7 @@ export interface Config
     DustCollectionConfig,
     FindMeConfig,
     GoToConfig,
+    GoToDockConfig,
     DockConfig,
     ZonesConfig,
     CareConfig {
@@ -76,6 +78,8 @@ export function applyConfigDefaults(config: Partial<Config>): Config {
     goToWord: "go to coordinates",
     goToX: 25500,
     goToY: 25500,
+    goToDock: false,
+    goToDockWord: "go to dock",
     roomTimeout: 0,
     waterBox: false,
     dustBin: false,
