@@ -1,9 +1,31 @@
 {
-  "extends": ["config:base"],
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "labels": ["dependencies"],
+  "minimumReleaseAge": "7 days",
+  "internalChecksFilter": "strict",
+  "platformAutomerge": false,
   "packageRules": [
     {
-      "depTypeList": ["devDependencies"],
-      "updateTypes": ["patch", "minor"],
+      "description": "Auto-merge patch and minor updates once CI passes (majors need a review)",
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    },
+    {
+      "description": "In 0.x versions, a minor bump can be breaking: review them manually",
+      "matchCurrentVersion": "<1.0.0",
+      "matchUpdateTypes": ["minor"],
+      "automerge": false
+    },
+    {
+      "description": "node-miio is maintained by the same author: no cooldown",
+      "matchPackageNames": ["node-miio"],
+      "minimumReleaseAge": "0 days"
+    },
+    {
+      "description": "Auto-merge node-miio's patch and minor updates, also in 0.x (majors need a review)",
+      "matchPackageNames": ["node-miio"],
+      "matchUpdateTypes": ["patch", "minor"],
       "automerge": true
     }
   ]
