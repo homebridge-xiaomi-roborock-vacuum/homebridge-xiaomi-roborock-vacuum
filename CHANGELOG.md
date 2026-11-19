@@ -2,6 +2,8 @@
 
 ## Next
 
+## 1.0.1
+
 - [Bug] An `accessories` block edited in the Homebridge UI (which saves the new `devices: [...]` platform format into it) works again: the accessory uses its first device, and the log explains how to move the block to `platforms` ([#1248](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1248)).
 - [Bug] Room cleaning: send numeric room IDs as numbers. Some models (e.g. the S5) failed to start the room cleaning when they received them as strings ([#1032](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1032)).
 
