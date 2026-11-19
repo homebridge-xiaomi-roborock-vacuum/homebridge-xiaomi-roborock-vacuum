@@ -50,7 +50,7 @@
     "postversion": "git push && git push --tags",
     "lint": "prettier --check .",
     "lint:fix": "prettier --write .",
-    "test": "jest"
+    "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
     "node-miio": "^0.3.0-beta.4",
