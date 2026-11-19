@@ -9,6 +9,16 @@ export interface RoomsConfig {
   autoroom?: boolean | string[];
   rooms?: unknown;
   roomTimeout: number;
+  /**
+   * Internal (platform mode only): the rooms resolved in a previous run, used as a fallback when they
+   * can't be retrieved from the device. When defined, the rooms are persisted automatically.
+   */
+  cachedRooms?: ResolvedRoom[];
+}
+
+export interface ResolvedRoom {
+  id: string;
+  name: string;
 }
 
 interface Room extends Service {
@@ -19,6 +29,8 @@ export class RoomsService extends PluginServiceClass {
   public readonly roomIdsToClean = new Set<string>();
   private readonly rooms: Record<string, Room> = {};
   private roomTimeout = setTimeout(() => {}, 0);
+  /** The rooms resolved from the device (when using `autoroom`) */
+  public resolvedRooms: ResolvedRoom[] = [];
 
   constructor(
     coreContext: CoreContext,
@@ -64,12 +76,36 @@ export class RoomsService extends PluginServiceClass {
       // Await for the device to be connected
       await firstValueFrom(this.deviceManager.deviceConnected$);
 
-      if (Array.isArray(this.config.autoroom)) {
-        await this.getRoomList();
-      } else {
-        await this.getRoomMap();
+      try {
+        if (Array.isArray(this.config.autoroom)) {
+          await this.getRoomList();
+        } else {
+          await this.getRoomMap();
+        }
+      } catch {
+        // Already logged by getRoomList/getRoomMap: fall back to the cached rooms (if any)
+      }
+
+      if (this.resolvedRooms.length === 0 && this.config.cachedRooms?.length) {
+        this.log.info(
+          `INF init | Using the rooms resolved in a previous run: ${JSON.stringify(
+            this.config.cachedRooms
+          )}`
+        );
+        this.applyCachedRooms(this.config.cachedRooms);
       }
     }
+  }
+
+  private applyCachedRooms(cachedRooms: ResolvedRoom[]) {
+    for (const { id, name } of cachedRooms) {
+      if (this.rooms[name]) {
+        this.rooms[name].roomId = id;
+      } else if (!Array.isArray(this.config.autoroom)) {
+        this.createRoom(id, name);
+      }
+    }
+    this.resolvedRooms = cachedRooms.filter(({ name }) => this.rooms[name]);
   }
 
   public get services(): Service[] {
@@ -162,7 +198,7 @@ export class RoomsService extends PluginServiceClass {
       );
       if (typeof leetTimer === "undefined") {
         this.log.error(`getRoomList | Could not find a timer for autoroom`);
-        return;
+        throw new Error("Could not find a timer for autoroom");
       }
 
       let roomIds = leetTimer[2][1][1]["segments"].split(`,`).map((x) => +x);
@@ -174,18 +210,28 @@ export class RoomsService extends PluginServiceClass {
         this.log.error(
           `getRoomList | Number of rooms in config does not match number of rooms in the timer`
         );
-        return;
+        throw new Error(
+          "Number of rooms in config does not match number of rooms in the timer"
+        );
       }
-      let roomMap: { id: string; name: string }[] = [];
+      let roomMap: ResolvedRoom[] = [];
       for (const [i, roomId] of roomIds.entries()) {
         this.rooms[autoroom[i]].roomId = roomId;
         roomMap.push({ id: roomId, name: autoroom[i] });
       }
-      this.log.info(
-        `getRoomList | Created "rooms": ${JSON.stringify(
-          roomMap
-        )}. Update your 'rooms' config, remove autoroom, and restart homebridge.`
-      );
+      this.resolvedRooms = roomMap;
+      if (this.config.cachedRooms) {
+        // Platform mode: the rooms are persisted automatically, no need to update the config
+        this.log.info(
+          `getRoomList | Resolved "rooms": ${JSON.stringify(roomMap)}`
+        );
+      } else {
+        this.log.info(
+          `getRoomList | Created "rooms": ${JSON.stringify(
+            roomMap
+          )}. Update your 'rooms' config, remove autoroom, and restart homebridge.`
+        );
+      }
     } catch (err) {
       this.log.error(`getRoomList | Failed getting the Room List.`, err);
       throw err;
@@ -201,6 +247,7 @@ export class RoomsService extends PluginServiceClass {
       for (let val of map) {
         this.createRoom(val[0], val[1]);
       }
+      this.resolvedRooms = map.map(([id, name]) => ({ id, name }));
     } catch (err) {
       this.log.error(`ERR getRoomMap | Failed getting the Room Map.`, err);
       throw err;

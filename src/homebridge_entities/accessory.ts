@@ -47,6 +47,8 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
   private readonly config: Config;
   private readonly pluginServices: PluginServices;
   private readonly deviceManager: DeviceManager;
+  /** Resolves once the rooms are known (immediately when not using `autoroom`) */
+  public readonly roomsReady: Promise<void>;
 
   constructor(
     log: Logging | Logger,
@@ -59,6 +61,14 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
 
     this.deviceManager =
       deviceManager || new DeviceManager(api.hap, this.log, config);
+
+    if (!deviceManager) {
+      // Legacy "accessory" mode (the platform always provides its DeviceManager)
+      this.log.info(
+        `INF init | Configured as an accessory. Consider moving this device to the "platforms" section ` +
+          `(see the README): it's the only format supported by the Homebridge UI, and it adds rooms automatically.`
+      );
+    }
 
     this.deviceManager.errorChanged$
       .pipe(
@@ -86,7 +96,19 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
     this.pluginServices = this.initializeServices(coreContext);
 
     // Run the init method of all the services, once they are all registered.
-    Object.values(this.pluginServices).map((service) => service?.init());
+    let roomsReady: Promise<void> = Promise.resolve();
+    Object.entries(this.pluginServices).forEach(([name, service]) => {
+      const initialized = service?.init();
+      if (name === "rooms" && initialized) roomsReady = initialized;
+    });
+    this.roomsReady = roomsReady.catch((err) =>
+      this.log.error(`Failed to resolve the rooms`, err)
+    );
+  }
+
+  /** The rooms resolved from the device (when using `autoroom`) */
+  public get resolvedRooms() {
+    return this.pluginServices.rooms.resolvedRooms;
   }
 
   /**

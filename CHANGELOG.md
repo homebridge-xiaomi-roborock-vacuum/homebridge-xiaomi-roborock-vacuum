@@ -3,6 +3,10 @@
 ## Next
 
 - [Enhancement] Register as platform for dynamically adding services after connecting ([#855](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/855))
+- [Enhancement] The Homebridge UI now configures the plugin as a platform (`config.schema.json`). Existing `accessories` configs keep working, but need to be edited as JSON.
+- [Enhancement] Rooms (`autoroom`) are resolved before registering the services in platform mode, so their switches show up without restarting. The resolved rooms are saved automatically: no need to copy them into the `rooms` config.
+- [Enhancement] In platform mode, `waterBox` is enabled automatically on the models that support it, unless set explicitly.
+- [Enhancement] Switches that are no longer exposed (e.g. removed rooms) are removed from the cached platform accessory.
 - [Feature] Use [node-miio](https://github.com/afharo/node-miio) (`0.3.0-beta.4`) instead of the bundled copy of `miio`. It adds support for **any MIoT vacuum** (Xiaomi, Dreame, Mijia, ijai, newer Viomi like the S9/V13…), driven by its spec from [miot-spec.org](https://home.miot-spec.com). The specs are cached, and a snapshot is bundled for offline setups.
 - [Feature] Models that are not listed in `models.ts` now use the fan speeds and water levels reported by node-miio (e.g. from their MIoT spec), instead of the Roborock defaults.
 - [Bug] The dock sensor now reports the robot as docked when its battery is fully charged.
