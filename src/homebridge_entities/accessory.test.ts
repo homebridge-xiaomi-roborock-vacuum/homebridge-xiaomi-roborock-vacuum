@@ -129,13 +129,14 @@ describe("XiaomiRoborockVacuum", () => {
         dustCollection: true,
         goTo: true,
         dock: true,
+        waterTankEmpty: true,
         zones: [],
         disableCareServices: true,
       },
       homebridge
     );
     const initialisedServices = client.getServices();
-    expect(initialisedServices).toHaveLength(9);
+    expect(initialisedServices).toHaveLength(10);
     expect(
       initialisedServices.map((svc) => `${svc.displayName}-${svc.subtype}`)
     ).toMatchSnapshot();

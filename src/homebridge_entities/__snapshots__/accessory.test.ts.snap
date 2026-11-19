@@ -11,6 +11,7 @@ exports[`XiaomiRoborockVacuum Client with all config has all the services 1`] = 
   "Roborock vacuum cleaner Dust Collection-Dust Collection",
   "Roborock vacuum cleaner go to coordinates-GoTo Switch",
   "Roborock vacuum cleaner Dock-undefined",
+  "Roborock vacuum cleaner Water Tank Empty-Water Tank Empty",
 ]
 `;
 
@@ -27,6 +28,7 @@ exports[`XiaomiRoborockVacuum Client with all config has all the services 2`] = 
   "dustCollection",
   "goTo",
   "dock",
+  "waterTank",
   "zones",
   "careServices",
 ]
@@ -57,6 +59,7 @@ exports[`XiaomiRoborockVacuum Client with minimum config has the basic services 
   "dustCollection",
   "goTo",
   "dock",
+  "waterTank",
   "zones",
   "careServices",
 ]
