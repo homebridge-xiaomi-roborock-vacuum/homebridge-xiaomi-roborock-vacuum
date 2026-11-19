@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Become a beta tester
+    url: https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1232
+    about: Sign up with your model, and get mentioned when a beta needs a device like yours.
