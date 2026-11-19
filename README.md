@@ -342,7 +342,7 @@ NOTE: We are not currently aware of how to retrieve the token from the Roborock 
 
 ## Is my model supported?
 
-As new users join our community, and use this plugin, we try to learn from their device, and keep up with the new devices Xiaomi releases. However, the main developer @afharo, only owns the model S5, and he can't test the features on other models. If you wonder whether your device is supported, please:
+As new users join our community, and use this plugin, we try to learn from their device, and keep up with the new devices Xiaomi releases. However, the maintainer can't test the features on most models, so we rely on users like you: see [CONTRIBUTING.md](./CONTRIBUTING.md) for what to share when requesting a model or a feature, and how to become a beta tester. If you wonder whether your device is supported, please:
 
 1. Check the [models.ts](./src/models/models.ts) file to see if your device is already in the explicit list.
 2. If not, maybe it matches the _default_ behaviour (just try running the plugin and see if it works).
