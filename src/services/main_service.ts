@@ -49,7 +49,13 @@ export class MainService extends PluginServiceClass {
       this.deviceManager.deviceConnected$.subscribe(() => {
         // Now that we know the model, amend the steps in the Rotation speed (for better usability)
         const minStep =
-          100 / (findSpeedModes(this.deviceManager.model).speed.length - 1);
+          100 /
+          (findSpeedModes(
+            this.deviceManager.model,
+            this.productInfo.firmware,
+            this.deviceManager.reportedModes
+          ).speed.length -
+            1);
         this.service
           .getCharacteristic(this.hap.Characteristic.RotationSpeed)
           .setProps({ minStep: minStep });
@@ -188,7 +194,8 @@ export class MainService extends PluginServiceClass {
     // Get the speed modes for this model
     const speedModes = findSpeedModes(
       this.deviceManager.model,
-      this.productInfo.firmware
+      this.productInfo.firmware,
+      this.deviceManager.reportedModes
     ).speed;
 
     let miLevel: number | null = null;
@@ -259,7 +266,8 @@ export class MainService extends PluginServiceClass {
     // Get the speed modes for this model
     const speedModes = findSpeedModes(
       this.deviceManager.model,
-      this.productInfo.firmware
+      this.productInfo.firmware,
+      this.deviceManager.reportedModes
     ).speed;
 
     // Find speed mode that matches the miLevel

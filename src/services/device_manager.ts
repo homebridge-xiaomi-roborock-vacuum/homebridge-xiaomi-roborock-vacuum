@@ -8,10 +8,11 @@ import {
   Subject,
   timer,
 } from "rxjs";
-import miio from "../miio";
+import * as miio from "node-miio";
 import { Logger } from "../utils/logger";
 import { MiioDevice } from "../utils/miio_types";
 import { cleaningStatuses } from "../utils/constants";
+import type { ReportedModes } from "../utils/find_speed_modes";
 
 export interface DeviceManagerConfig {
   ip?: string;
@@ -155,6 +156,7 @@ export class DeviceManager {
     const device = await miio.device({ address: this.ip, token: this.token });
 
     if (device.matches("type:vaccuum")) {
+      this.reportedModes = await this.loadReportedModes(device);
       this.internalDevice$.next(device);
 
       this.log.setModel(this.model);
@@ -186,6 +188,33 @@ export class DeviceManager {
       );
       this.log.debug(device);
       device.destroy();
+    }
+  }
+
+  /**
+   * Fan speeds and water levels reported by node-miio (e.g. from the MIoT spec). `undefined` if not available.
+   */
+  public reportedModes?: ReportedModes;
+
+  private async loadReportedModes(
+    device: MiioDevice
+  ): Promise<ReportedModes | undefined> {
+    if (typeof device.fanSpeeds !== "function") return undefined;
+    try {
+      const [fanSpeeds, waterBoxModes] = await Promise.all([
+        device.fanSpeeds(),
+        device.waterBoxModes ? device.waterBoxModes() : [],
+      ]);
+      this.log.debug(`DEB getDevice | Modes reported by node-miio: %j`, {
+        fanSpeeds,
+        waterBoxModes,
+      });
+      return { fanSpeeds, waterBoxModes };
+    } catch (err) {
+      this.log.debug(
+        `DEB getDevice | Failed to load the reported modes: ${err}`
+      );
+      return undefined;
     }
   }
 

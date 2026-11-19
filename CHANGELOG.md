@@ -3,6 +3,10 @@
 ## Next
 
 - [Enhancement] Register as platform for dynamically adding services after connecting ([#855](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/855))
+- [Feature] Use [node-miio](https://github.com/afharo/node-miio) (`0.3.0-beta.4`) instead of the bundled copy of `miio`. It adds support for **any MIoT vacuum** (Xiaomi, Dreame, Mijia, ijai, newer Viomi like the S9/V13…), driven by its spec from [miot-spec.org](https://home.miot-spec.com). The specs are cached, and a snapshot is bundled for offline setups.
+- [Feature] Models that are not listed in `models.ts` now use the fan speeds and water levels reported by node-miio (e.g. from their MIoT spec), instead of the Roborock defaults.
+- [Bug] The dock sensor now reports the robot as docked when its battery is fully charged.
+- [Breaking] Requires Node.js 22.12+, 24 or 26 (Node.js 20 is EOL).
 
 ## 0.36.0
 

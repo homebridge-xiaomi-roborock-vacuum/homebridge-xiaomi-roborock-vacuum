@@ -1,7 +1,7 @@
 import type { Logging, API, Service } from "homebridge";
 import { Subject, first } from "rxjs";
 import { type Config, DeviceManager } from "../services";
-import { findSpeedModes } from "../utils/find_speed_modes";
+import { findSpeedModes, type ReportedModes } from "../utils/find_speed_modes";
 import { type Logger, getLogger } from "../utils/logger";
 import { XiaomiRoborockVacuumAccessory } from "./accessory";
 import type { XiaomiRoborockVacuumPlatformAccessory } from "./platform";
@@ -32,7 +32,11 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
       // In the future, we can move to smarter logic: calculate the rooms first, then create the services.
       const vacuumService = new XiaomiRoborockVacuumAccessory(
         this.log,
-        this.applyDefaultsBasedOnModel(config, deviceManager.model),
+        this.applyDefaultsBasedOnModel(
+          config,
+          deviceManager.model,
+          deviceManager.reportedModes
+        ),
         api,
         deviceManager
       );
@@ -82,12 +86,13 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
 
   private applyDefaultsBasedOnModel(
     config: Partial<Config>,
-    model: string
+    model: string,
+    reportedModes?: ReportedModes
   ): Partial<Config> {
     // At this point, we can apply any defaults depending on the model...
     return {
       // like enabling the waterbox mode if the model supports it
-      waterBox: !!findSpeedModes(model).waterspeed,
+      waterBox: !!findSpeedModes(model, undefined, reportedModes).waterspeed,
       // or enabling auto-room if the model supports room mapping
       // autoroom: TODO,
       ...config,

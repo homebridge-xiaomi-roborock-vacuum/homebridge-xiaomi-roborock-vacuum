@@ -38,6 +38,15 @@ export interface MiioDevice {
   sendToLocation: (x: number, y: number) => Promise<void>;
   setRawProperty: (key: string, value: unknown) => Promise<void>;
   cleanZones: (zonesToClean: number[][]) => Promise<void>;
+  /** Available since node-miio 0.3.0-beta.4 */
+  fanSpeeds?: () => Promise<MiioVacuumMode[]>;
+  /** Available since node-miio 0.3.0-beta.4 (empty if the model doesn't support it) */
+  waterBoxModes?: () => Promise<MiioVacuumMode[]>;
+}
+
+export interface MiioVacuumMode {
+  value: number;
+  name: string;
 }
 
 export interface MiioState {

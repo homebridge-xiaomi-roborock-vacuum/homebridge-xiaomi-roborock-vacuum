@@ -95,8 +95,11 @@ export class WaterBoxService extends PluginServiceClass {
 
     // Get the speed modes for this model
     const speedModes =
-      findSpeedModes(this.deviceManager.model, this.productInfo.firmware)
-        .waterspeed || [];
+      findSpeedModes(
+        this.deviceManager.model,
+        this.productInfo.firmware,
+        this.deviceManager.reportedModes
+      ).waterspeed || [];
 
     // If the robot does not support water-mode cleaning
     if (speedModes.length === 0) {
@@ -186,8 +189,11 @@ export class WaterBoxService extends PluginServiceClass {
   private findWaterSpeedModeFromMiio(speed) {
     // Get the speed modes for this model
     const speedModes =
-      findSpeedModes(this.deviceManager.model, this.productInfo.firmware)
-        .waterspeed || [];
+      findSpeedModes(
+        this.deviceManager.model,
+        this.productInfo.firmware,
+        this.deviceManager.reportedModes
+      ).waterspeed || [];
 
     // Find speed mode that matches the miLevel
     return speedModes.find((mode) => mode.miLevel === speed);
