@@ -5,6 +5,11 @@ export interface CustomLoggerConfig {
    * When `true`, info and debug logs are silenced to avoid convoluted logs.
    */
   silent?: boolean;
+  /**
+   * When `true`, debug logs (including node-miio's) are shown as regular logs, without enabling Homebridge's debug
+   * mode (`-D`) for every plugin.
+   */
+  debug?: boolean;
 }
 
 const noop = () => {};
@@ -31,8 +36,13 @@ export function getLogger(
   }
 
   return {
-    debug: (msg, ...params) =>
-      config.silent ? noop() : log.debug(buildMsg(msg), ...params),
+    debug: (msg, ...params) => {
+      if (config.debug) {
+        log.info(buildMsg(`[debug] ${msg}`), ...params);
+      } else if (!config.silent) {
+        log.debug(buildMsg(msg), ...params);
+      }
+    },
     info: (msg, ...params) =>
       config.silent ? noop() : log.info(buildMsg(msg), ...params),
     warn: (msg, ...params) => log.warn(buildMsg(msg), ...params),

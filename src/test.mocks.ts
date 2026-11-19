@@ -45,6 +45,7 @@ export const miio = {
   device: miioDevice,
   createMock: () => ({
     device: jest.fn().mockImplementation(() => miioDevice),
+    configureLogging: jest.fn(),
   }),
 };
 

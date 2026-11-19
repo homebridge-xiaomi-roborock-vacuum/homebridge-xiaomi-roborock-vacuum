@@ -47,8 +47,8 @@ Open an issue with:
 
 ### Debug logs
 
-1. Homebridge UI: _Settings_ → _Homebridge Debug Mode (-D)_ → on, and restart Homebridge.
-   Make sure `"silent"` is not `true` in the plugin's config.
+1. In the plugin's settings for your vacuum, enable _Show debug logs_ (`"debug": true`), and restart Homebridge
+   (or the plugin's child bridge).
 2. Reproduce the problem.
 3. Copy the lines of this plugin from the logs (they start with your vacuum's name). The `DEB getState` lines show
    everything the vacuum reports, every 30 seconds.

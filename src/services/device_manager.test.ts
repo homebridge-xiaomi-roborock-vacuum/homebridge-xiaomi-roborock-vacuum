@@ -41,6 +41,29 @@ describe("DeviceManager", () => {
     });
   });
 
+  describe("node-miio logger", () => {
+    test("passes the plugin's logger to node-miio", async () => {
+      const nodeMiio = jest.requireMock("node-miio");
+      new DeviceManager(createHomebridgeMock().hap, log, {
+        ip: "192.168.0.1",
+        token: "token",
+      });
+      await new Promise(process.nextTick);
+      expect(nodeMiio.device).toHaveBeenCalledWith({
+        address: "192.168.0.1",
+        token: "token",
+        logger: { debug: expect.any(Function) },
+      });
+      expect(nodeMiio.configureLogging).toHaveBeenCalledWith({
+        logger: { debug: expect.any(Function) },
+      });
+
+      const [{ logger }] = nodeMiio.device.mock.calls[0];
+      logger.debug("[thing:miio:1234] <- Message");
+      expect(log.debug).toHaveBeenCalledWith("[thing:miio:1234] <- Message");
+    });
+  });
+
   describe("get device", () => {
     afterEach(() => {
       jest.useRealTimers();
