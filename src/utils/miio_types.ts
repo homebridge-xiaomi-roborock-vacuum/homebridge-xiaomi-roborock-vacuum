@@ -27,8 +27,8 @@ export interface MiioDevice {
   activateCleaning: () => Promise<void>;
   activateCharging: () => Promise<void>;
   pause: () => Promise<void>;
-  cleanRooms: (roomIds: string[]) => Promise<void>;
-  resumeCleanRooms: (roomIds: string[]) => Promise<void>;
+  cleanRooms: (roomIds: Array<number | string>) => Promise<void>;
+  resumeCleanRooms: (roomIds: Array<number | string>) => Promise<void>;
   fanSpeed: () => Promise<number>;
   changeFanSpeed: (miLevel: number) => Promise<void>;
   getWaterBoxMode: () => Promise<number>;
