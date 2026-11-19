@@ -8,6 +8,7 @@ export { DustCollection } from "./dust_collection";
 export { PauseSwitch } from "./pause_switch";
 export { FindMeService } from "./find_me_service";
 export { GoToService } from "./go_to_service";
+export { GoToDockService } from "./go_to_dock_service";
 export { MainService } from "./main_service";
 export { MopDockService } from "./mop_dock_service";
 export { ProductInfo } from "./product_info";
