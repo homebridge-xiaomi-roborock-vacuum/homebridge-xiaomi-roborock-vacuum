@@ -106,4 +106,15 @@ repeated polling.
 
 4. Sync the local checkout: `git checkout master && git pull --ff-only upstream master`.
 
+## Ask the testers / tell the reporters
+
+Once the version is on npm:
+
+- **Beta**: comment on the beta testers issue (#1232) mentioning the testers whose model or dock matches the
+  changes. Give them a short test list (2–3 items: "turn on X, check that Y happens") and ask for ✅ / ❌ per item, with
+  debug logs for ❌. Also comment on the issues the beta addresses, asking the reporters to try it.
+- **Release**: comment on every issue it addresses: the version, how to enable/use it, and "if it doesn't work, comment
+  here and we'll reopen it" (reporters can't reopen issues closed by a maintainer or a PR). Keep them closed: don't
+  leave issues open waiting for feedback that may never come.
+
 Report the PR, release and npm links to the user.

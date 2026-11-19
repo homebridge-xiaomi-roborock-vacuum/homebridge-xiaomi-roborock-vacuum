@@ -1,0 +1,60 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! The maintainer can't test most models, so the details below are what makes a fix possible.
+        See [CONTRIBUTING.md](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/CONTRIBUTING.md) for how to get them.
+        **Remove your token, serial number, MAC and IP addresses** before posting.
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      description: "Shown in the logs when the plugin starts: `STA getDevice | Model: ...`"
+      placeholder: roborock.vacuum.a75
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware version
+      description: "Shown in the logs: `STA getDevice | Firmware Version: ...`"
+      placeholder: 4.3.5_1234
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Plugin version
+      placeholder: 1.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Debug logs
+      description: "With Homebridge's debug mode (-D) on. The `DEB getState` lines show what the vacuum reports."
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Config
+      description: The config of this vacuum (**without the token**).
+      render: json
+  - type: checkboxes
+    id: beta
+    attributes:
+      label: Testing
+      options:
+        - label: I can test a beta with the fix on my vacuum.
