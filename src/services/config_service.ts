@@ -13,7 +13,8 @@ import { MainServiceConfig } from "./main_service";
 import { DustBinConfig } from "./dust_bin_service";
 
 export interface Config
-  extends MainServiceConfig,
+  extends
+    MainServiceConfig,
     DeviceManagerConfig,
     CustomLoggerConfig,
     RoomsConfig,

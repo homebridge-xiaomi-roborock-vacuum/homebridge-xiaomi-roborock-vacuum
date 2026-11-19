@@ -9,8 +9,10 @@ export interface CustomLoggerConfig {
 
 const noop = () => {};
 
-export interface Logger
-  extends Pick<Logging, "debug" | "info" | "warn" | "error"> {
+export interface Logger extends Pick<
+  Logging,
+  "debug" | "info" | "warn" | "error"
+> {
   setModel: (modelName: string) => void;
 }
 
