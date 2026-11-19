@@ -55,7 +55,7 @@
   "dependencies": {
     "node-miio": "^0.3.0-beta.4",
     "rxjs": "^7.5.6",
-    "semver": "7.8.1"
+    "semver": "7.8.6"
   },
   "devDependencies": {
     "@babel/core": "7.29.13",
@@ -63,7 +63,7 @@
     "@babel/preset-typescript": "7.29.7",
     "@types/jest": "30.0.0",
     "@types/node": "24.19.2",
-    "@types/semver": "7.7.1",
+    "@types/semver": "7.8.0",
     "babel-jest": "30.5.2",
     "homebridge": "2.4.0",
     "jest": "30.5.2",
