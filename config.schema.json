@@ -78,6 +78,12 @@
               "default": false,
               "required": false
             },
+            "debug": {
+              "title": "Show debug logs (use it when reporting an issue), without enabling Homebridge's debug mode",
+              "type": "boolean",
+              "default": false,
+              "required": false
+            },
             "silent": {
               "title": "Do not log info and debug messages (only log warn and error messages)",
               "type": "boolean",
@@ -266,6 +272,7 @@
             "devices[].mopWash",
             "devices[].mopDrying",
             "devices[].waterTankEmpty",
+            "devices[].debug",
             "devices[].silent",
             "devices[].pause",
             "devices[].pauseWord",

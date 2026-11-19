@@ -153,7 +153,18 @@ export class DeviceManager {
   private async initializeDevice() {
     this.log.debug("DEB getDevice | Discovering vacuum cleaner");
 
-    const device = await miio.device({ address: this.ip, token: this.token });
+    // node-miio's debug messages go to the plugin's logger (shown with the `debug` option or Homebridge's `-D`)
+    const miioLogger = { debug: (msg: string) => this.log.debug(msg) };
+    // Messages not tied to a device (network, MIoT specs…). Available since node-miio 0.5.0.
+    // With several vacuums, the last one to connect wins: it's only used for debugging.
+    if (typeof miio.configureLogging === "function") {
+      miio.configureLogging({ logger: miioLogger });
+    }
+    const device = await miio.device({
+      address: this.ip,
+      token: this.token,
+      logger: miioLogger,
+    });
 
     if (device.matches("type:vaccuum")) {
       this.reportedModes = await this.loadReportedModes(device);

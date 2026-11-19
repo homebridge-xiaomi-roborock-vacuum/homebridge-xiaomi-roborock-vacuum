@@ -56,6 +56,28 @@ describe("getLogger", () => {
     }
   );
 
+  describe("if debug === true", () => {
+    test("it should log debug messages as info", () => {
+      const logger = getLogger(homebridgeLogger, { debug: true });
+      logger.debug("Test message", 1);
+      expect(homebridgeLogger.info).toHaveBeenCalledWith(
+        "[Model=unknown] [debug] Test message",
+        1
+      );
+      expect(homebridgeLogger.debug).not.toHaveBeenCalled();
+    });
+
+    test("it wins over silent for debug messages, but info stays silenced", () => {
+      const logger = getLogger(homebridgeLogger, { debug: true, silent: true });
+      logger.debug("Debug message");
+      logger.info("Info message");
+      expect(homebridgeLogger.info).toHaveBeenCalledTimes(1);
+      expect(homebridgeLogger.info).toHaveBeenCalledWith(
+        "[Model=unknown] [debug] Debug message"
+      );
+    });
+  });
+
   describe("if silent === true", () => {
     test.each(["debug", "info"] as const)(
       "it not should log %p messages",
