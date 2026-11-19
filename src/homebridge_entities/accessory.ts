@@ -17,6 +17,7 @@ import {
   PauseSwitch,
   FindMeService,
   GoToService,
+  GoToDockService,
   DockService,
   WaterTankService,
   Config,
@@ -39,6 +40,7 @@ interface PluginServices {
   battery: BatteryInfo;
   findMe: FindMeService;
   goTo?: GoToService;
+  goToDock?: GoToDockService;
   dock?: DockService;
   waterTank?: WaterTankService;
   zones?: ZonesService;
@@ -163,6 +165,7 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
         ? new DustCollection(coreContext)
         : undefined,
       goTo: config.goTo ? new GoToService(coreContext) : undefined,
+      goToDock: config.goToDock ? new GoToDockService(coreContext) : undefined,
       dock: config.dock ? new DockService(coreContext) : undefined,
       waterTank: config.waterTankEmpty
         ? new WaterTankService(coreContext)

@@ -135,6 +135,21 @@
                 "functionBody": "return model.goTo === true"
               }
             },
+            "goToDock": {
+              "title": "Show switch for \"go to dock\"",
+              "type": "boolean",
+              "default": false,
+              "required": false
+            },
+            "goToDockWord": {
+              "title": "Go To Dock Word",
+              "type": "string",
+              "default": "go to dock",
+              "required": false,
+              "condition": {
+                "functionBody": "return model.devices[arrayIndices].goToDock === true;"
+              }
+            },
             "dock": {
               "title": "Show Dock sensor",
               "type": "boolean",
@@ -249,6 +264,8 @@
               "flex-flow": "row wrap",
               "items": ["devices[].goToX", "devices[].goToY"]
             },
+            "devices[].goToDock",
+            "devices[].goToDockWord",
             "devices[].dock",
             "devices[].cleanword",
             "devices[].roomTimeout",

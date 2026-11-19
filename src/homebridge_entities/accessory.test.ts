@@ -128,6 +128,7 @@ describe("XiaomiRoborockVacuum", () => {
         dustBin: true,
         dustCollection: true,
         goTo: true,
+        goToDock: true,
         dock: true,
         waterTankEmpty: true,
         zones: [],
