@@ -2,11 +2,41 @@
 
 ## Next
 
-- [Enhancement] Register as platform for dynamically adding services after connecting ([#855](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/855))
-- [Enhancement] The Homebridge UI now configures the plugin as a platform (`config.schema.json`). Existing `accessories` configs keep working, but need to be edited as JSON.
-- [Enhancement] Rooms (`autoroom`) are resolved before registering the services in platform mode, so their switches show up without restarting. The resolved rooms are saved automatically: no need to copy them into the `rooms` config.
-- [Enhancement] In platform mode, `waterBox` is enabled automatically on the models that support it, unless set explicitly.
-- [Enhancement] Switches that are no longer exposed (e.g. removed rooms) are removed from the cached platform accessory.
+## 1.0.0
+
+> [!WARNING]
+> **Potentially breaking changes.** This version is built around registering the plugin as a **platform** instead of an accessory.
+> The legacy accessory mode **still works**, but it's no longer the recommended (or the UI-supported) way to configure the plugin. Please read the notes below before upgrading.
+
+### ⚠️ Breaking changes
+
+- **The Homebridge UI now configures the plugin as a platform** (`config.schema.json`). Your existing `accessories` config keeps working as it is, but the UI can no longer edit it. You'll need to edit it in the JSON config, or move it to the `platforms` section.
+- **Moving a vacuum from `accessories` to `platforms` creates a new accessory in HomeKit.** You'll need to assign it to its room again, and re-create the scenes and automations that used it. In platform mode, the accessory is identified by its `name`, so **renaming it creates a new accessory too**.
+- In platform mode, the accessory is only published once the plugin has connected to the robot. After the first run, it's cached.
+- In platform mode, the exposed services may change after an upgrade, because they now depend on what the robot supports:
+  - `waterBox` is enabled automatically on the models that support it, unless you set it explicitly. Set `"waterBox": false` to keep it disabled.
+  - Switches that are no longer exposed (e.g. removed rooms) are removed from the accessory.
+
+### Migrating from accessory to platform
+
+1. Move each entry from `accessories` to a `devices` array inside a new `platforms` entry, and replace `"accessory": "XiaomiRoborockVacuum"` with a single `"platform": "XiaomiRoborockVacuum"` (see the README for a full example):
+   ```jsonc
+   "platforms": [
+     {
+       "platform": "XiaomiRoborockVacuum",
+       "devices": [{ "name": "Vacuum", "ip": "192.168.1.150", "token": "…" }]
+     }
+   ]
+   ```
+2. Optional: if you copied the `rooms` config from the logs (semi-automatic rooms), you can replace it with `autoroom` again. The rooms are now resolved and saved automatically. Don't set both `rooms` and `autoroom`.
+3. Restart Homebridge, then add the new accessory to its room and to your scenes and automations in the Home app.
+
+### Enhancements
+
+- Register as a platform, to add services dynamically after connecting to the robot ([#855](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/855), [#1037](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1037)).
+- Rooms (`autoroom`) are resolved before registering the services in platform mode, so their switches show up without restarting. The resolved rooms are saved automatically and used as a fallback if they can't be retrieved (e.g. the timer was deleted) ([#1238](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1238)).
+- In platform mode, `waterBox` is enabled automatically on the models that support it (using the water levels reported by [node-miio](https://github.com/afharo/node-miio)), unless set explicitly.
+- In accessory mode, the logs suggest moving to the platform format.
 
 ## 0.37.0
 
