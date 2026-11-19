@@ -2,6 +2,13 @@
 
 ## Next
 
+## 1.1.0
+
+- [Feature] New optional `goToDock` switch (named with `goToDockWord`, `"go to dock"` by default) that sends the robot back to the dock. It's on while the robot is on its way, and turning it off stops the robot ([#322](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/322), [#1256](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1256)).
+- [Feature] New optional `mopWash` button and `mopDrying` switch to wash and dry the mop in docks that support it (S7 MaxV Ultra, S8 Pro Ultra, Q Revo…). The drying switch also shows when the dock dries the mop on its own ([#752](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/752), [#1257](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1257)).
+- [Feature] New optional `waterTankEmpty` occupancy sensor, detected when the clean water tank is empty. Only for models that report it, usually the ones with a self-refilling dock ([#1169](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1169), [#1258](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1258)).
+- [Chore] Update node-miio to `0.4.0`, which adds the mop drying commands and the water tank / dock status ([#1259](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1259)).
+
 ## 1.0.1
 
 - [Bug] An `accessories` block edited in the Homebridge UI (which saves the new `devices: [...]` platform format into it) works again: the accessory uses its first device, and the log explains how to move the block to `platforms` ([#1248](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1248)).
