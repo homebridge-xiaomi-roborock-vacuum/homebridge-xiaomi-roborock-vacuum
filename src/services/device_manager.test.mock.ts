@@ -1,3 +1,3 @@
 import { miio } from "../test.mocks";
 
-jest.doMock("../miio", () => miio.createMock());
+jest.doMock("node-miio", () => miio.createMock());

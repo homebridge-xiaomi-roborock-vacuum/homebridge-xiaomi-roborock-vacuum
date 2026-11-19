@@ -56,6 +56,8 @@ export class GoToService extends PluginServiceClass {
     try {
       const goingToLocation =
         this.deviceManager.state === "going-to-location" ||
+        // "idle" is the name node-miio uses for the state 3 (previously "waiting")
+        this.deviceManager.state === "idle" ||
         this.deviceManager.state === "waiting";
       this.log.info(
         `getGoToState | Going to location or waiting is ${goingToLocation}`

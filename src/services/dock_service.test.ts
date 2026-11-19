@@ -77,6 +77,18 @@ describe("DockService", () => {
     );
   });
 
+  test("getDocked - true when fully charged", async () => {
+    (deviceManagerMock.state as string) = "fully-charged";
+    const [service] = dockService.services;
+    await expect(
+      service
+        .getCharacteristic(hap.Characteristic.OccupancyDetected)
+        .handleGetRequest()
+    ).resolves.toStrictEqual(
+      hap.Characteristic.OccupancyDetected.OCCUPANCY_DETECTED
+    );
+  });
+
   test("getDocked - false", async () => {
     const [service] = dockService.services;
     await expect(
