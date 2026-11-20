@@ -14,6 +14,7 @@ import {
   MainService,
   WaterBoxService,
   DustCollection,
+  ErrorSensorService,
   PauseSwitch,
   FindMeService,
   GoToService,
@@ -42,6 +43,7 @@ const EXTRA_SERVICES_IN_VACUUM_MODE = new Set<keyof PluginServices>([
   "doNotDisturb",
   "dustBin",
   "dustCollection",
+  "errorSensor",
   "goTo",
   "goToSpots",
   "mopDock",
@@ -58,6 +60,7 @@ interface PluginServices {
   waterBox?: WaterBoxService;
   dustBin?: DustBinService;
   dustCollection?: DustCollection;
+  errorSensor?: ErrorSensorService;
   battery: BatteryInfo;
   findMe: FindMeService;
   goTo?: GoToService;
@@ -220,6 +223,9 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
       dustBin: config.dustBin ? new DustBinService(coreContext) : undefined,
       dustCollection: config.dustCollection
         ? new DustCollection(coreContext)
+        : undefined,
+      errorSensor: config.errorSensor
+        ? new ErrorSensorService(coreContext)
         : undefined,
       goTo: config.goTo ? new GoToService(coreContext) : undefined,
       goToSpots: config.goToSpots?.length

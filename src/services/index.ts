@@ -8,6 +8,7 @@ export { DockService } from "./dock_service";
 export { DoNotDisturbService } from "./do_not_disturb_service";
 export { DustBinService } from "./dust_bin_service";
 export { DustCollection } from "./dust_collection";
+export { ErrorSensorService } from "./error_sensor_service";
 export { PauseSwitch } from "./pause_switch";
 export { FindMeService } from "./find_me_service";
 export { GoToService } from "./go_to_service";
