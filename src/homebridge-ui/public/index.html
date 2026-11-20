@@ -34,6 +34,29 @@
   }
 </style>
 
+<div class="card xrv-card border-warning" id="legacy-card" hidden>
+  <div class="card-body">
+    <h5 class="card-title">Vacuums in the old format</h5>
+    <p>
+      These vacuums are configured as <em>accessories</em>, the format of
+      versions before 1.0. They work, but this page and the form below can't
+      show or change them.
+    </p>
+    <ul id="legacy-devices"></ul>
+    <p class="xrv-muted">
+      Moving them to the new format (<em>platform</em>) keeps all their
+      options<span id="legacy-bridge-note"></span>. The Home app sees them as
+      new accessories: you'll have to put them back in their rooms, and update
+      your scenes and automations. A backup of your config is saved first
+      (Settings → Backup).
+    </p>
+    <p class="text-warning" id="legacy-bridges-warning" hidden></p>
+    <button type="button" class="btn btn-warning" id="migrate-legacy">
+      Move them to the new format
+    </button>
+  </div>
+</div>
+
 <div class="card xrv-card">
   <div class="card-body">
     <h5 class="card-title">Xiaomi Cloud (optional)</h5>
@@ -543,6 +566,73 @@
       return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
     }
 
+    // ---------- Legacy accessories ----------
+    async function refreshLegacy() {
+      let legacy;
+      try {
+        legacy = await homebridge.request("/legacy");
+      } catch (err) {
+        console.warn("Couldn't read the legacy config", err);
+        return;
+      }
+      $("legacy-card").hidden = legacy.blocks === 0;
+      if (legacy.blocks === 0) return;
+      const list = $("legacy-devices");
+      list.replaceChildren(
+        ...legacy.devices.map((device) =>
+          el(
+            "li",
+            `${device.name || "(no name)"}${device.ip ? ` (${device.ip})` : ""}`
+          )
+        )
+      );
+      $("legacy-bridge-note").textContent = legacy.bridge
+        ? ", and their child bridge (so the bridge stays paired)"
+        : "";
+      $("legacy-bridges-warning").hidden = legacy.bridges < 2;
+      $("legacy-bridges-warning").textContent =
+        `They run in ${legacy.bridges} different child bridges: only the first one is kept (the others will show as "No response" in the Home app, remove them there).`;
+    }
+
+    async function migrateLegacy() {
+      const button = $("migrate-legacy");
+      button.disabled = true;
+      try {
+        const legacy = await homebridge.request("/legacy");
+        pluginConfig = await homebridge.getPluginConfig();
+        const block = platformBlock();
+        const names = new Set(block.devices.map((device) => device.name));
+        const skipped = [];
+        for (const device of legacy.devices) {
+          if (names.has(device.name)) skipped.push(device.name);
+          else block.devices.push(device);
+        }
+        if (legacy.bridge && !block._bridge) block._bridge = legacy.bridge;
+        if (legacy.cloud && !block.cloud) block.cloud = legacy.cloud;
+
+        // First the platform (saved), then the legacy blocks are removed: if anything fails, nothing is lost
+        await homebridge.updatePluginConfig(pluginConfig);
+        await homebridge.savePluginConfig();
+        await homebridge.request("/legacy/remove", { blocks: legacy.blocks });
+
+        homebridge.hideSchemaForm();
+        homebridge.showSchemaForm();
+        refreshDeviceSelect();
+        $("legacy-card").hidden = true;
+        homebridge.toast.success(
+          `${skipped.length ? `Already configured, so not moved: ${skipped.join(", ")}. ` : ""}Restart Homebridge to apply it.`,
+          "Moved to the new format"
+        );
+      } catch (err) {
+        homebridge.toast.error(errorMessage(err), "Couldn't move them");
+        await refreshLegacy();
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    $("migrate-legacy").addEventListener("click", () => migrateLegacy());
+
     // ---------- Start ----------
     homebridge.addEventListener("configChanged", (event) => {
       pluginConfig = event.data;
@@ -553,7 +643,7 @@
       pluginConfig = await homebridge.getPluginConfig();
       homebridge.showSchemaForm();
       refreshDeviceSelect();
-      await refreshStatus();
+      await Promise.all([refreshLegacy(), refreshStatus()]);
     })();
   })();
 </script>

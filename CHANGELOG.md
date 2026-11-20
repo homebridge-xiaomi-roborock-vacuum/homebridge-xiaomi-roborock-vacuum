@@ -5,6 +5,7 @@
 - [Feature] Plugin settings page in the Homebridge UI ([#309](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/309)), above the usual form ([screenshot](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/settings-page.png)):
   - **Log in to the Xiaomi Cloud** by scanning a QR code with the Mi Home app (no password, no terminal needed).
   - **Find your vacuums** in the account, and add them (name, IP and token) or update their token in one click.
+  - **Move the vacuums still configured as accessories** (the format before 1.0, which the UI can't show) to the platform format, in one click: with all their options and their child bridge, after a backup of the config.
   - **See the map** of a Roborock vacuum, and name its rooms by clicking on them, even if the app doesn't let you name them. The names become the room cleaning switches (`rooms`).
 - [Feature] The room the robot is in, from its map in the Xiaomi Cloud (opt-in, Roborock only, platform mode). With the new platform option `cloud` and the vacuum's `roomSensors`, HomeKit shows an occupancy sensor per room, detected while the robot is in it. It needs a one-off `npx node-miio cloud login --qr`; your password is never stored.
 - [Feature] No more token extraction: with the platform's `cloud` option, a robot configured with only its `ip` gets its token from your Xiaomi account when Homebridge starts. The token is now optional in the config.

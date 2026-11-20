@@ -109,6 +109,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
   // Legacy: define it as an accessory.
   // Everything is preset, and the plugin tries to connect and address the commands based on the info provided here.
   // Note: the Homebridge UI can only edit the platform format. Accessory configs keep working, but they need to be edited as JSON.
+  // The plugin's settings page can move them to the platform format in one click (see "Settings page" below).
   "accessories": [
     {
       "accessory": "XiaomiRoborockVacuum",
@@ -380,6 +381,10 @@ warning: log in again and restart Homebridge.
 
 The plugin's settings in the Homebridge UI show, above the usual form:
 
+- **Vacuums in the old format** (`accessories`, before 1.0), if any: the UI can't show or change them, and this
+  page moves them to the platform format in one click, with all their options and their child bridge. A backup of the
+  config is saved first. The Home app sees them as new accessories: put them back in their rooms, and update your
+  scenes and automations.
 - **Xiaomi Cloud login** with a QR code (scan it with the Mi Home app: no password needed).
 - **Your vacuums** in the Xiaomi account: add them, with their IP and token, in one click (or update their token).
 - **The map** of a Roborock vacuum: click a room to name it. The names are saved as the vacuum's `rooms` (the room

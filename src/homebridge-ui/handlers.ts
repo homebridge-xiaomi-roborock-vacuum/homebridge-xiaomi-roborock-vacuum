@@ -11,6 +11,7 @@ import {
   type QrCode,
   type RoborockMap,
 } from "node-miio";
+import { readLegacyConfig, removeLegacyBlocks } from "./legacy";
 
 /** The payload of every request: where the session is (the platform's `cloud` option) */
 export interface CloudRequest {
@@ -84,8 +85,15 @@ export interface LoginResult {
  */
 export function createHandlers(
   push: (event: string, data: unknown) => void,
-  deps: HandlerDeps = defaultDeps
+  deps: HandlerDeps = defaultDeps,
+  /** Homebridge's `config.json` (to move the legacy `accessories` blocks) */
+  configPath?: string
 ) {
+  function getConfigPath() {
+    if (!configPath) throw new Error("Homebridge's config file is unknown.");
+    return configPath;
+  }
+
   /** The account's devices, by session and server: listing them takes a few requests per server */
   const caches = new Map<string, CloudDeviceCache>();
 
@@ -111,6 +119,13 @@ export function createHandlers(
   }
 
   return {
+    /** The vacuums configured in the legacy `accessories` format, converted to the platform's */
+    "/legacy": () => readLegacyConfig(getConfigPath()),
+
+    /** Removes the legacy blocks, once moved to the platform (and saved) */
+    "/legacy/remove": ({ blocks }: { blocks: number }) =>
+      removeLegacyBlocks(getConfigPath(), blocks),
+
     "/cloud/status": async (request: CloudRequest) => {
       const session = await deps.loadSession(request.sessionFile || undefined);
       return { loggedIn: !!session, userId: session?.userId };

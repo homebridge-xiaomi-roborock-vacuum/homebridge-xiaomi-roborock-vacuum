@@ -12,8 +12,10 @@ async function start() {
   class XiaomiRoborockVacuumUiServer extends HomebridgePluginUiServer {
     constructor() {
       super();
-      const handlers = createHandlers((event, data) =>
-        this.pushEvent(event, data)
+      const handlers = createHandlers(
+        (event, data) => this.pushEvent(event, data),
+        undefined,
+        this.homebridgeConfigPath
       );
       for (const [path, handler] of Object.entries(handlers)) {
         this.onRequest(path, async (payload) => {
