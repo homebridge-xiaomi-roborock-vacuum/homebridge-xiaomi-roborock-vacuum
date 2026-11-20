@@ -186,6 +186,10 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
    */
   private initializeServices(coreContext: CoreContext): PluginServices {
     const { config } = this;
+    const showCareSensors =
+      config.serviceType === "vacuum"
+        ? config.disableCareServices === false
+        : !config.disableCareServices;
 
     const productInfo = new ProductInfo(coreContext);
     const rooms = new RoomsService(coreContext, async (clean) => {
@@ -248,13 +252,10 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
       // ADDITIONAL HOMEKIT SERVICES
       // With `serviceType: "vacuum"`, they're opt-in (`"disableCareServices": false`): Matter has no equivalent, and
       // they'd be the only reason for a HomeKit accessory next to the Matter vacuum
-      careServices: (
-        config.serviceType === "vacuum"
-          ? config.disableCareServices === false
-          : !config.disableCareServices
-      )
-        ? new CareService(coreContext, mainService)
-        : undefined,
+      careServices:
+        showCareSensors || config.maintenanceSensor
+          ? new CareService(coreContext, mainService, showCareSensors)
+          : undefined,
     };
   }
 
