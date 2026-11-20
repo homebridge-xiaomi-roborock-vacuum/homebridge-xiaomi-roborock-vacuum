@@ -1,5 +1,11 @@
 import { Service } from "homebridge";
-import { distinct, filter, map, tap } from "rxjs";
+import {
+  distinctUntilChanged,
+  distinctUntilKeyChanged,
+  filter,
+  map,
+  tap,
+} from "rxjs";
 import { findSpeedModes } from "../utils/find_speed_modes";
 import { CoreContext } from "./types";
 import type { RoomsService } from "./rooms_service";
@@ -68,7 +74,7 @@ export class MainService extends PluginServiceClass {
       this.deviceManager.stateChanged$
         .pipe(
           filter(({ key }) => key === "fanSpeed"),
-          distinct(({ value }) => value)
+          distinctUntilKeyChanged("value")
         )
         .subscribe(({ value: speed }) => {
           this.log.info(`MON changedSpeed | FanSpeed is now ${speed}%`);
@@ -102,7 +108,7 @@ export class MainService extends PluginServiceClass {
             .getCharacteristic(this.hap.Characteristic.On)
             .updateValue(isCleaning);
         }),
-        distinct()
+        distinctUntilChanged()
       )
       .subscribe((isCleaning) => {
         this.log.info(

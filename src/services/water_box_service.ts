@@ -1,5 +1,5 @@
 import { Service } from "homebridge";
-import { distinct, filter } from "rxjs";
+import { distinctUntilKeyChanged, filter } from "rxjs";
 import { CoreContext } from "./types";
 import { findSpeedModes } from "../utils/find_speed_modes";
 import { ProductInfo } from "./product_info";
@@ -44,7 +44,7 @@ export class WaterBoxService extends PluginServiceClass {
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "cleaning"),
-        distinct(({ value }) => value)
+        distinctUntilKeyChanged("value")
       )
       .subscribe(({ value: isCleaning }) => {
         this.service
@@ -55,7 +55,7 @@ export class WaterBoxService extends PluginServiceClass {
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "water_box_mode"),
-        distinct(({ value }) => value)
+        distinctUntilKeyChanged("value")
       )
       .subscribe(({ value: speed }) => {
         this.log.info(`MON changedWaterSpeed | WaterBoxMode is now ${speed}%`);

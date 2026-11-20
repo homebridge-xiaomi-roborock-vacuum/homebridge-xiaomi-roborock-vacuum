@@ -1,5 +1,5 @@
 import { Service } from "homebridge";
-import { distinct, filter } from "rxjs";
+import { distinctUntilKeyChanged, filter } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";
@@ -35,7 +35,7 @@ export class WaterTankService extends PluginServiceClass {
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "waterShortage"),
-        distinct(({ value }) => value)
+        distinctUntilKeyChanged("value")
       )
       .subscribe(({ value }) => {
         const isEmpty = value === true;

@@ -1,5 +1,5 @@
 import { Service } from "homebridge";
-import { distinct, filter } from "rxjs";
+import { distinctUntilKeyChanged, filter } from "rxjs";
 import { CoreContext } from "./types";
 import { RoomsService } from "./rooms_service";
 import { PluginServiceClass } from "./plugin_service_class";
@@ -30,7 +30,7 @@ export class PauseSwitch extends PluginServiceClass {
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "cleaning"),
-        distinct(({ value }) => value)
+        distinctUntilKeyChanged("value")
       )
       .subscribe(({ value }) => this.changedPause(value));
   }

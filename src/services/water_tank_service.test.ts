@@ -61,6 +61,9 @@ describe("WaterTankService", () => {
     state$.next({ key: "waterShortage", value: true });
     state$.next({ key: "waterShortage", value: true });
     state$.next({ key: "waterShortage", value: false });
-    expect(spy.mock.calls).toEqual([[1], [0]]);
+    // Empty again, after it was refilled
+    state$.next({ key: "waterShortage", value: true });
+    state$.next({ key: "waterShortage", value: false });
+    expect(spy.mock.calls).toEqual([[1], [0], [1], [0]]);
   });
 });

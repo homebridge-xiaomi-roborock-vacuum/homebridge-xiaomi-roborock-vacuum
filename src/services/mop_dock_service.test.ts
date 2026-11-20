@@ -111,7 +111,11 @@ describe("MopDockService", () => {
       state$.next({ key: "cleaning", value: true });
       state$.next({ key: "mopDrying", value: true });
       state$.next({ key: "mopDrying", value: false });
-      expect(spy.mock.calls).toEqual([[true], [false]]);
+      // The next drying
+      state$.next({ key: "mopDrying", value: true });
+      state$.next({ key: "mopDrying", value: true });
+      state$.next({ key: "mopDrying", value: false });
+      expect(spy.mock.calls).toEqual([[true], [false], [true], [false]]);
     });
 
     test.each([

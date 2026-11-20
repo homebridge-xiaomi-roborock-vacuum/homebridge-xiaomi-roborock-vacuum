@@ -1,5 +1,5 @@
 import { Service, CharacteristicValue } from "homebridge";
-import { distinct, filter } from "rxjs";
+import { distinctUntilKeyChanged, filter } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";
@@ -52,7 +52,7 @@ export class MopDockService extends PluginServiceClass {
     this.deviceManager.stateChanged$
       .pipe(
         filter(({ key }) => key === "mopDrying"),
-        distinct(({ value }) => value)
+        distinctUntilKeyChanged("value")
       )
       .subscribe(({ value }) => {
         this.log.info(`MON changedMopDrying | Mop drying is now ${value}`);

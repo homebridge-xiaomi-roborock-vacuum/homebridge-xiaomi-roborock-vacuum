@@ -1,6 +1,6 @@
 "use strict";
 
-import { catchError, concatMap, distinct, filter } from "rxjs";
+import { catchError, concatMap, filter } from "rxjs";
 import { AccessoryPlugin, API, Logging } from "homebridge";
 
 import { getLogger, Logger } from "../utils/logger";
@@ -124,9 +124,8 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
 
     this.deviceManager.errorChanged$
       .pipe(
-        // `null` when the error is cleared: nothing to report
+        // `errorChanged$` only emits changes. `null` when the error is cleared: nothing to report
         filter((robotError) => robotError !== null),
-        distinct((robotError) => robotError.id),
         // Catch each failure here: a `catchError` after `concatMap` would complete the stream, and no later error
         // would ever be reported
         concatMap(async (err) => {
