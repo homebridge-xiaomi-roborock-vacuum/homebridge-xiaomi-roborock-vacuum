@@ -299,7 +299,15 @@
                 }
               }
             }
-          }
+          },
+          "anyOf": [
+            {
+              "required": ["did"]
+            },
+            {
+              "required": ["ip"]
+            }
+          ]
         }
       },
       "cloud": {

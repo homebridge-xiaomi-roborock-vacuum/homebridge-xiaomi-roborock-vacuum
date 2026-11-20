@@ -20,8 +20,10 @@ export interface CloudRequest {
 }
 
 export interface MapRequest extends CloudRequest {
-  ip: string;
-  token: string;
+  ip?: string;
+  token?: string;
+  /** The device ID: enough on its own, the IP and token are read from the account */
+  did?: string;
 }
 
 /** The map, ready to draw in the browser */
@@ -189,24 +191,25 @@ export function createHandlers(
 
     /** The robot's map (Roborock), with the names of its rooms if it has any */
     "/map": async (request: MapRequest): Promise<MapResponse> => {
-      if (!request.ip || !request.token) {
-        throw new Error("The vacuum needs an IP and a token.");
+      if (!request.did && (!request.ip || !request.token)) {
+        throw new Error("The vacuum needs a device ID, or an IP and a token.");
       }
       const cloud = await getCloud(request);
-      const server =
-        request.server ||
-        (
-          await deviceCache(request, cloud).find({
-            token: request.token,
-            ip: request.ip,
-          })
-        )?.server;
-      if (!server) {
+      const found = await deviceCache(request, cloud).find({
+        did: request.did,
+        token: request.token,
+        ip: request.ip,
+      });
+      const server = request.server || found?.server;
+      // With a device ID, the account knows where the robot is now
+      const ip = (request.did && found?.localip) || request.ip;
+      const token = (request.did && found?.token) || request.token;
+      if (!server || !ip || !token) {
         throw new Error(
-          "This vacuum is not in your Xiaomi account (check its IP and token)."
+          `This vacuum is not in your Xiaomi account (check its ${request.did ? "device ID" : "IP and token"}).`
         );
       }
-      const device = await deps.connect(request.ip, request.token);
+      const device = await deps.connect(ip, token);
       try {
         if (typeof device.getCloudMap !== "function") {
           throw new Error(

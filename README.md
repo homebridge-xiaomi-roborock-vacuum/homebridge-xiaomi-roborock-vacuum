@@ -400,7 +400,8 @@ The plugin's settings in the Homebridge UI show, above the usual form:
   config is saved first. The Home app sees them as new accessories: put them back in their rooms, and update your
   scenes and automations.
 - **Xiaomi Cloud login** with a QR code (scan it with the Mi Home app: no password needed).
-- **Your vacuums** in the Xiaomi account: add them, with their IP and token, in one click (or update their token).
+- **Your vacuums** in the Xiaomi account: add them, with their device ID (`did`), IP and token, in one click (or update
+  their token). With the `did`, the plugin finds them again if their IP or token change.
 - **The map** of a Roborock vacuum, with three tools:
   - **Rooms:** click a room to name it. The names are saved as the vacuum's `rooms` (the room cleaning switches),
     replacing `autoroom`. It's handy when the app doesn't let you name the rooms, or the robot doesn't report their

@@ -152,10 +152,21 @@ describe("custom UI handlers", () => {
     expect(cloud.getDevices).toHaveBeenCalledTimes(1);
   });
 
+  test("/map: a vacuum configured by its device ID is found in the account", async () => {
+    const { handlers, deps, device, cloud } = setup();
+    await handlers["/map"]({ did: "1", ip: "10.0.0.99", token: "old" });
+    // The account knows where it is now
+    expect(deps.connect).toHaveBeenCalledWith("10.0.0.2", "ABC");
+    expect(device.getCloudMap).toHaveBeenCalledWith(cloud, "de");
+  });
+
   test("/map errors", async () => {
     const { handlers, device } = setup();
     await expect(handlers["/map"]({ ip: "", token: "" })).rejects.toThrow(
-      "needs an IP and a token"
+      "needs a device ID, or an IP and a token"
+    );
+    await expect(handlers["/map"]({ did: "999" })).rejects.toThrow(
+      "check its device ID"
     );
     await expect(
       handlers["/map"]({ ip: "10.9.9.9", token: "nope" })
