@@ -92,15 +92,15 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
       ? new CloudService(this.log, this.config.cloud)
       : undefined;
     this.config.devices.forEach((config) => {
-      if (config.token || !config.ip || !cloud) {
+      // Configured with its `did`, or without a token: its IP and token are in the Xiaomi account
+      if (!cloud || !(config.did || (config.ip && !config.token))) {
         this.initializeDevice(config, cloud);
         return;
       }
-      // Configured with its IP only: its token is in the Xiaomi account
       cloud
-        .tokenOf(config.ip)
-        .then((token) =>
-          this.initializeDevice(token ? { ...config, token } : config, cloud)
+        .locate({ did: config.did, ip: config.ip })
+        .then((found) =>
+          this.initializeDevice(found ? { ...config, ...found } : config, cloud)
         )
         .catch((error: Error) =>
           this.log.error(

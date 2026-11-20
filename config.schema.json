@@ -24,12 +24,17 @@
             "ip": {
               "title": "IP",
               "type": "string",
-              "required": true
+              "description": "Optional with the `did` (the platform's `cloud` option): it's read from your Xiaomi account."
             },
             "token": {
               "title": "Token",
               "type": "string",
               "description": "Optional with the Xiaomi Cloud (the platform's `cloud` option): it's read from your Xiaomi account."
+            },
+            "did": {
+              "title": "Device ID (Xiaomi Cloud)",
+              "type": "string",
+              "description": "Instead of the IP and token, with the platform's `cloud` option: they're read from your Xiaomi account, and found again if they change (e.g. a new IP from the router). It's in the logs, and in `npx node-miio cloud devices`."
             },
             "serviceType": {
               "title": "Load the vacuum as a fan (ON/OFF + speed control) or a switch (ON/OFF only)",
@@ -294,7 +299,15 @@
                 }
               }
             }
-          }
+          },
+          "anyOf": [
+            {
+              "required": ["did"]
+            },
+            {
+              "required": ["ip"]
+            }
+          ]
         }
       },
       "cloud": {
@@ -337,7 +350,7 @@
             {
               "type": "flex",
               "flex-flow": "row wrap",
-              "items": ["devices[].ip", "devices[].token"]
+              "items": ["devices[].ip", "devices[].token", "devices[].did"]
             },
             "devices[].serviceType",
             "devices[].waterBox",

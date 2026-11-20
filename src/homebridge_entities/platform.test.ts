@@ -164,12 +164,14 @@ describe("XiaomiRoborockVacuumPlatform", () => {
     expect(homebridge.registerPlatformAccessories).toHaveBeenCalledTimes(1);
   });
 
-  test("gets the token of the robots configured with their IP only from the Xiaomi Cloud", async () => {
-    const tokenOf = jest
-      .spyOn(CloudService.prototype, "tokenOf")
-      .mockImplementation(async (ip) =>
-        ip === "2.2.2.2" ? "cloud-token" : undefined
-      );
+  test("gets the IP and token of the robots configured with their did, or without a token, from the Xiaomi Cloud", async () => {
+    const locate = jest
+      .spyOn(CloudService.prototype, "locate")
+      .mockImplementation(async ({ did, ip }) => {
+        if (did === "123") return { ip: "4.4.4.4", token: "did-token" };
+        if (ip === "2.2.2.2") return { ip: "2.2.2.2", token: "cloud-token" };
+        return undefined;
+      });
     homebridge.platformAccessory.mockImplementation(newAccessory);
     new XiaomiRoborockVacuumPlatform(
       log,
@@ -179,14 +181,16 @@ describe("XiaomiRoborockVacuumPlatform", () => {
         devices: [
           { name: "with-token", ip: "1.1.1.1", token: "token1" },
           { name: "from-the-cloud", ip: "2.2.2.2" },
+          { name: "by-did", did: "123", ip: "9.9.9.9", token: "old-token" },
         ],
       },
       homebridge
     );
     homebridge.on.mock.calls[0][1]();
     await new Promise(setImmediate);
-    expect(tokenOf).toHaveBeenCalledTimes(1);
-    expect(tokenOf).toHaveBeenCalledWith("2.2.2.2");
+    expect(locate).toHaveBeenCalledTimes(2);
+    expect(locate).toHaveBeenCalledWith({ did: undefined, ip: "2.2.2.2" });
+    expect(locate).toHaveBeenCalledWith({ did: "123", ip: "9.9.9.9" });
     const configs =
       XiaomiRoborockVacuumPlatformAccessoryInitializerMock.mock.calls.map(
         ([, config]) => config
@@ -194,13 +198,14 @@ describe("XiaomiRoborockVacuumPlatform", () => {
     expect(configs).toEqual([
       { name: "with-token", ip: "1.1.1.1", token: "token1" },
       { name: "from-the-cloud", ip: "2.2.2.2", token: "cloud-token" },
+      { name: "by-did", did: "123", ip: "4.4.4.4", token: "did-token" },
     ]);
-    expect(homebridge.registerPlatformAccessories).toHaveBeenCalledTimes(2);
-    tokenOf.mockRestore();
+    expect(homebridge.registerPlatformAccessories).toHaveBeenCalledTimes(3);
+    locate.mockRestore();
   });
 
   test("a robot whose token can't be initialized is reported, without failing the others", async () => {
-    jest.spyOn(CloudService.prototype, "tokenOf").mockResolvedValue(undefined);
+    jest.spyOn(CloudService.prototype, "locate").mockResolvedValue(undefined);
     homebridge.platformAccessory.mockImplementation(newAccessory);
     XiaomiRoborockVacuumPlatformAccessoryInitializerMock.mockImplementationOnce(
       () => {

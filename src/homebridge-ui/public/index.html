@@ -396,30 +396,50 @@
         const actions = row.insertCell();
         const configured = platformBlock().devices.find(
           (d) =>
+            (d.did && String(d.did) === String(device.did)) ||
             (d.token && d.token.toLowerCase() === device.token.toLowerCase()) ||
             (device.ip && d.ip === device.ip)
         );
         if (!configured) {
           const add = el("button", "Add", "btn btn-sm btn-primary");
           add.type = "button";
+          // The device ID lets the plugin find it again if its IP or token change (with the "Xiaomi Cloud" option)
           add.addEventListener("click", async () => {
             platformBlock().devices.push({
               name: device.name,
+              did: String(device.did),
               ip: device.ip,
               token: device.token,
             });
             await updateConfig(`"${device.name}" added.`);
           });
           actions.append(add);
-        } else if (configured.token !== device.token) {
+        } else if (
+          configured.token ? configured.token !== device.token : !configured.did
+        ) {
           const fill = el("button", "Update token", "btn btn-sm btn-warning");
           fill.type = "button";
           fill.addEventListener("click", async () => {
             configured.token = device.token;
             if (!configured.ip && device.ip) configured.ip = device.ip;
+            if (!configured.did) configured.did = String(device.did);
             await updateConfig(`The token of "${configured.name}" updated.`);
           });
           actions.append(fill);
+        } else if (!configured.did) {
+          const follow = el(
+            "button",
+            "Save its device ID",
+            "btn btn-sm btn-secondary"
+          );
+          follow.type = "button";
+          follow.title =
+            'With the "Xiaomi Cloud" option, the plugin finds it again if its IP or token change.';
+          follow.addEventListener("click", async () => {
+            configured.did = String(device.did);
+            await updateConfig(`The device ID of "${configured.name}" saved.`);
+          });
+          actions.append(follow);
         } else {
           actions.append(el("span", `Configured as "${configured.name}"`));
         }
@@ -433,7 +453,7 @@
       const previous = select.value;
       select.replaceChildren();
       platformBlock().devices.forEach((device, index) => {
-        if (!device.ip || !device.token) return;
+        if (!device.did && (!device.ip || !device.token)) return;
         const option = el("option", device.name || device.ip);
         option.value = String(index);
         select.append(option);
@@ -453,6 +473,7 @@
           ...cloudRequest(),
           ip: device.ip,
           token: device.token,
+          did: device.did,
         });
         showMap(map, device);
       } catch (err) {
@@ -816,7 +837,9 @@
     function targetDevice(device) {
       return (
         platformBlock().devices.find(
-          (d) => d.ip === device.ip && d.token === device.token
+          (d) =>
+            (device.did && d.did === device.did) ||
+            (d.ip === device.ip && d.token === device.token)
         ) || device
       );
     }
