@@ -15,6 +15,9 @@ type MockedMembers =
   | "fanSpeed"
   | "find"
   | "getDeviceInfo"
+  | "getDoNotDisturb"
+  | "setDoNotDisturb"
+  | "disableDoNotDisturb"
   | "getRoomMap"
   | "getSerialNumber"
   | "getTimer"
@@ -57,6 +60,9 @@ const miioDevice: MiioDeviceMock = {
   fanSpeed: jest.fn(),
   find: jest.fn(),
   getDeviceInfo: jest.fn(),
+  getDoNotDisturb: jest.fn(),
+  setDoNotDisturb: jest.fn(),
+  disableDoNotDisturb: jest.fn(),
   getRoomMap: jest.fn(),
   getSerialNumber: jest.fn(),
   getTimer: jest.fn(),

@@ -87,6 +87,31 @@
               "default": false,
               "required": false
             },
+            "doNotDisturb": {
+              "title": "Show a switch for the Do Not Disturb schedule (Roborock only): no voice, dimmed lights and no dust bin emptying",
+              "type": "boolean",
+              "default": false,
+              "required": false
+            },
+            "doNotDisturbWord": {
+              "title": "Name of the Do Not Disturb switch (after the vacuum's name)",
+              "type": "string",
+              "default": "Do Not Disturb",
+              "required": false
+            },
+            "doNotDisturbStart": {
+              "title": "Do Not Disturb from (HH:mm)",
+              "type": "string",
+              "pattern": "^([01]?\\d|2[0-3]):[0-5]\\d$",
+              "required": false,
+              "description": "Leave both times empty to turn the schedule set in the app back on. E.g. 00:00 to 23:59 for the whole day."
+            },
+            "doNotDisturbEnd": {
+              "title": "Do Not Disturb until (HH:mm)",
+              "type": "string",
+              "pattern": "^([01]?\\d|2[0-3]):[0-5]\\d$",
+              "required": false
+            },
             "disableCareServices": {
               "title": "Disable Care Services",
               "type": "boolean",
@@ -386,6 +411,16 @@
             "devices[].mopWash",
             "devices[].mopDrying",
             "devices[].waterTankEmpty",
+            "devices[].doNotDisturb",
+            "devices[].doNotDisturbWord",
+            {
+              "type": "flex",
+              "flex-flow": "row wrap",
+              "items": [
+                "devices[].doNotDisturbStart",
+                "devices[].doNotDisturbEnd"
+              ]
+            },
             "devices[].debug",
             "devices[].silent",
             "devices[].pause",

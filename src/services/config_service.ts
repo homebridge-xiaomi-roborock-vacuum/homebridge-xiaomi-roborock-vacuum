@@ -9,6 +9,7 @@ import { GoToConfig } from "./go_to_service";
 import { GoToSpotsConfig } from "./go_to_spots_service";
 import { GoToDockConfig } from "./go_to_dock_service";
 import { DockConfig } from "./dock_service";
+import { DoNotDisturbConfig } from "./do_not_disturb_service";
 import { MopDockConfig } from "./mop_dock_service";
 import { WaterTankConfig } from "./water_tank_service";
 import { ZonesConfig } from "./zones_service";
@@ -32,6 +33,7 @@ export interface Config
     GoToSpotsConfig,
     GoToDockConfig,
     DockConfig,
+    DoNotDisturbConfig,
     MopDockConfig,
     WaterTankConfig,
     ZonesConfig,
@@ -94,6 +96,8 @@ export function applyConfigDefaults(config: Partial<Config>): Config {
     dustBin: false,
     dustCollection: false,
     dock: false,
+    doNotDisturb: false,
+    doNotDisturbWord: "Do Not Disturb",
     mopWash: false,
     mopDrying: false,
     waterTankEmpty: false,
