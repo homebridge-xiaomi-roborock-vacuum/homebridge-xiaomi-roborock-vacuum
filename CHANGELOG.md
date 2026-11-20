@@ -2,7 +2,7 @@
 
 ## Next
 
-- [Feature] Plugin settings page in the Homebridge UI ([#309](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/309)), above the usual form:
+- [Feature] Plugin settings page in the Homebridge UI ([#309](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/309)), above the usual form ([screenshot](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/settings-page.png)):
   - **Log in to the Xiaomi Cloud** by scanning a QR code with the Mi Home app (no password, no terminal needed).
   - **Find your vacuums** in the account, and add them (name, IP and token) or update their token in one click.
   - **See the map** of a Roborock vacuum, and name its rooms by clicking on them, even if the app doesn't let you name them. The names become the room cleaning switches (`rooms`).

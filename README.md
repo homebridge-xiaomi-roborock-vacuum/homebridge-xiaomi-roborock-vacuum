@@ -388,6 +388,8 @@ The plugin's settings in the Homebridge UI show, above the usual form:
 
 Click "Save" afterwards to apply the changes.
 
+<img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/settings-page.png?raw=true" alt="The plugin's settings page: Xiaomi Cloud login, the vacuums in the account, and the map to name the rooms" width="500">
+
 ## Xiaomi Token
 
 To use this plugin, you need the "token" of the Xiaomi vacuum robots. The easiest way is to let the plugin read it from
