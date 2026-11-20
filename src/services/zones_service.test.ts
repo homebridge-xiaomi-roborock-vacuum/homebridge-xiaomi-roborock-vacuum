@@ -28,7 +28,8 @@ describe("ZonesService", () => {
 
   async function create(
     zones: NonNullable<Config["zones"]>,
-    waterSpeed: jest.Mock | null = jest.fn()
+    waterSpeed: jest.Mock | null = jest.fn(),
+    config: Partial<Config> = {}
   ) {
     deviceManagerMock = createDeviceManagerMock();
     (deviceManagerMock as { isCleaning: boolean }).isCleaning = false;
@@ -39,7 +40,7 @@ describe("ZonesService", () => {
       {
         hap,
         log,
-        config: applyConfigDefaults({ zones }),
+        config: applyConfigDefaults({ zones, ...config }),
         deviceManager: deviceManagerMock,
       },
       mainService as unknown as MainService,
@@ -55,7 +56,14 @@ describe("ZonesService", () => {
   afterEach(() => {
     (deviceManagerMock.stateChanged$ as Subject<unknown>).complete();
     jest.resetAllMocks();
+    jest.useRealTimers();
   });
+
+  const stoppedCleaning = () =>
+    (deviceManagerMock.stateChanged$ as Subject<unknown>).next({
+      key: "cleaning",
+      value: false,
+    });
 
   test("a switch per zone", async () => {
     await create([
@@ -131,5 +139,103 @@ describe("ZonesService", () => {
     await on(0).handleSetRequest(false);
     expect(mainService.setSpeed).not.toHaveBeenCalled();
     expect(deviceManagerMock.device.activateCharging).toHaveBeenCalled();
+  });
+
+  describe("only the zones being cleaned are ON (#594)", () => {
+    test("the other zones stay OFF, and all go OFF when the cleaning ends", async () => {
+      await create([
+        { name: "Kitchen", zone: kitchen },
+        { name: "Bedroom", zone: [[1, 2, 3, 4]] },
+      ]);
+      await on(0).handleSetRequest(true);
+      expect(await on(0).handleGetRequest()).toBe(true);
+      expect(await on(1).handleGetRequest()).toBe(false);
+      stoppedCleaning();
+      expect(on(0).value).toBe(false);
+      expect(await on(0).handleGetRequest()).toBe(false);
+    });
+
+    test("a failed start leaves the zone OFF", async () => {
+      await create([{ name: "Kitchen", zone: kitchen }]);
+      deviceManagerMock.device.cleanZones.mockRejectedValueOnce(
+        new Error("timeout")
+      );
+      await expect(on(0).handleSetRequest(true)).rejects.toBe(-70402);
+      expect(await on(0).handleGetRequest()).toBe(false);
+    });
+  });
+
+  describe("zoneTimeout (#594)", () => {
+    const zones = [
+      { name: "Kitchen", zone: kitchen, speed: "Max" },
+      {
+        name: "Bedroom",
+        zone: [[1, 2, 3, 4]] as [number, number, number, number][],
+      },
+      {
+        name: "Hall",
+        zone: [[5, 6, 7, 8]] as [number, number, number, number][],
+      },
+    ];
+
+    beforeEach(() => jest.useFakeTimers());
+
+    test("the zones turned on are cleaned together once the timeout expires", async () => {
+      await create(zones, jest.fn(), { zoneTimeout: 10 });
+      await on(1).handleSetRequest(true);
+      await on(0).handleSetRequest(true);
+      expect(deviceManagerMock.device.cleanZones).not.toHaveBeenCalled();
+      // Selected: ON already
+      expect(await on(0).handleGetRequest()).toBe(true);
+      expect(await on(1).handleGetRequest()).toBe(true);
+      expect(await on(2).handleGetRequest()).toBe(false);
+
+      await jest.advanceTimersByTimeAsync(10_000);
+      // In the order they were turned on, with the first zone's fan speed
+      expect(deviceManagerMock.device.cleanZones).toHaveBeenCalledWith([
+        [1, 2, 3, 4, 1],
+        ...kitchen,
+      ]);
+      expect(mainService.setSpeed).not.toHaveBeenCalled();
+      expect(log.warn).toHaveBeenCalledWith(
+        expect.stringContaining("using the ones of Bedroom")
+      );
+      expect(on(0).value).toBe(true);
+      expect(on(1).value).toBe(true);
+      expect(on(2).value).toBe(false);
+    });
+
+    test("each change restarts the timeout", async () => {
+      await create(zones, jest.fn(), { zoneTimeout: 10 });
+      await on(0).handleSetRequest(true);
+      await jest.advanceTimersByTimeAsync(8_000);
+      await on(1).handleSetRequest(true);
+      await jest.advanceTimersByTimeAsync(8_000);
+      expect(deviceManagerMock.device.cleanZones).not.toHaveBeenCalled();
+      await jest.advanceTimersByTimeAsync(2_000);
+      expect(deviceManagerMock.device.cleanZones).toHaveBeenCalledTimes(1);
+    });
+
+    test("turning a zone off before it starts unselects it", async () => {
+      await create(zones, jest.fn(), { zoneTimeout: 10 });
+      await on(0).handleSetRequest(true);
+      await on(1).handleSetRequest(true);
+      await on(0).handleSetRequest(false);
+      expect(deviceManagerMock.device.activateCharging).not.toHaveBeenCalled();
+      await jest.advanceTimersByTimeAsync(10_000);
+      expect(deviceManagerMock.device.cleanZones).toHaveBeenCalledWith([
+        [1, 2, 3, 4, 1],
+      ]);
+      // Its own fan speed: the only zone left
+      expect(log.warn).not.toHaveBeenCalled();
+    });
+
+    test("unselecting every zone cancels the cleaning", async () => {
+      await create(zones, jest.fn(), { zoneTimeout: 10 });
+      await on(0).handleSetRequest(true);
+      await on(0).handleSetRequest(false);
+      await jest.advanceTimersByTimeAsync(10_000);
+      expect(deviceManagerMock.device.cleanZones).not.toHaveBeenCalled();
+    });
   });
 });

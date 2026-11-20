@@ -237,6 +237,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 | `zones`               | `[]`                     | Array of name / zone coordinates for a single zone group. A zone group may contain multiple zone squares, each with its own value for number of cleanings. Coordinates are laid out as bottom-left-x, bottom-left-y, top-right-x, top-right-y, number-of-cleanings. A separate tile in Home will be created for each zone group. Figuring out coordinates will take some trial and error. Each zone should be surrounded by brackets: [], with the entire value also surrounded by brackets The [settings page](#settings-page-tokens-room-names-spots-and-zones-from-the-map) draws them on the map |
 | `autoroom`            | `false`                  | set to `true` to generate rooms from robot (only S6) or set to array of room name strings (see semi automatic below)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `roomTimeout`         | `0`                      | when set to anything above `0` - will initiate room cleaning for multiple rooms automatically after the given time in seconds                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `zoneTimeout`         | `0`                      | when set to anything above `0`, the zone switches select the zones, and the selected ones are cleaned together after the given time in seconds (see [Zone cleaning](#zone-cleaning))                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ## Robot vacuum (Matter)
 
@@ -324,6 +325,12 @@ This plugin supports Zone cleaning (only models that support zone cleaning via t
 ### How it works
 
 To start the Zone Clean Mode, you can enable the zone switch for the zone to be cleaned.
+Only the switches of the zones being cleaned are on, and they turn off when the cleaning ends.
+
+To clean several zones in one run (e.g. when each zone is a room, on the models without room cleaning), set `zoneTimeout`
+to a number of seconds: turning a zone on selects it, turning it off unselects it, and the selected zones are cleaned
+together once that time has passed since the last change. The robot takes one fan speed and water level per run: the
+first selected zone's.
 
 #### Fan speed and water level per zone
 

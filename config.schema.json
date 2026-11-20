@@ -240,6 +240,13 @@
               "default": 0,
               "required": false
             },
+            "zoneTimeout": {
+              "title": "Zone autoclean timeout",
+              "type": "integer",
+              "default": 0,
+              "required": false,
+              "description": "Above 0: the zones turned on are cleaned together, this many seconds after the last change. 0: a zone is cleaned as soon as it's turned on."
+            },
             "autoroom": {
               "title": "Automatic Room Detection",
               "type": "boolean",
@@ -430,6 +437,7 @@
             "devices[].roomSensors",
             "devices[].cleanword",
             "devices[].roomTimeout",
+            "devices[].zoneTimeout",
             "devices[].autoroom",
             {
               "type": "fieldset",
