@@ -14,6 +14,7 @@ import { ZonesConfig } from "./zones_service";
 import { CareConfig } from "./care_service";
 import { MainServiceConfig } from "./main_service";
 import { DustBinConfig } from "./dust_bin_service";
+import { CurrentRoomConfig } from "./current_room_service";
 
 export interface Config
   extends
@@ -32,7 +33,8 @@ export interface Config
     MopDockConfig,
     WaterTankConfig,
     ZonesConfig,
-    CareConfig {
+    CareConfig,
+    CurrentRoomConfig {
   /**
    * The name of the main service as it will show up in the Home App.
    */

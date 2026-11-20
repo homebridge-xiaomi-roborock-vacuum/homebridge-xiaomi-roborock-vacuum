@@ -45,6 +45,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 - Room cleaning (optional): Read [Room cleaning](#room-cleaning) to understand how it works.
 - Zone cleaning (optional): Read [Zone cleaning](#zone-cleaning) to understand how it works.
 - Occupancy sensor (similar to motion sensor) for dock status (optional).
+- Occupancy sensors for the room the robot is in, and its position in the logs (optional, Roborock, needs the Xiaomi Cloud): read [Current room](#current-room-xiaomi-cloud).
 - Second Fan for water box modes (optional).
   - [Watermode levels](./src/models/watermodes.ts) only when enabled in config, and the device supports it.
 
@@ -219,6 +220,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 | `goToDock`            | `false`                  | when set to true, HomeKit shows an additional switch that sends the robot back to the dock. It is on while the robot is on its way (turning it off stops the robot)                                                                                                                                                                                                                                                                                                                         |
 | `goToDockWord`        | `"go to dock"`           | used for naming the "go to dock" switch. E.g: Hey Siri, turn on NameOfYourVacuum go to dock                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `dock`                | `false`                  | when set to true, HomeKit shows an occupancy sensor, if robot is in the charging dock                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `roomSensors`         | `false`                  | when set to true, HomeKit shows an occupancy sensor per room, detected while the robot is in it. Roborock only, needs the platform's `cloud` option: see [Current room](#current-room-xiaomi-cloud)                                                                                                                                                                                                                                                                                         |
 | `waterBox`            | `false` (platform: auto) | when set to true, HomeKit shows an additional slider to control the amount of water released by the robot. When registered as a platform, it's enabled automatically on the models that support it unless set explicitly.                                                                                                                                                                                                                                                                   |
 | `dustBin`             | `false`                  | when set to true, HomeKit shows a lock that is _secured_ whenever the robot throws the dust-bin full error. Currently in a beta state.                                                                                                                                                                                                                                                                                                                                                      |
 | `dustCollection`      | `false`                  | when set to true, HomeKit shows an additional switch to control the dust collection with the auto-empty dock (only selected models like S7+ or S7 with additional dock). Currently in a beta state                                                                                                                                                                                                                                                                                          |
@@ -326,6 +328,48 @@ This plugin allows you to send your vacuum to a specific point on the map. As th
 2. Increasing the first value results in going to the top of the map, increasing the second value results in going to the right of the map (as displayed inside the app). The value seems to be in Millimeters.
 3. Knowing this you can approximate the desired location and change it as follows. In our example we want to go one meter up and three meters to the right: `[25500,25500]` --> `[26500,28500]`.
 4. While testing this location you can review the position in your app under `Go To` to fine tune it.
+
+With the [Xiaomi Cloud](#current-room-xiaomi-cloud) enabled, the plugin tells you the coordinates: drive the robot to the spot (e.g. with the remote control in the app), then turn on the "find me" switch (`findMe`). The robot says hello, and the logs show `The robot is at x=…, y=…`. The logs also show where the robot stops after each cleaning.
+
+## Current room (Xiaomi Cloud)
+
+The robot doesn't tell which room it's in over the local network: only its map knows, and the map is in the Xiaomi
+Cloud. With the platform's `cloud` option, the plugin downloads the map while the robot cleans (every 10 seconds) to
+know the room it's in and its position. Only Roborock vacuums, and only when the plugin is registered as a platform.
+
+1. Log in to your Xiaomi account once, **as the same user that runs Homebridge** (e.g. in the Homebridge UI's terminal):
+
+   ```sh
+   npx node-miio cloud login --qr   # scan the QR code with the Mi Home app
+   ```
+
+   The session is saved in [node-miio's config directory](https://github.com/afharo/node-miio/blob/main/docs/cloud.md)
+   (your password is never stored). If Homebridge runs as another user, copy that file where Homebridge can read it,
+   and set its path in `cloud.sessionFile`.
+
+2. Enable it in the platform's config (in the UI: "Xiaomi Cloud (optional)"), and `roomSensors` in the vacuum's:
+
+   ```json
+   {
+     "platform": "XiaomiRoborockVacuum",
+     "cloud": { "enabled": true },
+     "devices": [
+       {
+         "name": "Robot",
+         "ip": "…",
+         "token": "…",
+         "autoroom": true,
+         "roomSensors": true
+       }
+     ]
+   }
+   ```
+
+   Optionally, set `cloud.server` (`de`, `us`, `cn`…) to skip looking for the robot in every server.
+
+You get an occupancy sensor per room ("Robot in Kitchen"), detected while the robot is in it: use them in automations.
+The rooms are the ones of the room cleaning switches (`rooms` or `autoroom`). If the session expires, the plugin logs a
+warning: log in again and restart Homebridge.
 
 ## Xiaomi Token
 

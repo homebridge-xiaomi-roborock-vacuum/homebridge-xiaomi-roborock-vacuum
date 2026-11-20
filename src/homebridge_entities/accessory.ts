@@ -25,6 +25,8 @@ import {
   ZonesService,
   CareService,
   DustBinService,
+  CurrentRoomService,
+  type CloudService,
 } from "../services";
 import { errors } from "../utils/constants";
 import { ErrorChangedEvent } from "../services/device_manager";
@@ -47,6 +49,7 @@ interface PluginServices {
   waterTank?: WaterTankService;
   zones?: ZonesService;
   careServices?: CareService;
+  currentRoom: CurrentRoomService;
 }
 
 export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
@@ -61,7 +64,9 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
     log: Logging | Logger,
     config: Partial<Config>,
     api: API,
-    deviceManager?: DeviceManager
+    deviceManager?: DeviceManager,
+    /** The Xiaomi Cloud (platform mode, with the `cloud` option) */
+    private readonly cloud?: CloudService
   ) {
     // Legacy "accessory" mode only: an `accessories` block edited with the Homebridge UI's platform form (#1248)
     const uiForm = deviceManager ? undefined : fromUiPlatformForm(config);
@@ -149,6 +154,7 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
     const rooms = new RoomsService(coreContext, async (clean) => {
       await this.pluginServices.mainService.setCleaning(clean);
     });
+    const currentRoom = new CurrentRoomService(coreContext, rooms, this.cloud);
     const mainService = new MainService(
       coreContext,
       productInfo,
@@ -164,7 +170,8 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
       productInfo,
       rooms,
       battery: new BatteryInfo(coreContext),
-      findMe: new FindMeService(coreContext),
+      findMe: new FindMeService(coreContext, () => currentRoom.logPosition()),
+      currentRoom,
       pause: config.pause ? new PauseSwitch(coreContext, rooms) : undefined,
       waterBox: config.waterBox
         ? new WaterBoxService(coreContext, productInfo, mainService)

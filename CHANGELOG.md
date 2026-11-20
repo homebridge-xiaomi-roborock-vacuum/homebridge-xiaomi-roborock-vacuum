@@ -2,6 +2,9 @@
 
 ## Next
 
+- [Feature] The room the robot is in, from its map in the Xiaomi Cloud (opt-in, Roborock only, platform mode). With the new platform option `cloud` and the vacuum's `roomSensors`, HomeKit shows an occupancy sensor per room, detected while the robot is in it. It needs a one-off `npx node-miio cloud login --qr`; your password is never stored.
+- [Feature] The robot's position in the logs, to find the `goToX` / `goToY` coordinates: where it stops after each cleaning, and where it is when you turn on the "find me" switch ([#1020](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1020)).
+
 ## 1.1.0
 
 - [Feature] New optional `goToDock` switch (named with `goToDockWord`, `"go to dock"` by default) that sends the robot back to the dock. It's on while the robot is on its way, and turning it off stops the robot ([#322](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/322), [#1256](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1256)).

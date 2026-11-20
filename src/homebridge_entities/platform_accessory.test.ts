@@ -140,7 +140,8 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
           cachedRooms: [{ id: "16", name: "Kitchen" }],
         }),
         homebridge,
-        expect.anything()
+        expect.anything(),
+        undefined // No Xiaomi Cloud
       );
       expect(accessory.context.rooms).toEqual(instanceMock.resolvedRooms);
     });

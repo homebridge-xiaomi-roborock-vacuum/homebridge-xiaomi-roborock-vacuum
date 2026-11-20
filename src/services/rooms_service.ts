@@ -123,6 +123,14 @@ export class RoomsService extends PluginServiceClass {
     return [...Object.values(this.rooms)];
   }
 
+  /** The rooms with a switch, and their current IDs */
+  public get roomList(): ResolvedRoom[] {
+    return Object.entries(this.rooms).map(([name, room]) => ({
+      id: room.roomId,
+      name,
+    }));
+  }
+
   private createRoom(roomId: string, roomName: string) {
     this.log.info(`INF createRoom | Room ${roomName} (${roomId})`);
 

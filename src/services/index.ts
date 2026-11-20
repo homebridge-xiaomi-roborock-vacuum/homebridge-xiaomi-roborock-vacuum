@@ -1,6 +1,8 @@
 export { applyConfigDefaults, Config } from "./config_service";
 export { BatteryInfo } from "./battery_info";
 export { CareService } from "./care_service";
+export { CloudService } from "./cloud_service";
+export { CurrentRoomService } from "./current_room_service";
 export { DeviceManager } from "./device_manager";
 export { DockService } from "./dock_service";
 export { DustBinService } from "./dust_bin_service";
