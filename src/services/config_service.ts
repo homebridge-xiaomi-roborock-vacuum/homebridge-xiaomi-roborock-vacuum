@@ -4,6 +4,7 @@ import { DeviceManagerConfig } from "./device_manager";
 import { PauseConfig } from "./pause_switch";
 import { WaterBoxConfig } from "./water_box_service";
 import { DustCollectionConfig } from "./dust_collection";
+import { ErrorSensorConfig } from "./error_sensor_service";
 import { FindMeConfig } from "./find_me_service";
 import { GoToConfig } from "./go_to_service";
 import { GoToSpotsConfig } from "./go_to_spots_service";
@@ -28,6 +29,7 @@ export interface Config
     WaterBoxConfig,
     DustBinConfig,
     DustCollectionConfig,
+    ErrorSensorConfig,
     FindMeConfig,
     GoToConfig,
     GoToSpotsConfig,
