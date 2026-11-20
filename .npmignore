@@ -28,3 +28,6 @@ jest.config.js
 
 # Docs
 images/
+# Local Homebridge in Docker
+docker/
+.dockerignore

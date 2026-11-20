@@ -86,5 +86,7 @@ Pull requests are very welcome, too.
 - The plugin only translates between node-miio and HomeKit. Protocol and per-model fixes belong in
   [node-miio](https://github.com/afharo/node-miio).
 - Before pushing: `npm run lint` (Prettier), `npm test` and `npm run build`.
+- To try it with your robot, `npm run docker` starts a real Homebridge with your working copy (see
+  [docker/README.md](./docker/README.md)).
 - Don't copy code from GPL projects (e.g. python-miio): this project is MIT. Using them as a reference for how a
   device behaves is fine.
