@@ -31,3 +31,11 @@ images/
 # Local Homebridge in Docker
 docker/
 .dockerignore
+
+# Source maps: they point to src/, which isn't published
+*.js.map
+
+# Contributor and AI-agent docs, and Claude Code's project config
+.claude/
+AGENTS.md
+CONTRIBUTING.md
