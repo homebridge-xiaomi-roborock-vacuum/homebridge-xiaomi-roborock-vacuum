@@ -57,7 +57,9 @@ export class DeviceManager {
     this.ip = config.ip;
 
     if (!config.token) {
-      throw new Error("You must provide a token of the vacuum cleaner.");
+      throw new Error(
+        "You must provide a token of the vacuum cleaner (or enable the platform's `cloud` option, to get it from your Xiaomi account)."
+      );
     }
     this.token = config.token;
 

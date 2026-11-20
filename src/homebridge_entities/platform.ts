@@ -92,37 +92,60 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
       ? new CloudService(this.log, this.config.cloud)
       : undefined;
     this.config.devices.forEach((config) => {
-      let isCached = true;
-      const uuid = this.api.hap.uuid.generate(
-        `${PLUGIN_NAME}-accessory-${config.name}`
-      );
-      let accessory = [...this.accessories].find(({ UUID }) => UUID === uuid);
-
-      if (!accessory) {
-        isCached = false;
-        const name = applyConfigDefaults(config).name;
-        accessory = new this.api.platformAccessory(name, uuid);
-        accessory.context.name = name;
-        this.accessories.add(accessory);
+      if (config.token || !config.ip || !cloud) {
+        this.initializeDevice(config, cloud);
+        return;
       }
-
-      const platformInitializer =
-        new XiaomiRoborockVacuumPlatformAccessoryInitializer(
-          this.log,
-          config,
-          this.api,
-          accessory,
-          cloud
+      // Configured with its IP only: its token is in the Xiaomi account
+      cloud
+        .tokenOf(config.ip)
+        .then((token) =>
+          this.initializeDevice(token ? { ...config, token } : config, cloud)
+        )
+        .catch((error: Error) =>
+          this.log.error(
+            `Failed to initialize the vacuum "${config.name}": ${error.message}`
+          )
         );
-
-      // Finally, register the accessory if not cached
-      if (!isCached) {
-        platformInitializer.initialized$.pipe(first()).subscribe(() => {
-          this.api.registerPlatformAccessories(PLUGIN_NAME, ACCESSORY_NAME, [
-            accessory!,
-          ]);
-        });
-      }
     });
+  }
+
+  /**
+   * Initializes the connection of a device, and registers its accessory if not previously cached.
+   * @param config The device's config
+   * @param cloud The Xiaomi Cloud, if enabled
+   */
+  private initializeDevice(config: Partial<Config>, cloud?: CloudService) {
+    let isCached = true;
+    const uuid = this.api.hap.uuid.generate(
+      `${PLUGIN_NAME}-accessory-${config.name}`
+    );
+    let accessory = [...this.accessories].find(({ UUID }) => UUID === uuid);
+
+    if (!accessory) {
+      isCached = false;
+      const name = applyConfigDefaults(config).name;
+      accessory = new this.api.platformAccessory(name, uuid);
+      accessory.context.name = name;
+      this.accessories.add(accessory);
+    }
+
+    const platformInitializer =
+      new XiaomiRoborockVacuumPlatformAccessoryInitializer(
+        this.log,
+        config,
+        this.api,
+        accessory,
+        cloud
+      );
+
+    // Finally, register the accessory if not cached
+    if (!isCached) {
+      platformInitializer.initialized$.pipe(first()).subscribe(() => {
+        this.api.registerPlatformAccessories(PLUGIN_NAME, ACCESSORY_NAME, [
+          accessory!,
+        ]);
+      });
+    }
   }
 }

@@ -144,4 +144,62 @@ describe("CloudService", () => {
     );
     expect(log.debug).toHaveBeenCalledWith(expect.stringContaining("network"));
   });
+
+  describe("tokenOf", () => {
+    test("finds a robot's token by its IP, listing the devices once for all the robots", async () => {
+      const { service, cloud, log } = setup({
+        devices: [
+          cloudDevice({ localip: "10.0.0.1", token: "tok1" }),
+          cloudDevice({ localip: "10.0.0.2", token: "tok2" }),
+        ],
+      });
+      await expect(service.tokenOf("10.0.0.1")).resolves.toBe("tok1");
+      await expect(service.tokenOf("10.0.0.2")).resolves.toBe("tok2");
+      expect(cloud.getDevices).toHaveBeenCalledTimes(1);
+      expect(log.info).toHaveBeenCalledWith(
+        'Xiaomi Cloud: found the token of the robot at 10.0.0.1 ("Robot").'
+      );
+    });
+
+    test("lists only the configured server", async () => {
+      const { service, cloud } = setup({
+        server: "sg",
+        devices: [cloudDevice({ localip: "10.0.0.1", token: "tok1" })],
+      });
+      await expect(service.tokenOf("10.0.0.1")).resolves.toBe("tok1");
+      expect(cloud.getDevices).toHaveBeenCalledWith({ servers: ["sg"] });
+    });
+
+    test("a robot that's not in the account has no token", async () => {
+      const { service, log } = setup({
+        devices: [cloudDevice({ localip: "10.0.0.9" })],
+      });
+      await expect(service.tokenOf("10.0.0.1")).resolves.toBeUndefined();
+      expect(log.warn).toHaveBeenCalledWith(
+        expect.stringContaining("no robot with the IP 10.0.0.1")
+      );
+    });
+
+    test("without a saved session, it explains how to log in", async () => {
+      const { service, log } = setup({ session: undefined });
+      await expect(service.tokenOf("10.0.0.1")).resolves.toBeUndefined();
+      expect(log.warn).toHaveBeenCalledWith(
+        expect.stringContaining("npx node-miio cloud login --qr")
+      );
+    });
+
+    test("a failure to list the devices is reported, and retried for the next robot", async () => {
+      const { service, cloud, log } = setup({
+        devices: [cloudDevice({ localip: "10.0.0.1", token: "tok1" })],
+      });
+      cloud.getDevices.mockRejectedValueOnce(new Error("network"));
+      await expect(service.tokenOf("10.0.0.1")).resolves.toBeUndefined();
+      expect(log.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "failed to list the devices of your Xiaomi account: Error: network"
+        )
+      );
+      await expect(service.tokenOf("10.0.0.1")).resolves.toBe("tok1");
+    });
+  });
 });
