@@ -600,6 +600,9 @@
             name: zone.name,
             rects: (zone.zone || []).map((rect) => rect.slice(0, 4)),
             repeat: (zone.zone && zone.zone[0] && zone.zone[0][4]) || 1,
+            // Kept as they are: set in the form below
+            speed: zone.speed,
+            waterSpeed: zone.waterSpeed,
           })
         ),
       };
@@ -1001,6 +1004,8 @@
         target.zones = zones.map((zone) => ({
           name: zone.name.trim(),
           zone: zone.rects.map((rect) => [...rect, zone.repeat || 1]),
+          ...(zone.speed ? { speed: zone.speed } : {}),
+          ...(zone.waterSpeed ? { waterSpeed: zone.waterSpeed } : {}),
         }));
       } else {
         delete target.zones;

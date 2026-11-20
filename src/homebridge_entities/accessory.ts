@@ -196,8 +196,15 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
         ? new WaterTankService(coreContext)
         : undefined,
       zones: config.zones
-        ? new ZonesService(coreContext, mainService, (isCleaning) =>
-            this.pluginServices.pause?.changedPause(isCleaning)
+        ? new ZonesService(
+            coreContext,
+            mainService,
+            (isCleaning) => this.pluginServices.pause?.changedPause(isCleaning),
+            config.waterBox
+              ? async (mode) => {
+                  await this.pluginServices.waterBox?.setWaterSpeed(mode);
+                }
+              : undefined
           )
         : undefined,
       // ADDITIONAL HOMEKIT SERVICES

@@ -280,6 +280,25 @@ This plugin supports Zone cleaning (only models that support zone cleaning via t
 
 To start the Zone Clean Mode, you can enable the zone switch for the zone to be cleaned.
 
+#### Fan speed and water level per zone
+
+Each zone can set the fan speed (`speed`) and the water level (`waterSpeed`) before starting, e.g. to vacuum a zone
+first and mop it afterwards with a second switch:
+
+```json
+"zones": [
+  { "name": "Kitchen", "zone": [[24500, 27000, 28000, 30000, 1]], "speed": "Max", "waterSpeed": "Off" },
+  { "name": "Kitchen mop", "zone": [[24500, 27000, 28000, 30000, 1]], "speed": "Mop", "waterSpeed": "High" }
+]
+```
+
+- The names are the ones of your model's [fan speeds](./src/models/speedmodes.ts) and [water levels](./src/models/watermodes.ts)
+  (the same steps as the sliders in HomeKit). The robot keeps them after the cleaning, as when you change them from HomeKit.
+- `"Mop"` turns the suction off (mop only): S7 and newer (S7, S7 MaxV, S8, S7 Max Ultra, Q8 Max, Q Revo), with the mop
+  attached. On the older models, the lowest speed is `"Soft"`, which still vacuums.
+- `waterSpeed` needs the water box (`waterBox`, enabled automatically in platform mode on the models that support it).
+- Leave them out to keep the current speed and water level.
+
 ### How can I set it up
 
 Open terminal and run:

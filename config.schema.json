@@ -295,6 +295,18 @@
                         "required": true
                       }
                     }
+                  },
+                  "speed": {
+                    "title": "Fan speed",
+                    "description": "Set before cleaning the zone, e.g. Quiet, Balanced, Turbo, Max, or Mop (no suction, S7 and newer). Leave empty to keep the current one.",
+                    "type": "string",
+                    "required": false
+                  },
+                  "waterSpeed": {
+                    "title": "Water level",
+                    "description": "Set before cleaning the zone (needs Water Box): Off, Light, Medium or High. Leave empty to keep the current one.",
+                    "type": "string",
+                    "required": false
                   }
                 }
               }
@@ -502,6 +514,23 @@
                               ]
                             }
                           ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "div",
+                      "displayFlex": true,
+                      "flex-direction": "row",
+                      "items": [
+                        {
+                          "key": "devices[].zones[].speed",
+                          "flex": "1 1 100px",
+                          "placeholder": "Keep the current one"
+                        },
+                        {
+                          "key": "devices[].zones[].waterSpeed",
+                          "flex": "1 1 100px",
+                          "placeholder": "Keep the current one"
                         }
                       ]
                     }
