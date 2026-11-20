@@ -210,6 +210,27 @@ describe("XiaomiRoborockVacuum", () => {
       );
     });
 
+    test("the maintenance sensor alone, without the care sensors", () => {
+      const client = new XiaomiRoborockVacuumAccessory(
+        log,
+        {
+          ip: "192.168.0.1",
+          token: "TOKEN",
+          serviceType: "vacuum",
+          maintenanceSensor: true,
+        },
+        homebridge,
+        deviceManagerMock
+      );
+      const services = client.getServices();
+      // The accessory information, and the sensor
+      expect(services).toHaveLength(2);
+      expect(services[0]).toBeInstanceOf(
+        homebridge.hap.Service.AccessoryInformation
+      );
+      expect(services[1].subtype).toBe("maintenance");
+    });
+
     test("care sensors are opt-in", () => {
       const create = (config: Record<string, unknown>) =>
         new XiaomiRoborockVacuumAccessory(

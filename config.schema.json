@@ -112,6 +112,12 @@
               "pattern": "^([01]?\\d|2[0-3]):[0-5]\\d$",
               "required": false
             },
+            "maintenanceSensor": {
+              "title": "Show a sensor for \"needs maintenance\" (brushes, filter or sensors), e.g. for notifications",
+              "type": "boolean",
+              "default": false,
+              "required": false
+            },
             "disableCareServices": {
               "title": "Disable Care Services",
               "type": "boolean",
@@ -421,6 +427,7 @@
                 "devices[].doNotDisturbEnd"
               ]
             },
+            "devices[].maintenanceSensor",
             "devices[].debug",
             "devices[].silent",
             "devices[].pause",

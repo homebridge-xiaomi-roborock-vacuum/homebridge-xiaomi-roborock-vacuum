@@ -23,6 +23,7 @@ type MockedMembers =
   | "getTimer"
   | "getWaterBoxMode"
   | "pause"
+  | "resetConsumable"
   | "resumeCleanRooms"
   | "sendToLocation"
   | "setRawProperty"
@@ -69,6 +70,7 @@ const miioDevice: MiioDeviceMock = {
   getWaterBoxMode: jest.fn(),
   pause: jest.fn(),
   properties: {},
+  resetConsumable: jest.fn(),
   resumeCleanRooms: jest.fn(),
   sendToLocation: jest.fn(),
   setRawProperty: jest.fn(),
