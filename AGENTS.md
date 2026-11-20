@@ -26,6 +26,7 @@ npm ci
 npm run lint    # prettier --check .
 npm test        # jest via `node --experimental-vm-modules` (needed to load ESM-only deps like @homebridge/hap-nodejs ≥ 2.3); not type-checked
 npm run build   # tsc (type-checks everything, tests included)
+npm run docker  # a real Homebridge (UI on :8581) running this working copy, see docker/README.md
 node dist/bin/miio-vacuum.js --help   # the CLI is a thin wrapper around node-miio's
 ```
 

@@ -9,3 +9,4 @@ bugs/
 coverage/
 dist/
 persist/
+docker/homebridge/

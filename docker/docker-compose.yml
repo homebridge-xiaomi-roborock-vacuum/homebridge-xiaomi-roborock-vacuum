@@ -1,0 +1,21 @@
+# A real Homebridge (with its UI) running the plugin built from this working copy: see docker/README.md.
+# Start it with `npm run docker`.
+name: homebridge-xiaomi-roborock-vacuum
+
+services:
+  homebridge:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-UTC}
+      # Keep the Xiaomi Cloud session (saved by the settings page) with the rest of the data
+      MIIO_CONFIG_DIR: /homebridge/.node-miio
+    volumes:
+      # Homebridge's config, accessories and logs (git-ignored)
+      - ./homebridge:/homebridge
+    # Enough for the UI and to control the robot. To pair with the Home app, Homebridge must be in your LAN (mDNS):
+    # on Linux, replace `ports` with `network_mode: host`.
+    ports:
+      - "8581:8581"

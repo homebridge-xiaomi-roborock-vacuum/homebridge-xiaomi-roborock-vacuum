@@ -1,0 +1,7 @@
+.git
+node_modules
+dist
+coverage
+persist
+docker/homebridge
+**/.DS_Store
