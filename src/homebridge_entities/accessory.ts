@@ -20,6 +20,7 @@ import {
   GoToSpotsService,
   GoToDockService,
   DockService,
+  DoNotDisturbService,
   MopDockService,
   WaterTankService,
   Config,
@@ -38,6 +39,7 @@ import { CoreContext } from "../services/types";
  * cover. The others (on/off, fan speed, water level, rooms, pause, dock, battery, find me…) are in the Matter vacuum.
  */
 const EXTRA_SERVICES_IN_VACUUM_MODE = new Set<keyof PluginServices>([
+  "doNotDisturb",
   "dustBin",
   "dustCollection",
   "goTo",
@@ -62,6 +64,7 @@ interface PluginServices {
   goToSpots?: GoToSpotsService;
   goToDock?: GoToDockService;
   dock?: DockService;
+  doNotDisturb?: DoNotDisturbService;
   mopDock?: MopDockService;
   waterTank?: WaterTankService;
   zones?: ZonesService;
@@ -220,6 +223,9 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
         : undefined,
       goToDock: config.goToDock ? new GoToDockService(coreContext) : undefined,
       dock: config.dock ? new DockService(coreContext) : undefined,
+      doNotDisturb: config.doNotDisturb
+        ? new DoNotDisturbService(coreContext)
+        : undefined,
       mopDock:
         config.mopWash || config.mopDrying
           ? new MopDockService(coreContext)

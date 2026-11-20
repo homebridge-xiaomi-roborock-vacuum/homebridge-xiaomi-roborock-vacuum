@@ -5,6 +5,7 @@ export { CloudService } from "./cloud_service";
 export { CurrentRoomService } from "./current_room_service";
 export { DeviceManager } from "./device_manager";
 export { DockService } from "./dock_service";
+export { DoNotDisturbService } from "./do_not_disturb_service";
 export { DustBinService } from "./dust_bin_service";
 export { DustCollection } from "./dust_collection";
 export { PauseSwitch } from "./pause_switch";
