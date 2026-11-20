@@ -146,6 +146,93 @@ describe("XiaomiRoborockVacuum", () => {
     expect(Object.keys(client["pluginServices"])).toMatchSnapshot();
   });
 
+  describe('serviceType: "vacuum"', () => {
+    test("legacy accessory: not available, falls back to the fan", () => {
+      const client = new XiaomiRoborockVacuumAccessory(
+        log,
+        { ip: "192.168.0.1", token: "TOKEN", serviceType: "vacuum" },
+        homebridge
+      );
+      expect(client["config"].serviceType).toBe("fan");
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('"serviceType": "vacuum" is only available')
+      );
+      expect(client.getServices()).toHaveLength(7);
+    });
+
+    test("platform: no HomeKit services without extras (the Matter vacuum has them)", () => {
+      const client = new XiaomiRoborockVacuumAccessory(
+        log,
+        {
+          ip: "192.168.0.1",
+          token: "TOKEN",
+          serviceType: "vacuum",
+          pause: true,
+          findMe: true,
+          goToDock: true,
+          dock: true,
+          waterBox: true,
+          rooms: [{ id: "16", name: "Kitchen" }],
+          disableCareServices: true,
+        },
+        homebridge,
+        deviceManagerMock
+      );
+      expect(client.getServices()).toStrictEqual([]);
+      expect(client.roomList).toStrictEqual([{ id: "16", name: "Kitchen" }]);
+    });
+
+    test("platform: only the extras that Matter doesn't cover, with the accessory information", () => {
+      const client = new XiaomiRoborockVacuumAccessory(
+        log,
+        {
+          ip: "192.168.0.1",
+          token: "TOKEN",
+          serviceType: "vacuum",
+          pause: true,
+          goToDock: true,
+          dustCollection: true,
+          zones: [],
+          disableCareServices: true,
+        },
+        homebridge,
+        deviceManagerMock
+      );
+      const services = client.getServices();
+      expect(services[0]).toBeInstanceOf(
+        homebridge.hap.Service.AccessoryInformation
+      );
+      expect(services.map((svc) => svc.constructor.name)).not.toContain("Fan");
+      expect(services).toHaveLength(
+        1 +
+          client["pluginServices"].dustCollection!.services.length +
+          client["pluginServices"].zones!.services.length
+      );
+    });
+
+    test("care sensors are opt-in", () => {
+      const create = (config: Record<string, unknown>) =>
+        new XiaomiRoborockVacuumAccessory(
+          log,
+          {
+            ip: "192.168.0.1",
+            token: "TOKEN",
+            serviceType: "vacuum",
+            ...config,
+          },
+          homebridge,
+          deviceManagerMock
+        );
+      expect(create({}).getServices()).toStrictEqual([]);
+      expect(create({ disableCareServices: true }).getServices()).toStrictEqual(
+        []
+      );
+      const withCare = create({ disableCareServices: false });
+      expect(withCare["pluginServices"].careServices).toBeDefined();
+      expect(withCare.getServices().length).toBeGreaterThan(1);
+    });
+  });
+
   test("identify API", async () => {
     const client = new XiaomiRoborockVacuumAccessory(
       log,

@@ -37,11 +37,19 @@
               "description": "Instead of the IP and token, with the platform's `cloud` option: they're read from your Xiaomi account, and found again if they change (e.g. a new IP from the router). It's in the logs, and in `npx node-miio cloud devices`."
             },
             "serviceType": {
-              "title": "Load the vacuum as a fan (ON/OFF + speed control) or a switch (ON/OFF only)",
+              "title": "How the vacuum shows up in HomeKit",
               "type": "string",
               "default": "fan",
-              "enum": ["fan", "switch"],
-              "required": false
+              "oneOf": [
+                { "title": "Fan (on/off + fan speed)", "enum": ["fan"] },
+                { "title": "Switch (on/off only)", "enum": ["switch"] },
+                {
+                  "title": "Robot vacuum (Matter, iOS 18.4+)",
+                  "enum": ["vacuum"]
+                }
+              ],
+              "required": false,
+              "description": "Robot vacuum: Apple Home's native vacuum, with its rooms and clean modes. It needs Matter enabled in the bridge that runs this plugin, and is paired separately, with its own code (see the README)."
             },
             "waterBox": {
               "title": "Enable the Water Box mode (beta)",

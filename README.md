@@ -38,6 +38,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 
 ## Features
 
+- **Robot vacuum in Apple Home** (Matter, optional): the native vacuum tile, with its rooms and clean modes. Read [Robot vacuum (Matter)](#robot-vacuum-matter).
 - **Fan** as On-/Off-Switch. When switching off, directly back to the charging station.
   - [Fanspeed levels](./src/models/speedmodes.ts) adjustable via 3D Touch / Force Touch.
 - Battery status and condition in the device details. Low battery alert.
@@ -209,7 +210,7 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 | --------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `debug`               | `false`                  | when set to true, the debug logs (including what the vacuum answers) are shown as regular logs, without enabling Homebridge's debug mode (`-D`) for every plugin. Enable it when reporting an issue                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `silent`              | `false`                  | when set to true, it will log only warning and error messages (hiding info and debug messages even when running homebridge -D                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `serviceType`         | `"fan"`                  | Defines the type of service of how the accessory is exposed. <br />When set to `"fan"` (default), ON/OFF controls and speed selection can be controlled by sliding the fan speed in the Home app. <br />When set to `"switch"`, only ON/OFF controls are allowed (no speed selection).                                                                                                                                                                                                                                                                                                               |
+| `serviceType`         | `"fan"`                  | Defines the type of service of how the accessory is exposed. <br />When set to `"fan"` (default), ON/OFF controls and speed selection can be controlled by sliding the fan speed in the Home app. <br />When set to `"switch"`, only ON/OFF controls are allowed (no speed selection). <br />When set to `"vacuum"` (platform only), it's a Matter robot vacuum: see [Robot vacuum (Matter)](#robot-vacuum-matter).                                                                                                                                                                                  |
 | `pause`               | `false`                  | when set to `true`, HomeKit shows an additional switch for "pause" - switch is on, when pause is possible                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `pauseWord`           | `"pause"`                | used for naming the Pause comment                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | `findMe`              | `false`                  | when set to true, HomeKit shows an additional switch for "find me" - if switched on, the vacuum will say "Hi, I am over here"                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -230,12 +231,56 @@ For the underlying communication layer, it uses a port of the no-longer maintain
 | `mopWash`             | `false`                  | when set to true, HomeKit shows a button to wash the mop in the dock (only docks with mop washing, like the S7 MaxV Ultra or S8 Pro Ultra)                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `mopDrying`           | `false`                  | when set to true, HomeKit shows a switch to dry the mop in the dock (only docks with a mop dryer, like the S8 Pro Ultra). It is on while the mop is drying                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `waterTankEmpty`      | `false`                  | when set to true, HomeKit shows an occupancy sensor that detects when the clean water tank is empty. Only for models that report it (usually the ones with a self-refilling dock)                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `disableCareServices` | `false`                  | when set to true, HomeKit doesn't shows additional Care Services                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `disableCareServices` | `false`                  | when set to true, HomeKit doesn't shows additional Care Services. With `"serviceType": "vacuum"`, they're hidden unless it's set to `false`                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `cleanword`           | `"cleaning"`             | used for autonaming the Roomselectors                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | `rooms`               | `[]`                     | Array of ID / Name for a single Room. If set you have another switch for cleaning only this room. Add `"repeats": [2, 3]` to a room to also get switches that clean it 2 or 3 times ("Kitchen 2x"): the robot takes one count per run, so the highest of the selected switches wins. The [settings page](#settings-page-tokens-room-names-spots-and-zones-from-the-map) sets them from the map                                                                                                                                                                                                       |
 | `zones`               | `[]`                     | Array of name / zone coordinates for a single zone group. A zone group may contain multiple zone squares, each with its own value for number of cleanings. Coordinates are laid out as bottom-left-x, bottom-left-y, top-right-x, top-right-y, number-of-cleanings. A separate tile in Home will be created for each zone group. Figuring out coordinates will take some trial and error. Each zone should be surrounded by brackets: [], with the entire value also surrounded by brackets The [settings page](#settings-page-tokens-room-names-spots-and-zones-from-the-map) draws them on the map |
 | `autoroom`            | `false`                  | set to `true` to generate rooms from robot (only S6) or set to array of room name strings (see semi automatic below)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `roomTimeout`         | `0`                      | when set to anything above `0` - will initiate room cleaning for multiple rooms automatically after the given time in seconds                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+
+## Robot vacuum (Matter)
+
+Apple Home only shows its native robot vacuum tile for Matter devices (iOS 18.4 or later). With `"serviceType": "vacuum"`, this plugin
+exposes the vacuum through Homebridge's Matter support (Homebridge v2) instead of a fan or a switch:
+
+- Start, stop and go to the dock, pause and resume.
+- The rooms: pick the ones to clean in the Home app. They're read from the robot (as with `"autoroom": true`), or from `rooms`/`autoroom` when
+  configured. With the [Xiaomi Cloud](#current-room-xiaomi-cloud), the Home app shows the room the robot is in.
+- The clean modes: one per fan speed, mop-only modes (on the models with a "Mop" fan speed), and vacuum & mop presets (Automatic, Deep
+  clean, Quiet) on the models with a water box.
+- The battery, the dock states (charging, emptying the dust bin, washing the mop…) and the errors (e.g. "brush jammed").
+
+It replaces the HomeKit switches and sensors for all of that: `pause`, `findMe`, `goToDock`, `dock`, `waterBox`, `roomSensors` and the room
+switches aren't shown. The ones Matter doesn't cover still are, when enabled, in a separate HomeKit accessory: `zones`, `goTo`, `goToSpots`,
+`dustBin`, `dustCollection`, `mopWash`, `mopDrying`, `waterTankEmpty`, and the care sensors with `"disableCareServices": false` (they're
+hidden by default in this mode: Matter has no equivalent).
+
+### How can I set it up
+
+1. Use the platform (the `platforms` section, as the settings page does).
+2. Enable Matter in the bridge that runs this plugin: a `matter` block in its `_bridge` (a child bridge, recommended), or in `bridge` (the main
+   bridge). In the Homebridge UI, it's in the bridge settings.
+
+   ```json
+   {
+     "platform": "XiaomiRoborockVacuum",
+     "devices": [
+       {
+         "name": "Vacuum",
+         "ip": "192.168.1.10",
+         "token": "…",
+         "serviceType": "vacuum"
+       }
+     ],
+     "_bridge": { "username": "0E:12:34:56:78:9A", "port": 51830, "matter": {} }
+   }
+   ```
+
+3. Restart Homebridge, and add the vacuum in the Home app with its own pairing code: it's shown in the Homebridge UI and in the logs
+   (`Commissioning codes for …`). The vacuum is paired separately from the bridge, as Apple Home requires for robot vacuums.
+
+Without Matter, the plugin logs a warning and shows the vacuum as a fan. Switching back to `"fan"` or `"switch"` removes the Matter vacuum (remove
+it from the Home app too).
 
 ## Room cleaning
 

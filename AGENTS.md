@@ -37,6 +37,13 @@ node dist/bin/miio-vacuum.js --help   # the CLI is a thin wrapper around node-mi
   - `device.matches("type:vaccuum")` is intentional: it's how abstract-things (used by node-miio) spells the type.
   - `reportedModes`: fan speeds / water levels from node-miio (`device.fanSpeeds()` / `waterBoxModes()`), loaded once after connecting.
 - `src/services/*`: one HomeKit service each (main fan/switch, battery, dock, rooms, zones, water box, care…).
+- `src/matter/`: `serviceType: "vacuum"` (platform only, Homebridge's Matter API `api.matter`). `MatterVacuum` registers a
+  Matter Robotic Vacuum Cleaner on every start (Homebridge publishes it on its own Matter server, with its own pairing code,
+  as Apple Home requires): run/clean modes, rooms (service areas), battery, errors. The HomeKit accessory then only keeps the
+  extras Matter doesn't cover (`EXTRA_SERVICES_IN_VACUUM_MODE` in `accessory.ts`), and isn't registered without them.
+  - `api.matter.types` (Homebridge 2.5) only exports `RvcOperationalState`: the Matter values are in `src/matter/constants.ts`.
+  - `skipArea` isn't supported: Homebridge answers it with matter.js's base implementation, which always fails.
+  - Matter rejects rooms with an empty or a repeated name (`toAreas` renames them).
 - `src/utils/find_speed_modes.ts`: models listed in `src/models/` keep the local tables. Any other model uses `reportedModes`
   (an "Off" -1 speed is prepended, which stops the cleaning). The plan is to remove `src/models/` once node-miio's lists are confirmed.
 - node-miio ships its own types (since 0.5.0). The device is a `VacuumDevice` (union of node-miio's vacuum classes): only their

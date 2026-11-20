@@ -1,6 +1,6 @@
 import type { Service } from "homebridge";
 import type { MapPoint, MapWatcher } from "node-miio";
-import { Observable, Subscription, switchMap } from "rxjs";
+import { Observable, Subject, Subscription, switchMap } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";
@@ -26,6 +26,8 @@ export class CurrentRoomService extends PluginServiceClass {
   private position?: MapPoint;
   private watcher?: MapWatcher;
   private subscription?: Subscription;
+  /** The room the robot is in (`undefined` when it's not in any room, or stopped) */
+  public readonly currentRoom$ = new Subject<string | undefined>();
 
   constructor(
     coreContext: CoreContext,
@@ -147,6 +149,7 @@ export class CurrentRoomService extends PluginServiceClass {
       );
     }
     this.currentRoom = roomId;
+    this.currentRoom$.next(roomId);
     for (const sensor of this.sensors.values()) {
       sensor
         .getCharacteristic(this.hap.Characteristic.OccupancyDetected)

@@ -33,6 +33,21 @@ import { errors } from "../utils/constants";
 import { ErrorChangedEvent } from "../services/device_manager";
 import { CoreContext } from "../services/types";
 
+/**
+ * The HomeKit services that are still exposed with `serviceType: "vacuum"`: the ones the Matter robot vacuum doesn't
+ * cover. The others (on/off, fan speed, water level, rooms, pause, dock, battery, find me…) are in the Matter vacuum.
+ */
+const EXTRA_SERVICES_IN_VACUUM_MODE = new Set<keyof PluginServices>([
+  "dustBin",
+  "dustCollection",
+  "goTo",
+  "goToSpots",
+  "mopDock",
+  "waterTank",
+  "zones",
+  "careServices",
+]);
+
 interface PluginServices {
   productInfo: ProductInfo;
   rooms: RoomsService;
@@ -89,6 +104,13 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
     this.deviceManager =
       deviceManager || new DeviceManager(api.hap, this.log, config);
 
+    if (!deviceManager && this.config.serviceType === "vacuum") {
+      this.log.warn(
+        `WARN init | "serviceType": "vacuum" is only available on the platform (see the README). Using "fan" instead.`
+      );
+      this.config.serviceType = "fan";
+    }
+
     if (!deviceManager) {
       // Legacy "accessory" mode (the platform always provides its DeviceManager)
       this.log.info(
@@ -143,6 +165,16 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
   /** The rooms resolved from the device (when using `autoroom`) */
   public get resolvedRooms() {
     return this.pluginServices.rooms.resolvedRooms;
+  }
+
+  /** The rooms (from `rooms` or `autoroom`), and their current IDs */
+  public get roomList() {
+    return this.pluginServices.rooms.roomList;
+  }
+
+  /** The room the robot is in (from the Xiaomi Cloud's map, when enabled) */
+  public get currentRoom$() {
+    return this.pluginServices.currentRoom.currentRoom$;
   }
 
   /**
@@ -208,7 +240,13 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
           )
         : undefined,
       // ADDITIONAL HOMEKIT SERVICES
-      careServices: !config.disableCareServices
+      // With `serviceType: "vacuum"`, they're opt-in (`"disableCareServices": false`): Matter has no equivalent, and
+      // they'd be the only reason for a HomeKit accessory next to the Matter vacuum
+      careServices: (
+        config.serviceType === "vacuum"
+          ? config.disableCareServices === false
+          : !config.disableCareServices
+      )
         ? new CareService(coreContext, mainService)
         : undefined,
     };
@@ -253,6 +291,20 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
    */
   public getServices() {
     this.log.debug(`DEB getServices`);
+
+    if (this.config.serviceType === "vacuum") {
+      // The Matter vacuum covers the rest: only the extras (and the accessory information) stay in HomeKit
+      const extras = Object.entries(this.pluginServices).flatMap(
+        ([name, service]) =>
+          service &&
+          EXTRA_SERVICES_IN_VACUUM_MODE.has(name as keyof PluginServices)
+            ? service.services
+            : []
+      );
+      return extras.length > 0
+        ? [...this.pluginServices.productInfo.services, ...extras]
+        : [];
+    }
 
     const { mainService, ...rest } = this.pluginServices;
 

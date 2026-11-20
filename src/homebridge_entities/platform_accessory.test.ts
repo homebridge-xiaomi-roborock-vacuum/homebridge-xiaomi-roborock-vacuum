@@ -184,6 +184,111 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
       expect(accessory.removeService).toHaveBeenCalledWith(staleRoom);
     });
 
+    describe('serviceType: "vacuum"', () => {
+      const vacuumConfig = { ...config, did: "123", serviceType: "vacuum" };
+      const matter = {
+        uuid: { generate: jest.fn((id: string) => `uuid:${id}`) },
+        deviceTypes: { RoboticVacuumCleaner: {} },
+        status: {},
+        registerPlatformAccessories: jest.fn(),
+        updateAccessoryState: jest.fn(),
+      };
+      const configFor = () =>
+        XiaomiRoborockVacuumAccessoryMock.mock.calls[0][1] as Record<
+          string,
+          unknown
+        >;
+
+      const start = async (
+        isMatterEnabled: boolean,
+        deviceConfig: Record<string, unknown> = vacuumConfig
+      ) => {
+        Object.assign(homebridge, {
+          isMatterEnabled: () => isMatterEnabled,
+          matter: isMatterEnabled ? matter : undefined,
+        });
+        miio.device.getDeviceInfo.mockResolvedValue({
+          fw_ver: "3.5.8",
+        } as never);
+        miio.device.getSerialNumber.mockResolvedValue("SN1");
+        const instanceMock = createXiaomiRoborockVacuumAccessoryMock();
+        instanceMock.roomList = [{ id: "16", name: "Kitchen" }];
+        XiaomiRoborockVacuumAccessoryMock.mockReturnValue(instanceMock);
+        const initializer =
+          new XiaomiRoborockVacuumPlatformAccessoryInitializer(
+            log,
+            deviceConfig,
+            homebridge,
+            newAccessory()
+          );
+        const initialized = jest.fn();
+        initializer.initialized$.subscribe(initialized);
+        (
+          deviceManagerMock.deviceConnected$ as unknown as Subject<MiioDevice>
+        ).next(miio.device);
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        return { initializer, initialized };
+      };
+
+      test("registers the Matter vacuum, with the rooms", async () => {
+        const { initializer, initialized } = await start(true);
+        expect(matter.registerPlatformAccessories).toHaveBeenCalledWith(
+          "homebridge-xiaomi-roborock-vacuum",
+          "XiaomiRoborockVacuum",
+          [
+            expect.objectContaining({
+              displayName: "test",
+              serialNumber: "SN1",
+              firmwareRevision: "3.5.8",
+              clusters: expect.objectContaining({
+                serviceArea: expect.objectContaining({
+                  supportedAreas: [expect.objectContaining({ areaId: 16 })],
+                }),
+              }),
+            }),
+          ]
+        );
+        expect(initializer.matterVacuum).toBeDefined();
+        // No HomeKit services: the HomeKit accessory isn't needed
+        expect(initialized).toHaveBeenCalledWith(false);
+        // The rooms are read from the robot
+        expect(configFor()).toMatchObject({
+          serviceType: "vacuum",
+          autoroom: true,
+        });
+      });
+
+      test("a failing Matter registration doesn't prevent the HomeKit accessory", async () => {
+        matter.registerPlatformAccessories.mockRejectedValueOnce(
+          new Error("Matter is not ready")
+        );
+        const { initialized } = await start(true);
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          expect.stringContaining("Failed to register the Matter robot vacuum"),
+          expect.any(Error)
+        );
+        expect(initialized).toHaveBeenCalledWith(false);
+      });
+
+      test("configured rooms are kept", async () => {
+        await start(true, {
+          ...vacuumConfig,
+          rooms: [{ id: "16", name: "Kitchen" }],
+        });
+        expect(configFor().autoroom).toBeUndefined();
+      });
+
+      test("without Matter: warns, and falls back to the fan", async () => {
+        const { initializer } = await start(false);
+        expect(consoleWarnSpy).toHaveBeenCalledWith(
+          expect.stringContaining('"serviceType": "vacuum" needs Matter')
+        );
+        expect(configFor().serviceType).toBe("fan");
+        expect(initializer.matterVacuum).toBeUndefined();
+        expect(matter.registerPlatformAccessories).not.toHaveBeenCalled();
+      });
+    });
+
     describe("waterBox auto-detection", () => {
       const configFor = () =>
         XiaomiRoborockVacuumAccessoryMock.mock.calls[0][1] as Record<
