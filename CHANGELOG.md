@@ -6,7 +6,10 @@
   - **Log in to the Xiaomi Cloud** by scanning a QR code with the Mi Home app (no password, no terminal needed).
   - **Find your vacuums** in the account, and add them (name, IP and token) or update their token in one click.
   - **Move the vacuums still configured as accessories** (the format before 1.0, which the UI can't show) to the platform format, in one click: with all their options and their child bridge, after a backup of the config.
-  - **See the map** of a Roborock vacuum, and name its rooms by clicking on them, even if the app doesn't let you name them. The names become the room cleaning switches (`rooms`).
+  - **See the map** of a Roborock vacuum, and name its rooms by clicking on them, even if the app doesn't let you name them. The names become the room cleaning switches (`rooms`). Tick 2x / 3x to also get "clean it 2 or 3 times" switches.
+  - **Pick "go to" spots and draw zones on the map**: no more guessing coordinates.
+- [Feature] Clean a room 2 or 3 times: `repeats: [2, 3]` in a room adds "Kitchen 2x" / "Kitchen 3x" switches ([#859](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/859)). The robot takes one count per run: the highest of the selected switches wins.
+- [Feature] Several "go to" spots: `goToSpots: [{ "name", "x", "y" }]` adds a "go to …" switch per spot (the first words are configurable with `goToSpotWord`). The single `goTo` switch keeps working.
 - [Feature] The room the robot is in, from its map in the Xiaomi Cloud (opt-in, Roborock only, platform mode). With the new platform option `cloud` and the vacuum's `roomSensors`, HomeKit shows an occupancy sensor per room, detected while the robot is in it. It needs a one-off `npx node-miio cloud login --qr`; your password is never stored.
 - [Feature] No more token extraction: with the platform's `cloud` option, a robot configured with only its `ip` gets its token from your Xiaomi account when Homebridge starts. The token is now optional in the config.
 - [Feature] The robot's position in the logs, to find the `goToX` / `goToY` coordinates: where it stops after each cleaning, and where it is when you turn on the "find me" switch ([#1020](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1020)).

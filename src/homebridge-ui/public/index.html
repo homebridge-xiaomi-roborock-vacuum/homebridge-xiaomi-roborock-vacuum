@@ -28,6 +28,37 @@
   .xrv-rooms .form-control {
     max-width: 16rem;
   }
+  .xrv-map canvas.xrv-drawing {
+    touch-action: none;
+  }
+  .xrv-note {
+    text-align: left;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .xrv-note ul {
+    margin: 0.25rem 0 0;
+    padding-left: 1.25rem;
+  }
+  .xrv-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+  .xrv-row .form-control {
+    width: auto;
+  }
+  .xrv-row .xrv-name {
+    min-width: 7rem;
+  }
+  .xrv-coords {
+    font-family: monospace;
+    font-size: 0.85rem;
+    opacity: 0.8;
+  }
   .xrv-table td,
   .xrv-table th {
     vertical-align: middle;
@@ -106,22 +137,98 @@
 
 <div class="card xrv-card" id="map-card" hidden>
   <div class="card-body">
-    <h5 class="card-title">Name the rooms from the map (Roborock)</h5>
+    <h5 class="card-title">Rooms, spots and zones from the map (Roborock)</h5>
     <div class="form-inline mb-2">
       <select class="form-control mr-2 mb-2" id="map-device"></select>
       <button type="button" class="btn btn-primary mb-2" id="load-map">
         Show the map
       </button>
     </div>
-    <p class="xrv-muted" id="map-hint" hidden>
-      Click a room on the map (or use the list) to name it. The names become the
-      room cleaning switches.
-    </p>
+    <div id="map-tools" hidden>
+      <div class="btn-group btn-group-sm mb-2" role="group" id="map-modes">
+        <button
+          type="button"
+          class="btn btn-secondary active"
+          data-mode="rooms"
+        >
+          Rooms
+        </button>
+        <button type="button" class="btn btn-secondary" data-mode="spots">
+          "Go to" spots
+        </button>
+        <button type="button" class="btn btn-secondary" data-mode="zones">
+          Zones
+        </button>
+      </div>
+      <div class="alert alert-info xrv-note" data-for="rooms">
+        <strong>Click a room</strong> (or use the list) to name it: the names
+        become the room cleaning switches. Tick <strong>2x</strong> /
+        <strong>3x</strong> to also get "Kitchen 2x" switches, which clean the
+        room 2 or 3 times (you can rename them in the Home app).
+        <ul>
+          <li>
+            The robot takes <strong>one count for the whole run</strong>: if you
+            turn on rooms with different counts together, the highest applies to
+            all of them.
+          </li>
+          <li>Roborock robots clean a room at most 3 times in a row.</li>
+          <li>
+            Some older firmwares don't support repeating: the switch then logs
+            an error.
+          </li>
+        </ul>
+      </div>
+      <div class="alert alert-info xrv-note" data-for="spots" hidden>
+        <strong>Click on the map</strong> to add a spot, and name it. Each spot
+        becomes a "go to …" switch: on sends the robot there, off sends it back
+        to the dock.
+        <ul>
+          <li>
+            Pick spots the robot can reach: it stops if the way is blocked.
+          </li>
+          <li>
+            The coordinates belong to this map: if the robot's map is reset or
+            created again, pick the spots again.
+          </li>
+        </ul>
+      </div>
+      <div class="alert alert-info xrv-note" data-for="zones" hidden>
+        <strong>Drag on the map</strong> to draw a zone, and name it. Each zone
+        becomes a switch that cleans that area, 1 to 3 times.
+        <ul>
+          <li>
+            Zones that come from your config with several rectangles keep all of
+            them.
+          </li>
+          <li>
+            The coordinates belong to this map: if the robot's map is reset or
+            created again, draw the zones again.
+          </li>
+        </ul>
+      </div>
+      <p class="xrv-muted small mb-1">
+        This is the last map the robot saved in the Xiaomi Cloud.
+      </p>
+    </div>
     <div class="xrv-map mb-2"><canvas id="map" hidden></canvas></div>
-    <div class="xrv-rooms" id="rooms"></div>
-    <button type="button" class="btn btn-primary" id="save-rooms" hidden>
-      Use these room names
-    </button>
+    <div data-for="rooms" data-panel>
+      <div class="xrv-rooms" id="rooms"></div>
+      <button type="button" class="btn btn-primary" id="save-rooms" hidden>
+        Use these rooms
+      </button>
+    </div>
+    <div data-for="spots" data-panel hidden>
+      <div id="spots"></div>
+      <button type="button" class="btn btn-primary" id="save-spots">
+        Use these spots
+      </button>
+    </div>
+    <div data-for="zones" data-panel hidden>
+      <div id="zones"></div>
+      <button type="button" class="btn btn-primary" id="save-zones">
+        Use these zones
+      </button>
+    </div>
   </div>
 </div>
 
@@ -144,7 +251,9 @@
     const $ = (id) => document.getElementById(id);
 
     let pluginConfig = [];
-    let currentMap; // { map, device, crop, scale, colors }
+    let currentMap; // { map, device, crop, scale, colors, spots, zones… }
+    let mode = "rooms"; // rooms | spots | zones
+    let drag; // { from, to } while drawing a zone
 
     // ---------- Config ----------
     function platformBlock() {
@@ -426,8 +535,11 @@
         ctx.strokeStyle = "#fff";
         ctx.lineWidth = 2;
         ctx.stroke();
+        ctx.font = "bold 12px sans-serif";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(255,255,255,0.85)";
+        ctx.strokeText(label, cx + 8, cy + 4);
         ctx.fillStyle = "#000";
-        ctx.font = "12px sans-serif";
         ctx.fillText(label, cx + 8, cy + 4);
       };
 
@@ -442,11 +554,97 @@
         ctx,
         offscreen,
         marker,
+        toCanvas,
+        spots: (Array.isArray(device.goToSpots) ? device.goToSpots : []).map(
+          (spot) => ({ ...spot })
+        ),
+        zones: (Array.isArray(device.zones) ? device.zones : []).map(
+          (zone) => ({
+            name: zone.name,
+            rects: (zone.zone || []).map((rect) => rect.slice(0, 4)),
+            repeat: (zone.zone && zone.zone[0] && zone.zone[0][4]) || 1,
+          })
+        ),
       };
       renderRooms();
-      redraw();
+      renderSpots();
+      renderZones();
+      setMode(mode);
       canvas.hidden = false;
-      $("map-hint").hidden = false;
+      $("map-tools").hidden = false;
+    }
+
+    // ---------- Map modes ----------
+    function setMode(newMode) {
+      mode = newMode;
+      for (const button of $("map-modes").querySelectorAll("button")) {
+        const active = button.dataset.mode === mode;
+        button.classList.toggle("active", active);
+        button.classList.toggle("btn-primary", active);
+        button.classList.toggle("btn-secondary", !active);
+      }
+      for (const node of $("map-card").querySelectorAll("[data-for]")) {
+        node.hidden = node.dataset.for !== mode;
+      }
+      $("map").classList.toggle("xrv-drawing", mode === "zones");
+      if (currentMap) redraw();
+    }
+
+    for (const button of $("map-modes").querySelectorAll("button")) {
+      button.addEventListener("click", () => setMode(button.dataset.mode));
+    }
+
+    /** Where the pointer is: in the map's image (pixels), and in the robot's coordinates (mm) */
+    function pointerToMap(event) {
+      const { crop, scale, map } = currentMap;
+      const canvas = $("map");
+      const rect = canvas.getBoundingClientRect();
+      const ratio = canvas.width / rect.width;
+      const cx = (event.clientX - rect.left) * ratio;
+      const cy = (event.clientY - rect.top) * ratio;
+      const imgX = cx / scale - 0.5 + crop.minX;
+      const imgY = crop.maxY - (cy / scale - 0.5);
+      return {
+        x: Math.round((imgX + map.image.left) * MM_PER_PIXEL),
+        y: Math.round((imgY + map.image.top) * MM_PER_PIXEL),
+      };
+    }
+
+    /** A rectangle in the robot's coordinates, as zones need it: [bottom-left x, y, top-right x, y] */
+    function normalizeRect(a, b) {
+      return [
+        Math.min(a.x, b.x),
+        Math.min(a.y, b.y),
+        Math.max(a.x, b.x),
+        Math.max(a.y, b.y),
+      ];
+    }
+
+    function drawRect(rect, label, dashed) {
+      const { ctx, toCanvas } = currentMap;
+      const [ax, ay] = toCanvas({ x: rect[0], y: rect[1] });
+      const [bx, by] = toCanvas({ x: rect[2], y: rect[3] });
+      const x = Math.min(ax, bx);
+      const y = Math.min(ay, by);
+      const w = Math.abs(bx - ax);
+      const h = Math.abs(by - ay);
+      ctx.save();
+      ctx.fillStyle = "rgba(255, 152, 0, 0.25)";
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = "#ff9800";
+      ctx.lineWidth = 2;
+      if (dashed) ctx.setLineDash([6, 4]);
+      ctx.strokeRect(x, y, w, h);
+      if (label) {
+        ctx.font = "bold 12px sans-serif";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(255,255,255,0.85)";
+        ctx.setLineDash([]);
+        ctx.strokeText(label, x + 4, y + 14);
+        ctx.fillStyle = "#7a4000";
+        ctx.fillText(label, x + 4, y + 14);
+      }
+      ctx.restore();
     }
 
     function redraw() {
@@ -467,6 +665,16 @@
         ctx.fillText(label, cx, cy);
       }
       ctx.textAlign = "left";
+      const { zones, spots } = currentMap;
+      zones.forEach((zone, index) =>
+        zone.rects.forEach((rect) =>
+          drawRect(rect, zone.name || `Zone ${index + 1}`, mode !== "zones")
+        )
+      );
+      if (drag) drawRect(normalizeRect(drag.from, drag.to), "", true);
+      spots.forEach((spot, index) =>
+        marker(spot, "#7b3fd0", spot.name || `Spot ${index + 1}`)
+      );
       marker(map.charger, "#2ca02c", "Dock");
       marker(map.robot, "#d62728", "Robot");
     }
@@ -487,7 +695,7 @@
       const configured = new Map(
         (Array.isArray(device.rooms) ? device.rooms : []).map((r) => [
           String(r.id),
-          r.name,
+          r,
         ])
       );
       if (map.rooms.length === 0) {
@@ -499,8 +707,8 @@
         );
       }
       for (const room of map.rooms) {
-        const row = el("div", undefined, "form-inline mb-1");
-        const label = el("label", undefined, "mr-2");
+        const row = el("div", undefined, "xrv-row");
+        const label = el("label", undefined, "mb-0");
         label.style.minWidth = "7rem";
         const swatch = el("span", undefined, "xrv-swatch");
         swatch.style.background = colors.get(room.id);
@@ -509,9 +717,22 @@
         input.type = "text";
         input.placeholder = "Name";
         input.dataset.room = String(room.id);
-        input.value = configured.get(String(room.id)) || room.name || "";
+        const current = configured.get(String(room.id));
+        input.value = (current && current.name) || room.name || "";
         input.addEventListener("input", redraw);
         row.append(label, input);
+        const repeats = (current && current.repeats) || [];
+        for (const repeat of [2, 3]) {
+          const check = el("label", undefined, "mb-0 ml-1");
+          const box = el("input");
+          box.type = "checkbox";
+          box.dataset.repeat = String(repeat);
+          box.dataset.room = String(room.id);
+          box.checked = repeats.includes(repeat);
+          box.title = `Also a switch that cleans this room ${repeat} times`;
+          check.append(box, ` ${repeat}x`);
+          row.append(check);
+        }
         container.append(row);
       }
       $("save-rooms").hidden = map.rooms.length === 0;
@@ -519,6 +740,16 @@
 
     $("map").addEventListener("click", (event) => {
       if (!currentMap) return;
+      if (mode === "spots") {
+        const { x, y } = pointerToMap(event);
+        currentMap.spots.push({ name: "", x, y });
+        renderSpots();
+        redraw();
+        const inputs = $("spots").querySelectorAll("input");
+        inputs[inputs.length - 1].focus();
+        return;
+      }
+      if (mode !== "rooms") return;
       const { crop, scale, pixels, map } = currentMap;
       const rect = event.target.getBoundingClientRect();
       const ratio = event.target.width / rect.width;
@@ -539,25 +770,204 @@
     $("save-rooms").addEventListener("click", async () => {
       const { device, map } = currentMap;
       const rooms = map.rooms
-        .map((room) => ({
-          id: String(room.id),
-          name: roomInput(room.id).value.trim(),
-        }))
+        .map((room) => {
+          const repeats = [
+            ...$("rooms").querySelectorAll(
+              `input[type=checkbox][data-room="${room.id}"]:checked`
+            ),
+          ].map((box) => Number(box.dataset.repeat));
+          return {
+            id: room.id,
+            name: roomInput(room.id).value.trim(),
+            ...(repeats.length ? { repeats } : {}),
+          };
+        })
         .filter((room) => room.name);
       if (rooms.length === 0) {
         homebridge.toast.error("Name at least one room.");
         return;
       }
-      // Find the device again: the config may have changed meanwhile
-      const target =
-        platformBlock().devices.find(
-          (d) => d.ip === device.ip && d.token === device.token
-        ) || device;
+      const target = targetDevice(device);
       target.rooms = rooms;
       // "rooms" and "autoroom" can't be used together
       delete target.autoroom;
       await updateConfig(
         `${rooms.length} room${rooms.length === 1 ? "" : "s"} set for "${target.name}".`
+      );
+    });
+
+    /** The device in the config: it may have changed since the map was shown */
+    function targetDevice(device) {
+      return (
+        platformBlock().devices.find(
+          (d) => d.ip === device.ip && d.token === device.token
+        ) || device
+      );
+    }
+
+    function removeButton(onClick) {
+      const button = el("button", "Remove", "btn btn-sm btn-outline-danger");
+      button.type = "button";
+      button.addEventListener("click", onClick);
+      return button;
+    }
+
+    // ---------- "Go to" spots ----------
+    function renderSpots() {
+      const container = $("spots");
+      container.replaceChildren();
+      const { spots } = currentMap;
+      if (spots.length === 0) {
+        container.append(el("p", "No spots yet.", "xrv-muted"));
+      }
+      spots.forEach((spot, index) => {
+        const row = el("div", undefined, "xrv-row");
+        const input = el(
+          "input",
+          undefined,
+          "form-control form-control-sm xrv-name"
+        );
+        input.type = "text";
+        input.placeholder = "Name (e.g. Kitchen door)";
+        input.value = spot.name || "";
+        input.addEventListener("input", () => {
+          spot.name = input.value;
+          redraw();
+        });
+        row.append(
+          input,
+          el("span", `x=${spot.x}, y=${spot.y}`, "xrv-coords"),
+          removeButton(() => {
+            spots.splice(index, 1);
+            renderSpots();
+            redraw();
+          })
+        );
+        container.append(row);
+      });
+    }
+
+    $("save-spots").addEventListener("click", async () => {
+      const { device, spots } = currentMap;
+      if (spots.some((spot) => !spot.name.trim())) {
+        homebridge.toast.error("Name all the spots (or remove them).");
+        return;
+      }
+      const target = targetDevice(device);
+      if (spots.length) {
+        target.goToSpots = spots.map(({ name, x, y }) => ({
+          name: name.trim(),
+          x,
+          y,
+        }));
+      } else {
+        delete target.goToSpots;
+      }
+      await updateConfig(
+        `${spots.length} "go to" spot${spots.length === 1 ? "" : "s"} set for "${target.name}".`
+      );
+    });
+
+    // ---------- Zones ----------
+    function renderZones() {
+      const container = $("zones");
+      container.replaceChildren();
+      const { zones } = currentMap;
+      if (zones.length === 0) {
+        container.append(el("p", "No zones yet.", "xrv-muted"));
+      }
+      zones.forEach((zone, index) => {
+        const row = el("div", undefined, "xrv-row");
+        const input = el(
+          "input",
+          undefined,
+          "form-control form-control-sm xrv-name"
+        );
+        input.type = "text";
+        input.placeholder = "Name (e.g. Under the table)";
+        input.value = zone.name || "";
+        input.addEventListener("input", () => {
+          zone.name = input.value;
+          redraw();
+        });
+        const repeat = el("select", undefined, "form-control form-control-sm");
+        for (const times of [1, 2, 3]) {
+          const option = el("option", `${times}x`);
+          option.value = String(times);
+          repeat.append(option);
+        }
+        repeat.value = String(zone.repeat || 1);
+        repeat.title = "How many times to clean it";
+        repeat.addEventListener("change", () => {
+          zone.repeat = Number(repeat.value);
+        });
+        row.append(input, repeat);
+        if (zone.rects.length > 1) {
+          row.append(
+            el("span", `${zone.rects.length} rectangles`, "xrv-coords")
+          );
+        }
+        row.append(
+          removeButton(() => {
+            zones.splice(index, 1);
+            renderZones();
+            redraw();
+          })
+        );
+        container.append(row);
+      });
+    }
+
+    $("map").addEventListener("pointerdown", (event) => {
+      if (!currentMap || mode !== "zones") return;
+      event.preventDefault();
+      $("map").setPointerCapture(event.pointerId);
+      const point = pointerToMap(event);
+      drag = { from: point, to: point };
+    });
+
+    $("map").addEventListener("pointermove", (event) => {
+      if (!drag) return;
+      drag.to = pointerToMap(event);
+      redraw();
+    });
+
+    $("map").addEventListener("pointerup", () => {
+      if (!drag) return;
+      const rect = normalizeRect(drag.from, drag.to);
+      drag = undefined;
+      // Ignore clicks: a zone is at least 2 pixels of the map wide and high
+      if (
+        rect[2] - rect[0] < 2 * MM_PER_PIXEL ||
+        rect[3] - rect[1] < 2 * MM_PER_PIXEL
+      ) {
+        redraw();
+        return;
+      }
+      currentMap.zones.push({ name: "", rects: [rect], repeat: 1 });
+      renderZones();
+      redraw();
+      const inputs = $("zones").querySelectorAll("input");
+      inputs[inputs.length - 1].focus();
+    });
+
+    $("save-zones").addEventListener("click", async () => {
+      const { device, zones } = currentMap;
+      if (zones.some((zone) => !(zone.name || "").trim())) {
+        homebridge.toast.error("Name all the zones (or remove them).");
+        return;
+      }
+      const target = targetDevice(device);
+      if (zones.length) {
+        target.zones = zones.map((zone) => ({
+          name: zone.name.trim(),
+          zone: zone.rects.map((rect) => [...rect, zone.repeat || 1]),
+        }));
+      } else {
+        delete target.zones;
+      }
+      await updateConfig(
+        `${zones.length} zone${zones.length === 1 ? "" : "s"} set for "${target.name}".`
       );
     });
 

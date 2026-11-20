@@ -132,13 +132,15 @@ export class MainService extends PluginServiceClass {
         const roomIdsToClean = this.roomsService.roomIdsToClean;
         if (roomIdsToClean.size > 0) {
           // Numeric IDs are sent as numbers. Non-numeric ones are passed as-is, for the models that use them.
+          const { repeat } = this.roomsService;
           await this.deviceManager.device.cleanRooms(
-            this.roomsService.roomIdsForDevice as number[]
+            this.roomsService.roomIdsForDevice as number[],
+            ...(repeat > 1 ? [{ repeat }] : [])
           );
           this.log.info(
             `ACT setCleaning | Start rooms cleaning for rooms ${Array.from(
               roomIdsToClean
-            )}, device is in state ${this.deviceManager.property("state")}.`
+            )}${repeat > 1 ? ` ${repeat} times (the highest of the selected switches)` : ""}, device is in state ${this.deviceManager.property("state")}.`
           );
         } else {
           await this.deviceManager.device.activateCleaning();
