@@ -1,0 +1,1083 @@
+<style>
+  .xrv-card {
+    margin-bottom: 1rem;
+  }
+  .xrv-muted {
+    opacity: 0.75;
+  }
+  .xrv-qr img {
+    width: 220px;
+    height: 220px;
+    background: #fff;
+    padding: 8px;
+    border-radius: 8px;
+  }
+  .xrv-map canvas {
+    max-width: 100%;
+    cursor: crosshair;
+    border-radius: 6px;
+  }
+  .xrv-swatch {
+    display: inline-block;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 3px;
+    vertical-align: middle;
+    margin-right: 0.4rem;
+  }
+  .xrv-rooms .form-control {
+    max-width: 16rem;
+  }
+  .xrv-map canvas.xrv-drawing {
+    touch-action: none;
+  }
+  .xrv-note {
+    text-align: left;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .xrv-note ul {
+    margin: 0.25rem 0 0;
+    padding-left: 1.25rem;
+  }
+  .xrv-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+  .xrv-row .form-control {
+    width: auto;
+  }
+  .xrv-row .xrv-name {
+    min-width: 7rem;
+  }
+  .xrv-coords {
+    font-family: monospace;
+    font-size: 0.85rem;
+    opacity: 0.8;
+  }
+  .xrv-table td,
+  .xrv-table th {
+    vertical-align: middle;
+  }
+</style>
+
+<div class="card xrv-card border-warning" id="legacy-card" hidden>
+  <div class="card-body">
+    <h5 class="card-title">Vacuums in the old format</h5>
+    <p>
+      These vacuums are configured as <em>accessories</em>, the format of
+      versions before 1.0. They work, but this page and the form below can't
+      show or change them.
+    </p>
+    <ul id="legacy-devices"></ul>
+    <p class="xrv-muted">
+      Moving them to the new format (<em>platform</em>) keeps all their
+      options<span id="legacy-bridge-note"></span>. The Home app sees them as
+      new accessories: you'll have to put them back in their rooms, and update
+      your scenes and automations. A backup of your config is saved first
+      (Settings → Backup).
+    </p>
+    <p class="text-warning" id="legacy-bridges-warning" hidden></p>
+    <button type="button" class="btn btn-warning" id="migrate-legacy">
+      Move them to the new format
+    </button>
+  </div>
+</div>
+
+<div class="card xrv-card">
+  <div class="card-body">
+    <h5 class="card-title">Xiaomi Cloud (optional)</h5>
+    <p class="xrv-muted">
+      Log in to get your vacuums' tokens, see their map to name the rooms, and
+      (with the "Xiaomi Cloud" option below) know which room they're cleaning.
+      Your password is never needed: scan a QR code with the Mi Home app.
+    </p>
+    <p id="cloud-status" class="mb-2">Checking…</p>
+    <div class="xrv-qr mb-2" id="qr" hidden>
+      <p>Scan this QR code with the <strong>Mi Home</strong> app:</p>
+      <img id="qr-image" alt="QR code to log in to the Xiaomi Cloud" />
+      <p class="mt-2 xrv-muted">
+        Or open <a id="qr-link" target="_blank" rel="noopener">this page</a>.
+      </p>
+    </div>
+    <button type="button" class="btn btn-primary" id="login" hidden>
+      Log in with a QR code
+    </button>
+    <button type="button" class="btn btn-secondary" id="logout" hidden>
+      Log out
+    </button>
+  </div>
+</div>
+
+<div class="card xrv-card" id="devices-card" hidden>
+  <div class="card-body">
+    <h5 class="card-title">Vacuums in your Xiaomi account</h5>
+    <button type="button" class="btn btn-primary mb-2" id="load-devices">
+      Find my vacuums
+    </button>
+    <div class="table-responsive">
+      <table class="table table-sm xrv-table" id="devices-table" hidden>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Model</th>
+            <th>IP</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card xrv-card" id="map-card" hidden>
+  <div class="card-body">
+    <h5 class="card-title">Rooms, spots and zones from the map (Roborock)</h5>
+    <div class="form-inline mb-2">
+      <select class="form-control mr-2 mb-2" id="map-device"></select>
+      <button type="button" class="btn btn-primary mb-2" id="load-map">
+        Show the map
+      </button>
+    </div>
+    <div id="map-tools" hidden>
+      <div class="btn-group btn-group-sm mb-2" role="group" id="map-modes">
+        <button
+          type="button"
+          class="btn btn-secondary active"
+          data-mode="rooms"
+        >
+          Rooms
+        </button>
+        <button type="button" class="btn btn-secondary" data-mode="spots">
+          "Go to" spots
+        </button>
+        <button type="button" class="btn btn-secondary" data-mode="zones">
+          Zones
+        </button>
+      </div>
+      <div class="alert alert-info xrv-note" data-for="rooms">
+        <strong>Click a room</strong> (or use the list) to name it: the names
+        become the room cleaning switches. Tick <strong>2x</strong> /
+        <strong>3x</strong> to also get "Kitchen 2x" switches, which clean the
+        room 2 or 3 times (you can rename them in the Home app).
+        <ul>
+          <li>
+            The robot takes <strong>one count for the whole run</strong>: if you
+            turn on rooms with different counts together, the highest applies to
+            all of them.
+          </li>
+          <li>Roborock robots clean a room at most 3 times in a row.</li>
+          <li>
+            Some older firmwares don't support repeating: the switch then logs
+            an error.
+          </li>
+        </ul>
+      </div>
+      <div class="alert alert-info xrv-note" data-for="spots" hidden>
+        <strong>Click on the map</strong> to add a spot, and name it. Each spot
+        becomes a "go to …" switch: on sends the robot there, off sends it back
+        to the dock.
+        <ul>
+          <li>
+            Pick spots the robot can reach: it stops if the way is blocked.
+          </li>
+          <li>
+            The coordinates belong to this map: if the robot's map is reset or
+            created again, pick the spots again.
+          </li>
+        </ul>
+      </div>
+      <div class="alert alert-info xrv-note" data-for="zones" hidden>
+        <strong>Drag on the map</strong> to draw a zone, and name it. Each zone
+        becomes a switch that cleans that area, 1 to 3 times.
+        <ul>
+          <li>
+            Zones that come from your config with several rectangles keep all of
+            them.
+          </li>
+          <li>
+            The coordinates belong to this map: if the robot's map is reset or
+            created again, draw the zones again.
+          </li>
+        </ul>
+      </div>
+      <p class="xrv-muted small mb-1">
+        This is the last map the robot saved in the Xiaomi Cloud.
+      </p>
+    </div>
+    <div class="xrv-map mb-2"><canvas id="map" hidden></canvas></div>
+    <div data-for="rooms" data-panel>
+      <div class="xrv-rooms" id="rooms"></div>
+      <button type="button" class="btn btn-primary" id="save-rooms" hidden>
+        Use these rooms
+      </button>
+    </div>
+    <div data-for="spots" data-panel hidden>
+      <div id="spots"></div>
+      <button type="button" class="btn btn-primary" id="save-spots">
+        Use these spots
+      </button>
+    </div>
+    <div data-for="zones" data-panel hidden>
+      <div id="zones"></div>
+      <button type="button" class="btn btn-primary" id="save-zones">
+        Use these zones
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const ALIAS = "XiaomiRoborockVacuum";
+    const MM_PER_PIXEL = 50;
+    const PALETTE = [
+      "#4e79a7",
+      "#f28e2b",
+      "#59a14f",
+      "#e15759",
+      "#76b7b2",
+      "#edc948",
+      "#b07aa1",
+      "#ff9da7",
+      "#9c755f",
+      "#86bcb6",
+    ];
+    const $ = (id) => document.getElementById(id);
+
+    let pluginConfig = [];
+    let currentMap; // { map, device, crop, scale, colors, spots, zones… }
+    let mode = "rooms"; // rooms | spots | zones
+    let drag; // { from, to } while drawing a zone
+
+    // ---------- Config ----------
+    function platformBlock() {
+      let block = pluginConfig.find((c) => !c.accessory);
+      if (!block) {
+        block = { platform: ALIAS, devices: [] };
+        pluginConfig.push(block);
+      }
+      block.devices = block.devices || [];
+      return block;
+    }
+
+    function cloudRequest() {
+      const cloud = platformBlock().cloud || {};
+      return {
+        sessionFile: cloud.sessionFile || undefined,
+        server: cloud.server || undefined,
+      };
+    }
+
+    /**
+     * Rebuilds the form below from the config. The Homebridge UI doesn't always redraw it after a change (e.g. a vacuum
+     * added again after removing it in the form), and hiding and showing it right away is ignored: the form must be
+     * gone before it's shown again.
+     */
+    async function refreshForm() {
+      homebridge.hideSchemaForm();
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      homebridge.showSchemaForm();
+    }
+
+    async function updateConfig(message) {
+      await homebridge.updatePluginConfig(pluginConfig);
+      await refreshForm();
+      homebridge.toast.success(`${message} Click "Save" to apply it.`);
+      refreshDeviceSelect();
+      refreshDevicesTable();
+    }
+
+    function errorMessage(err) {
+      return (err && (err.message || err.error)) || String(err);
+    }
+
+    function el(tag, text, className) {
+      const node = document.createElement(tag);
+      if (text !== undefined) node.textContent = text;
+      if (className) node.className = className;
+      return node;
+    }
+
+    // ---------- Login ----------
+    async function refreshStatus() {
+      try {
+        const { loggedIn } = await homebridge.request(
+          "/cloud/status",
+          cloudRequest()
+        );
+        $("cloud-status").textContent = loggedIn
+          ? "✅ Logged in to the Xiaomi Cloud."
+          : "Not logged in.";
+        $("login").hidden = loggedIn;
+        $("logout").hidden = !loggedIn;
+        $("devices-card").hidden = !loggedIn;
+        $("map-card").hidden = !loggedIn;
+      } catch (err) {
+        $("cloud-status").textContent = `Error: ${errorMessage(err)}`;
+      }
+    }
+
+    $("login").addEventListener("click", async () => {
+      $("login").disabled = true;
+      try {
+        const qr = await homebridge.request("/cloud/login-qr", cloudRequest());
+        $("qr-image").src = qr.imageUrl;
+        $("qr-link").href = qr.loginUrl;
+        $("qr").hidden = false;
+        $("cloud-status").textContent =
+          "Waiting for the QR code to be scanned…";
+      } catch (err) {
+        homebridge.toast.error(errorMessage(err), "Login failed");
+        $("login").disabled = false;
+      }
+    });
+
+    homebridge.addEventListener("cloud-login", async (event) => {
+      $("qr").hidden = true;
+      $("login").disabled = false;
+      if (event.data.ok) {
+        homebridge.toast.success("Logged in to the Xiaomi Cloud.");
+      } else {
+        homebridge.toast.error(event.data.error, "Login failed");
+      }
+      await refreshStatus();
+    });
+
+    $("logout").addEventListener("click", async () => {
+      await homebridge.request("/cloud/logout", cloudRequest());
+      $("devices-table").hidden = true;
+      await refreshStatus();
+    });
+
+    // ---------- Devices ----------
+    $("load-devices").addEventListener("click", async () => {
+      homebridge.showSpinner();
+      try {
+        const devices = await homebridge.request(
+          "/cloud/devices",
+          cloudRequest()
+        );
+        renderDevices(devices);
+      } catch (err) {
+        homebridge.toast.error(errorMessage(err), "Couldn't list the vacuums");
+      } finally {
+        homebridge.hideSpinner();
+      }
+    });
+
+    /** The vacuums of the account, as last listed (to refresh the table when the config changes) */
+    let accountDevices;
+
+    function refreshDevicesTable() {
+      if (accountDevices) renderDevices(accountDevices);
+    }
+
+    function renderDevices(devices) {
+      accountDevices = devices;
+      const body = $("devices-table").querySelector("tbody");
+      body.replaceChildren();
+      if (devices.length === 0) {
+        const row = body.insertRow();
+        const cell = row.insertCell();
+        cell.colSpan = 4;
+        cell.textContent = "No vacuums in this account.";
+      }
+      for (const device of devices) {
+        const row = body.insertRow();
+        row.insertCell().textContent = device.name;
+        row.insertCell().textContent = device.model;
+        row.insertCell().textContent = device.ip || "unknown";
+        const actions = row.insertCell();
+        const configured = platformBlock().devices.find(
+          (d) =>
+            (d.token && d.token.toLowerCase() === device.token.toLowerCase()) ||
+            (device.ip && d.ip === device.ip)
+        );
+        if (!configured) {
+          const add = el("button", "Add", "btn btn-sm btn-primary");
+          add.type = "button";
+          add.addEventListener("click", async () => {
+            platformBlock().devices.push({
+              name: device.name,
+              ip: device.ip,
+              token: device.token,
+            });
+            await updateConfig(`"${device.name}" added.`);
+          });
+          actions.append(add);
+        } else if (configured.token !== device.token) {
+          const fill = el("button", "Update token", "btn btn-sm btn-warning");
+          fill.type = "button";
+          fill.addEventListener("click", async () => {
+            configured.token = device.token;
+            if (!configured.ip && device.ip) configured.ip = device.ip;
+            await updateConfig(`The token of "${configured.name}" updated.`);
+          });
+          actions.append(fill);
+        } else {
+          actions.append(el("span", `Configured as "${configured.name}"`));
+        }
+      }
+      $("devices-table").hidden = false;
+    }
+
+    // ---------- Map ----------
+    function refreshDeviceSelect() {
+      const select = $("map-device");
+      const previous = select.value;
+      select.replaceChildren();
+      platformBlock().devices.forEach((device, index) => {
+        if (!device.ip || !device.token) return;
+        const option = el("option", device.name || device.ip);
+        option.value = String(index);
+        select.append(option);
+      });
+      if ([...select.options].some((o) => o.value === previous)) {
+        select.value = previous;
+      }
+      $("load-map").disabled = select.options.length === 0;
+    }
+
+    $("load-map").addEventListener("click", async () => {
+      const device = platformBlock().devices[Number($("map-device").value)];
+      if (!device) return;
+      homebridge.showSpinner();
+      try {
+        const map = await homebridge.request("/map", {
+          ...cloudRequest(),
+          ip: device.ip,
+          token: device.token,
+        });
+        showMap(map, device);
+      } catch (err) {
+        homebridge.toast.error(errorMessage(err), "Couldn't get the map");
+      } finally {
+        homebridge.hideSpinner();
+      }
+    });
+
+    function roomOfPixel(value) {
+      if (value === 0xff || value === 0x07) return undefined;
+      return (value & 0x07) === 7 ? value >> 3 : undefined;
+    }
+
+    function showMap(map, device) {
+      const { width, height } = map.image;
+      const pixels = Uint8Array.from(atob(map.image.pixels), (c) =>
+        c.charCodeAt(0)
+      );
+      const colors = new Map(
+        map.rooms.map((room, i) => [room.id, PALETTE[i % PALETTE.length]])
+      );
+
+      // Crop to what the robot has seen
+      let minX = width,
+        minY = height,
+        maxX = -1,
+        maxY = -1;
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          if (pixels[x + width * y] !== 0) {
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+      if (maxX < 0) {
+        homebridge.toast.error("The map is empty.");
+        return;
+      }
+      const cropWidth = maxX - minX + 1;
+      const cropHeight = maxY - minY + 1;
+      const available = Math.max(320, $("map-card").clientWidth - 40);
+      const scale = Math.max(1, Math.min(8, Math.floor(available / cropWidth)));
+
+      // Draw the pixels (the map's Y axis points up: flip it)
+      const image = new ImageData(cropWidth, cropHeight);
+      const sums = new Map(); // room → [sumX, sumY, count], for the labels
+      for (let y = minY; y <= maxY; y++) {
+        for (let x = minX; x <= maxX; x++) {
+          const value = pixels[x + width * y];
+          const room = roomOfPixel(value);
+          let rgb;
+          if (room !== undefined && colors.has(room)) {
+            rgb = hexToRgb(colors.get(room));
+            const sum = sums.get(room) || [0, 0, 0];
+            sum[0] += x;
+            sum[1] += y;
+            sum[2]++;
+            sums.set(room, sum);
+          } else if (value === 0x01) rgb = [90, 90, 90];
+          else if (value !== 0) rgb = [205, 205, 205];
+          if (!rgb) continue;
+          const i = ((maxY - y) * cropWidth + (x - minX)) * 4;
+          image.data[i] = rgb[0];
+          image.data[i + 1] = rgb[1];
+          image.data[i + 2] = rgb[2];
+          image.data[i + 3] = 255;
+        }
+      }
+      const offscreen = document.createElement("canvas");
+      offscreen.width = cropWidth;
+      offscreen.height = cropHeight;
+      offscreen.getContext("2d").putImageData(image, 0, 0);
+
+      const canvas = $("map");
+      canvas.width = cropWidth * scale;
+      canvas.height = cropHeight * scale;
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(offscreen, 0, 0, canvas.width, canvas.height);
+
+      const toCanvas = (point) => [
+        (point.x / MM_PER_PIXEL - map.image.left - minX + 0.5) * scale,
+        (maxY - (point.y / MM_PER_PIXEL - map.image.top) + 0.5) * scale,
+      ];
+      const marker = (point, color, label) => {
+        if (!point) return;
+        const [cx, cy] = toCanvas(point);
+        ctx.beginPath();
+        ctx.arc(cx, cy, Math.max(4, scale * 2), 0, 2 * Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.font = "bold 12px sans-serif";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(255,255,255,0.85)";
+        ctx.strokeText(label, cx + 8, cy + 4);
+        ctx.fillStyle = "#000";
+        ctx.fillText(label, cx + 8, cy + 4);
+      };
+
+      currentMap = {
+        map,
+        device,
+        pixels,
+        crop: { minX, maxY },
+        scale,
+        colors,
+        sums,
+        ctx,
+        offscreen,
+        marker,
+        toCanvas,
+        spots: (Array.isArray(device.goToSpots) ? device.goToSpots : []).map(
+          (spot) => ({ ...spot })
+        ),
+        zones: (Array.isArray(device.zones) ? device.zones : []).map(
+          (zone) => ({
+            name: zone.name,
+            rects: (zone.zone || []).map((rect) => rect.slice(0, 4)),
+            repeat: (zone.zone && zone.zone[0] && zone.zone[0][4]) || 1,
+          })
+        ),
+      };
+      renderRooms();
+      renderSpots();
+      renderZones();
+      setMode(mode);
+      canvas.hidden = false;
+      $("map-tools").hidden = false;
+    }
+
+    // ---------- Map modes ----------
+    function setMode(newMode) {
+      mode = newMode;
+      for (const button of $("map-modes").querySelectorAll("button")) {
+        const active = button.dataset.mode === mode;
+        button.classList.toggle("active", active);
+        button.classList.toggle("btn-primary", active);
+        button.classList.toggle("btn-secondary", !active);
+      }
+      for (const node of $("map-card").querySelectorAll("[data-for]")) {
+        node.hidden = node.dataset.for !== mode;
+      }
+      $("map").classList.toggle("xrv-drawing", mode === "zones");
+      if (currentMap) redraw();
+    }
+
+    for (const button of $("map-modes").querySelectorAll("button")) {
+      button.addEventListener("click", () => setMode(button.dataset.mode));
+    }
+
+    /** Where the pointer is: in the map's image (pixels), and in the robot's coordinates (mm) */
+    function pointerToMap(event) {
+      const { crop, scale, map } = currentMap;
+      const canvas = $("map");
+      const rect = canvas.getBoundingClientRect();
+      const ratio = canvas.width / rect.width;
+      const cx = (event.clientX - rect.left) * ratio;
+      const cy = (event.clientY - rect.top) * ratio;
+      const imgX = cx / scale - 0.5 + crop.minX;
+      const imgY = crop.maxY - (cy / scale - 0.5);
+      return {
+        x: Math.round((imgX + map.image.left) * MM_PER_PIXEL),
+        y: Math.round((imgY + map.image.top) * MM_PER_PIXEL),
+      };
+    }
+
+    /** A rectangle in the robot's coordinates, as zones need it: [bottom-left x, y, top-right x, y] */
+    function normalizeRect(a, b) {
+      return [
+        Math.min(a.x, b.x),
+        Math.min(a.y, b.y),
+        Math.max(a.x, b.x),
+        Math.max(a.y, b.y),
+      ];
+    }
+
+    function drawRect(rect, label, dashed) {
+      const { ctx, toCanvas } = currentMap;
+      const [ax, ay] = toCanvas({ x: rect[0], y: rect[1] });
+      const [bx, by] = toCanvas({ x: rect[2], y: rect[3] });
+      const x = Math.min(ax, bx);
+      const y = Math.min(ay, by);
+      const w = Math.abs(bx - ax);
+      const h = Math.abs(by - ay);
+      ctx.save();
+      ctx.fillStyle = "rgba(255, 152, 0, 0.25)";
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = "#ff9800";
+      ctx.lineWidth = 2;
+      if (dashed) ctx.setLineDash([6, 4]);
+      ctx.strokeRect(x, y, w, h);
+      if (label) {
+        ctx.font = "bold 12px sans-serif";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(255,255,255,0.85)";
+        ctx.setLineDash([]);
+        ctx.strokeText(label, x + 4, y + 14);
+        ctx.fillStyle = "#7a4000";
+        ctx.fillText(label, x + 4, y + 14);
+      }
+      ctx.restore();
+    }
+
+    function redraw() {
+      const { ctx, offscreen, sums, crop, scale, map, marker } = currentMap;
+      const canvas = ctx.canvas;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(offscreen, 0, 0, canvas.width, canvas.height);
+      ctx.font = "bold 13px sans-serif";
+      ctx.textAlign = "center";
+      for (const [room, [sx, sy, count]] of sums) {
+        const label = roomLabel(room);
+        const cx = (sx / count - crop.minX + 0.5) * scale;
+        const cy = (crop.maxY - sy / count + 0.5) * scale;
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(255,255,255,0.85)";
+        ctx.strokeText(label, cx, cy);
+        ctx.fillStyle = "#111";
+        ctx.fillText(label, cx, cy);
+      }
+      ctx.textAlign = "left";
+      const { zones, spots } = currentMap;
+      zones.forEach((zone, index) =>
+        zone.rects.forEach((rect) =>
+          drawRect(rect, zone.name || `Zone ${index + 1}`, mode !== "zones")
+        )
+      );
+      if (drag) drawRect(normalizeRect(drag.from, drag.to), "", true);
+      spots.forEach((spot, index) =>
+        marker(spot, "#7b3fd0", spot.name || `Spot ${index + 1}`)
+      );
+      marker(map.charger, "#2ca02c", "Dock");
+      marker(map.robot, "#d62728", "Robot");
+    }
+
+    function roomInput(room) {
+      return $("rooms").querySelector(`input[data-room="${room}"]`);
+    }
+
+    function roomLabel(room) {
+      const input = roomInput(room);
+      return (input && input.value.trim()) || `Room ${room}`;
+    }
+
+    function renderRooms() {
+      const { map, device, colors } = currentMap;
+      const container = $("rooms");
+      container.replaceChildren();
+      const configured = new Map(
+        (Array.isArray(device.rooms) ? device.rooms : []).map((r) => [
+          String(r.id),
+          r,
+        ])
+      );
+      if (map.rooms.length === 0) {
+        container.append(
+          el(
+            "p",
+            "This map has no rooms yet: split it into rooms in the app first."
+          )
+        );
+      }
+      for (const room of map.rooms) {
+        const row = el("div", undefined, "xrv-row");
+        const label = el("label", undefined, "mb-0");
+        label.style.minWidth = "7rem";
+        const swatch = el("span", undefined, "xrv-swatch");
+        swatch.style.background = colors.get(room.id);
+        label.append(swatch, `Room ${room.id}`);
+        const input = el("input", undefined, "form-control form-control-sm");
+        input.type = "text";
+        input.placeholder = "Name";
+        input.dataset.room = String(room.id);
+        const current = configured.get(String(room.id));
+        input.value = (current && current.name) || room.name || "";
+        input.addEventListener("input", redraw);
+        row.append(label, input);
+        const repeats = (current && current.repeats) || [];
+        for (const repeat of [2, 3]) {
+          const check = el("label", undefined, "mb-0 ml-1");
+          const box = el("input");
+          box.type = "checkbox";
+          box.dataset.repeat = String(repeat);
+          box.dataset.room = String(room.id);
+          box.checked = repeats.includes(repeat);
+          box.title = `Also a switch that cleans this room ${repeat} times`;
+          check.append(box, ` ${repeat}x`);
+          row.append(check);
+        }
+        container.append(row);
+      }
+      $("save-rooms").hidden = map.rooms.length === 0;
+    }
+
+    $("map").addEventListener("click", (event) => {
+      if (!currentMap) return;
+      if (mode === "spots") {
+        const { x, y } = pointerToMap(event);
+        currentMap.spots.push({ name: "", x, y });
+        renderSpots();
+        redraw();
+        const inputs = $("spots").querySelectorAll("input");
+        inputs[inputs.length - 1].focus();
+        return;
+      }
+      if (mode !== "rooms") return;
+      const { crop, scale, pixels, map } = currentMap;
+      const rect = event.target.getBoundingClientRect();
+      const ratio = event.target.width / rect.width;
+      const x =
+        Math.floor(((event.clientX - rect.left) * ratio) / scale) + crop.minX;
+      const y =
+        crop.maxY - Math.floor(((event.clientY - rect.top) * ratio) / scale);
+      if (x < 0 || y < 0 || x >= map.image.width || y >= map.image.height)
+        return;
+      const room = roomOfPixel(pixels[x + map.image.width * y]);
+      const input = room !== undefined && roomInput(room);
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    });
+
+    $("save-rooms").addEventListener("click", async () => {
+      const { device, map } = currentMap;
+      const rooms = map.rooms
+        .map((room) => {
+          const repeats = [
+            ...$("rooms").querySelectorAll(
+              `input[type=checkbox][data-room="${room.id}"]:checked`
+            ),
+          ].map((box) => Number(box.dataset.repeat));
+          return {
+            id: room.id,
+            name: roomInput(room.id).value.trim(),
+            ...(repeats.length ? { repeats } : {}),
+          };
+        })
+        .filter((room) => room.name);
+      if (rooms.length === 0) {
+        homebridge.toast.error("Name at least one room.");
+        return;
+      }
+      const target = targetDevice(device);
+      target.rooms = rooms;
+      // "rooms" and "autoroom" can't be used together
+      delete target.autoroom;
+      await updateConfig(
+        `${rooms.length} room${rooms.length === 1 ? "" : "s"} set for "${target.name}".`
+      );
+    });
+
+    /** The device in the config: it may have changed since the map was shown */
+    function targetDevice(device) {
+      return (
+        platformBlock().devices.find(
+          (d) => d.ip === device.ip && d.token === device.token
+        ) || device
+      );
+    }
+
+    function removeButton(onClick) {
+      const button = el("button", "Remove", "btn btn-sm btn-outline-danger");
+      button.type = "button";
+      button.addEventListener("click", onClick);
+      return button;
+    }
+
+    // ---------- "Go to" spots ----------
+    function renderSpots() {
+      const container = $("spots");
+      container.replaceChildren();
+      const { spots } = currentMap;
+      if (spots.length === 0) {
+        container.append(el("p", "No spots yet.", "xrv-muted"));
+      }
+      spots.forEach((spot, index) => {
+        const row = el("div", undefined, "xrv-row");
+        const input = el(
+          "input",
+          undefined,
+          "form-control form-control-sm xrv-name"
+        );
+        input.type = "text";
+        input.placeholder = "Name (e.g. Kitchen door)";
+        input.value = spot.name || "";
+        input.addEventListener("input", () => {
+          spot.name = input.value;
+          redraw();
+        });
+        row.append(
+          input,
+          el("span", `x=${spot.x}, y=${spot.y}`, "xrv-coords"),
+          removeButton(() => {
+            spots.splice(index, 1);
+            renderSpots();
+            redraw();
+          })
+        );
+        container.append(row);
+      });
+    }
+
+    $("save-spots").addEventListener("click", async () => {
+      const { device, spots } = currentMap;
+      if (spots.some((spot) => !spot.name.trim())) {
+        homebridge.toast.error("Name all the spots (or remove them).");
+        return;
+      }
+      const target = targetDevice(device);
+      if (spots.length) {
+        target.goToSpots = spots.map(({ name, x, y }) => ({
+          name: name.trim(),
+          x,
+          y,
+        }));
+      } else {
+        delete target.goToSpots;
+      }
+      await updateConfig(
+        `${spots.length} "go to" spot${spots.length === 1 ? "" : "s"} set for "${target.name}".`
+      );
+    });
+
+    // ---------- Zones ----------
+    function renderZones() {
+      const container = $("zones");
+      container.replaceChildren();
+      const { zones } = currentMap;
+      if (zones.length === 0) {
+        container.append(el("p", "No zones yet.", "xrv-muted"));
+      }
+      zones.forEach((zone, index) => {
+        const row = el("div", undefined, "xrv-row");
+        const input = el(
+          "input",
+          undefined,
+          "form-control form-control-sm xrv-name"
+        );
+        input.type = "text";
+        input.placeholder = "Name (e.g. Under the table)";
+        input.value = zone.name || "";
+        input.addEventListener("input", () => {
+          zone.name = input.value;
+          redraw();
+        });
+        const repeat = el("select", undefined, "form-control form-control-sm");
+        for (const times of [1, 2, 3]) {
+          const option = el("option", `${times}x`);
+          option.value = String(times);
+          repeat.append(option);
+        }
+        repeat.value = String(zone.repeat || 1);
+        repeat.title = "How many times to clean it";
+        repeat.addEventListener("change", () => {
+          zone.repeat = Number(repeat.value);
+        });
+        row.append(input, repeat);
+        if (zone.rects.length > 1) {
+          row.append(
+            el("span", `${zone.rects.length} rectangles`, "xrv-coords")
+          );
+        }
+        row.append(
+          removeButton(() => {
+            zones.splice(index, 1);
+            renderZones();
+            redraw();
+          })
+        );
+        container.append(row);
+      });
+    }
+
+    $("map").addEventListener("pointerdown", (event) => {
+      if (!currentMap || mode !== "zones") return;
+      event.preventDefault();
+      $("map").setPointerCapture(event.pointerId);
+      const point = pointerToMap(event);
+      drag = { from: point, to: point };
+    });
+
+    $("map").addEventListener("pointermove", (event) => {
+      if (!drag) return;
+      drag.to = pointerToMap(event);
+      redraw();
+    });
+
+    $("map").addEventListener("pointerup", () => {
+      if (!drag) return;
+      const rect = normalizeRect(drag.from, drag.to);
+      drag = undefined;
+      // Ignore clicks: a zone is at least 2 pixels of the map wide and high
+      if (
+        rect[2] - rect[0] < 2 * MM_PER_PIXEL ||
+        rect[3] - rect[1] < 2 * MM_PER_PIXEL
+      ) {
+        redraw();
+        return;
+      }
+      currentMap.zones.push({ name: "", rects: [rect], repeat: 1 });
+      renderZones();
+      redraw();
+      const inputs = $("zones").querySelectorAll("input");
+      inputs[inputs.length - 1].focus();
+    });
+
+    $("save-zones").addEventListener("click", async () => {
+      const { device, zones } = currentMap;
+      if (zones.some((zone) => !(zone.name || "").trim())) {
+        homebridge.toast.error("Name all the zones (or remove them).");
+        return;
+      }
+      const target = targetDevice(device);
+      if (zones.length) {
+        target.zones = zones.map((zone) => ({
+          name: zone.name.trim(),
+          zone: zone.rects.map((rect) => [...rect, zone.repeat || 1]),
+        }));
+      } else {
+        delete target.zones;
+      }
+      await updateConfig(
+        `${zones.length} zone${zones.length === 1 ? "" : "s"} set for "${target.name}".`
+      );
+    });
+
+    function hexToRgb(hex) {
+      const n = parseInt(hex.slice(1), 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+
+    // ---------- Legacy accessories ----------
+    async function refreshLegacy() {
+      let legacy;
+      try {
+        legacy = await homebridge.request("/legacy");
+      } catch (err) {
+        console.warn("Couldn't read the legacy config", err);
+        return;
+      }
+      $("legacy-card").hidden = legacy.blocks === 0;
+      if (legacy.blocks === 0) return;
+      const list = $("legacy-devices");
+      list.replaceChildren(
+        ...legacy.devices.map((device) =>
+          el(
+            "li",
+            `${device.name || "(no name)"}${device.ip ? ` (${device.ip})` : ""}`
+          )
+        )
+      );
+      $("legacy-bridge-note").textContent = legacy.bridge
+        ? ", and their child bridge (so the bridge stays paired)"
+        : "";
+      $("legacy-bridges-warning").hidden = legacy.bridges < 2;
+      $("legacy-bridges-warning").textContent =
+        `They run in ${legacy.bridges} different child bridges: only the first one is kept (the others will show as "No response" in the Home app, remove them there).`;
+    }
+
+    async function migrateLegacy() {
+      const button = $("migrate-legacy");
+      button.disabled = true;
+      try {
+        const legacy = await homebridge.request("/legacy");
+        pluginConfig = await homebridge.getPluginConfig();
+        const block = platformBlock();
+        const names = new Set(block.devices.map((device) => device.name));
+        const skipped = [];
+        for (const device of legacy.devices) {
+          if (names.has(device.name)) skipped.push(device.name);
+          else block.devices.push(device);
+        }
+        if (legacy.bridge && !block._bridge) block._bridge = legacy.bridge;
+        if (legacy.cloud && !block.cloud) block.cloud = legacy.cloud;
+
+        // First the platform (saved), then the legacy blocks are removed: if anything fails, nothing is lost
+        await homebridge.updatePluginConfig(pluginConfig);
+        await homebridge.savePluginConfig();
+        await homebridge.request("/legacy/remove", { blocks: legacy.blocks });
+
+        await refreshForm();
+        refreshDeviceSelect();
+        refreshDevicesTable();
+        $("legacy-card").hidden = true;
+        homebridge.toast.success(
+          `${skipped.length ? `Already configured, so not moved: ${skipped.join(", ")}. ` : ""}Restart Homebridge to apply it.`,
+          "Moved to the new format"
+        );
+      } catch (err) {
+        homebridge.toast.error(errorMessage(err), "Couldn't move them");
+        await refreshLegacy();
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    $("migrate-legacy").addEventListener("click", () => migrateLegacy());
+
+    // ---------- Start ----------
+    // Changes made in the form below (e.g. a vacuum removed): the table and the map's list follow them
+    homebridge.addEventListener("configChanged", (event) => {
+      pluginConfig = event.data;
+      refreshDeviceSelect();
+      refreshDevicesTable();
+    });
+
+    (async () => {
+      pluginConfig = await homebridge.getPluginConfig();
+      // The Homebridge UI only shows the form when the config has a block, and doesn't show it later when one is
+      // added: start with an empty one, so the vacuums can be added by hand too
+      if (pluginConfig.length === 0) {
+        platformBlock();
+        await homebridge.updatePluginConfig(pluginConfig);
+      }
+      homebridge.showSchemaForm();
+      refreshDeviceSelect();
+      await Promise.all([refreshLegacy(), refreshStatus()]);
+    })();
+  })();
+</script>

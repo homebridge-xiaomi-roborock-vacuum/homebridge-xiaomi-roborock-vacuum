@@ -24,10 +24,29 @@ export interface ResolvedRoom {
 
 interface Room extends Service {
   roomId: string;
+  /** How many times the switch cleans the room (1, or the room's `repeats`) */
+  repeat: number;
 }
+
+/** The repeats Roborock accepts for room cleaning (like the app's cleaning passes) */
+const VALID_REPEATS = [2, 3];
 
 export class RoomsService extends PluginServiceClass {
   public readonly roomIdsToClean = new Set<string>();
+  /** How many times each selected room is cleaned (by the switch that selected it) */
+  private readonly roomRepeats = new Map<string, number>();
+
+  /**
+   * How many times to clean the selected rooms. The robot only takes one number for the whole run: the highest of the
+   * selected switches wins.
+   */
+  public get repeat(): number {
+    let repeat = 1;
+    for (const id of this.roomIdsToClean) {
+      repeat = Math.max(repeat, this.roomRepeats.get(id) ?? 1);
+    }
+    return repeat;
+  }
 
   /**
    * The room IDs to send to the device: numeric IDs must be sent as numbers, otherwise some models (e.g. S5)
@@ -39,6 +58,8 @@ export class RoomsService extends PluginServiceClass {
     );
   }
   private readonly rooms: Record<string, Room> = {};
+  /** The "clean the room N times" switches (`rooms[].repeats`) */
+  private readonly repeatSwitches: Room[] = [];
   private roomTimeout = setTimeout(() => {}, 0);
   /** The rooms resolved from the device (when using `autoroom`) */
   public resolvedRooms: ResolvedRoom[] = [];
@@ -55,7 +76,11 @@ export class RoomsService extends PluginServiceClass {
 
     if (this.config.rooms && !this.config.autoroom) {
       for (const i in this.config.rooms) {
-        this.createRoom(this.config.rooms[i].id, this.config.rooms[i].name);
+        this.createRoom(
+          this.config.rooms[i].id,
+          this.config.rooms[i].name,
+          this.config.rooms[i].repeats
+        );
       }
     }
 
@@ -80,6 +105,7 @@ export class RoomsService extends PluginServiceClass {
               .updateValue(false);
           });
           this.roomIdsToClean.clear();
+          this.roomRepeats.clear();
         }
       });
 
@@ -120,7 +146,7 @@ export class RoomsService extends PluginServiceClass {
   }
 
   public get services(): Service[] {
-    return [...Object.values(this.rooms)];
+    return [...Object.values(this.rooms), ...this.repeatSwitches];
   }
 
   /** The rooms with a switch, and their current IDs */
@@ -131,32 +157,59 @@ export class RoomsService extends PluginServiceClass {
     }));
   }
 
-  private createRoom(roomId: string, roomName: string) {
+  private createRoom(roomId: string, roomName: string, repeats?: unknown) {
     this.log.info(`INF createRoom | Room ${roomName} (${roomId})`);
+    this.rooms[roomName] = this.createRoomSwitch(roomId, roomName, 1);
 
-    const switchName = `${this.config.cleanword} ${roomName}`;
-    const room = Object.assign(
-      new this.hap.Service.Switch(switchName, "roomService" + roomId),
-      { roomId }
+    for (const repeat of new Set(Array.isArray(repeats) ? repeats : [])) {
+      if (!VALID_REPEATS.includes(repeat)) {
+        this.log.warn(
+          `WAR createRoom | Ignoring the repeat ${JSON.stringify(repeat)} of the room ${roomName}: it must be 2 or 3.`
+        );
+        continue;
+      }
+      this.repeatSwitches.push(
+        this.createRoomSwitch(roomId, roomName, repeat as number)
+      );
+    }
+  }
+
+  private createRoomSwitch(roomId: string, roomName: string, repeat: number) {
+    const switchName =
+      repeat > 1
+        ? `${this.config.cleanword} ${roomName} ${repeat}x`
+        : `${this.config.cleanword} ${roomName}`;
+    const subtype =
+      repeat > 1 ? `roomService${roomId}x${repeat}` : `roomService${roomId}`;
+    const room: Room = Object.assign(
+      new this.hap.Service.Switch(switchName, subtype),
+      { roomId, repeat }
     );
 
     ensureName(this.hap, room, switchName);
 
     room
       .getCharacteristic(this.hap.Characteristic.On)
-      .onGet(() => this.getCleaningRoom(room.roomId))
-      .onSet((newState) => this.setCleaningRoom(newState, room.roomId));
-
-    this.rooms[roomName] = room;
+      .onGet(() => this.getCleaningRoom(room))
+      .onSet((newState) => this.setCleaningRoom(newState, room));
+    return room;
   }
 
-  private async getCleaningRoom(roomId: string) {
+  private async getCleaningRoom(room: Room) {
     await this.deviceManager.ensureDevice("getCleaningRoom");
-    return this.roomIdsToClean.has(roomId);
+    return this.isSelected(room);
   }
 
-  private async setCleaningRoom<T>(state: T, roomId: string) {
+  private isSelected(room: Room) {
+    return (
+      this.roomIdsToClean.has(room.roomId) &&
+      (this.roomRepeats.get(room.roomId) ?? 1) === room.repeat
+    );
+  }
+
+  private async setCleaningRoom<T>(state: T, room: Room) {
     await this.deviceManager.ensureDevice("setCleaning");
+    const { roomId, repeat } = room;
 
     try {
       if (
@@ -165,21 +218,26 @@ export class RoomsService extends PluginServiceClass {
         !this.deviceManager.isPaused
       ) {
         this.log.info(
-          `ACT setCleaningRoom | Enable cleaning Room ID ${roomId}.`
+          `ACT setCleaningRoom | Enable cleaning Room ID ${roomId}${repeat > 1 ? ` ${repeat} times` : ""}.`
         );
         // Delete then add, to maintain the correct order.
         this.roomIdsToClean.delete(roomId);
         this.roomIdsToClean.add(roomId);
+        this.roomRepeats.set(roomId, repeat);
+        // Only one switch per room: e.g. "Kitchen 2x" turns "Kitchen" off
+        this.refreshRoomSwitches(roomId);
         this.checkRoomTimeout();
       } else if (
         !state &&
         !this.deviceManager.isCleaning &&
-        !this.deviceManager.isPaused
+        !this.deviceManager.isPaused &&
+        this.isSelected(room)
       ) {
         this.log.info(
           `ACT setCleaningRoom | Disable cleaning Room ID ${roomId}.`
         );
         this.roomIdsToClean.delete(roomId);
+        this.roomRepeats.delete(roomId);
         this.checkRoomTimeout();
       }
     } catch (err) {
@@ -188,6 +246,16 @@ export class RoomsService extends PluginServiceClass {
         err
       );
       throw err;
+    }
+  }
+
+  private refreshRoomSwitches(roomId: string) {
+    for (const room of this.services as Room[]) {
+      if (room.roomId === roomId) {
+        room
+          .getCharacteristic(this.hap.Characteristic.On)
+          .updateValue(this.isSelected(room));
+      }
     }
   }
 

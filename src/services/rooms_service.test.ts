@@ -62,7 +62,70 @@ describe("RoomsService", () => {
     expect(roomsService.services).toHaveLength(1);
   });
 
-  // TODO: Keep adding tests
+  describe("repeats (clean a room 2 or 3 times)", () => {
+    const names = () =>
+      roomsService.services.map(
+        (room) => room.getCharacteristic(hap.Characteristic.Name).value
+      );
+    const roomSwitch = (name: string) =>
+      roomsService.services
+        .find(
+          (room) =>
+            room.getCharacteristic(hap.Characteristic.Name).value === name
+        )!
+        .getCharacteristic(hap.Characteristic.On);
+
+    beforeEach(async () => {
+      await createRoomService({
+        rooms: [
+          { id: 16, name: "Kitchen", repeats: [2, 3] },
+          { id: 17, name: "Bedroom" },
+        ],
+      });
+      Object.assign(deviceManagerMock, { isCleaning: false, isPaused: false });
+    });
+
+    test("a switch per repeat, next to the room's", () => {
+      expect(names()).toEqual([
+        "cleaning Kitchen",
+        "cleaning Bedroom",
+        "cleaning Kitchen 2x",
+        "cleaning Kitchen 3x",
+      ]);
+    });
+
+    test("invalid repeats are ignored", async () => {
+      await createRoomService({
+        rooms: [{ id: 16, name: "Kitchen", repeats: [1, 4, "2", 2, 2] }],
+      });
+      expect(names()).toEqual(["cleaning Kitchen", "cleaning Kitchen 2x"]);
+    });
+
+    test("the highest repeat of the selected switches wins", async () => {
+      expect(roomsService.repeat).toBe(1);
+      await roomSwitch("cleaning Kitchen 2x").handleSetRequest(true);
+      await roomSwitch("cleaning Bedroom").handleSetRequest(true);
+      expect(roomsService.roomIdsForDevice).toEqual([16, 17]);
+      expect(roomsService.repeat).toBe(2);
+    });
+
+    test("only one switch per room: the last one selected", async () => {
+      const once = roomSwitch("cleaning Kitchen");
+      const thrice = roomSwitch("cleaning Kitchen 3x");
+      await once.handleSetRequest(true);
+      await thrice.handleSetRequest(true);
+      await expect(once.handleGetRequest()).resolves.toBe(false);
+      await expect(thrice.handleGetRequest()).resolves.toBe(true);
+      expect(roomsService.repeat).toBe(3);
+
+      // Turning off a switch that isn't the selected one keeps the room
+      await once.handleSetRequest(false);
+      expect(roomsService.roomIdsForDevice).toEqual([16]);
+      await thrice.handleSetRequest(false);
+      expect(roomsService.roomIdsForDevice).toEqual([]);
+      expect(roomsService.repeat).toBe(1);
+    });
+  });
 
   describe("autoroom (resolved and cached rooms)", () => {
     async function createConnectedRoomService(partialConfig: Partial<Config>) {

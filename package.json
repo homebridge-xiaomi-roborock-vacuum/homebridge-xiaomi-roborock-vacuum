@@ -41,7 +41,8 @@
   },
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "rimraf ./dist && tsc",
+    "build": "rimraf ./dist && tsc && npm run build:ui",
+    "build:ui": "node -e \"require('node:fs').cpSync('src/homebridge-ui/public', 'dist/homebridge-ui/public', { recursive: true })\"",
     "prepublishOnly": "npm run build",
     "postpublish": "npm run clean",
     "preversion": "npm run build && npm test",
@@ -54,6 +55,7 @@
     "docker": "docker compose -f docker/docker-compose.yml up --build"
   },
   "dependencies": {
+    "@homebridge/plugin-ui-utils": "^2.3.0",
     "node-miio": "^0.7.0",
     "rxjs": "^7.5.6",
     "semver": "7.8.6"

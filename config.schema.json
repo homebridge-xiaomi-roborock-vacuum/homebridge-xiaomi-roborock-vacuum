@@ -2,6 +2,8 @@
   "pluginAlias": "XiaomiRoborockVacuum",
   "pluginType": "platform",
   "singular": true,
+  "customUi": true,
+  "customUiPath": "./dist/homebridge-ui",
   "headerDisplay": "Add one entry per vacuum cleaner. Existing `accessories` configs keep working, but only the platform format can be edited here: if your vacuum is under `accessories` in config.json, move it to `platforms` (and rename `\"accessory\"` to `\"platform\"`) before editing it here.",
   "schema": {
     "type": "object",
@@ -153,6 +155,40 @@
                 "functionBody": "return model.goTo === true"
               }
             },
+            "goToSpots": {
+              "title": "\"Go to\" spots",
+              "type": "array",
+              "description": "A \"go to …\" switch per spot: on sends the robot there, off sends it back to the dock. Pick them on the map above (Roborock), or find the coordinates with the \"find me\" switch and the Xiaomi Cloud.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "required": true
+                  },
+                  "x": {
+                    "title": "x",
+                    "type": "integer",
+                    "required": true
+                  },
+                  "y": {
+                    "title": "y",
+                    "type": "integer",
+                    "required": true
+                  }
+                }
+              }
+            },
+            "goToSpotWord": {
+              "title": "\"Go to\" spots word",
+              "type": "string",
+              "default": "go to",
+              "description": "The first word(s) of the spots' switches, in your language: \"go to Kitchen door\".",
+              "condition": {
+                "functionBody": "var spots = model.devices[arrayIndices].goToSpots; return !!spots && spots.length > 0;"
+              }
+            },
             "goToDock": {
               "title": "Show switch for \"go to dock\"",
               "type": "boolean",
@@ -212,6 +248,16 @@
                   "id": {
                     "name": "Room ID",
                     "type": "integer"
+                  },
+                  "repeats": {
+                    "title": "Also clean it",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "description": "Extra switches to clean the room 2 or 3 times (\"Kitchen 2x\"). The robot takes one count for the whole run: with several rooms selected, the highest wins.",
+                    "items": {
+                      "type": "integer",
+                      "enum": [2, 3]
+                    }
                   }
                 }
               }
@@ -313,6 +359,38 @@
               "flex-flow": "row wrap",
               "items": ["devices[].goToX", "devices[].goToY"]
             },
+            {
+              "key": "devices[].goToSpots",
+              "type": "array",
+              "items": [
+                {
+                  "type": "div",
+                  "displayFlex": true,
+                  "flex-direction": "row",
+                  "items": [
+                    {
+                      "key": "devices[].goToSpots[].name",
+                      "flex": "4 4 200px",
+                      "notitle": true,
+                      "placeholder": "Name"
+                    },
+                    {
+                      "key": "devices[].goToSpots[].x",
+                      "flex": "1 1 80px",
+                      "notitle": true,
+                      "placeholder": "x"
+                    },
+                    {
+                      "key": "devices[].goToSpots[].y",
+                      "flex": "1 1 80px",
+                      "notitle": true,
+                      "placeholder": "y"
+                    }
+                  ]
+                }
+              ]
+            },
+            "devices[].goToSpotWord",
             "devices[].goToDock",
             "devices[].goToDockWord",
             "devices[].dock",
@@ -348,6 +426,22 @@
                           "flex": "4 4 200px",
                           "notitle": true,
                           "placeholder": "Room Name"
+                        },
+                        {
+                          "key": "devices[].rooms[].repeats",
+                          "flex": "2 2 120px",
+                          "notitle": true,
+                          "type": "checkboxes",
+                          "titleMap": [
+                            {
+                              "value": 2,
+                              "name": "2x"
+                            },
+                            {
+                              "value": 3,
+                              "name": "3x"
+                            }
+                          ]
                         }
                       ]
                     }
