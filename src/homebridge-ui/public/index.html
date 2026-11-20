@@ -275,12 +275,11 @@
     }
 
     async function updateConfig(message) {
+      // The Homebridge UI refreshes the form below by itself (the config always has a block, see "Start")
       await homebridge.updatePluginConfig(pluginConfig);
-      // Show the change in the form below
-      homebridge.hideSchemaForm();
-      homebridge.showSchemaForm();
       homebridge.toast.success(`${message} Click "Save" to apply it.`);
       refreshDeviceSelect();
+      refreshDevicesTable();
     }
 
     function errorMessage(err) {
@@ -361,7 +360,15 @@
       }
     });
 
+    /** The vacuums of the account, as last listed (to refresh the table when the config changes) */
+    let accountDevices;
+
+    function refreshDevicesTable() {
+      if (accountDevices) renderDevices(accountDevices);
+    }
+
     function renderDevices(devices) {
+      accountDevices = devices;
       const body = $("devices-table").querySelector("tbody");
       body.replaceChildren();
       if (devices.length === 0) {
@@ -391,7 +398,6 @@
               token: device.token,
             });
             await updateConfig(`"${device.name}" added.`);
-            renderDevices(devices);
           });
           actions.append(add);
         } else if (configured.token !== device.token) {
@@ -401,7 +407,6 @@
             configured.token = device.token;
             if (!configured.ip && device.ip) configured.ip = device.ip;
             await updateConfig(`The token of "${configured.name}" updated.`);
-            renderDevices(devices);
           });
           actions.append(fill);
         } else {
@@ -1025,9 +1030,8 @@
         await homebridge.savePluginConfig();
         await homebridge.request("/legacy/remove", { blocks: legacy.blocks });
 
-        homebridge.hideSchemaForm();
-        homebridge.showSchemaForm();
         refreshDeviceSelect();
+        refreshDevicesTable();
         $("legacy-card").hidden = true;
         homebridge.toast.success(
           `${skipped.length ? `Already configured, so not moved: ${skipped.join(", ")}. ` : ""}Restart Homebridge to apply it.`,
@@ -1044,13 +1048,21 @@
     $("migrate-legacy").addEventListener("click", () => migrateLegacy());
 
     // ---------- Start ----------
+    // Changes made in the form below (e.g. a vacuum removed): the table and the map's list follow them
     homebridge.addEventListener("configChanged", (event) => {
       pluginConfig = event.data;
       refreshDeviceSelect();
+      refreshDevicesTable();
     });
 
     (async () => {
       pluginConfig = await homebridge.getPluginConfig();
+      // The Homebridge UI only shows the form when the config has a block, and doesn't show it later when one is
+      // added: start with an empty one, so the vacuums can be added by hand too
+      if (pluginConfig.length === 0) {
+        platformBlock();
+        await homebridge.updatePluginConfig(pluginConfig);
+      }
       homebridge.showSchemaForm();
       refreshDeviceSelect();
       await Promise.all([refreshLegacy(), refreshStatus()]);
