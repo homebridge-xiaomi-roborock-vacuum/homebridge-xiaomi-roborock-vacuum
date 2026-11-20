@@ -2,6 +2,8 @@
   "pluginAlias": "XiaomiRoborockVacuum",
   "pluginType": "platform",
   "singular": true,
+  "customUi": true,
+  "customUiPath": "./dist/homebridge-ui",
   "headerDisplay": "Add one entry per vacuum cleaner. Existing `accessories` configs keep working, but only the platform format can be edited here: if your vacuum is under `accessories` in config.json, move it to `platforms` (and rename `\"accessory\"` to `\"platform\"`) before editing it here.",
   "schema": {
     "type": "object",

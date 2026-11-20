@@ -337,7 +337,8 @@ The robot doesn't tell which room it's in over the local network: only its map k
 Cloud. With the platform's `cloud` option, the plugin downloads the map while the robot cleans (every 10 seconds) to
 know the room it's in and its position. Only Roborock vacuums, and only when the plugin is registered as a platform.
 
-1. Log in to your Xiaomi account once, **as the same user that runs Homebridge** (e.g. in the Homebridge UI's terminal):
+1. Log in to your Xiaomi account once: in the plugin's settings in the Homebridge UI, click "Log in with a QR code" and
+   scan it with the Mi Home app. Without the Homebridge UI, run this **as the same user that runs Homebridge**:
 
    ```sh
    npx node-miio cloud login --qr   # scan the QR code with the Mi Home app
@@ -375,11 +376,24 @@ You get an occupancy sensor per room ("Robot in Kitchen"), detected while the ro
 The rooms are the ones of the room cleaning switches (`rooms` or `autoroom`). If the session expires, the plugin logs a
 warning: log in again and restart Homebridge.
 
+## Settings page: tokens and room names from the map
+
+The plugin's settings in the Homebridge UI show, above the usual form:
+
+- **Xiaomi Cloud login** with a QR code (scan it with the Mi Home app: no password needed).
+- **Your vacuums** in the Xiaomi account: add them, with their IP and token, in one click (or update their token).
+- **The map** of a Roborock vacuum: click a room to name it. The names are saved as the vacuum's `rooms` (the room
+  cleaning switches), replacing `autoroom`. It's handy when the app doesn't let you name the rooms, or the robot
+  doesn't report their names.
+
+Click "Save" afterwards to apply the changes.
+
 ## Xiaomi Token
 
 To use this plugin, you need the "token" of the Xiaomi vacuum robots. The easiest way is to let the plugin read it from
-your Xiaomi account: enable the [Xiaomi Cloud](#current-room-xiaomi-cloud), and configure only the robot's `ip`. You can
-also print the tokens of all your devices with node-miio:
+your Xiaomi account: enable the [Xiaomi Cloud](#current-room-xiaomi-cloud), and configure only the robot's `ip`. The
+[settings page](#settings-page-tokens-and-room-names-from-the-map) in the Homebridge UI also adds your vacuums with their
+IP and token in one click. Or print the tokens of all your devices with node-miio:
 
 ```sh
 npx node-miio cloud login --qr   # scan the QR code with the Mi Home app
