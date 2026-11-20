@@ -10,7 +10,11 @@ export interface FindMeConfig {
 
 export class FindMeService extends PluginServiceClass {
   private readonly service?: Service;
-  constructor(coreContext: CoreContext) {
+  constructor(
+    coreContext: CoreContext,
+    /** Called after the robot says hello (e.g. to log its position) */
+    private readonly afterFind?: () => Promise<void>
+  ) {
     super(coreContext);
     if (this.config.findMe) {
       const name = `${this.config.name} ${this.config.findMeWord}`;
@@ -39,5 +43,10 @@ export class FindMeService extends PluginServiceClass {
       this.log.error(`identify | `, err);
       throw err;
     }
+    await this.afterFind?.().catch((err) =>
+      this.log.debug(
+        `DEB identify | Failed to get the robot's position: ${err}`
+      )
+    );
   }
 }

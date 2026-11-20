@@ -1,6 +1,6 @@
 import type { Logging, API, Service } from "homebridge";
 import { Subject, first } from "rxjs";
-import { type Config, DeviceManager } from "../services";
+import { type CloudService, type Config, DeviceManager } from "../services";
 import { findSpeedModes, type ReportedModes } from "../utils/find_speed_modes";
 import { type Logger, getLogger } from "../utils/logger";
 import { XiaomiRoborockVacuumAccessory } from "./accessory";
@@ -42,7 +42,8 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
     log: Logging,
     config: Partial<Config>,
     api: API,
-    private readonly accessory: XiaomiRoborockVacuumPlatformAccessory
+    private readonly accessory: XiaomiRoborockVacuumPlatformAccessory,
+    private readonly cloud?: CloudService
   ) {
     this.log = getLogger(log, config);
     const deviceManager = new DeviceManager(api.hap, this.log, config);
@@ -71,7 +72,8 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
         cachedRooms: this.accessory.context.rooms ?? [],
       },
       api,
-      deviceManager
+      deviceManager,
+      this.cloud
     );
 
     // Wait for the rooms to be resolved (autoroom), so their switches are registered too

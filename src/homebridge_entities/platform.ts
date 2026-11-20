@@ -5,7 +5,8 @@ import type {
   PlatformAccessory,
   PlatformConfig,
 } from "homebridge";
-import { type Config, applyConfigDefaults } from "../services";
+import { type Config, applyConfigDefaults, CloudService } from "../services";
+import type { CloudConfig } from "../services/cloud_service";
 import { ACCESSORY_NAME, PLUGIN_NAME } from "../constants";
 import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory";
 import { first } from "rxjs";
@@ -13,6 +14,8 @@ import type { ResolvedRoom } from "../services/rooms_service";
 
 interface XiaomiRoborockVacuumPlatformConfig extends PlatformConfig {
   devices: Partial<Config>[];
+  /** The Xiaomi Cloud, to know which room the robot is cleaning (opt-in) */
+  cloud?: CloudConfig;
 }
 
 interface PlatformAccessoryContext {
@@ -85,6 +88,9 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
    * and appends new accessories if not previously cached.
    */
   private initializeDevices() {
+    const cloud = this.config.cloud?.enabled
+      ? new CloudService(this.log, this.config.cloud)
+      : undefined;
     this.config.devices.forEach((config) => {
       let isCached = true;
       const uuid = this.api.hap.uuid.generate(
@@ -105,7 +111,8 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
           this.log,
           config,
           this.api,
-          accessory
+          accessory,
+          cloud
         );
 
       // Finally, register the accessory if not cached
