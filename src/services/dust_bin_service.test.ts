@@ -57,4 +57,22 @@ describe("DustBinService", () => {
       hap.Characteristic.LockTargetState.UNSECURED
     );
   });
+
+  test("is secured again the next time the bin is full", async () => {
+    const errors$ = deviceManagerMock.errorChanged$ as Subject<unknown>;
+    const target = service.services[0].getCharacteristic(
+      hap.Characteristic.LockTargetState
+    );
+    errors$.next({ id: 10, description: "Bin full" });
+    // Emptied, and acknowledged in HomeKit
+    errors$.next(null);
+    await target.handleSetRequest(hap.Characteristic.LockTargetState.UNSECURED);
+    await expect(lockState()).resolves.toBe(
+      hap.Characteristic.LockTargetState.UNSECURED
+    );
+    errors$.next({ id: 10, description: "Bin full" });
+    await expect(lockState()).resolves.toBe(
+      hap.Characteristic.LockTargetState.SECURED
+    );
+  });
 });

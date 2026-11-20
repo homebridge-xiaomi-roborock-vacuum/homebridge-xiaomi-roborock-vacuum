@@ -1,5 +1,5 @@
 import { Service } from "homebridge";
-import { distinct, filter, map, tap } from "rxjs";
+import { distinctUntilChanged, filter, map, tap } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";
@@ -31,7 +31,7 @@ export class DockService extends PluginServiceClass {
             .getCharacteristic(this.hap.Characteristic.OccupancyDetected)
             .updateValue(isCharging);
         }),
-        distinct()
+        distinctUntilChanged()
       )
       .subscribe((isCharging) => {
         const msg = isCharging

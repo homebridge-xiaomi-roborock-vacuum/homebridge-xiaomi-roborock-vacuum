@@ -202,6 +202,31 @@ describe("DeviceManager", () => {
       expect(miio.device.poll).toHaveBeenCalledTimes(2);
     });
 
+    test("errorChanged$ emits the changes of the robot's error, every time (not only the first one)", async () => {
+      const brush = { id: 5, description: "Main brush blocked" };
+      // The state of each poll: the same error is reported on every poll while it lasts
+      for (const error of [
+        brush,
+        { ...brush }, // the same error again
+        null,
+        null,
+        { ...brush }, // the same error, after it was cleared
+        null,
+        { id: 8, description: "Device stuck" },
+      ]) {
+        miio.device.state.mockResolvedValueOnce({ error } as never);
+      }
+      const deviceManager = await createConnectedDeviceManager();
+      const errors: unknown[] = [];
+      deviceManager.errorChanged$.subscribe((error) =>
+        errors.push(error === null ? null : (error as { id: number }).id)
+      );
+      for (let poll = 0; poll < 7; poll++) {
+        await jest.advanceTimersByTimeAsync(poll === 0 ? 0 : 30000);
+      }
+      expect(errors).toStrictEqual([5, null, 5, null, 8]);
+    });
+
     test("replaces the polling timer when the device reconnects", async () => {
       const deviceManager = await createConnectedDeviceManager();
       await jest.advanceTimersByTimeAsync(0);

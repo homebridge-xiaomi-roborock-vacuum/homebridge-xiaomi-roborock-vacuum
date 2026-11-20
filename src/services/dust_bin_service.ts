@@ -1,5 +1,5 @@
 import { Service, CharacteristicValue } from "homebridge";
-import { BehaviorSubject, distinct, filter } from "rxjs";
+import { BehaviorSubject, filter } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 
@@ -33,8 +33,7 @@ export class DustBinService extends PluginServiceClass {
           (error): error is NonNullable<typeof error> =>
             error !== null &&
             DUST_BIN_FULL_ERROR_CODES.includes(String(error.id))
-        ),
-        distinct(({ description }) => description)
+        )
       )
       .subscribe(() => {
         this.state$.next(true);

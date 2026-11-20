@@ -1,7 +1,7 @@
 import { HAP } from "homebridge";
 import {
   BehaviorSubject,
-  distinct,
+  distinctUntilChanged,
   exhaustMap,
   filter,
   Subscription,
@@ -52,6 +52,10 @@ const FAILED_POLLS_BEFORE_LOCATING = 3;
 /** Don't ask the Xiaomi Cloud more often than this (e.g. while the robot is unplugged) */
 const LOCATE_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
 
+/** The id of an error, or `null` when there's no error */
+const errorId = (error: ErrorChangedEvent) =>
+  error === null || error === undefined ? null : String(error.id);
+
 export class DeviceManager {
   private readonly internalDevice$ = new BehaviorSubject<
     VacuumDevice | undefined
@@ -64,7 +68,16 @@ export class DeviceManager {
 
   private readonly internalErrorChanged$ = new Subject<ErrorChangedEvent>();
   private readonly internalStateChanged$ = new Subject<StateChangedEvent>();
-  public readonly errorChanged$ = this.internalErrorChanged$.pipe(distinct());
+  /**
+   * The robot's error, when it changes (`null`: cleared). The state is polled: the same error is reported on every poll,
+   * so only the changes are emitted (by id). Not `distinct()`, which would never emit an already seen value again
+   * (e.g. the second time an error is cleared).
+   */
+  public readonly errorChanged$ = this.internalErrorChanged$.pipe(
+    distinctUntilChanged(
+      (previous, current) => errorId(previous) === errorId(current)
+    )
+  );
   public readonly stateChanged$ = this.internalStateChanged$.asObservable();
   public readonly deviceConnected$ = this.internalDevice$.pipe(filter(Boolean));
 
