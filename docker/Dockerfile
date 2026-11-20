@@ -3,7 +3,7 @@
 ARG HOMEBRIDGE_IMAGE=homebridge/homebridge:latest
 
 # Build the plugin, and package it the way npm would publish it
-FROM node:24-slim AS build
+FROM node:26-slim AS build
 WORKDIR /src
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund
