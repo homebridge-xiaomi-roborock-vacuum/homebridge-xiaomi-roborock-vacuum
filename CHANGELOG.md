@@ -2,6 +2,11 @@
 
 ## Next
 
+## 1.3.0-beta.0
+
+- [Feature] Fan speed and water level per zone: `speed` and `waterSpeed` in a zone set them before cleaning it, e.g. one switch to vacuum a zone and another one to mop it ([#1028](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1028), [#1273](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1273)).
+- [Feature] Mop-only cleaning on the S7 and newer (S7, S7 MaxV, S8, S7 Max Ultra, Q8 Max, Q Revo): the lowest fan speed is now "Mop" (no suction, with the mop attached) instead of "Soft" ([#791](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/791), [#1273](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1273)).
+
 ## 1.2.0
 
 - [Feature] Configure a robot by its device ID (`did`) instead of its IP and token, with the platform's `cloud` option: they're read from your Xiaomi account. When the robot stops answering, the plugin looks for it again in the account, so a new IP (or a new token, after resetting its Wi-Fi) doesn't break it anymore. Robots configured with an IP and token benefit too, when the `cloud` option is enabled. The settings page saves the `did` when adding a vacuum (or with "Save its device ID" for the ones already configured), and the form flags a vacuum with neither `did` nor `ip`.
