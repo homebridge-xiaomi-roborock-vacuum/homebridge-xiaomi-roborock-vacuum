@@ -27,7 +27,7 @@
             "token": {
               "title": "Token",
               "type": "string",
-              "required": true
+              "description": "Optional with the Xiaomi Cloud (the platform's `cloud` option): it's read from your Xiaomi account."
             },
             "serviceType": {
               "title": "Load the vacuum as a fan (ON/OFF + speed control) or a switch (ON/OFF only)",
@@ -253,7 +253,7 @@
       },
       "cloud": {
         "title": "Xiaomi Cloud (optional)",
-        "description": "Know the room the robot is cleaning (and its position, in the logs) by downloading its map from the Xiaomi Cloud while it cleans. Roborock vacuums only. Before enabling it, log in once with `npx node-miio cloud login --qr`, as the same user that runs Homebridge: the session is saved in node-miio's config directory (your password is never stored).",
+        "description": "Get the robots' tokens from your Xiaomi account (so only their IP is needed), and know the room the robot is cleaning (and its position, in the logs) by downloading its map while it cleans (Roborock vacuums only). Before enabling it, log in once with `npx node-miio cloud login --qr`, as the same user that runs Homebridge. The session is saved in node-miio's config directory (your password is never stored).",
         "type": "object",
         "properties": {
           "enabled": {

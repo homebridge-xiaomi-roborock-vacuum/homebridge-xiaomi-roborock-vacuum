@@ -367,13 +367,26 @@ know the room it's in and its position. Only Roborock vacuums, and only when the
 
    Optionally, set `cloud.server` (`de`, `us`, `cn`…) to skip looking for the robot in every server.
 
+With the `cloud` option, the robots' `token` is optional too: a robot configured with only its `ip` gets its token from
+your Xiaomi account when Homebridge starts. The IP must be the one the Mi Home app shows. This works for every model,
+not only Roborock.
+
 You get an occupancy sensor per room ("Robot in Kitchen"), detected while the robot is in it: use them in automations.
 The rooms are the ones of the room cleaning switches (`rooms` or `autoroom`). If the session expires, the plugin logs a
 warning: log in again and restart Homebridge.
 
 ## Xiaomi Token
 
-To use this plugin, you have to read the "token" of the xiaomi vacuum robots. Here are some detailed instructions:
+To use this plugin, you need the "token" of the Xiaomi vacuum robots. The easiest way is to let the plugin read it from
+your Xiaomi account: enable the [Xiaomi Cloud](#current-room-xiaomi-cloud), and configure only the robot's `ip`. You can
+also print the tokens of all your devices with node-miio:
+
+```sh
+npx node-miio cloud login --qr   # scan the QR code with the Mi Home app
+npx node-miio cloud devices      # name, model, IP and token of each device
+```
+
+Other ways to get it:
 
 - :us::gb: - [Xiaomi cloud tokens extractor](https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor)
 - :us::gb: - [python-miio - Getting started](https://python-miio.readthedocs.io/en/latest/discovery.html)

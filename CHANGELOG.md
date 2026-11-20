@@ -3,7 +3,9 @@
 ## Next
 
 - [Feature] The room the robot is in, from its map in the Xiaomi Cloud (opt-in, Roborock only, platform mode). With the new platform option `cloud` and the vacuum's `roomSensors`, HomeKit shows an occupancy sensor per room, detected while the robot is in it. It needs a one-off `npx node-miio cloud login --qr`; your password is never stored.
+- [Feature] No more token extraction: with the platform's `cloud` option, a robot configured with only its `ip` gets its token from your Xiaomi account when Homebridge starts. The token is now optional in the config.
 - [Feature] The robot's position in the logs, to find the `goToX` / `goToY` coordinates: where it stops after each cleaning, and where it is when you turn on the "find me" switch ([#1020](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1020)).
+- [Chore] Update node-miio to `0.7.0`: the robots share a single list of the Xiaomi account's devices ([afharo/node-miio#41](https://github.com/afharo/node-miio/pull/41)).
 
 ## 1.1.0
 

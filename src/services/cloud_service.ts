@@ -1,27 +1,26 @@
 import {
+  CloudDeviceCache,
   CloudSessionExpiredError,
   loadSession,
   MapWatcher,
   XiaomiCloud,
-  type CloudDevice,
+  type CloudDeviceMatch,
+  type CloudServer,
   type CloudSession,
   type MapWatcherDevice,
 } from "node-miio";
 
 /** The `cloud` section of the platform config */
 export interface CloudConfig {
-  /** Use the Xiaomi Cloud to know which room the robot is cleaning (Roborock only). Off by default. */
+  /**
+   * Use the Xiaomi Cloud: to get the robots' tokens (so only their IP is needed), and to know which room the robot is
+   * cleaning (Roborock only). Off by default.
+   */
   enabled?: boolean;
   /** The session saved by `npx node-miio cloud login` (defaults to node-miio's config directory) */
   sessionFile?: string;
   /** The server the robots are registered in (`de`, `us`, `cn`…). Found automatically when missing. */
   server?: string;
-}
-
-/** What identifies a robot in the Xiaomi account */
-export interface CloudDeviceMatch {
-  ip?: string;
-  token?: string;
 }
 
 /** The logger methods used by the service */
@@ -60,7 +59,7 @@ export const LOGIN_HINT =
  */
 export class CloudService {
   private cloud?: Promise<Cloud | undefined>;
-  private devices?: Promise<CloudDevice[]>;
+  private devices?: CloudDeviceCache;
   private expiredWarningShown = false;
 
   constructor(
@@ -89,23 +88,53 @@ export class CloudService {
   }
 
   /**
+   * @returns The account's devices, listed once for all the robots
+   */
+  private async getDevices() {
+    const cloud = await this.getCloud();
+    if (!cloud) return undefined;
+    this.devices ??= new CloudDeviceCache(
+      cloud,
+      this.config.server ? { servers: [this.config.server as CloudServer] } : {}
+    );
+    return this.devices;
+  }
+
+  /**
    * @param match The robot's IP and token
    * @returns The server the robot is registered in
    */
   private async serverOf(match: CloudDeviceMatch) {
     if (this.config.server) return this.config.server;
-    const cloud = await this.getCloud();
-    if (!cloud) return undefined;
-    this.devices ??= cloud.getDevices().catch((error) => {
-      this.devices = undefined; // Try again with the next robot (or the next restart)
-      throw error;
-    });
-    const devices = await this.devices;
-    const token = match.token?.toLowerCase();
-    const device =
-      devices.find((d) => token && d.token.toLowerCase() === token) ??
-      devices.find((d) => match.ip && d.localip === match.ip);
-    return device?.server;
+    return (await (await this.getDevices())?.find(match))?.server;
+  }
+
+  /**
+   * Finds the token of a robot configured with its IP only.
+   *
+   * @param ip The robot's IP
+   * @returns Its token, or `undefined` if it can't be found (the reason is logged)
+   */
+  async tokenOf(ip: string): Promise<string | undefined> {
+    const devices = await this.getDevices();
+    if (!devices) return undefined;
+    try {
+      const device = await devices.find({ ip });
+      if (device?.token) {
+        this.log.info(
+          `Xiaomi Cloud: found the token of the robot at ${ip} ("${device.name}").`
+        );
+        return device.token;
+      }
+      this.log.warn(
+        `Xiaomi Cloud: no robot with the IP ${ip} in your Xiaomi account. Check its IP (it must be the one the Mi Home app shows), and that you logged in with the account that owns it.`
+      );
+    } catch (error) {
+      this.log.warn(
+        `Xiaomi Cloud: failed to list the devices of your Xiaomi account: ${error}`
+      );
+    }
+    return undefined;
   }
 
   /**

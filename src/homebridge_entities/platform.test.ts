@@ -3,6 +3,8 @@ import { Categories } from "@homebridge/hap-nodejs";
 
 import { createHomebridgeMock, miio } from "../test.mocks";
 import "./platform.test.mock";
+import { XiaomiRoborockVacuumPlatformAccessoryInitializerMock } from "./platform.test.mock";
+import { CloudService } from "../services";
 import {
   XiaomiRoborockVacuumPlatform,
   XiaomiRoborockVacuumPlatformAccessory,
@@ -160,5 +162,65 @@ describe("XiaomiRoborockVacuumPlatform", () => {
     // Tries to register the accessory
     expect(homebridge.platformAccessory).toHaveBeenCalledTimes(1);
     expect(homebridge.registerPlatformAccessories).toHaveBeenCalledTimes(1);
+  });
+
+  test("gets the token of the robots configured with their IP only from the Xiaomi Cloud", async () => {
+    const tokenOf = jest
+      .spyOn(CloudService.prototype, "tokenOf")
+      .mockImplementation(async (ip) =>
+        ip === "2.2.2.2" ? "cloud-token" : undefined
+      );
+    homebridge.platformAccessory.mockImplementation(newAccessory);
+    new XiaomiRoborockVacuumPlatform(
+      log,
+      {
+        platform: ACCESSORY_NAME,
+        cloud: { enabled: true },
+        devices: [
+          { name: "with-token", ip: "1.1.1.1", token: "token1" },
+          { name: "from-the-cloud", ip: "2.2.2.2" },
+        ],
+      },
+      homebridge
+    );
+    homebridge.on.mock.calls[0][1]();
+    await new Promise(setImmediate);
+    expect(tokenOf).toHaveBeenCalledTimes(1);
+    expect(tokenOf).toHaveBeenCalledWith("2.2.2.2");
+    const configs =
+      XiaomiRoborockVacuumPlatformAccessoryInitializerMock.mock.calls.map(
+        ([, config]) => config
+      );
+    expect(configs).toEqual([
+      { name: "with-token", ip: "1.1.1.1", token: "token1" },
+      { name: "from-the-cloud", ip: "2.2.2.2", token: "cloud-token" },
+    ]);
+    expect(homebridge.registerPlatformAccessories).toHaveBeenCalledTimes(2);
+    tokenOf.mockRestore();
+  });
+
+  test("a robot whose token can't be initialized is reported, without failing the others", async () => {
+    jest.spyOn(CloudService.prototype, "tokenOf").mockResolvedValue(undefined);
+    homebridge.platformAccessory.mockImplementation(newAccessory);
+    XiaomiRoborockVacuumPlatformAccessoryInitializerMock.mockImplementationOnce(
+      () => {
+        throw new Error("You must provide a token of the vacuum cleaner");
+      }
+    );
+    new XiaomiRoborockVacuumPlatform(
+      log,
+      {
+        platform: ACCESSORY_NAME,
+        cloud: { enabled: true },
+        devices: [{ name: "not-in-the-account", ip: "3.3.3.3" }],
+      },
+      homebridge
+    );
+    homebridge.on.mock.calls[0][1]();
+    await new Promise(setImmediate);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Failed to initialize the vacuum "not-in-the-account": You must provide a token of the vacuum cleaner'
+    );
+    jest.restoreAllMocks();
   });
 });
