@@ -1,10 +1,11 @@
 import * as miio from "node-miio";
 import {
+  CloudDeviceCache,
   deleteSession,
   loadSession,
   saveSession,
   XiaomiCloud,
-  type CloudDevice,
+  type CloudServer,
   type CloudSession,
   type MapPoint,
   type QrCode,
@@ -86,7 +87,7 @@ export function createHandlers(
   deps: HandlerDeps = defaultDeps
 ) {
   /** The account's devices, by session and server: listing them takes a few requests per server */
-  const caches = new Map<string, Promise<CloudDevice[]>>();
+  const caches = new Map<string, CloudDeviceCache>();
 
   async function getCloud(request: CloudRequest) {
     const session = await deps.loadSession(request.sessionFile || undefined);
@@ -96,23 +97,17 @@ export function createHandlers(
     return deps.createCloud(session);
   }
 
-  function listDevices(request: CloudRequest, cloud: Cloud, fresh = false) {
+  function deviceCache(request: CloudRequest, cloud: Cloud) {
     const key = `${request.sessionFile ?? ""}|${request.server ?? ""}|${cloud.session.userId}`;
-    let devices = fresh ? undefined : caches.get(key);
-    if (!devices) {
-      devices = cloud
-        .getDevices(
-          request.server
-            ? { servers: [request.server as CloudDevice["server"]] }
-            : {}
-        )
-        .catch((err) => {
-          caches.delete(key);
-          throw err;
-        });
-      caches.set(key, devices);
+    let cache = caches.get(key);
+    if (!cache) {
+      cache = new CloudDeviceCache(
+        cloud,
+        request.server ? { servers: [request.server as CloudServer] } : {}
+      );
+      caches.set(key, cache);
     }
-    return devices;
+    return cache;
   }
 
   return {
@@ -161,7 +156,9 @@ export function createHandlers(
     "/cloud/devices": async (request: CloudRequest) => {
       const cloud = await getCloud(request);
       // The user asked for them: always fresh
-      const devices = await listDevices(request, cloud, true);
+      const cache = deviceCache(request, cloud);
+      cache.clear();
+      const devices = await cache.list();
       return devices
         .filter(({ model }) => model.includes("vacuum"))
         .map(({ did, name, model, token, localip, server, isOnline }) => ({
@@ -181,11 +178,13 @@ export function createHandlers(
         throw new Error("The vacuum needs an IP and a token.");
       }
       const cloud = await getCloud(request);
-      const token = request.token.toLowerCase();
       const server =
         request.server ||
-        (await listDevices(request, cloud)).find(
-          (d) => d.token.toLowerCase() === token || d.localip === request.ip
+        (
+          await deviceCache(request, cloud).find({
+            token: request.token,
+            ip: request.ip,
+          })
         )?.server;
       if (!server) {
         throw new Error(
