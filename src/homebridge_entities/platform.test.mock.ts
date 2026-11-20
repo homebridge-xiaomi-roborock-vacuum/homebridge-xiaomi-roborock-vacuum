@@ -4,7 +4,8 @@ import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_acc
 export const XiaomiRoborockVacuumPlatformAccessoryInitializerMock = jest
   .fn()
   .mockImplementation(() => {
-    const initialized$ = new BehaviorSubject<void>(void 0);
+    // `true`: the HomeKit accessory has services
+    const initialized$ = new BehaviorSubject<boolean>(true);
     return { initialized$ } as jest.Mocked<
       Pick<
         XiaomiRoborockVacuumPlatformAccessoryInitializer,

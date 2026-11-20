@@ -139,13 +139,22 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
         cloud
       );
 
-    // Finally, register the accessory if not cached
-    if (!isCached) {
-      platformInitializer.initialized$.pipe(first()).subscribe(() => {
+    platformInitializer.initialized$.pipe(first()).subscribe((hasServices) => {
+      if (hasServices && !isCached) {
+        // Finally, register the accessory if not cached
         this.api.registerPlatformAccessories(PLUGIN_NAME, ACCESSORY_NAME, [
           accessory!,
         ]);
-      });
-    }
+      } else if (!hasServices && isCached) {
+        // `serviceType: "vacuum"` without extras: everything is in the Matter vacuum
+        this.log.info(
+          `Unregistering the HomeKit accessory of "${accessory!.context.name}": it's a Matter robot vacuum now`
+        );
+        this.accessories.delete(accessory!);
+        this.api.unregisterPlatformAccessories(PLUGIN_NAME, ACCESSORY_NAME, [
+          accessory!,
+        ]);
+      }
+    });
   }
 }

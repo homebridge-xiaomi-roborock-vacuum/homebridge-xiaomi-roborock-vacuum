@@ -8,7 +8,11 @@ import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";
 
 export interface MainServiceConfig {
-  serviceType: "fan" | "switch";
+  /**
+   * How the vacuum shows up: a fan (on/off and the fan speed), a switch (on/off), or a Matter robot vacuum (platform
+   * only, with Matter enabled in the bridge: see `src/matter/`).
+   */
+  serviceType: "fan" | "switch" | "vacuum";
 }
 
 export class MainService extends PluginServiceClass {

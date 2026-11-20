@@ -1,8 +1,10 @@
 import type { Logging, API, Service } from "homebridge";
 import { Subject, first } from "rxjs";
 import { type CloudService, type Config, DeviceManager } from "../services";
-import { findSpeedModes, type ReportedModes } from "../utils/find_speed_modes";
+import { findSpeedModes } from "../utils/find_speed_modes";
 import { type Logger, getLogger } from "../utils/logger";
+import { supports } from "../utils/supports";
+import { MatterVacuum } from "../matter/matter_vacuum";
 import { XiaomiRoborockVacuumAccessory } from "./accessory";
 import type { XiaomiRoborockVacuumPlatformAccessory } from "./platform";
 
@@ -35,7 +37,13 @@ async function waitAtMost(promise: Promise<unknown>, timeoutMs: number) {
  * 4. Assign the listeners and services to the accessory
  */
 export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
-  public readonly initialized$ = new Subject<void>();
+  /**
+   * Emits once the services are set up: whether the HomeKit accessory has any (with `serviceType: "vacuum"`, it only
+   * exists for the extras that the Matter vacuum doesn't cover).
+   */
+  public readonly initialized$ = new Subject<boolean>();
+  /** The Matter robot vacuum (`serviceType: "vacuum"`) */
+  public matterVacuum?: MatterVacuum;
   private readonly log: Logger;
 
   constructor(
@@ -46,6 +54,16 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
     private readonly cloud?: CloudService
   ) {
     this.log = getLogger(log, config);
+    if (
+      config.serviceType === "vacuum" &&
+      !(api.isMatterEnabled() && api.matter)
+    ) {
+      this.log.warn(
+        `WARN init | "serviceType": "vacuum" needs Matter: enable it in the settings of the bridge that runs this plugin ` +
+          `(see the README). Using "fan" until then.`
+      );
+      config = { ...config, serviceType: "fan" };
+    }
     const deviceManager = new DeviceManager(
       api.hap,
       this.log,
@@ -66,15 +84,20 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
     api: API,
     deviceManager: DeviceManager
   ) {
+    // The firmware picks the fan speeds of some models (and the Matter vacuum reports it)
+    const firmware =
+      config.serviceType === "vacuum"
+        ? await deviceManager.device
+            .getDeviceInfo()
+            .then(({ fw_ver }) => `${fw_ver}`)
+            .catch(() => undefined)
+        : undefined;
+
     // For now, let's simply reuse the accessory class to bootstrap the services.
     const vacuumService = new XiaomiRoborockVacuumAccessory(
       this.log,
       {
-        ...this.applyDefaultsBasedOnModel(
-          config,
-          deviceManager.model,
-          deviceManager.reportedModes
-        ),
+        ...this.applyDefaultsBasedOnModel(config, deviceManager),
         // Platform mode: the resolved rooms are persisted in the accessory's context
         cachedRooms: this.accessory.context.rooms ?? [],
       },
@@ -144,20 +167,52 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
         this.accessory.removeService(staleSvc);
       });
 
-    this.initialized$.next();
+    if (config.serviceType === "vacuum" && api.matter) {
+      const serialNumber = await deviceManager.device
+        .getSerialNumber()
+        .then((serial) => `${serial}`)
+        .catch(() => "Unknown");
+      this.matterVacuum = new MatterVacuum({
+        matter: api.matter,
+        log: this.log,
+        config: { ...config, name: this.accessory.context.name } as Config,
+        deviceManager,
+        serialNumber,
+        firmware,
+        speedModes: findSpeedModes(
+          deviceManager.model,
+          firmware,
+          deviceManager.reportedModes
+        ),
+        rooms: vacuumService.roomList,
+        currentRoom$: vacuumService.currentRoom$,
+      });
+      // A failure must not prevent the HomeKit extras from being registered
+      await this.matterVacuum
+        .register()
+        .catch((err) =>
+          this.log.error("Failed to register the Matter robot vacuum", err)
+        );
+    }
+
+    this.initialized$.next(services.length > 0);
   }
 
   private applyDefaultsBasedOnModel(
     config: Partial<Config>,
-    model: string,
-    reportedModes?: ReportedModes
+    deviceManager: DeviceManager
   ): Partial<Config> {
+    const { model, reportedModes } = deviceManager;
     // At this point, we can apply any defaults depending on the model...
     return {
       // like enabling the waterbox mode if the model supports it
       waterBox: !!findSpeedModes(model, undefined, reportedModes).waterspeed,
-      // or enabling auto-room if the model supports room mapping
-      // autoroom: TODO,
+      // The Matter vacuum shows the rooms: read them from the robot, unless they're configured
+      ...(config.serviceType === "vacuum" &&
+      !config.rooms &&
+      supports(deviceManager.device, "getRoomMap")
+        ? { autoroom: true }
+        : {}),
       ...config,
     };
   }

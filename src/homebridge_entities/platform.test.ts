@@ -1,5 +1,6 @@
 import type { API, Logging } from "homebridge";
 import { Categories } from "@homebridge/hap-nodejs";
+import { BehaviorSubject } from "rxjs";
 
 import { createHomebridgeMock, miio } from "../test.mocks";
 import "./platform.test.mock";
@@ -162,6 +163,48 @@ describe("XiaomiRoborockVacuumPlatform", () => {
     // Tries to register the accessory
     expect(homebridge.platformAccessory).toHaveBeenCalledTimes(1);
     expect(homebridge.registerPlatformAccessories).toHaveBeenCalledTimes(1);
+  });
+
+  describe('without HomeKit services (serviceType: "vacuum" without extras)', () => {
+    const startWithoutServices = (cached: boolean) => {
+      XiaomiRoborockVacuumPlatformAccessoryInitializerMock.mockImplementationOnce(
+        () => ({ initialized$: new BehaviorSubject(false) })
+      );
+      homebridge.platformAccessory.mockImplementationOnce(newAccessory);
+      const platform = new XiaomiRoborockVacuumPlatform(
+        log,
+        {
+          platform: ACCESSORY_NAME,
+          devices: [{ name: "test", ip: "my.ip", token: "super-secret" }],
+        },
+        homebridge
+      );
+      if (cached) {
+        const accessory = newAccessory();
+        Object.assign(accessory, {
+          UUID: homebridge.hap.uuid.generate(
+            "homebridge-xiaomi-roborock-vacuum-accessory-test"
+          ),
+        });
+        platform.configureAccessory(accessory);
+      }
+      homebridge.on.mock.calls[0][1]();
+      return platform;
+    };
+
+    test("a new HomeKit accessory isn't registered", () => {
+      const platform = startWithoutServices(false);
+      expect(homebridge.registerPlatformAccessories).not.toHaveBeenCalled();
+      expect(homebridge.unregisterPlatformAccessories).not.toHaveBeenCalled();
+      expect(platform["accessories"].size).toBe(1);
+    });
+
+    test("the cached HomeKit accessory is unregistered", () => {
+      const platform = startWithoutServices(true);
+      expect(homebridge.registerPlatformAccessories).not.toHaveBeenCalled();
+      expect(homebridge.unregisterPlatformAccessories).toHaveBeenCalledTimes(1);
+      expect(platform["accessories"].size).toBe(0);
+    });
   });
 
   test("gets the IP and token of the robots configured with their did, or without a token, from the Xiaomi Cloud", async () => {
