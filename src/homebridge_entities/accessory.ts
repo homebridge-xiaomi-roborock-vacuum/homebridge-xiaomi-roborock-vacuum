@@ -240,7 +240,13 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
           )
         : undefined,
       // ADDITIONAL HOMEKIT SERVICES
-      careServices: !config.disableCareServices
+      // With `serviceType: "vacuum"`, they're opt-in (`"disableCareServices": false`): Matter has no equivalent, and
+      // they'd be the only reason for a HomeKit accessory next to the Matter vacuum
+      careServices: (
+        config.serviceType === "vacuum"
+          ? config.disableCareServices === false
+          : !config.disableCareServices
+      )
         ? new CareService(coreContext, mainService)
         : undefined,
     };
@@ -264,8 +270,6 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
     this.log.warn(
       `WAR changedError | Robot has an ERROR - ${robotError.id}, ${robotErrorTxt}`
     );
-    // The Matter vacuum reports the error until the robot clears it: clearing it here would make it come and go
-    if (this.config.serviceType === "vacuum") return;
     // Clear the error_code property
     await this.deviceManager.device.setRawProperty("error_code", 0);
   }

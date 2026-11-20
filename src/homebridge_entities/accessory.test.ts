@@ -7,7 +7,6 @@ jest.useFakeTimers();
 
 import { createHomebridgeMock, miio } from "../test.mocks";
 import { deviceManagerMock } from "./accessory.test.mock";
-import { createDeviceManagerMock } from "../services/device_manager.mock";
 
 import { XiaomiRoborockVacuumAccessory } from "./accessory";
 
@@ -211,23 +210,26 @@ describe("XiaomiRoborockVacuum", () => {
       );
     });
 
-    test("the robot's error is not cleared (the Matter vacuum reports it until the robot clears it)", async () => {
-      // Its own device manager: the shared one also has the accessories of the other tests
-      const deviceManager = createDeviceManagerMock();
-      new XiaomiRoborockVacuumAccessory(
-        log,
-        { ip: "192.168.0.1", token: "TOKEN", serviceType: "vacuum" },
-        homebridge,
-        deviceManager
+    test("care sensors are opt-in", () => {
+      const create = (config: Record<string, unknown>) =>
+        new XiaomiRoborockVacuumAccessory(
+          log,
+          {
+            ip: "192.168.0.1",
+            token: "TOKEN",
+            serviceType: "vacuum",
+            ...config,
+          },
+          homebridge,
+          deviceManagerMock
+        );
+      expect(create({}).getServices()).toStrictEqual([]);
+      expect(create({ disableCareServices: true }).getServices()).toStrictEqual(
+        []
       );
-      miio.device.setRawProperty.mockClear();
-      (deviceManager.errorChanged$ as Subject<unknown>).next({ id: "1" });
-      await Promise.resolve();
-      await Promise.resolve();
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringContaining("Robot has an ERROR - 1")
-      );
-      expect(miio.device.setRawProperty).not.toHaveBeenCalled();
+      const withCare = create({ disableCareServices: false });
+      expect(withCare["pluginServices"].careServices).toBeDefined();
+      expect(withCare.getServices().length).toBeGreaterThan(1);
     });
   });
 
