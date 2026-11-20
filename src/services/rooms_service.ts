@@ -3,6 +3,7 @@ import { filter, firstValueFrom } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";
+import type { RoomMapping, TimerResponse } from "../utils/miio_responses";
 
 export interface RoomsConfig {
   cleanword: string;
@@ -199,7 +200,8 @@ export class RoomsService extends PluginServiceClass {
     await this.deviceManager.ensureDevice("getRoomList");
 
     try {
-      const timers = await this.deviceManager.device.getTimer();
+      const timers =
+        (await this.deviceManager.device.getTimer()) as TimerResponse[];
 
       // Find specific timer containing the room order
       // Timer needs to be scheduled for 00:00 and inactive
@@ -211,7 +213,9 @@ export class RoomsService extends PluginServiceClass {
         throw new Error("Could not find a timer for autoroom");
       }
 
-      let roomIds = leetTimer[2][1][1]["segments"].split(`,`).map((x) => +x);
+      let roomIds = (leetTimer[2][1][1].segments ?? "")
+        .split(`,`)
+        .map((x) => +x);
       this.log.debug(`getRoomList | Room IDs are ${roomIds}`);
 
       const autoroom: string[] = this.config.autoroom as string[];
@@ -226,8 +230,10 @@ export class RoomsService extends PluginServiceClass {
       }
       let roomMap: ResolvedRoom[] = [];
       for (const [i, roomId] of roomIds.entries()) {
-        this.rooms[autoroom[i]].roomId = roomId;
-        roomMap.push({ id: roomId, name: autoroom[i] });
+        // The timer's IDs have always been stored as numbers (the persisted rooms rely on it): keep them as they are
+        const id = roomId as unknown as string;
+        this.rooms[autoroom[i]].roomId = id;
+        roomMap.push({ id, name: autoroom[i] });
       }
       this.resolvedRooms = roomMap;
       if (this.config.cachedRooms) {
@@ -252,7 +258,7 @@ export class RoomsService extends PluginServiceClass {
     await this.deviceManager.ensureDevice("getRoomMap");
 
     try {
-      const map = await this.deviceManager.device.getRoomMap();
+      const map = (await this.deviceManager.device.getRoomMap()) as RoomMapping;
       this.log.info(`INF getRoomMap | Map is ${map}`);
       for (let val of map) {
         this.createRoom(val[0], val[1]);

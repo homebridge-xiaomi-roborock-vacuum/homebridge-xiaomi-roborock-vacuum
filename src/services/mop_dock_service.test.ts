@@ -127,7 +127,9 @@ describe("MopDockService", () => {
     test("does nothing if node-miio doesn't support it", async () => {
       const service = await create({ mopDrying: true });
       const { startMopDrying } = deviceManagerMock.device;
-      delete deviceManagerMock.device.startMopDrying;
+      delete (
+        deviceManagerMock.device as Partial<typeof deviceManagerMock.device>
+      ).startMopDrying;
       try {
         await expect(
           on(service, "Dry Mop").handleSetRequest(true)

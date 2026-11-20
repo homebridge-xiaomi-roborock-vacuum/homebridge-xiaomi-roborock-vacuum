@@ -8,7 +8,7 @@ import {
 } from "./device_manager.mock";
 import { getLoggerMock } from "../utils/logger.mock";
 import { applyConfigDefaults, Config } from "./config_service";
-import { MiioDevice } from "../utils/miio_types";
+import type { MiioDeviceMock as MiioDevice } from "../test.mocks";
 import { miio } from "../test.mocks";
 
 describe("RoomsService", () => {
@@ -78,9 +78,9 @@ describe("RoomsService", () => {
         setCleaning
       );
       const initialized = roomsService.init();
-      (deviceManagerMock.deviceConnected$ as Subject<MiioDevice>).next(
-        miio.device
-      );
+      (
+        deviceManagerMock.deviceConnected$ as unknown as Subject<MiioDevice>
+      ).next(miio.device);
       await initialized;
     }
 
@@ -116,7 +116,7 @@ describe("RoomsService", () => {
     });
 
     test("autoroom: [names] resolves the ids from the midnight timer", async () => {
-      miio.device.getTimer.mockResolvedValue([midnightTimer("18,19")]);
+      miio.device.getTimer.mockResolvedValue([midnightTimer("18,19")] as never);
       await createConnectedRoomService({
         autoroom: ["Kitchen", "Bedroom"],
         cachedRooms: [],
@@ -128,7 +128,7 @@ describe("RoomsService", () => {
     });
 
     test("autoroom: [names] falls back to the cached ids when the timer is gone", async () => {
-      miio.device.getTimer.mockResolvedValue([]);
+      miio.device.getTimer.mockResolvedValue([] as never);
       await createConnectedRoomService({
         autoroom: ["Kitchen", "Bedroom"],
         cachedRooms: [

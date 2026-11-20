@@ -1,13 +1,16 @@
 import { Subject } from "rxjs";
 import { DeviceManager } from "./device_manager";
-import { miio } from "../test.mocks";
+import { miio, type MiioDeviceMock } from "../test.mocks";
 
-export type DeviceManagerMock = jest.Mocked<DeviceManager>;
+/** The vacuum is only partially mocked (see `MiioDeviceMock`) */
+export type DeviceManagerMock = jest.Mocked<DeviceManager> & {
+  device: MiioDeviceMock;
+};
 
 export const createDeviceManagerMock = (): DeviceManagerMock => {
   const deviceManagerMock: jest.Mocked<
-    Pick<DeviceManager, keyof DeviceManager>
-  > = {
+    Pick<DeviceManager, Exclude<keyof DeviceManager, "device">>
+  > & { device: MiioDeviceMock } = {
     errorChanged$: new Subject(),
     stateChanged$: new Subject(),
     deviceConnected$: new Subject(),
@@ -20,5 +23,5 @@ export const createDeviceManagerMock = (): DeviceManagerMock => {
     ensureDevice: jest.fn(),
   };
 
-  return deviceManagerMock as DeviceManagerMock;
+  return deviceManagerMock as unknown as DeviceManagerMock;
 };

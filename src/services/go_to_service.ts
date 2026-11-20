@@ -2,6 +2,7 @@ import { Service } from "homebridge";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";
+import { supports } from "../utils/supports";
 
 export interface GoToConfig {
   goTo: boolean;
@@ -33,13 +34,18 @@ export class GoToService extends PluginServiceClass {
     await this.deviceManager.ensureDevice("goTo");
 
     this.log.info(`ACT goTo | Let's go!`);
+    const { device } = this.deviceManager;
+    if (!supports(device, "sendToLocation")) {
+      this.log.warn(
+        `goTo | ${this.deviceManager.model} doesn't support going to a location.`
+      );
+      return;
+    }
+
     try {
       if (newState) {
         //trigger go to location if newState is true
-        await this.deviceManager.device.sendToLocation(
-          this.config.goToX,
-          this.config.goToY
-        );
+        await device.sendToLocation(this.config.goToX, this.config.goToY);
       } else if (!newState) {
         //trigger go to dock if newState is false
         await this.deviceManager.device.activateCharging();

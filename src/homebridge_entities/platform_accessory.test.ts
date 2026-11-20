@@ -10,7 +10,7 @@ import {
 import { deviceManagerMock } from "./accessory.test.mock";
 import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory";
 import { XiaomiRoborockVacuumPlatformAccessory } from "./platform";
-import { MiioDevice } from "../utils/miio_types";
+import type { MiioDeviceMock as MiioDevice } from "../test.mocks";
 
 function newAccessory(): XiaomiRoborockVacuumPlatformAccessory {
   const name = "test";
@@ -96,9 +96,9 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
           homebridge,
           accessory
         );
-      (deviceManagerMock.deviceConnected$ as Subject<MiioDevice>).next(
-        miio.device
-      );
+      (
+        deviceManagerMock.deviceConnected$ as unknown as Subject<MiioDevice>
+      ).next(miio.device);
 
       await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -118,9 +118,9 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
         homebridge,
         accessory
       );
-      (deviceManagerMock.deviceConnected$ as Subject<MiioDevice>).next(
-        miio.device
-      );
+      (
+        deviceManagerMock.deviceConnected$ as unknown as Subject<MiioDevice>
+      ).next(miio.device);
       await new Promise((resolve) => setTimeout(resolve, 0));
     };
 
@@ -233,9 +233,9 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
           homebridge,
           newAccessory()
         );
-        (deviceManagerMock.deviceConnected$ as Subject<MiioDevice>).next(
-          miio.device
-        );
+        (
+          deviceManagerMock.deviceConnected$ as unknown as Subject<MiioDevice>
+        ).next(miio.device);
         await new Promise((resolve) => setTimeout(resolve, 0));
         expect(configFor().waterBox).toBe(false);
       });

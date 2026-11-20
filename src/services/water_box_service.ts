@@ -6,6 +6,7 @@ import { ProductInfo } from "./product_info";
 import { MainService } from "./main_service";
 import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";
+import { supports } from "../utils/supports";
 
 export interface WaterBoxConfig {
   waterBox: boolean;
@@ -144,7 +145,12 @@ export class WaterBoxService extends PluginServiceClass {
     this.mainService.cachedState.set("WaterSpeed", miLevel);
     this.mainService.cachedState.set("WaterSpeedName", name);
 
-    await this.deviceManager.device.setWaterBoxMode(miLevel);
+    const { device } = this.deviceManager;
+    if (!supports(device, "setWaterBoxMode")) {
+      this.log.info(`setWaterSpeed | Model does not support the water mode`);
+      return;
+    }
+    await device.setWaterBoxMode(miLevel);
 
     // If speed is "custom", also set the water speed to "custom" (for Xiaomi App)
     if (
@@ -165,7 +171,11 @@ export class WaterBoxService extends PluginServiceClass {
   private async getWaterSpeed() {
     await this.deviceManager.ensureDevice("getWaterSpeed");
 
-    const speed = await this.deviceManager.device.getWaterBoxMode();
+    const { device } = this.deviceManager;
+    if (!supports(device, "getWaterBoxMode")) {
+      return 0;
+    }
+    const speed = await device.getWaterBoxMode();
     this.log.info(
       `getWaterSpeed | WaterBoxMode is ${speed} over miIO. Converting to HomeKit`
     );

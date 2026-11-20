@@ -2,6 +2,7 @@ import { Service } from "homebridge";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";
+import { supports } from "../utils/supports";
 
 export interface DustCollectionConfig {
   dustCollection: boolean;
@@ -52,15 +53,22 @@ export class DustCollection extends PluginServiceClass {
     await this.deviceManager.ensureDevice("setDustCollectionState");
 
     const isCharging = this.deviceManager.state;
+    const { device } = this.deviceManager;
+    if (!supports(device, "startDustCollection")) {
+      this.log.warn(
+        `setDustCollectionState | ${this.deviceManager.model} doesn't support the dust collection.`
+      );
+      return;
+    }
 
     try {
       if (state && !this.isDustCollecting && isCharging) {
-        await this.deviceManager.device.startDustCollection();
+        await device.startDustCollection();
         this.log.info(
           `setDustCollectionState | Starting Dust Collection, and the device is in state ${this.deviceManager.state}`
         );
       } else if (!state && this.isDustCollecting) {
-        await this.deviceManager.device.stopDustCollection();
+        await device.stopDustCollection();
         this.log.info(
           `setDustCollectionState | Stopping Dust Collection, and the device is in state ${this.deviceManager.state}`
         );

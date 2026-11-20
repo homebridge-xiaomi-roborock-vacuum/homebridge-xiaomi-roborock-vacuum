@@ -4,6 +4,7 @@ import { CoreContext } from "./types";
 import { MainService } from "./main_service";
 import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";
+import { supports } from "../utils/supports";
 
 interface ZoneDefinition {
   name: string;
@@ -88,7 +89,14 @@ export class ZonesService extends PluginServiceClass {
             zoneParams.push(zon);
           }
         }
-        await this.deviceManager.device.cleanZones(zoneParams);
+        const { device } = this.deviceManager;
+        if (!supports(device, "cleanZones")) {
+          this.log.warn(
+            `setCleaningZone | ${this.deviceManager.model} doesn't support zone cleaning.`
+          );
+          return;
+        }
+        await device.cleanZones(zoneParams);
       } else if (!state) {
         // Stop cleaning
         this.log.info(`ACT setCleaning | Stop cleaning and go to charge.`);

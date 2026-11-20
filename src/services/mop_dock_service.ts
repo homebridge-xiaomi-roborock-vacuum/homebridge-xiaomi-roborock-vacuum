@@ -3,6 +3,7 @@ import { distinct, filter } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";
+import { supports } from "../utils/supports";
 
 export interface MopDockConfig {
   /** Show a switch that starts washing the mop (docks with mop washing only) */
@@ -77,7 +78,7 @@ export class MopDockService extends PluginServiceClass {
 
     const { device } = this.deviceManager;
     try {
-      if (typeof device.startMopWash !== "function") {
+      if (!supports(device, "startMopWash")) {
         this.log.warn(`washMop | This model doesn't support mop washing.`);
         return;
       }
@@ -102,10 +103,7 @@ export class MopDockService extends PluginServiceClass {
 
     const { device } = this.deviceManager;
     try {
-      if (
-        typeof device.startMopDrying !== "function" ||
-        typeof device.stopMopDrying !== "function"
-      ) {
+      if (!supports(device, "startMopDrying")) {
         this.log.warn(`setDrying | This model doesn't support mop drying.`);
         return;
       }

@@ -28,7 +28,12 @@ export class DustBinService extends PluginServiceClass {
   public async init(): Promise<void> {
     this.deviceManager.errorChanged$
       .pipe(
-        filter(({ id }) => DUST_BIN_FULL_ERROR_CODES.includes(id)),
+        // node-miio reports Roborock error codes as numbers, and `null` when the error is cleared
+        filter(
+          (error): error is NonNullable<typeof error> =>
+            error !== null &&
+            DUST_BIN_FULL_ERROR_CODES.includes(String(error.id))
+        ),
         distinct(({ description }) => description)
       )
       .subscribe(() => {
