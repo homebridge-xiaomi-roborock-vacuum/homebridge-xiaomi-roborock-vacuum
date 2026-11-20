@@ -145,61 +145,103 @@ describe("CloudService", () => {
     expect(log.debug).toHaveBeenCalledWith(expect.stringContaining("network"));
   });
 
-  describe("tokenOf", () => {
-    test("finds a robot's token by its IP, listing the devices once for all the robots", async () => {
-      const { service, cloud, log } = setup({
-        devices: [
-          cloudDevice({ localip: "10.0.0.1", token: "tok1" }),
-          cloudDevice({ localip: "10.0.0.2", token: "tok2" }),
-        ],
+  describe("locate", () => {
+    const devices = [
+      cloudDevice({ did: "1", localip: "10.0.0.1", token: "tok1" }),
+      cloudDevice({ did: "2", localip: "10.0.0.2", token: "tok2" }),
+    ];
+
+    test("finds a robot by its IP, listing the devices once for all the robots", async () => {
+      const { service, cloud, log } = setup({ devices });
+      await expect(service.locate({ ip: "10.0.0.1" })).resolves.toEqual({
+        ip: "10.0.0.1",
+        token: "tok1",
       });
-      await expect(service.tokenOf("10.0.0.1")).resolves.toBe("tok1");
-      await expect(service.tokenOf("10.0.0.2")).resolves.toBe("tok2");
+      await expect(service.locate({ ip: "10.0.0.2" })).resolves.toEqual({
+        ip: "10.0.0.2",
+        token: "tok2",
+      });
       expect(cloud.getDevices).toHaveBeenCalledTimes(1);
       expect(log.info).toHaveBeenCalledWith(
-        'Xiaomi Cloud: found the token of the robot at 10.0.0.1 ("Robot").'
+        'Xiaomi Cloud: found "Robot" (did 1) at 10.0.0.1.'
       );
     });
 
+    test("the did wins over the IP", async () => {
+      const { service, log } = setup({ devices });
+      await expect(
+        service.locate({ did: "2", ip: "10.0.0.1" })
+      ).resolves.toEqual({ ip: "10.0.0.2", token: "tok2" });
+      expect(log.info).toHaveBeenCalledWith(
+        'Xiaomi Cloud: found "Robot" (did 2) at 10.0.0.2.'
+      );
+    });
+
+    test("fresh: lists the devices again, e.g. to find a robot's new IP by its token", async () => {
+      const { service, cloud, log } = setup({ devices });
+      await service.locate({ ip: "10.0.0.1" });
+      cloud.getDevices.mockResolvedValueOnce([
+        cloudDevice({ did: "1", localip: "10.0.0.7", token: "tok1" }),
+      ]);
+      await expect(
+        service.locate({ ip: "10.0.0.1", token: "tok1" }, { fresh: true })
+      ).resolves.toEqual({ ip: "10.0.0.7", token: "tok1" });
+      expect(cloud.getDevices).toHaveBeenCalledTimes(2);
+      expect(log.info).toHaveBeenCalledTimes(1);
+    });
+
     test("lists only the configured server", async () => {
-      const { service, cloud } = setup({
-        server: "sg",
-        devices: [cloudDevice({ localip: "10.0.0.1", token: "tok1" })],
-      });
-      await expect(service.tokenOf("10.0.0.1")).resolves.toBe("tok1");
+      const { service, cloud } = setup({ server: "sg", devices });
+      await service.locate({ ip: "10.0.0.1" });
       expect(cloud.getDevices).toHaveBeenCalledWith({ servers: ["sg"] });
     });
 
-    test("a robot that's not in the account has no token", async () => {
-      const { service, log } = setup({
-        devices: [cloudDevice({ localip: "10.0.0.9" })],
-      });
-      await expect(service.tokenOf("10.0.0.1")).resolves.toBeUndefined();
+    test("a robot that's not in the account isn't found (a warning, or a debug log when fresh)", async () => {
+      const { service, log } = setup({ devices });
+      await expect(service.locate({ did: "9" })).resolves.toBeUndefined();
       expect(log.warn).toHaveBeenCalledWith(
-        expect.stringContaining("no robot with the IP 10.0.0.1")
+        expect.stringContaining('no robot "9" in your Xiaomi account')
+      );
+      await expect(
+        service.locate({ ip: "10.0.0.9" }, { fresh: true })
+      ).resolves.toBeUndefined();
+      expect(log.warn).toHaveBeenCalledTimes(1);
+      expect(log.debug).toHaveBeenCalledWith(
+        expect.stringContaining("no robot at 10.0.0.9")
+      );
+    });
+
+    test("a robot without an IP (offline) isn't found", async () => {
+      const { service, log } = setup({
+        devices: [cloudDevice({ did: "1", localip: "" })],
+      });
+      await expect(service.locate({ did: "1" })).resolves.toBeUndefined();
+      expect(log.warn).toHaveBeenCalledWith(
+        expect.stringContaining("has no IP or token")
       );
     });
 
     test("without a saved session, it explains how to log in", async () => {
       const { service, log } = setup({ session: undefined });
-      await expect(service.tokenOf("10.0.0.1")).resolves.toBeUndefined();
+      await expect(service.locate({ ip: "10.0.0.1" })).resolves.toBeUndefined();
       expect(log.warn).toHaveBeenCalledWith(
         expect.stringContaining("npx node-miio cloud login --qr")
       );
     });
 
     test("a failure to list the devices is reported, and retried for the next robot", async () => {
-      const { service, cloud, log } = setup({
-        devices: [cloudDevice({ localip: "10.0.0.1", token: "tok1" })],
-      });
+      const { service, cloud, log } = setup({ devices });
       cloud.getDevices.mockRejectedValueOnce(new Error("network"));
-      await expect(service.tokenOf("10.0.0.1")).resolves.toBeUndefined();
+      await expect(service.locate({ ip: "10.0.0.1" })).resolves.toBeUndefined();
       expect(log.warn).toHaveBeenCalledWith(
         expect.stringContaining(
           "failed to list the devices of your Xiaomi account: Error: network"
         )
       );
-      await expect(service.tokenOf("10.0.0.1")).resolves.toBe("tok1");
+      await expect(service.locate({ ip: "10.0.0.1" })).resolves.toEqual({
+        ip: "10.0.0.1",
+        token: "tok1",
+      });
     });
   });
 });

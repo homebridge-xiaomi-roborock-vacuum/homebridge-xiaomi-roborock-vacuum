@@ -53,6 +53,7 @@ export class CurrentRoomService extends PluginServiceClass {
               let watcher: MapWatcher | undefined;
               const follow = async () => {
                 const created = await cloud.createMapWatcher(device, {
+                  did: this.config.did,
                   ip: this.config.ip,
                   token: this.config.token,
                 });

@@ -110,27 +110,40 @@ export class CloudService {
   }
 
   /**
-   * Finds the token of a robot configured with its IP only.
+   * Finds a robot in the Xiaomi account: by its `did`, its token or its IP (in that order).
    *
-   * @param ip The robot's IP
-   * @returns Its token, or `undefined` if it can't be found (the reason is logged)
+   * @param match What's known about the robot
+   * @param options.fresh List the account's devices again (e.g. the robot stopped answering): problems are only
+   * logged in debug
+   * @returns Its IP and token, or `undefined` if it can't be found (the reason is logged)
    */
-  async tokenOf(ip: string): Promise<string | undefined> {
+  async locate(
+    match: CloudDeviceMatch,
+    { fresh = false }: { fresh?: boolean } = {}
+  ): Promise<{ ip: string; token: string } | undefined> {
     const devices = await this.getDevices();
     if (!devices) return undefined;
+    const report = (message: string) =>
+      fresh ? this.log.debug(message) : this.log.warn(message);
+    const robot = match.did ? `"${match.did}"` : `at ${match.ip}`;
     try {
-      const device = await devices.find({ ip });
-      if (device?.token) {
-        this.log.info(
-          `Xiaomi Cloud: found the token of the robot at ${ip} ("${device.name}").`
-        );
-        return device.token;
+      if (fresh) devices.clear();
+      const device = await devices.find(match);
+      if (device?.localip && device.token) {
+        if (!fresh) {
+          this.log.info(
+            `Xiaomi Cloud: found "${device.name}" (did ${device.did}) at ${device.localip}.`
+          );
+        }
+        return { ip: device.localip, token: device.token };
       }
-      this.log.warn(
-        `Xiaomi Cloud: no robot with the IP ${ip} in your Xiaomi account. Check its IP (it must be the one the Mi Home app shows), and that you logged in with the account that owns it.`
+      report(
+        device
+          ? `Xiaomi Cloud: the robot ${robot} ("${device.name}") has no IP or token in your Xiaomi account. Is it online?`
+          : `Xiaomi Cloud: no robot ${robot} in your Xiaomi account. Check its ${match.did ? "did" : "IP (it must be the one the Mi Home app shows)"}, and that you logged in with the account that owns it.`
       );
     } catch (error) {
-      this.log.warn(
+      report(
         `Xiaomi Cloud: failed to list the devices of your Xiaomi account: ${error}`
       );
     }

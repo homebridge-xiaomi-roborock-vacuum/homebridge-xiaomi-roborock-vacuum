@@ -22,20 +22,45 @@ import type { ReportedModes } from "../utils/find_speed_modes";
 export interface DeviceManagerConfig {
   ip?: string;
   token?: string;
+  /** The device ID in the Xiaomi account: its IP and token are read from there (needs the platform's `cloud` option) */
+  did?: string;
 }
+
+/** Where the robot is, and how to talk to it */
+export interface DeviceLocation {
+  ip: string;
+  token: string;
+}
+
+/**
+ * Looks for the robot again (in the Xiaomi Cloud), e.g. when its IP changed.
+ *
+ * @param current Where the robot was
+ * @returns Where it is now, or `undefined` if unknown
+ */
+export type DeviceLocator = (
+  current: DeviceLocation
+) => Promise<DeviceLocation | undefined>;
 
 /** `null` when the error is cleared (node-miio >= 0.5.0) */
 export type { ErrorChangedEvent, StateChangedEvent };
 
 const GET_STATE_INTERVAL_MS = 30000; // 30s
+const RECONNECT_INTERVAL_MS = 120000; // 2 minutes
+/** Consecutive failed state requests before looking for the robot again (~1.5 minutes) */
+const FAILED_POLLS_BEFORE_LOCATING = 3;
+/** Don't ask the Xiaomi Cloud more often than this (e.g. while the robot is unplugged) */
+const LOCATE_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
 
 export class DeviceManager {
   private readonly internalDevice$ = new BehaviorSubject<
     VacuumDevice | undefined
   >(undefined);
 
-  private readonly ip: string;
-  private readonly token: string;
+  private ip: string;
+  private token: string;
+  private failedPolls = 0;
+  private lastLocatedAt = 0;
 
   private readonly internalErrorChanged$ = new Subject<ErrorChangedEvent>();
   private readonly internalStateChanged$ = new Subject<StateChangedEvent>();
@@ -49,10 +74,14 @@ export class DeviceManager {
   constructor(
     private readonly hap: HAP,
     private readonly log: Logger,
-    config: DeviceManagerConfig
+    config: DeviceManagerConfig,
+    /** Finds the robot again when it stops answering (with the platform's `cloud` option) */
+    private readonly locate?: DeviceLocator
   ) {
     if (!config.ip) {
-      throw new Error("You must provide an ip address of the vacuum cleaner.");
+      throw new Error(
+        "You must provide an ip address of the vacuum cleaner (or its `did`, with the platform's `cloud` option)."
+      );
     }
     this.ip = config.ip;
 
@@ -129,15 +158,17 @@ export class DeviceManager {
   private async connect() {
     if (this.connectingPromise === null) {
       // if already trying to connect, don't trigger yet another one
-      this.connectingPromise = this.initializeDevice().catch((error) => {
+      this.connectingPromise = this.initializeDevice().catch(async (error) => {
+        // Maybe it's somewhere else now (new IP), or it has a new token (its Wi-Fi was reset)
+        const moved = await this.relocate();
         this.log.error(
-          `ERR connect | miio.device, next try in 2 minutes | ${error}`
+          `ERR connect | miio.device, next try ${moved ? "now, at its new location" : "in 2 minutes"} | ${error}`
         );
         clearTimeout(this.connectRetry);
         // Using setTimeout instead of holding the promise. This way we'll keep retrying but not holding the other actions
         this.connectRetry = setTimeout(
           () => this.connect().catch(() => {}),
-          120000
+          moved ? 0 : RECONNECT_INTERVAL_MS
         );
         throw error;
       });
@@ -148,6 +179,39 @@ export class DeviceManager {
     } finally {
       this.connectingPromise = null;
     }
+  }
+
+  /**
+   * Asks where the robot is now (at most every 10 minutes).
+   *
+   * @returns Whether its IP or token changed
+   */
+  private async relocate(): Promise<boolean> {
+    if (!this.locate || Date.now() - this.lastLocatedAt < LOCATE_INTERVAL_MS) {
+      return false;
+    }
+    this.lastLocatedAt = Date.now();
+    let found: DeviceLocation | undefined;
+    try {
+      found = await this.locate({ ip: this.ip, token: this.token });
+    } catch (error) {
+      this.log.debug(`DEB relocate | Failed to locate the robot: ${error}`);
+      return false;
+    }
+    if (!found || (found.ip === this.ip && found.token === this.token)) {
+      return false;
+    }
+    if (found.ip !== this.ip) {
+      this.log.info(
+        `INF relocate | The robot's IP changed from ${this.ip} to ${found.ip}`
+      );
+    }
+    if (found.token !== this.token) {
+      this.log.info("INF relocate | The robot has a new token");
+    }
+    this.ip = found.ip;
+    this.token = found.token;
+    return true;
   }
 
   private async initializeDevice() {
@@ -238,6 +302,7 @@ export class DeviceManager {
         this.device.properties
       );
 
+      this.failedPolls = 0;
       for (const key in state) {
         if (key === "error") {
           this.internalErrorChanged$.next(state[key] as ErrorChangedEvent);
@@ -247,6 +312,21 @@ export class DeviceManager {
       }
     } catch (err) {
       this.log.error(`getState | %j`, err);
+      await this.reconnectIfMoved();
     }
+  }
+
+  /**
+   * The robot doesn't answer anymore: if it's somewhere else now, connect to it there.
+   */
+  private async reconnectIfMoved() {
+    this.failedPolls += 1;
+    if (this.failedPolls < FAILED_POLLS_BEFORE_LOCATING) return;
+    this.failedPolls = 0;
+    if (!(await this.relocate())) return;
+    this.internalDevice$.value?.destroy();
+    await this.connect().catch(() => {
+      // Already logged, and retried later
+    });
   }
 }

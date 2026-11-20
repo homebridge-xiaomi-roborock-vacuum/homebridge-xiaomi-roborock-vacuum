@@ -46,7 +46,14 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
     private readonly cloud?: CloudService
   ) {
     this.log = getLogger(log, config);
-    const deviceManager = new DeviceManager(api.hap, this.log, config);
+    const deviceManager = new DeviceManager(
+      api.hap,
+      this.log,
+      config,
+      cloud &&
+        ((current) =>
+          cloud.locate({ did: config.did, ...current }, { fresh: true }))
+    );
     deviceManager.deviceConnected$.pipe(first()).subscribe(() => {
       this.initialize(config, api, deviceManager).catch((err) =>
         this.log.error("Failed to initialize the accessory", err)

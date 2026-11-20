@@ -18,7 +18,7 @@ describe("DeviceManager", () => {
     test("Fails if no IP provided", () => {
       expect(
         () => new DeviceManager(createHomebridgeMock().hap, log, {})
-      ).toThrow("You must provide an ip address of the vacuum cleaner.");
+      ).toThrow("You must provide an ip address of the vacuum cleaner");
     });
 
     test("Fails if no token provided", () => {
@@ -214,6 +214,118 @@ describe("DeviceManager", () => {
 
       await jest.advanceTimersByTimeAsync(30000);
       expect(miio.device.poll).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  describe("finding the robot again (Xiaomi Cloud)", () => {
+    const nodeMiio = jest.requireMock("node-miio");
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      miio.device.matches.mockReturnValue(true);
+      miio.device.property.mockReturnValue("charging");
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+      nodeMiio.device.mockImplementation(() => miio.device);
+    });
+
+    const addresses = () =>
+      nodeMiio.device.mock.calls.map(
+        ([options]: [{ address: string; token: string }]) =>
+          `${options.address}/${options.token}`
+      );
+
+    test("when it can't connect, it asks where the robot is, and connects there right away", async () => {
+      nodeMiio.device.mockRejectedValueOnce(new Error("timeout"));
+      const locate = jest
+        .fn()
+        .mockResolvedValue({ ip: "192.168.0.7", token: "new-token" });
+      new DeviceManager(
+        createHomebridgeMock().hap,
+        log,
+        { ip: "192.168.0.1", token: "token" },
+        locate
+      );
+      await jest.advanceTimersByTimeAsync(0);
+      expect(locate).toHaveBeenCalledWith({
+        ip: "192.168.0.1",
+        token: "token",
+      });
+      expect(addresses()).toEqual([
+        "192.168.0.1/token",
+        "192.168.0.7/new-token",
+      ]);
+      expect(log.info).toHaveBeenCalledWith(
+        "INF relocate | The robot's IP changed from 192.168.0.1 to 192.168.0.7"
+      );
+      expect(log.info).toHaveBeenCalledWith(
+        "INF relocate | The robot has a new token"
+      );
+    });
+
+    test("an unplugged robot (same location) is retried every 2 minutes, asking the cloud at most every 10 minutes", async () => {
+      nodeMiio.device.mockRejectedValue(new Error("timeout"));
+      const locate = jest
+        .fn()
+        .mockResolvedValue({ ip: "192.168.0.1", token: "token" });
+      new DeviceManager(
+        createHomebridgeMock().hap,
+        log,
+        { ip: "192.168.0.1", token: "token" },
+        locate
+      );
+      await jest.advanceTimersByTimeAsync(0);
+      expect(nodeMiio.device).toHaveBeenCalledTimes(1);
+      expect(locate).toHaveBeenCalledTimes(1);
+
+      await jest.advanceTimersByTimeAsync(120000);
+      expect(nodeMiio.device).toHaveBeenCalledTimes(2);
+      expect(locate).toHaveBeenCalledTimes(1);
+
+      // 18 minutes: 8 more retries, and the cloud asked again after 10 minutes
+      await jest.advanceTimersByTimeAsync(8 * 120000);
+      expect(nodeMiio.device).toHaveBeenCalledTimes(10);
+      expect(locate).toHaveBeenCalledTimes(2);
+    });
+
+    test("when it stops answering, it reconnects at the robot's new IP", async () => {
+      const locate = jest
+        .fn()
+        .mockResolvedValue({ ip: "192.168.0.7", token: "token" });
+      new DeviceManager(
+        createHomebridgeMock().hap,
+        log,
+        { ip: "192.168.0.1", token: "token" },
+        locate
+      );
+      await jest.advanceTimersByTimeAsync(0);
+      expect(addresses()).toEqual(["192.168.0.1/token"]);
+
+      miio.device.poll.mockRejectedValue(new Error("timeout"));
+      await jest.advanceTimersByTimeAsync(30000);
+      await jest.advanceTimersByTimeAsync(30000);
+      expect(locate).not.toHaveBeenCalled();
+
+      // The 3rd failure in a row
+      await jest.advanceTimersByTimeAsync(30000);
+      expect(locate).toHaveBeenCalledTimes(1);
+      expect(miio.device.destroy).toHaveBeenCalled();
+      expect(addresses()).toEqual(["192.168.0.1/token", "192.168.0.7/token"]);
+      miio.device.poll.mockResolvedValue(undefined);
+    });
+
+    test("without the cloud, it keeps retrying the configured IP", async () => {
+      nodeMiio.device.mockRejectedValueOnce(new Error("timeout"));
+      new DeviceManager(createHomebridgeMock().hap, log, {
+        ip: "192.168.0.1",
+        token: "token",
+      });
+      await jest.advanceTimersByTimeAsync(0);
+      expect(nodeMiio.device).toHaveBeenCalledTimes(1);
+      await jest.advanceTimersByTimeAsync(120000);
+      expect(addresses()).toEqual(["192.168.0.1/token", "192.168.0.1/token"]);
     });
   });
 });

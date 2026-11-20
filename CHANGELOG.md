@@ -2,6 +2,7 @@
 
 ## Next
 
+- [Feature] Configure a robot by its device ID (`did`) instead of its IP and token, with the platform's `cloud` option: they're read from your Xiaomi account. When the robot stops answering, the plugin looks for it again in the account, so a new IP (or a new token, after resetting its Wi-Fi) doesn't break it anymore. Robots configured with an IP and token benefit too, when the `cloud` option is enabled.
 - [Feature] Plugin settings page in the Homebridge UI ([#309](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/309)), above the usual form ([screenshot](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/settings-page.png)):
   - **Log in to the Xiaomi Cloud** by scanning a QR code with the Mi Home app (no password, no terminal needed).
   - **Find your vacuums** in the account, and add them (name, IP and token) or update their token in one click.
