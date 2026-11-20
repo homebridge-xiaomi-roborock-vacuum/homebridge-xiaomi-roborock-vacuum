@@ -274,9 +274,20 @@
       };
     }
 
+    /**
+     * Rebuilds the form below from the config. The Homebridge UI doesn't always redraw it after a change (e.g. a vacuum
+     * added again after removing it in the form), and hiding and showing it right away is ignored: the form must be
+     * gone before it's shown again.
+     */
+    async function refreshForm() {
+      homebridge.hideSchemaForm();
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      homebridge.showSchemaForm();
+    }
+
     async function updateConfig(message) {
-      // The Homebridge UI refreshes the form below by itself (the config always has a block, see "Start")
       await homebridge.updatePluginConfig(pluginConfig);
+      await refreshForm();
       homebridge.toast.success(`${message} Click "Save" to apply it.`);
       refreshDeviceSelect();
       refreshDevicesTable();
@@ -1030,6 +1041,7 @@
         await homebridge.savePluginConfig();
         await homebridge.request("/legacy/remove", { blocks: legacy.blocks });
 
+        await refreshForm();
         refreshDeviceSelect();
         refreshDevicesTable();
         $("legacy-card").hidden = true;
