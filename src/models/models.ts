@@ -88,7 +88,7 @@ export const MODELS: Record<string, ModelDefinition[]> = {
   // S7
   "roborock.vacuum.a15": [
     {
-      speed: speedmodes["gen4+custom"],
+      speed: speedmodes["gen4+custom+mop"],
       waterspeed: watermodes["gen1+custom"],
     },
   ],
@@ -102,14 +102,14 @@ export const MODELS: Record<string, ModelDefinition[]> = {
   // S8
   "roborock.vacuum.a51": [
     {
-      speed: speedmodes["gen4+custom"],
+      speed: speedmodes["gen4+custom+mop"],
       waterspeed: watermodes["gen1+custom"],
     },
   ],
   // S7 Max Ultra
   "roborock.vacuum.a65": [
     {
-      speed: speedmodes["gen4+custom"],
+      speed: speedmodes["gen4+custom+mop"],
       waterspeed: watermodes["gen1+custom"],
     },
   ],
@@ -122,14 +122,14 @@ export const MODELS: Record<string, ModelDefinition[]> = {
   // Q8S Max+
   "roborock.vacuum.a73": [
     {
-      speed: speedmodes["gen4+custom"],
+      speed: speedmodes["gen4+custom+mop"],
       waterspeed: watermodes["gen1+custom"],
     },
   ],
   // Q Revo
   "roborock.vacuum.a75": [
     {
-      speed: speedmodes["gen4+custom"],
+      speed: speedmodes["gen4+custom+mop"],
       waterspeed: watermodes["gen1+custom"],
     },
   ],

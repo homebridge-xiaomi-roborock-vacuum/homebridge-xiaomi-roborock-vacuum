@@ -12,6 +12,10 @@ interface ZoneDefinition {
   zone:
     | [number, number, number, number][]
     | [number, number, number, number, number][];
+  /** Fan speed to set before cleaning the zone (a name of the model's speeds, e.g. "Quiet" or "Mop") */
+  speed?: string;
+  /** Water level to set before cleaning the zone (a name of the model's water levels, e.g. "Off" or "High") */
+  waterSpeed?: string;
 }
 
 export interface ZonesConfig {
@@ -24,13 +28,13 @@ export class ZonesService extends PluginServiceClass {
   constructor(
     coreContext: CoreContext,
     private readonly mainService: MainService,
-    private readonly changedPause: (isCleaning: boolean) => void
+    private readonly changedPause: (isCleaning: boolean) => void,
+    private readonly setWaterSpeed?: (mode: string) => Promise<void>
   ) {
     super(coreContext);
     if (this.config.zones) {
-      for (const { name, zone } of this.config.zones) {
-        // Index will be overwritten, when robot is available
-        this.createZone(name, zone);
+      for (const zone of this.config.zones) {
+        this.createZone(zone);
       }
     }
   }
@@ -54,7 +58,8 @@ export class ZonesService extends PluginServiceClass {
     return [...Object.values(this.zones)];
   }
 
-  private createZone(zoneName: string, zoneParams: ZoneDefinition["zone"]) {
+  private createZone(definition: ZoneDefinition) {
+    const { name: zoneName, zone: zoneParams } = definition;
     this.log.info(`createRoom | Zone ${zoneName} (${zoneParams})`);
     const name = `${this.config.cleanword} ${zoneName}`;
     this.zones[zoneName] = new this.hap.Service.Switch(
@@ -65,13 +70,14 @@ export class ZonesService extends PluginServiceClass {
     this.zones[zoneName]
       .getCharacteristic(this.hap.Characteristic.On)
       .onGet(() => this.mainService.getCleaning())
-      .onSet((newState) => this.setCleaningZone(newState, zoneParams))
+      .onSet((newState) => this.setCleaningZone(newState, definition))
       .on("change", ({ newValue }) => {
         this.changedPause(newValue === true);
       });
   }
 
-  private async setCleaningZone(state, zone: ZoneDefinition["zone"]) {
+  private async setCleaningZone(state, definition: ZoneDefinition) {
+    const { zone } = definition;
     await this.deviceManager.ensureDevice("setCleaningZone");
 
     try {
@@ -96,6 +102,7 @@ export class ZonesService extends PluginServiceClass {
           );
           return;
         }
+        await this.applyModes(definition);
         await device.cleanZones(zoneParams);
       } else if (!state) {
         // Stop cleaning
@@ -105,6 +112,36 @@ export class ZonesService extends PluginServiceClass {
     } catch (err) {
       this.log.error(`setCleaning | Failed to set cleaning to ${state}`, err);
       throw err;
+    }
+  }
+
+  /**
+   * Sets the zone's fan speed and water level (when configured) before starting the cleaning.
+   * The robot keeps them afterwards, as when they're changed from HomeKit.
+   */
+  private async applyModes({ name, speed, waterSpeed }: ZoneDefinition) {
+    if (speed) {
+      if (speed === "Off") {
+        // "Off" (-1) is HomeKit's 0%, which stops the cleaning instead of changing the fan speed
+        this.log.warn(
+          `setCleaningZone | Zone ${name}: "Off" is not a fan speed. Use "Mop" for mop-only cleaning, on the models that support it.`
+        );
+      } else {
+        this.log.info(`setCleaningZone | Zone ${name}: fan speed "${speed}".`);
+        await this.mainService.setSpeed(speed);
+      }
+    }
+    if (waterSpeed) {
+      if (!this.setWaterSpeed) {
+        this.log.warn(
+          `setCleaningZone | Zone ${name}: enable "waterBox" to set its water level ("${waterSpeed}").`
+        );
+      } else {
+        this.log.info(
+          `setCleaningZone | Zone ${name}: water level "${waterSpeed}".`
+        );
+        await this.setWaterSpeed(waterSpeed);
+      }
     }
   }
 }

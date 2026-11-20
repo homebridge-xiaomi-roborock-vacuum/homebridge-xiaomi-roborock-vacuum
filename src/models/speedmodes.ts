@@ -222,12 +222,55 @@ const SPEEDMODES: SimplifiedSpeedModes = {
       name: "Custom",
     },
   ],
+  // S7 and newer (S7, S8, S7 Max Ultra, Q8 Max, Q Revo…): like gen4+custom, but 105 turns the suction off (mop only)
+  "gen4+custom+mop": [
+    // 0%      = Off / Aus
+    {
+      miLevel: -1,
+      name: "Off",
+    },
+    // 1-16%   = "Mop" (no suction, only with the mop attached)
+    {
+      miLevel: 105,
+      name: "Mop",
+    },
+    // 17-32%   = "Quiet / Leise"
+    {
+      miLevel: 101,
+      name: "Quiet",
+    },
+    // 33-48%  = "Balanced / Standard"
+    {
+      miLevel: 102,
+      name: "Balanced",
+    },
+    // 49-64%  = "Turbo / Stark"
+    {
+      miLevel: 103,
+      name: "Turbo",
+    },
+    // 65-80% = "Full Speed / Max Speed / Max"
+    {
+      miLevel: 104,
+      name: "Max",
+    },
+    // 81-100% = "Custom"
+    {
+      miLevel: 106,
+      name: "Custom",
+    },
+  ],
   // S7 MaxV
   gen5: [
     // Off
     {
       miLevel: -1,
       name: "Off",
+    },
+    // "Mop" (no suction, only with the mop attached)
+    {
+      miLevel: 105,
+      name: "Mop",
     },
     // 0-16%   = "Quiet"
     {
