@@ -118,7 +118,8 @@ vacuum through Homebridge's Matter support:
 
 - Start, stop, pause, resume and go to the dock.
 - The rooms: pick the ones to clean in the Home app. They're read from the robot, or taken from `rooms` / `autoroom`
-  when set. With the [Xiaomi Cloud](#xiaomi-cloud), the Home app shows the room the robot is in.
+  when set. With the [Xiaomi Cloud](#xiaomi-cloud) or the [Roborock app](#roborock-app-experimental), the Home app shows
+  the room the robot is in.
 - The clean modes: one per fan speed, mop-only (on the models with a "Mop" fan speed), and vacuum & mop presets
   (Automatic, Deep clean, Quiet) on the models with a water box.
 - The battery, the dock states (charging, emptying the dust bin, washing the mop…) and the errors.
@@ -145,6 +146,8 @@ To set it up:
 
 2. Restart Homebridge, and add the vacuum in the Home app with **its own pairing code**, shown in the Homebridge UI and
    in the logs (`Commissioning codes for …`). Apple Home pairs robot vacuums separately from the bridge.
+   It gets the vacuum's `name`. Vacuums paired before 1.5.0 were named after their model (e.g. `roborock.vacuum.a15`):
+   rename them in the Home app.
 
 The Matter vacuum replaces the fan and these options: `pause`, `findMe`, `goToDock`, `dock`, `waterBox`,
 `roomSensors` and the room switches. The options Matter doesn't cover stay in HomeKit, as a separate accessory, when

@@ -129,8 +129,11 @@ export class MatterVacuum {
       displayName: config.name,
       deviceType: this.matter.deviceTypes.RoboticVacuumCleaner,
       serialNumber,
-      manufacturer: "Xiaomi",
-      model: this.deviceManager.model,
+      // Robots of a Roborock app account aren't Xiaomi ones
+      manufacturer: config.duid ? "Roborock" : "Xiaomi",
+      // Homebridge sends the model as the Matter product name, which Apple Home uses as the accessory's name when it's
+      // paired (e.g. "roborock.vacuum.a296"): the configured name instead. The real model is in the logs.
+      model: config.name,
       firmwareRevision: firmware,
       context: {},
       clusters: {
