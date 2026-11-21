@@ -12,7 +12,8 @@ The plugin's settings in the Homebridge UI show these tools above the usual form
 - **Vacuums in the old format** (`accessories`), if any: moved to the platform in one click, with their options and
   child bridge, after a backup of the config. The Home app sees them as new accessories: put them back in their rooms,
   and update your scenes and automations.
-- **The map** of a Roborock vacuum: click the rooms to name them (`rooms`, with **2x** / **3x** for the repeats), click
+- **The map** of a Roborock vacuum (from the Xiaomi Cloud, or the Roborock app account for the vacuums paired with
+  it): click the rooms to name them (`rooms`, with **2x** / **3x** for the repeats), click
   to add "go to" spots (`goToSpots`), and drag to draw zones (`zones`). Spots and zones belong to the current map:
   pick them again if it's reset.
 

@@ -207,6 +207,21 @@ describe("Roborock app account", () => {
       saveRoborockSession: jest.fn(),
       deleteRoborockSession: jest.fn(),
       startRoborockLogin: jest.fn().mockResolvedValue(login),
+      getRoborockMap: jest.fn().mockResolvedValue({
+        map: {
+          image: {
+            top: 10,
+            left: 20,
+            width: 2,
+            height: 1,
+            pixels: new Uint8Array([(10 << 3) | 7, 1]),
+          },
+          rooms: [{ id: 10 }, { id: 11 }],
+          robot: { x: 25582, y: 26094 },
+          charger: { x: 25581, y: 26272 },
+        },
+        names: new Map([[10, "Lavadero"]]),
+      }),
       getRoborockDevices: jest.fn().mockResolvedValue([
         {
           duid: "duid-1",
@@ -307,6 +322,43 @@ describe("Roborock app account", () => {
       },
     ]);
     expect(JSON.stringify(devices)).not.toContain("secret");
+  });
+
+  test("the map of a robot of the Roborock account, with its rooms' names", async () => {
+    const { handlers, deps } = setupRoborock(roborockSession);
+    const map = await handlers["/map"]({
+      duid: "duid-1",
+      ip: "192.168.86.26",
+      roborockSessionFile: "/rr.json",
+    });
+    expect(deps.loadRoborockSession).toHaveBeenCalledWith("/rr.json");
+    expect(deps.getRoborockMap).toHaveBeenCalledWith(
+      roborockSession,
+      "duid-1",
+      "192.168.86.26"
+    );
+    expect(map).toStrictEqual({
+      image: {
+        top: 10,
+        left: 20,
+        width: 2,
+        height: 1,
+        pixels: Buffer.from([(10 << 3) | 7, 1]).toString("base64"),
+      },
+      rooms: [
+        { id: 10, name: "Lavadero" },
+        { id: 11, name: undefined },
+      ],
+      robot: { x: 25582, y: 26094 },
+      charger: { x: 25581, y: 26272 },
+    });
+  });
+
+  test("the map of a Roborock robot needs the Roborock login", async () => {
+    const { handlers } = setupRoborock();
+    await expect(handlers["/map"]({ duid: "duid-1" })).rejects.toThrow(
+      "Log in to your Roborock account first."
+    );
   });
 
   test("not logged in, and logout", async () => {
