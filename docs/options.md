@@ -6,14 +6,15 @@ Each vacuum in `devices` takes these options. They're all in the Homebridge UI's
 
 **Connection**
 
-| Option   | Default | Description                                                                                                      |
-| -------- | ------- | ---------------------------------------------------------------------------------------------------------------- |
-| `name`   |         | The name in the Home app. The switches and sensors are named after it                                            |
-| `ip`     |         | The robot's IP address (give it a fixed one in your router)                                                      |
-| `token`  |         | The robot's token. Optional with the [Xiaomi Cloud](xiaomi-cloud.md)                                             |
-| `did`    |         | Instead of `ip` and `token`, with the [Xiaomi Cloud](xiaomi-cloud.md): the device ID, found again if they change |
-| `debug`  | `false` | Show the debug logs (including what the robot answers) of this plugin only. Enable it when reporting an issue    |
-| `silent` | `false` | Only log warnings and errors                                                                                     |
+| Option   | Default | Description                                                                                                               |
+| -------- | ------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `name`   |         | The name in the Home app. The switches and sensors are named after it                                                     |
+| `ip`     |         | The robot's IP address (give it a fixed one in your router). Optional for the [Roborock app](roborock-app.md) vacuums     |
+| `token`  |         | The robot's token. Optional with the [Xiaomi Cloud](xiaomi-cloud.md), not needed for the Roborock app vacuums             |
+| `did`    |         | Instead of `ip` and `token`, with the [Xiaomi Cloud](xiaomi-cloud.md): the device ID, found again if they change          |
+| `duid`   |         | Instead of `ip` and `token`, for a vacuum paired with the [Roborock app](roborock-app.md): its ID in the Roborock account |
+| `debug`  | `false` | Show the debug logs (including what the robot answers) of this plugin only. Enable it when reporting an issue             |
+| `silent` | `false` | Only log warnings and errors                                                                                              |
 
 **How it shows up**
 
@@ -60,4 +61,5 @@ Each vacuum in `devices` takes these options. They're all in the Homebridge UI's
 | `zoneTimeout` | `0`          | Above `0`: the zone switches select the zones, cleaned together this many seconds after the last change                              |
 | `cleanword`   | `"cleaning"` | The first word of the room and zone switches, e.g. "cleaning Kitchen"                                                                |
 
-The platform also takes `cloud`: see [Xiaomi Cloud](xiaomi-cloud.md).
+The platform also takes `cloud` (the Xiaomi account, see [Xiaomi Cloud](xiaomi-cloud.md)) and `roborock` (the Roborock
+account, see [Roborock app](roborock-app.md)).

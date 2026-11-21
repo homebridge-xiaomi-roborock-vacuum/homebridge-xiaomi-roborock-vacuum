@@ -60,8 +60,9 @@ the room they're in).
 
 1. Install the plugin from the Homebridge UI (search for "Xiaomi Roborock Vacuum"), or with
    `npm install -g homebridge-xiaomi-roborock-vacuum`. It needs Homebridge 2.3 or later.
-2. Open the plugin's settings in the Homebridge UI. The [settings page](docs/settings-page.md) logs in to your Xiaomi account
-   with a QR code and adds your vacuums, with their tokens, in one click.
+2. Open the plugin's settings in the Homebridge UI. The [settings page](docs/settings-page.md) logs in to your account and
+   adds your vacuums in one click: the Xiaomi account with a QR code (vacuums paired with the Mi Home app), or the
+   Roborock account with a code sent by email (vacuums paired with the Roborock app).
 3. Pick [how the vacuum shows up](docs/how-it-shows-up.md), enable the [options](docs/options.md) you want, save, and
    restart Homebridge.
 

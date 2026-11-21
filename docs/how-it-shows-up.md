@@ -5,8 +5,9 @@
 `serviceType` picks it:
 
 - `"vacuum"`: Apple Home's native [robot vacuum (Matter)](#robot-vacuum-matter). Recommended with iOS 18.4 or later.
-- `"fan"` (default): a fan. On starts the cleaning, off sends the robot to the dock, and the speed is the fan speed.
-- `"switch"`: a switch, on/off only.
+- `"fan"` (default): a [fan](#fan). On starts the cleaning, off sends the robot to the dock, and the speed is the fan
+  speed.
+- `"switch"`: a [switch](#switch), on/off only.
 
 <img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/screenshot1.jpg?raw=true" alt="The vacuum as a fan in the Home app" width="220">
 <img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/screenshot2.jpg?raw=true" alt="The vacuum in the Eve app" width="220">
@@ -57,3 +58,22 @@ maintenance sensors, and the care services (only with `"disableCareServices": fa
 
 Without Matter, the plugin logs a warning and shows a fan. Switching back to `"fan"` or `"switch"` removes the Matter
 vacuum: remove it from the Home app too.
+
+## Fan
+
+`"fan"` (the default) shows the vacuum as a fan:
+
+- **On** starts the cleaning: the rooms whose switches are on (see [Rooms](rooms-and-zones.md#rooms)), or the whole
+  home when none is.
+- **Off**, while the robot cleans or is paused, stops it and sends it to the dock.
+- **The speed slider** is the fan speed: each range of the slider is one of the robot's fan speeds, and the plugin moves
+  the slider to the top of the range it picks. 0% stops the cleaning, like Off. The ranges of each model are in
+  [Fan speeds and water levels](speeds-and-modes.md).
+- With `waterBox`, a second fan sets the water level, the same way.
+
+The other options (switches, sensors…) show up next to it, in the same accessory.
+
+## Switch
+
+`"switch"` shows the vacuum as a switch: **on** and **off** work like the fan's, without the speed slider. The fan
+speed stays the one set in the robot's app. The other options show up next to it, as with the fan.
