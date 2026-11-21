@@ -190,7 +190,9 @@ describe("RoborockService: default dependencies (node-miio)", () => {
     };
     jest.resetModules();
     jest.doMock("node-miio", () => nodeMiio);
-    const { RoborockService: Service } = await import("./roborock_service");
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { RoborockService: Service } =
+      require("./roborock_service") as typeof import("./roborock_service");
     const log = { debug: jest.fn(), info: jest.fn(), warn: jest.fn() };
     const connection = await new Service(log, { enabled: true }).connect({
       duid: "duid-1",
