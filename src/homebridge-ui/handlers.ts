@@ -1,10 +1,17 @@
 import * as miio from "node-miio";
 import {
   CloudDeviceCache,
+  deleteRoborockSession,
   deleteSession,
+  loadRoborockSession,
   loadSession,
+  RoborockLogin,
+  RoborockWebApi,
+  saveRoborockSession,
   saveSession,
   XiaomiCloud,
+  type RoborockDevice,
+  type RoborockSession,
   type CloudServer,
   type CloudSession,
   type MapPoint,
@@ -61,6 +68,23 @@ export interface HandlerDeps {
   createCloud(session: CloudSession): Cloud;
   loginWithQrCode(onQrCode: (qr: QrCode) => void): Promise<Cloud>;
   connect(ip: string, token: string): Promise<MapDevice>;
+  loadRoborockSession(file?: string): Promise<RoborockSession | undefined>;
+  saveRoborockSession(session: RoborockSession, file?: string): Promise<void>;
+  deleteRoborockSession(file?: string): Promise<void>;
+  /** Starts a login with a code sent by email (finds the account's region) */
+  startRoborockLogin(email: string): Promise<RoborockLoginFlow>;
+  getRoborockDevices(session: RoborockSession): Promise<RoborockDevice[]>;
+}
+
+/** A Roborock login in progress: the code and the login must come from the same client */
+export interface RoborockLoginFlow {
+  requestCode(): Promise<void>;
+  loginWithCode(code: string): Promise<RoborockSession>;
+}
+
+/** The payload of the Roborock requests: where the session is (the platform's `roborock` option) */
+export interface RoborockRequest {
+  sessionFile?: string;
 }
 
 const defaultDeps: HandlerDeps = {
@@ -71,6 +95,11 @@ const defaultDeps: HandlerDeps = {
   loginWithQrCode: (onQrCode) => XiaomiCloud.loginWithQrCode({ onQrCode }),
   connect: (ip, token) =>
     miio.device({ address: ip, token }) as unknown as Promise<MapDevice>,
+  loadRoborockSession,
+  saveRoborockSession,
+  deleteRoborockSession,
+  startRoborockLogin: (email) => RoborockLogin.start(email),
+  getRoborockDevices: (session) => new RoborockWebApi(session).getDevices(),
 };
 
 /** The result of the QR login, pushed to the UI once it ends */
@@ -95,6 +124,9 @@ export function createHandlers(
     if (!configPath) throw new Error("Homebridge's config file is unknown.");
     return configPath;
   }
+
+  /** The Roborock logins waiting for their code, by email */
+  const roborockLogins = new Map<string, RoborockLoginFlow>();
 
   /** The account's devices, by session and server: listing them takes a few requests per server */
   const caches = new Map<string, CloudDeviceCache>();
@@ -187,6 +219,74 @@ export function createHandlers(
           server,
           isOnline,
         }));
+    },
+
+    "/roborock/status": async (request: RoborockRequest) => {
+      const session = await deps.loadRoborockSession(
+        request.sessionFile || undefined
+      );
+      return { loggedIn: !!session, email: session?.email };
+    },
+
+    /** Asks Roborock to email a login code to the account */
+    "/roborock/request-code": async ({ email }: { email?: string }) => {
+      const address = email?.trim();
+      if (!address)
+        throw new Error("Enter the email of your Roborock account.");
+      const login = await deps.startRoborockLogin(address);
+      await login.requestCode();
+      roborockLogins.set(address.toLowerCase(), login);
+      return { sent: true };
+    },
+
+    /** Logs in with the code from the email, and saves the session */
+    "/roborock/login": async (
+      request: RoborockRequest & { email?: string; code?: string }
+    ) => {
+      const address = request.email?.trim().toLowerCase() ?? "";
+      const login = roborockLogins.get(address);
+      if (!login) throw new Error("Ask for a code first.");
+      const code = request.code?.trim();
+      if (!code) throw new Error("Enter the code from the email.");
+      const session = await login.loginWithCode(code);
+      await deps.saveRoborockSession(session, request.sessionFile || undefined);
+      roborockLogins.delete(address);
+      return { loggedIn: true, email: session.email };
+    },
+
+    "/roborock/logout": async (request: RoborockRequest) => {
+      await deps.deleteRoborockSession(request.sessionFile || undefined);
+      return { loggedIn: false };
+    },
+
+    /** The robots of the Roborock account (without their local keys) */
+    "/roborock/devices": async (request: RoborockRequest) => {
+      const session = await deps.loadRoborockSession(
+        request.sessionFile || undefined
+      );
+      if (!session) throw new Error("Log in to your Roborock account first.");
+      const devices = await deps.getRoborockDevices(session);
+      return devices.map(
+        ({
+          duid,
+          name,
+          model,
+          productName,
+          protocolVersion,
+          online,
+          shared,
+        }) => ({
+          duid,
+          name,
+          model,
+          productName,
+          protocolVersion,
+          online,
+          shared,
+          // The protocols node-miio can control
+          supported: /^(1\.0|L01)$/.test(protocolVersion),
+        })
+      );
     },
 
     /** The robot's map (Roborock), with the names of its rooms if it has any */

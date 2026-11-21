@@ -185,3 +185,138 @@ describe("custom UI handlers", () => {
     expect(device.destroy).toHaveBeenCalled();
   });
 });
+
+describe("Roborock app account", () => {
+  const roborockSession = {
+    email: "me@example.com",
+    baseUrl: "https://euiot.roborock.com",
+    clientId: "c",
+    userData: {
+      token: "t",
+      rriot: { u: "u", s: "s", h: "h", k: "k", r: { r: "EU", a: "a", m: "m" } },
+    },
+  };
+
+  function setupRoborock(saved?: typeof roborockSession) {
+    const login = {
+      requestCode: jest.fn().mockResolvedValue(undefined),
+      loginWithCode: jest.fn().mockResolvedValue(roborockSession),
+    };
+    const deps = {
+      loadRoborockSession: jest.fn().mockResolvedValue(saved),
+      saveRoborockSession: jest.fn(),
+      deleteRoborockSession: jest.fn(),
+      startRoborockLogin: jest.fn().mockResolvedValue(login),
+      getRoborockDevices: jest.fn().mockResolvedValue([
+        {
+          duid: "duid-1",
+          name: "Saros 20 Neo",
+          model: "roborock.vacuum.a296",
+          productName: "Qrevo Edge 3 Pro",
+          protocolVersion: "1.0",
+          firmwareVersion: "02.32.54",
+          online: true,
+          localKey: "secret",
+          shared: false,
+        },
+        {
+          duid: "duid-2",
+          name: "Q7",
+          model: "roborock.vacuum.sc05",
+          protocolVersion: "B01",
+          localKey: "secret2",
+          shared: true,
+        },
+      ]),
+    };
+    const handlers = createHandlers(jest.fn(), deps as unknown as HandlerDeps);
+    return { handlers, deps, login };
+  }
+
+  test("status", async () => {
+    await expect(
+      setupRoborock().handlers["/roborock/status"]({})
+    ).resolves.toStrictEqual({ loggedIn: false, email: undefined });
+    await expect(
+      setupRoborock(roborockSession).handlers["/roborock/status"]({
+        sessionFile: "/rr.json",
+      })
+    ).resolves.toStrictEqual({ loggedIn: true, email: "me@example.com" });
+  });
+
+  test("requests a code, then logs in with it (same login) and saves the session", async () => {
+    const { handlers, deps, login } = setupRoborock();
+    await expect(
+      handlers["/roborock/request-code"]({ email: " Me@Example.com " })
+    ).resolves.toStrictEqual({ sent: true });
+    expect(deps.startRoborockLogin).toHaveBeenCalledWith("Me@Example.com");
+    expect(login.requestCode).toHaveBeenCalled();
+
+    await expect(
+      handlers["/roborock/login"]({
+        email: "me@example.com",
+        code: " 123456 ",
+        sessionFile: "/rr.json",
+      })
+    ).resolves.toStrictEqual({ loggedIn: true, email: "me@example.com" });
+    expect(login.loginWithCode).toHaveBeenCalledWith("123456");
+    expect(deps.saveRoborockSession).toHaveBeenCalledWith(
+      roborockSession,
+      "/rr.json"
+    );
+    // The login is done: a second one needs a new code
+    await expect(
+      handlers["/roborock/login"]({ email: "me@example.com", code: "1" })
+    ).rejects.toThrow("Ask for a code first.");
+  });
+
+  test("missing email or code", async () => {
+    const { handlers } = setupRoborock();
+    await expect(handlers["/roborock/request-code"]({})).rejects.toThrow(
+      "Enter the email of your Roborock account."
+    );
+    await handlers["/roborock/request-code"]({ email: "me@example.com" });
+    await expect(
+      handlers["/roborock/login"]({ email: "me@example.com", code: " " })
+    ).rejects.toThrow("Enter the code from the email.");
+  });
+
+  test("lists the robots, without their local keys", async () => {
+    const { handlers } = setupRoborock(roborockSession);
+    const devices = await handlers["/roborock/devices"]({});
+    expect(devices).toStrictEqual([
+      {
+        duid: "duid-1",
+        name: "Saros 20 Neo",
+        model: "roborock.vacuum.a296",
+        productName: "Qrevo Edge 3 Pro",
+        protocolVersion: "1.0",
+        online: true,
+        shared: false,
+        supported: true,
+      },
+      {
+        duid: "duid-2",
+        name: "Q7",
+        model: "roborock.vacuum.sc05",
+        productName: undefined,
+        protocolVersion: "B01",
+        online: undefined,
+        shared: true,
+        supported: false,
+      },
+    ]);
+    expect(JSON.stringify(devices)).not.toContain("secret");
+  });
+
+  test("not logged in, and logout", async () => {
+    const { handlers, deps } = setupRoborock();
+    await expect(handlers["/roborock/devices"]({})).rejects.toThrow(
+      "Log in to your Roborock account first."
+    );
+    await expect(
+      handlers["/roborock/logout"]({ sessionFile: "/rr.json" })
+    ).resolves.toStrictEqual({ loggedIn: false });
+    expect(deps.deleteRoborockSession).toHaveBeenCalledWith("/rr.json");
+  });
+});

@@ -2,6 +2,17 @@
   .xrv-card {
     margin-bottom: 1rem;
   }
+  .xrv-app-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+  }
+  .xrv-trademarks {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
   .xrv-muted {
     opacity: 0.75;
   }
@@ -90,11 +101,19 @@
 
 <div class="card xrv-card">
   <div class="card-body">
-    <h5 class="card-title">Xiaomi Cloud (optional)</h5>
+    <h5 class="card-title">
+      <img
+        class="xrv-app-icon"
+        src="images/xiaomi-home.png"
+        alt="Xiaomi Home app"
+      />Xiaomi Cloud (optional)
+    </h5>
     <p class="xrv-muted">
-      Log in to get your vacuums' tokens, see their map to name the rooms, and
-      (with the "Xiaomi Cloud" option below) know which room they're cleaning.
-      Your password is never needed: scan a QR code with the Mi Home app.
+      For the vacuums paired with the <strong>Mi Home</strong> (Xiaomi Home)
+      app. Log in to get your vacuums' tokens, see their map to name the rooms,
+      and (with the "Xiaomi Cloud" option below) know which room they're
+      cleaning. Your password is never needed: scan a QR code with the Mi Home
+      app.
     </p>
     <p id="cloud-status" class="mb-2">Checking…</p>
     <div class="xrv-qr mb-2" id="qr" hidden>
@@ -115,7 +134,13 @@
 
 <div class="card xrv-card" id="devices-card" hidden>
   <div class="card-body">
-    <h5 class="card-title">Vacuums in your Xiaomi account</h5>
+    <h5 class="card-title">
+      <img
+        class="xrv-app-icon"
+        src="images/xiaomi-home.png"
+        alt="Xiaomi Home app"
+      />Vacuums in your Xiaomi account
+    </h5>
     <button type="button" class="btn btn-primary mb-2" id="load-devices">
       Find my vacuums
     </button>
@@ -126,6 +151,90 @@
             <th>Name</th>
             <th>Model</th>
             <th>IP</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card xrv-card">
+  <div class="card-body">
+    <h5 class="card-title">
+      <img
+        class="xrv-app-icon"
+        src="images/roborock.png"
+        alt="Roborock app"
+      />Roborock app account (optional, experimental)
+    </h5>
+    <p class="xrv-muted">
+      For the vacuums paired with the <strong>Roborock app</strong> instead of
+      Mi Home. Log in with the email of your Roborock account: Roborock emails
+      you a code. Your password is never needed.
+    </p>
+    <p id="roborock-status" class="mb-2">Checking…</p>
+    <div id="roborock-login" hidden>
+      <div class="xrv-row">
+        <input
+          type="email"
+          class="form-control"
+          id="roborock-email"
+          placeholder="Email of your Roborock account"
+          autocomplete="email"
+        />
+        <button type="button" class="btn btn-primary" id="roborock-send-code">
+          Send me a code
+        </button>
+      </div>
+      <div class="xrv-row" id="roborock-code-row" hidden>
+        <input
+          type="text"
+          class="form-control"
+          id="roborock-code"
+          placeholder="Code from the email"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+        />
+        <button type="button" class="btn btn-primary" id="roborock-log-in">
+          Log in
+        </button>
+      </div>
+    </div>
+    <button type="button" class="btn btn-secondary" id="roborock-logout" hidden>
+      Log out
+    </button>
+  </div>
+</div>
+
+<div class="card xrv-card" id="roborock-devices-card" hidden>
+  <div class="card-body">
+    <h5 class="card-title">
+      <img
+        class="xrv-app-icon"
+        src="images/roborock.png"
+        alt="Roborock app"
+      />Vacuums in your Roborock account
+    </h5>
+    <button
+      type="button"
+      class="btn btn-primary mb-2"
+      id="roborock-load-devices"
+    >
+      Find my vacuums
+    </button>
+    <div class="table-responsive">
+      <table
+        class="table table-sm xrv-table"
+        id="roborock-devices-table"
+        hidden
+      >
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Model</th>
+            <th>Status</th>
             <th></th>
           </tr>
         </thead>
@@ -232,6 +341,13 @@
   </div>
 </div>
 
+<p class="xrv-trademarks mt-3">
+  Xiaomi, Xiaomi Home, Mi Home, Roborock and their logos are trademarks of their
+  respective owners. They're shown only to tell which app each section is for:
+  this plugin is an independent project, not affiliated with, endorsed or
+  sponsored by Xiaomi or Roborock.
+</p>
+
 <script>
   (() => {
     const ALIAS = "XiaomiRoborockVacuum";
@@ -291,6 +407,7 @@
       homebridge.toast.success(`${message} Click "Save" to apply it.`);
       refreshDeviceSelect();
       refreshDevicesTable();
+      refreshRoborockDevicesTable();
     }
 
     function errorMessage(err) {
@@ -445,6 +562,151 @@
         }
       }
       $("devices-table").hidden = false;
+    }
+
+    // ---------- Roborock app account ----------
+    function roborockRequest() {
+      const roborock = platformBlock().roborock || {};
+      return { sessionFile: roborock.sessionFile || undefined };
+    }
+
+    async function refreshRoborockStatus() {
+      try {
+        const { loggedIn, email } = await homebridge.request(
+          "/roborock/status",
+          roborockRequest()
+        );
+        $("roborock-status").textContent = loggedIn
+          ? `✅ Logged in to the Roborock account ${email || ""}.`
+          : "Not logged in.";
+        $("roborock-login").hidden = loggedIn;
+        $("roborock-logout").hidden = !loggedIn;
+        $("roborock-devices-card").hidden = !loggedIn;
+      } catch (err) {
+        $("roborock-status").textContent = `Error: ${errorMessage(err)}`;
+      }
+    }
+
+    $("roborock-send-code").addEventListener("click", async () => {
+      const email = $("roborock-email").value.trim();
+      if (!email) {
+        homebridge.toast.error("Enter the email of your Roborock account.");
+        return;
+      }
+      $("roborock-send-code").disabled = true;
+      homebridge.showSpinner();
+      try {
+        await homebridge.request("/roborock/request-code", { email });
+        $("roborock-code-row").hidden = false;
+        $("roborock-code").focus();
+        $("roborock-status").textContent = `Roborock sent a code to ${email}.`;
+      } catch (err) {
+        homebridge.toast.error(errorMessage(err), "Couldn't send the code");
+      } finally {
+        homebridge.hideSpinner();
+        $("roborock-send-code").disabled = false;
+      }
+    });
+
+    $("roborock-log-in").addEventListener("click", async () => {
+      $("roborock-log-in").disabled = true;
+      homebridge.showSpinner();
+      try {
+        await homebridge.request("/roborock/login", {
+          ...roborockRequest(),
+          email: $("roborock-email").value.trim(),
+          code: $("roborock-code").value.trim(),
+        });
+        $("roborock-code").value = "";
+        $("roborock-code-row").hidden = true;
+        homebridge.toast.success("Logged in to your Roborock account.");
+        await refreshRoborockStatus();
+      } catch (err) {
+        homebridge.toast.error(errorMessage(err), "Login failed");
+      } finally {
+        homebridge.hideSpinner();
+        $("roborock-log-in").disabled = false;
+      }
+    });
+
+    $("roborock-logout").addEventListener("click", async () => {
+      await homebridge.request("/roborock/logout", roborockRequest());
+      $("roborock-devices-table").hidden = true;
+      roborockDevices = undefined;
+      await refreshRoborockStatus();
+    });
+
+    $("roborock-load-devices").addEventListener("click", async () => {
+      homebridge.showSpinner();
+      try {
+        renderRoborockDevices(
+          await homebridge.request("/roborock/devices", roborockRequest())
+        );
+      } catch (err) {
+        homebridge.toast.error(errorMessage(err), "Couldn't list the vacuums");
+      } finally {
+        homebridge.hideSpinner();
+      }
+    });
+
+    /** The robots of the Roborock account, as last listed (to refresh the table when the config changes) */
+    let roborockDevices;
+
+    function refreshRoborockDevicesTable() {
+      if (roborockDevices) renderRoborockDevices(roborockDevices);
+    }
+
+    function renderRoborockDevices(devices) {
+      roborockDevices = devices;
+      const body = $("roborock-devices-table").querySelector("tbody");
+      body.replaceChildren();
+      if (devices.length === 0) {
+        const row = body.insertRow();
+        const cell = row.insertCell();
+        cell.colSpan = 4;
+        cell.textContent = "No vacuums in this account.";
+      }
+      for (const device of devices) {
+        const row = body.insertRow();
+        row.insertCell().textContent = device.name;
+        row.insertCell().textContent = device.productName
+          ? `${device.productName} (${device.model})`
+          : device.model || "unknown";
+        row.insertCell().textContent =
+          device.online === false ? "Offline" : "Online";
+        const actions = row.insertCell();
+        const configured = platformBlock().devices.find(
+          (d) => d.duid && d.duid === device.duid
+        );
+        if (configured) {
+          actions.append(el("span", `Configured as "${configured.name}"`));
+        } else if (!device.supported) {
+          actions.append(
+            el(
+              "span",
+              `Not supported yet (protocol ${device.protocolVersion})`,
+              "xrv-muted"
+            )
+          );
+        } else {
+          const add = el("button", "Add", "btn btn-sm btn-primary");
+          add.type = "button";
+          add.addEventListener("click", async () => {
+            const block = platformBlock();
+            // The robots of a Roborock account need the platform's `roborock` option
+            block.roborock = { ...(block.roborock || {}), enabled: true };
+            block.devices.push({
+              name: device.name,
+              duid: device.duid,
+              // The rooms get the names given in the Roborock app
+              autoroom: true,
+            });
+            await updateConfig(`"${device.name}" added.`);
+          });
+          actions.append(add);
+        }
+      }
+      $("roborock-devices-table").hidden = false;
     }
 
     // ---------- Map ----------
@@ -1105,7 +1367,11 @@
       }
       homebridge.showSchemaForm();
       refreshDeviceSelect();
-      await Promise.all([refreshLegacy(), refreshStatus()]);
+      await Promise.all([
+        refreshLegacy(),
+        refreshStatus(),
+        refreshRoborockStatus(),
+      ]);
     })();
   })();
 </script>

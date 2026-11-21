@@ -6,21 +6,29 @@
 > If you'd like to help, [sign up as a beta tester](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1232): you'll be mentioned when a beta needs a device like yours.
 > See [CONTRIBUTING.md](./CONTRIBUTING.md) for other ways to help. Co-maintainers are welcome too.
 
-# homebridge-xiaomi-roborock-vacuum
+<p align="center">
+  <img src="https://raw.githubusercontent.com/homebridge/branding/latest/logos/homebridge-color-round-stylized.svg" alt="Homebridge logo" width="64" height="64">
+  <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app logo" width="64" height="64">
+  <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/roborock.png" alt="Roborock app logo" width="64" height="64">
+</p>
 
-[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
-[![npm version](https://badge.fury.io/js/homebridge-xiaomi-roborock-vacuum.svg)](https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum)
-[![npm](https://img.shields.io/npm/dt/homebridge-xiaomi-roborock-vacuum.svg)](https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum)
-[![GitHub last commit](https://img.shields.io/github/last-commit/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum.svg)](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum)
-[![codecov](https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/branch/master/graph/badge.svg?token=1VW1RV7MCT)](https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum)
+<h1 align="center">homebridge-xiaomi-roborock-vacuum</h1>
+
+<p align="center">
+  <a href="https://github.com/homebridge/homebridge/wiki/Verified-Plugins"><img src="https://badgen.net/badge/homebridge/verified/purple" alt="verified-by-homebridge"></a>
+  <a href="https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum"><img src="https://badge.fury.io/js/homebridge-xiaomi-roborock-vacuum.svg" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum"><img src="https://img.shields.io/npm/dt/homebridge-xiaomi-roborock-vacuum.svg" alt="npm downloads"></a>
+  <a href="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum"><img src="https://img.shields.io/github/last-commit/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum.svg" alt="GitHub last commit"></a>
+  <a href="https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum"><img src="https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/branch/master/graph/badge.svg?token=1VW1RV7MCT" alt="codecov"></a>
+</p>
 
 A [Homebridge](https://homebridge.io) plugin to control the Xiaomi / Roborock robot vacuums in the Apple Home app:
 as Apple Home's **native robot vacuum** (through Homebridge's Matter support), or as a fan with extra switches and
 sensors. It talks to the robot in your local network, with [node-miio](https://github.com/afharo/node-miio).
 
 > [!NOTE]
-> Made for the vacuums paired with the **Mi Home** app. The ones paired with the **Roborock app** are supported too,
-> experimentally: see [Roborock app](#roborock-app-experimental).
+> Made for the vacuums paired with the <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app" width="20" height="20" align="absmiddle"> **Mi Home** app. The ones paired with the <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/roborock.png" alt="Roborock app" width="20" height="20" align="absmiddle"> **Roborock app** are
+> supported too, experimentally: see [Roborock app](#roborock-app-experimental).
 
 <p>
 <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/rockrobo.vacuum.v1.jpg" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="100">
@@ -275,7 +283,7 @@ To find a spot's coordinates:
 
 ## Xiaomi Cloud
 
-The robot works in your local network, but the Xiaomi account knows its token, and its map (Roborock). With the
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app" width="20" height="20" align="absmiddle"> The robot works in your local network, but the Xiaomi account knows its token, and its map (Roborock). With the
 platform's `cloud` option, the plugin can:
 
 - **Read the tokens**: configure a robot with only its `ip`, or with its device ID (`did`) instead of the IP and token.
@@ -319,7 +327,7 @@ or the guides in German on [smartapfel.de](https://forum.smartapfel.de/forum/thr
 
 ## Roborock app (experimental)
 
-Robots paired with the **Roborock app** (instead of Mi Home) aren't in the Xiaomi account, and their miIO token doesn't
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/roborock.png" alt="Roborock app" width="20" height="20" align="absmiddle"> Robots paired with the **Roborock app** (instead of Mi Home) aren't in the Xiaomi account, and their miIO token doesn't
 work. With the platform's `roborock` option, the plugin uses your Roborock account instead: it talks to the robot in
 your local network when possible, and through Roborock's cloud otherwise. No token is needed, and the IP is optional.
 With `"autoroom": true`, the rooms get the names given in the Roborock app.
@@ -327,7 +335,9 @@ With `roomSensors` (and the Matter vacuum), the room the robot is cleaning comes
 
 To set it up:
 
-1. Log in once, as the same user that runs Homebridge (Roborock emails you a code):
+1. Log in once: in the [settings page](#settings-page), enter the email of your Roborock account, click "Send me a
+   code", and enter the code Roborock emails you. Then "Find my vacuums" and "Add" adds them with their `duid` (and
+   enables the `roborock` option). Without the Homebridge UI, run this as the same user that runs Homebridge:
 
    ```sh
    npx node-miio roborock login
@@ -363,6 +373,8 @@ The plugin's settings in the Homebridge UI show these tools above the usual form
 - **Xiaomi Cloud login**, with a QR code.
 - **Your vacuums** in the Xiaomi account: add them (with their `did`, IP and token) or update their token, in one
   click.
+- **Roborock app account login**, with a code sent by email, and **your vacuums** in that account: add them (with
+  their `duid`) in one click.
 - **Vacuums in the old format** (`accessories`), if any: moved to the platform in one click, with their options and
   child bridge, after a backup of the config. The Home app sees them as new accessories: put them back in their rooms,
   and update your scenes and automations.
@@ -393,3 +405,12 @@ Try a couple of times, in case of a network glitch. If it answers, try other com
 
 **Reporting an issue**: enable `debug` on the vacuum, and attach the logs. See [CONTRIBUTING.md](./CONTRIBUTING.md)
 for what to share when requesting a model or a feature.
+
+## Trademarks
+
+Xiaomi, Xiaomi Home, Mi Home, Roborock and their logos are trademarks of their respective owners. This README and the
+settings page show the apps' icons only to tell which app each section is for. This plugin is an independent project, not affiliated
+with, endorsed or sponsored by Xiaomi or Roborock.
+
+The Homebridge logo is used as allowed by the [Homebridge branding guidelines](https://github.com/homebridge/branding):
+this is a community plugin, not an official Homebridge project.
