@@ -19,33 +19,33 @@ MIoT vacuums, from their spec: they're in the logs with `"debug": true`). The Vi
 
 ## Models
 
-- [dreame.vacuum.mc1808](#dreamevacuummc1808)
-- [roborock.vacuum.a08](#roborockvacuuma08)
+- [dreame.vacuum.mc1808 — Dreame 1C](#dreamevacuummc1808--dreame-1c)
+- [roborock.vacuum.a08 — Roborock S6 Pure](#roborockvacuuma08--roborock-s6-pure)
 - [roborock.vacuum.a09](#roborockvacuuma09)
-- [roborock.vacuum.a10](#roborockvacuuma10)
-- [roborock.vacuum.a11](#roborockvacuuma11)
+- [roborock.vacuum.a10 — Roborock S6 MaxV](#roborockvacuuma10--roborock-s6-maxv)
+- [roborock.vacuum.a11 — Roborock T7 (Chinese S7)](#roborockvacuuma11--roborock-t7-chinese-s7)
 - [roborock.vacuum.a15 — Roborock S7](#roborockvacuuma15--roborock-s7)
 - [roborock.vacuum.a27 — Roborock S7 MaxV](#roborockvacuuma27--roborock-s7-maxv)
-- [roborock.vacuum.a296 — Roborock Saros 20 (Roborock app)](#roborockvacuuma296--roborock-saros-20-roborock-app)
+- [roborock.vacuum.a296 — Roborock Saros 20 Neo](#roborockvacuuma296--roborock-saros-20-neo)
 - [roborock.vacuum.a51 — Roborock S8](#roborockvacuuma51--roborock-s8)
-- [roborock.vacuum.a65](#roborockvacuuma65)
+- [roborock.vacuum.a65 — Roborock S7 Max Ultra](#roborockvacuuma65--roborock-s7-max-ultra)
 - [roborock.vacuum.a72 — Roborock Q5 Pro](#roborockvacuuma72--roborock-q5-pro)
-- [roborock.vacuum.a73](#roborockvacuuma73)
-- [roborock.vacuum.a75](#roborockvacuuma75)
-- [roborock.vacuum.c1](#roborockvacuumc1)
-- [roborock.vacuum.e2](#roborockvacuume2)
-- [roborock.vacuum.m1s](#roborockvacuumm1s)
+- [roborock.vacuum.a73 — Roborock Q8 Max](#roborockvacuuma73--roborock-q8-max)
+- [roborock.vacuum.a75 — Roborock Q Revo](#roborockvacuuma75--roborock-q-revo)
+- [roborock.vacuum.c1 — Roborock Xiaowa Lite (C1)](#roborockvacuumc1--roborock-xiaowa-lite-c1)
+- [roborock.vacuum.e2 — Roborock Xiaowa (E2)](#roborockvacuume2--roborock-xiaowa-e2)
+- [roborock.vacuum.m1s — Xiaomi Mi Robot Vacuum 1S](#roborockvacuumm1s--xiaomi-mi-robot-vacuum-1s)
 - [roborock.vacuum.s5 — Roborock S5 / S50 / S55](#roborockvacuums5--roborock-s5--s50--s55)
 - [roborock.vacuum.s5e — Roborock S5 Max](#roborockvacuums5e--roborock-s5-max)
 - [roborock.vacuum.s6 — Roborock S6](#roborockvacuums6--roborock-s6)
 - [roborock.vacuum.t4](#roborockvacuumt4)
-- [roborock.vacuum.t6](#roborockvacuumt6)
-- [rockrobo.vacuum.v1 — Mi Robot (1st generation)](#rockrobovacuumv1--mi-robot-1st-generation)
+- [roborock.vacuum.t6 — Roborock T6 (Chinese S6)](#roborockvacuumt6--roborock-t6-chinese-s6)
+- [rockrobo.vacuum.v1 — Xiaomi Mi Robot Vacuum (1st generation)](#rockrobovacuumv1--xiaomi-mi-robot-vacuum-1st-generation)
 - [viomi.vacuum.v7](#viomivacuumv7)
-- [viomi.vacuum.v8](#viomivacuumv8)
+- [viomi.vacuum.v8 — Xiaomi Mi Robot Vacuum-Mop Pro](#viomivacuumv8--xiaomi-mi-robot-vacuum-mop-pro)
 - [Other models (default)](#other-models-default)
 
-## dreame.vacuum.mc1808
+## dreame.vacuum.mc1808 — Dreame 1C
 
 Fan speed (the main fan's slider):
 
@@ -66,7 +66,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 3    | Medium Vacuum   | Vacuum, Day      | 2   | –     | –         |
 | 4    | Turbo Vacuum    | Vacuum, Max      | 3   | –     | –         |
 
-## roborock.vacuum.a08
+## roborock.vacuum.a08 — Roborock S6 Pure
 
 Fan speed (the main fan's slider):
 
@@ -125,7 +125,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 8    | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
 | 9    | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
 
-## roborock.vacuum.a10
+## roborock.vacuum.a10 — Roborock S6 MaxV
 
 Fan speed (the main fan's slider):
 
@@ -163,7 +163,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 8    | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
 | 9    | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
 
-## roborock.vacuum.a11
+## roborock.vacuum.a11 — Roborock T7 (Chinese S7)
 
 Fan speed (the main fan's slider):
 
@@ -285,7 +285,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 12   | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
 | 13   | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
 
-## roborock.vacuum.a296 — Roborock Saros 20 (Roborock app)
+## roborock.vacuum.a296 — Roborock Saros 20 Neo
 
 Fan speed (the main fan's slider):
 
@@ -390,7 +390,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 11   | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
 | 12   | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
 
-## roborock.vacuum.a65
+## roborock.vacuum.a65 — Roborock S7 Max Ultra
 
 Fan speed (the main fan's slider):
 
@@ -456,7 +456,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 5    | Max Vacuum      | Vacuum, Max       | 104 | –     | –         |
 | 6    | Custom Vacuum   | Vacuum, Vacation  | 106 | –     | –         |
 
-## roborock.vacuum.a73
+## roborock.vacuum.a73 — Roborock Q8 Max
 
 Fan speed (the main fan's slider):
 
@@ -497,7 +497,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 11   | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
 | 12   | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
 
-## roborock.vacuum.a75
+## roborock.vacuum.a75 — Roborock Q Revo
 
 Fan speed (the main fan's slider):
 
@@ -538,7 +538,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 11   | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
 | 12   | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
 
-## roborock.vacuum.c1
+## roborock.vacuum.c1 — Roborock Xiaowa Lite (C1)
 
 Fan speed (the main fan's slider):
 
@@ -559,7 +559,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 3    | Turbo Vacuum    | Vacuum, Max      | 77  | –     | –         |
 | 4    | Max Vacuum      | Vacuum, Max      | 90  | –     | –         |
 
-## roborock.vacuum.e2
+## roborock.vacuum.e2 — Roborock Xiaowa (E2)
 
 Fan speed (the main fan's slider):
 
@@ -582,7 +582,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 4    | Turbo Vacuum    | Vacuum, Max       | 79  | –     | –         |
 | 5    | Max Vacuum      | Vacuum, Max       | 100 | –     | –         |
 
-## roborock.vacuum.m1s
+## roborock.vacuum.m1s — Xiaomi Mi Robot Vacuum 1S
 
 Fan speed (the main fan's slider):
 
@@ -730,7 +730,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 3    | Turbo Vacuum    | Vacuum, Max      | 103 | –     | –         |
 | 4    | Max Vacuum      | Vacuum, Max      | 104 | –     | –         |
 
-## roborock.vacuum.t6
+## roborock.vacuum.t6 — Roborock T6 (Chinese S6)
 
 Fan speed (the main fan's slider):
 
@@ -751,7 +751,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 3    | Turbo Vacuum    | Vacuum, Max      | 103 | –     | –         |
 | 4    | Max Vacuum      | Vacuum, Max      | 104 | –     | –         |
 
-## rockrobo.vacuum.v1 — Mi Robot (1st generation)
+## rockrobo.vacuum.v1 — Xiaomi Mi Robot Vacuum (1st generation)
 
 Fan speed (the main fan's slider):
 
@@ -793,7 +793,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 3    | Medium Vacuum   | Vacuum, Day      | 2   | –     | –         |
 | 4    | Turbo Vacuum    | Vacuum, Max      | 3   | –     | –         |
 
-## viomi.vacuum.v8
+## viomi.vacuum.v8 — Xiaomi Mi Robot Vacuum-Mop Pro
 
 Fan speed (the main fan's slider):
 

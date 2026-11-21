@@ -13,17 +13,32 @@ import { CleanModeTag } from "../matter/constants";
 /** Models only node-miio knows the modes of (the plugin uses what it reports) */
 const NODE_MIIO_MODELS = ["roborock.vacuum.a296"];
 
-/** Better-known names of some models */
+/**
+ * The commercial names of the models. Sources: Roborock's product catalog, python-miio's model list, Roborock's pages
+ * (Xiaowa) and this repo's issues. The ones without a confirmed name (a09, t4, viomi.vacuum.v7) show their model only.
+ */
 const MODEL_NAMES: Record<string, string> = {
-  "rockrobo.vacuum.v1": "Mi Robot (1st generation)",
+  "dreame.vacuum.mc1808": "Dreame 1C",
+  "rockrobo.vacuum.v1": "Xiaomi Mi Robot Vacuum (1st generation)",
+  "roborock.vacuum.a08": "Roborock S6 Pure",
+  "roborock.vacuum.a10": "Roborock S6 MaxV",
+  "roborock.vacuum.a11": "Roborock T7 (Chinese S7)",
+  "roborock.vacuum.a15": "Roborock S7",
+  "roborock.vacuum.a27": "Roborock S7 MaxV",
+  "roborock.vacuum.a296": "Roborock Saros 20 Neo",
+  "roborock.vacuum.a51": "Roborock S8",
+  "roborock.vacuum.a65": "Roborock S7 Max Ultra",
+  "roborock.vacuum.a72": "Roborock Q5 Pro",
+  "roborock.vacuum.a73": "Roborock Q8 Max",
+  "roborock.vacuum.a75": "Roborock Q Revo",
+  "roborock.vacuum.c1": "Roborock Xiaowa Lite (C1)",
+  "roborock.vacuum.e2": "Roborock Xiaowa (E2)",
+  "roborock.vacuum.m1s": "Xiaomi Mi Robot Vacuum 1S",
   "roborock.vacuum.s5": "Roborock S5 / S50 / S55",
   "roborock.vacuum.s5e": "Roborock S5 Max",
   "roborock.vacuum.s6": "Roborock S6",
-  "roborock.vacuum.a15": "Roborock S7",
-  "roborock.vacuum.a27": "Roborock S7 MaxV",
-  "roborock.vacuum.a51": "Roborock S8",
-  "roborock.vacuum.a72": "Roborock Q5 Pro",
-  "roborock.vacuum.a296": "Roborock Saros 20 (Roborock app)",
+  "roborock.vacuum.t6": "Roborock T6 (Chinese S6)",
+  "viomi.vacuum.v8": "Xiaomi Mi Robot Vacuum-Mop Pro",
 };
 
 const TAG_NAMES: Record<number, string> = Object.fromEntries(
