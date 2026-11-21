@@ -86,7 +86,7 @@ describe("MatterVacuum", () => {
       state: "charging",
       batteryLevel: 80,
       fanSpeed: 102,
-      water_box_mode: 200,
+      waterBoxMode: 200,
     };
     deviceManager.property.mockImplementation(
       (name: string) => properties[name] as never
@@ -242,6 +242,50 @@ describe("MatterVacuum", () => {
       expect(deviceManager.device.setWaterBoxMode).toHaveBeenCalledWith(203);
     });
 
+    test("clean mode: the robot's SmartPlan preset sets the 3 settings at once", async () => {
+      deviceManager.reportedModes = {
+        fanSpeeds: [],
+        waterBoxModes: [],
+        presets: [
+          {
+            name: "SmartPlan",
+            fanSpeed: 110,
+            waterBoxMode: 209,
+            mopRoute: 306,
+          },
+        ],
+      };
+      const vacuum = createVacuum();
+      const { supportedModes } = vacuum.build().clusters?.rvcCleanMode ?? {};
+      const smartPlan = (
+        supportedModes as { label: string; mode: number }[]
+      ).find(({ label }) => label === "SmartPlan");
+      expect(smartPlan).toBeDefined();
+      await handlersOf(vacuum).rvcCleanMode.changeToMode!({
+        newMode: smartPlan!.mode,
+      });
+      expect(deviceManager.device.setCleanMotorMode).toHaveBeenCalledWith({
+        fanSpeed: 110,
+        waterBoxMode: 209,
+        mopRoute: 306,
+      });
+      expect(deviceManager.device.changeFanSpeed).not.toHaveBeenCalled();
+
+      await vacuum.register();
+      // Picked in the Roborock app: it's the current mode
+      Object.assign(properties, {
+        fanSpeed: 110,
+        waterBoxMode: 209,
+        mopRoute: 306,
+      });
+      stateChanged$.next({ key: "mopRoute", value: 306 });
+      await new Promise(setImmediate);
+      expect(lastUpdate("rvcCleanMode")).toStrictEqual({
+        currentMode: smartPlan!.mode,
+      });
+      vacuum.stop();
+    });
+
     test("clean mode: unknown mode", async () => {
       const handlers = handlersOf(createVacuum());
       await expect(
@@ -311,8 +355,8 @@ describe("MatterVacuum", () => {
 
     test("fan speed and water level changed from the app", async () => {
       properties.fanSpeed = 105;
-      properties.water_box_mode = 201;
-      stateChanged$.next({ key: "water_box_mode", value: 201 });
+      properties.waterBoxMode = 201;
+      stateChanged$.next({ key: "waterBoxMode", value: 201 });
       await new Promise(setImmediate);
       // "Light Mop"
       expect(lastUpdate("rvcCleanMode")).toStrictEqual({ currentMode: 6 });

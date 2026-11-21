@@ -162,6 +162,7 @@ export class RoborockService {
       duid: robot.duid,
       localKey: robot.localKey,
       model: robot.model,
+      firmwareVersion: robot.firmwareVersion,
       address: config.ip,
       mqtt: this.mqtt,
       logger,

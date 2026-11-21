@@ -1,3 +1,4 @@
+import type { CleanPreset } from "node-miio";
 import type { ModelDefinition, ModesHomekitVsMiLevel } from "../models/types";
 import { CleanModeTag } from "./constants";
 
@@ -6,8 +7,11 @@ export interface CleanMode {
   label: string;
   mode: number;
   modeTags: Array<{ value: CleanModeTag }>;
-  /** The fan speed and water level (miIO values). `undefined`: not changed. */
-  levels: { fan?: number; water?: number };
+  /**
+   * The fan speed and water level (miIO values). `undefined`: not changed. With `mop` (the mop route), the robot's own
+   * preset (e.g. SmartPlan): the three are set at once.
+   */
+  levels: { fan?: number; water?: number; mop?: number };
 }
 
 /** Tags by (lowercased) fan speed name, as named in `models/` and by node-miio */
@@ -132,9 +136,16 @@ function pick(
  *   (controllers and automations refer to the modes by number).
  *
  * @param definition The robot's fan speeds and water levels
+ *   When the robot has a SmartPlan preset (it picks the settings per room), it replaces "Automatic" (same number and
+ *   tag): it's the robot's own automatic mode.
+ *
+ * @param robotPresets The robot's presets (`cleanPresets()` of node-miio)
  * @returns The clean modes
  */
-export function buildCleanModes(definition: ModelDefinition): CleanMode[] {
+export function buildCleanModes(
+  definition: ModelDefinition,
+  robotPresets: CleanPreset[] = []
+): CleanMode[] {
   const fans = definition.speed.filter((mode) => !isFanOff(mode));
   const mopFan = fans.find(isMopFan);
   const vacuumFans = fans.filter((mode) => !isMopFan(mode));
@@ -208,8 +219,20 @@ export function buildCleanModes(definition: ModelDefinition): CleanMode[] {
       water: pick(presetWaters, WATER_PRESET_NAMES, level).miLevel,
     },
   });
+  const smartPlan = robotPresets.find(({ name }) =>
+    /^smart ?plan$/i.test(name)
+  );
   const presets = [
-    preset("Automatic", CleanModeTag.Auto, "medium"),
+    smartPlan
+      ? {
+          ...preset(smartPlan.name, CleanModeTag.Auto, "medium"),
+          levels: {
+            fan: smartPlan.fanSpeed,
+            water: smartPlan.waterBoxMode,
+            mop: smartPlan.mopRoute,
+          },
+        }
+      : preset("Automatic", CleanModeTag.Auto, "medium"),
     preset("Deep clean", CleanModeTag.DeepClean, "high"),
     preset("Quiet", CleanModeTag.Quiet, "low"),
   ];
@@ -222,16 +245,19 @@ export function buildCleanModes(definition: ModelDefinition): CleanMode[] {
  * @param modes The clean modes
  * @param fan The robot's fan speed
  * @param water The robot's water level (`undefined` without a water box)
+ * @param mop The robot's mop route (only the presets, e.g. SmartPlan, check it)
  * @returns The clean mode, or `undefined` if none matches (e.g. a fan speed set from the app with another water level)
  */
 export function findCleanMode(
   modes: CleanMode[],
   fan: number | undefined,
-  water: number | undefined
+  water: number | undefined,
+  mop?: number
 ): CleanMode | undefined {
   return modes.find(
     ({ levels }) =>
       levels.fan === fan &&
-      (levels.water === undefined || levels.water === water)
+      (levels.water === undefined || levels.water === water) &&
+      (levels.mop === undefined || levels.mop === mop)
   );
 }

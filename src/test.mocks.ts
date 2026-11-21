@@ -28,6 +28,8 @@ type MockedMembers =
   | "sendToLocation"
   | "setRawProperty"
   | "setWaterBoxMode"
+  | "setCleanMotorMode"
+  | "cleanPresets"
   | "startDustCollection"
   | "stopDustCollection"
   | "startMopWash"
@@ -75,6 +77,8 @@ const miioDevice: MiioDeviceMock = {
   sendToLocation: jest.fn(),
   setRawProperty: jest.fn(),
   setWaterBoxMode: jest.fn(),
+  setCleanMotorMode: jest.fn(),
+  cleanPresets: jest.fn().mockResolvedValue([]),
   startDustCollection: jest.fn(),
   stopDustCollection: jest.fn(),
   startMopWash: jest.fn(),

@@ -146,3 +146,64 @@ describe("WaterBoxService", () => {
 
   // TODO: Add more tests
 });
+
+describe("WaterBoxService: water level changed from the app", () => {
+  test("the robot's preset (e.g. SmartPlan) is logged as such, not as an unsupported level", async () => {
+    const log = getLoggerMock();
+    const deviceManagerMock = createDeviceManagerMock();
+    deviceManagerMock.reportedModes = {
+      fanSpeeds: [],
+      waterBoxModes: [],
+      presets: [
+        { name: "SmartPlan", fanSpeed: 110, waterBoxMode: 209, mopRoute: 306 },
+      ],
+    };
+    const service = new WaterBoxService(
+      {
+        hap: HapJs,
+        log,
+        config: applyConfigDefaults({}),
+        deviceManager: deviceManagerMock,
+      },
+      createProductInfoMock(),
+      createMainServiceMock()
+    );
+    await service.init();
+    (
+      deviceManagerMock.stateChanged$ as unknown as {
+        next: (e: unknown) => void;
+      }
+    ).next({
+      key: "waterBoxMode",
+      value: 209,
+    });
+    expect(log.info).toHaveBeenCalledWith(
+      'changedWaterSpeed | The robot\'s "SmartPlan" preset is on (water level 209)'
+    );
+    expect(log.warn).not.toHaveBeenCalled();
+  });
+
+  test('follows node-miio\'s "waterBoxMode" events', async () => {
+    const log = getLoggerMock();
+    const deviceManagerMock = createDeviceManagerMock();
+    const service = new WaterBoxService(
+      {
+        hap: HapJs,
+        log,
+        config: applyConfigDefaults({}),
+        deviceManager: deviceManagerMock,
+      },
+      createProductInfoMock(),
+      createMainServiceMock()
+    );
+    await service.init();
+    (
+      deviceManagerMock.stateChanged$ as unknown as {
+        next: (e: unknown) => void;
+      }
+    ).next({ key: "waterBoxMode", value: 202 });
+    expect(log.info).toHaveBeenCalledWith(
+      "MON changedWaterSpeed | WaterBoxMode is now 202%"
+    );
+  });
+});

@@ -80,7 +80,15 @@ export class MainService extends PluginServiceClass {
           this.log.info(`MON changedSpeed | FanSpeed is now ${speed}%`);
           const speedMode = this.findSpeedModeFromMiio(speed);
 
-          if (typeof speedMode === "undefined") {
+          const preset = this.deviceManager.reportedModes?.presets?.find(
+            ({ fanSpeed }) => fanSpeed === speed
+          );
+          if (typeof speedMode === "undefined" && preset) {
+            // e.g. SmartPlan: the robot picks the settings (a Matter clean mode, with `serviceType: "vacuum"`)
+            this.log.info(
+              `changedSpeed | The robot's "${preset.name}" preset is on (fan speed ${speed})`
+            );
+          } else if (typeof speedMode === "undefined") {
             this.log.warn(
               `WAR changedSpeed | Speed was changed to ${speed}%, this speed is not supported`
             );

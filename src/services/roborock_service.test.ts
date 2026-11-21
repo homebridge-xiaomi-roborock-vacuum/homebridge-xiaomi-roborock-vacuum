@@ -79,6 +79,7 @@ describe("RoborockService", () => {
       duid: "duid-1",
       localKey: "key1",
       model: "roborock.vacuum.a296",
+      firmwareVersion: "02.32.54",
       address: undefined,
       mqtt,
       logger,

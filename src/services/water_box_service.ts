@@ -54,15 +54,23 @@ export class WaterBoxService extends PluginServiceClass {
 
     this.deviceManager.stateChanged$
       .pipe(
-        filter(({ key }) => key === "water_box_mode"),
+        filter(({ key }) => key === "waterBoxMode"),
         distinctUntilKeyChanged("value")
       )
       .subscribe(({ value: speed }) => {
         this.log.info(`MON changedWaterSpeed | WaterBoxMode is now ${speed}%`);
 
         const speedMode = this.findWaterSpeedModeFromMiio(speed);
+        const preset = this.deviceManager.reportedModes?.presets?.find(
+          ({ waterBoxMode }) => waterBoxMode === speed
+        );
 
-        if (typeof speedMode === "undefined") {
+        if (typeof speedMode === "undefined" && preset) {
+          // e.g. SmartPlan: the robot picks the settings (a Matter clean mode, with `serviceType: "vacuum"`)
+          this.log.info(
+            `changedWaterSpeed | The robot's "${preset.name}" preset is on (water level ${speed})`
+          );
+        } else if (typeof speedMode === "undefined") {
           this.log.warn(
             `WAR changedWaterSpeed | Speed was changed to ${speed}%, this speed is not supported`
           );
