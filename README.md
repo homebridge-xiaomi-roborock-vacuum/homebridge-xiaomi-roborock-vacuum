@@ -19,8 +19,8 @@ as Apple Home's **native robot vacuum** (through Homebridge's Matter support), o
 sensors. It talks to the robot in your local network, with [node-miio](https://github.com/afharo/node-miio).
 
 > [!NOTE]
-> Made for the vacuums paired with the **Mi Home** app. The ones paired with the **Roborock app** are supported too,
-> experimentally: see [Roborock app](#roborock-app-experimental).
+> Made for the vacuums paired with the <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app" width="20" height="20" align="absmiddle"> **Mi Home** app. The ones paired with the <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/roborock.png" alt="Roborock app" width="20" height="20" align="absmiddle"> **Roborock app** are
+> supported too, experimentally: see [Roborock app](#roborock-app-experimental).
 
 <p>
 <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/rockrobo.vacuum.v1.jpg" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="100">
@@ -272,7 +272,7 @@ To find a spot's coordinates:
 
 ## Xiaomi Cloud
 
-The robot works in your local network, but the Xiaomi account knows its token, and its map (Roborock). With the
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app" width="20" height="20" align="absmiddle"> The robot works in your local network, but the Xiaomi account knows its token, and its map (Roborock). With the
 platform's `cloud` option, the plugin can:
 
 - **Read the tokens**: configure a robot with only its `ip`, or with its device ID (`did`) instead of the IP and token.
@@ -316,7 +316,7 @@ or the guides in German on [smartapfel.de](https://forum.smartapfel.de/forum/thr
 
 ## Roborock app (experimental)
 
-Robots paired with the **Roborock app** (instead of Mi Home) aren't in the Xiaomi account, and their miIO token doesn't
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/roborock.png" alt="Roborock app" width="20" height="20" align="absmiddle"> Robots paired with the **Roborock app** (instead of Mi Home) aren't in the Xiaomi account, and their miIO token doesn't
 work. With the platform's `roborock` option, the plugin uses your Roborock account instead: it talks to the robot in
 your local network when possible, and through Roborock's cloud otherwise. No token is needed, and the IP is optional.
 With `"autoroom": true`, the rooms get the names given in the Roborock app.
@@ -396,6 +396,6 @@ for what to share when requesting a model or a feature.
 
 ## Trademarks
 
-Xiaomi, Xiaomi Home, Mi Home, Roborock and their logos are trademarks of their respective owners. The settings page
-shows the apps' icons only to tell which app each section is for. This plugin is an independent project, not affiliated
+Xiaomi, Xiaomi Home, Mi Home, Roborock and their logos are trademarks of their respective owners. This README and the
+settings page show the apps' icons only to tell which app each section is for. This plugin is an independent project, not affiliated
 with, endorsed or sponsored by Xiaomi or Roborock.
