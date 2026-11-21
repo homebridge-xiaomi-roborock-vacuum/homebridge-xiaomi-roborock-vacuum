@@ -323,7 +323,9 @@ With `"autoroom": true`, the rooms get the names given in the Roborock app.
 
 To set it up:
 
-1. Log in once, as the same user that runs Homebridge (Roborock emails you a code):
+1. Log in once: in the [settings page](#settings-page), enter the email of your Roborock account, click "Send me a
+   code", and enter the code Roborock emails you. Then "Find my vacuums" and "Add" adds them with their `duid` (and
+   enables the `roborock` option). Without the Homebridge UI, run this as the same user that runs Homebridge:
 
    ```sh
    npx node-miio roborock login
@@ -359,6 +361,8 @@ The plugin's settings in the Homebridge UI show these tools above the usual form
 - **Xiaomi Cloud login**, with a QR code.
 - **Your vacuums** in the Xiaomi account: add them (with their `did`, IP and token) or update their token, in one
   click.
+- **Roborock app account login**, with a code sent by email, and **your vacuums** in that account: add them (with
+  their `duid`) in one click.
 - **Vacuums in the old format** (`accessories`), if any: moved to the platform in one click, with their options and
   child bridge, after a backup of the config. The Home app sees them as new accessories: put them back in their rooms,
   and update your scenes and automations.
