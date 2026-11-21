@@ -354,3 +354,43 @@ describe("DeviceManager", () => {
     });
   });
 });
+
+describe("DeviceManager with a connector (Roborock app)", () => {
+  const log = getLoggerMock();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    miio.device.matches.mockReturnValue(true);
+    miio.device.property.mockReturnValue(undefined);
+    miio.device.poll.mockResolvedValue(undefined);
+    miio.device.state.mockResolvedValue({});
+  });
+
+  test("connects with it: no IP nor token needed, room names kept", async () => {
+    const nodeMiio = jest.requireMock("node-miio");
+    nodeMiio.roborockApiOf.mockReturnValue({ address: "192.168.86.26" });
+    const connector = jest.fn().mockResolvedValue({
+      device: miio.device,
+      roomNames: new Map([["50625967", "Cocina"]]),
+    });
+    const manager = new DeviceManager(
+      createHomebridgeMock().hap,
+      log,
+      { duid: "k6Al" },
+      undefined,
+      connector
+    );
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(connector).toHaveBeenCalledWith({ debug: expect.any(Function) });
+    expect(nodeMiio.device).not.toHaveBeenCalled();
+    expect(manager.device).toBe(miio.device);
+    expect(manager.roomName("50625967")).toBe("Cocina");
+    expect(manager.roomName(50625967)).toBe("Cocina");
+    expect(manager.roomName("1")).toBeUndefined();
+    expect(log.info).toHaveBeenCalledWith(
+      "STA getDevice | Connected to: %s",
+      "192.168.86.26"
+    );
+    nodeMiio.roborockApiOf.mockReturnValue(undefined);
+  });
+});

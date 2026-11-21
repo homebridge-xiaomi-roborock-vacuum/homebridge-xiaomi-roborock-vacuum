@@ -24,6 +24,8 @@ export interface DeviceManagerConfig {
   token?: string;
   /** The device ID in the Xiaomi account: its IP and token are read from there (needs the platform's `cloud` option) */
   did?: string;
+  /** The robot's ID in a Roborock app account (needs the platform's `roborock` option): no token needed, the IP is optional */
+  duid?: string;
 }
 
 /** Where the robot is, and how to talk to it */
@@ -45,6 +47,23 @@ export type DeviceLocator = (
 /** `null` when the error is cleared (node-miio >= 0.5.0) */
 export type { ErrorChangedEvent, StateChangedEvent };
 
+/** A robot connected another way than miIO (e.g. a Roborock-app robot) */
+export interface ConnectedDevice {
+  device: unknown;
+  /** The names of the rooms, by the ID in the 2nd item of `get_room_mapping` */
+  roomNames?: Map<string, string>;
+}
+
+/**
+ * Connects to the robot without miIO (e.g. through a Roborock app account).
+ *
+ * @param logger Where node-miio's debug messages go
+ * @returns The device
+ */
+export type DeviceConnector = (
+  logger: miio.MiioLogger
+) => Promise<ConnectedDevice | undefined>;
+
 const GET_STATE_INTERVAL_MS = 30000; // 30s
 const RECONNECT_INTERVAL_MS = 120000; // 2 minutes
 /** Consecutive failed state requests before looking for the robot again (~1.5 minutes) */
@@ -63,6 +82,7 @@ export class DeviceManager {
 
   private ip: string;
   private token: string;
+  private roomNames = new Map<string, string>();
   private failedPolls = 0;
   private lastLocatedAt = 0;
 
@@ -89,8 +109,16 @@ export class DeviceManager {
     private readonly log: Logger,
     config: DeviceManagerConfig,
     /** Finds the robot again when it stops answering (with the platform's `cloud` option) */
-    private readonly locate?: DeviceLocator
+    private readonly locate?: DeviceLocator,
+    /** Connects without miIO (with the platform's `roborock` option) */
+    private readonly connector?: DeviceConnector
   ) {
+    if (connector) {
+      this.ip = config.ip ?? "";
+      this.token = "";
+      this.connect().catch(() => {});
+      return;
+    }
     if (!config.ip) {
       throw new Error(
         "You must provide an ip address of the vacuum cleaner (or its `did`, with the platform's `cloud` option)."
@@ -116,6 +144,14 @@ export class DeviceManager {
 
   public get state() {
     return this.property("state") as string;
+  }
+
+  /**
+   * @param roomId The room ID of `get_room_mapping` (its 2nd item)
+   * @returns The room's name in the robot's app, if known (Roborock app accounts)
+   */
+  public roomName(roomId: string | number): string | undefined {
+    return this.roomNames.get(String(roomId));
   }
 
   public get isCleaning() {
@@ -235,11 +271,20 @@ export class DeviceManager {
     // Messages not tied to a device (network, MIoT specs…).
     // With several vacuums, the last one to connect wins: it's only used for debugging.
     miio.configureLogging({ logger: miioLogger });
-    const device = await miio.device({
-      address: this.ip,
-      token: this.token,
-      logger: miioLogger,
-    });
+    let device: unknown;
+    if (this.connector) {
+      const connected = await this.connector(miioLogger);
+      if (!connected) throw new Error("The robot couldn't be found");
+      device = connected.device;
+      this.roomNames = connected.roomNames ?? new Map();
+      this.ip = miio.roborockApiOf(device)?.address ?? this.ip;
+    } else {
+      device = await miio.device({
+        address: this.ip,
+        token: this.token,
+        logger: miioLogger,
+      });
+    }
 
     if (isVacuum(device)) {
       this.reportedModes = await this.loadReportedModes(device);
@@ -268,12 +313,14 @@ export class DeviceManager {
         .pipe(exhaustMap(() => this.getState()))
         .subscribe();
     } else {
-      const model = device?.miioModel;
+      const other = device as
+        { miioModel?: string; destroy?: () => unknown } | undefined;
+      const model = other?.miioModel;
       this.log.error(
         `Device "${model}" is not registered as a vacuum cleaner! If you think it should be, please open an issue at https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/new and provide this line.`
       );
       this.log.debug("DEB getDevice | %o", device);
-      device?.destroy();
+      other?.destroy?.();
     }
   }
 

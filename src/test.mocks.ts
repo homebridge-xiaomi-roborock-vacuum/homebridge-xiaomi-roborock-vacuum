@@ -94,6 +94,8 @@ export const miio = {
   createMock: () => ({
     device: jest.fn().mockImplementation(() => miioDevice),
     configureLogging: jest.fn(),
+    // Only robots of a Roborock app account have a Roborock connection
+    roborockApiOf: jest.fn().mockReturnValue(undefined),
     // Same logic as node-miio's
     isVacuum: (device: unknown) =>
       typeof (device as { matches?: unknown })?.matches === "function" &&

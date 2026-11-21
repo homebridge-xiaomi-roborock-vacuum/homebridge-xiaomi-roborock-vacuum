@@ -5,8 +5,14 @@ import type {
   PlatformAccessory,
   PlatformConfig,
 } from "homebridge";
-import { type Config, applyConfigDefaults, CloudService } from "../services";
+import {
+  type Config,
+  applyConfigDefaults,
+  CloudService,
+  RoborockService,
+} from "../services";
 import type { CloudConfig } from "../services/cloud_service";
+import type { RoborockConfig } from "../services/roborock_service";
 import { ACCESSORY_NAME, PLUGIN_NAME } from "../constants";
 import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory";
 import { first } from "rxjs";
@@ -16,6 +22,8 @@ interface XiaomiRoborockVacuumPlatformConfig extends PlatformConfig {
   devices: Partial<Config>[];
   /** The Xiaomi Cloud, to know which room the robot is cleaning (opt-in) */
   cloud?: CloudConfig;
+  /** A Roborock app account, for the robots paired with the Roborock app (opt-in) */
+  roborock?: RoborockConfig;
 }
 
 interface PlatformAccessoryContext {
@@ -91,7 +99,20 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
     const cloud = this.config.cloud?.enabled
       ? new CloudService(this.log, this.config.cloud)
       : undefined;
+    const roborock = this.config.roborock?.enabled
+      ? new RoborockService(this.log, this.config.roborock)
+      : undefined;
     this.config.devices.forEach((config) => {
+      if (config.duid) {
+        if (!roborock) {
+          this.log.error(
+            `The vacuum "${config.name}" has a \`duid\` (Roborock app): enable the platform's \`roborock\` option.`
+          );
+          return;
+        }
+        this.initializeDevice(config, cloud, roborock);
+        return;
+      }
       // Configured with its `did`, or without a token: its IP and token are in the Xiaomi account
       if (!cloud || !(config.did || (config.ip && !config.token))) {
         this.initializeDevice(config, cloud);
@@ -115,7 +136,11 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
    * @param config The device's config
    * @param cloud The Xiaomi Cloud, if enabled
    */
-  private initializeDevice(config: Partial<Config>, cloud?: CloudService) {
+  private initializeDevice(
+    config: Partial<Config>,
+    cloud?: CloudService,
+    roborock?: RoborockService
+  ) {
     let isCached = true;
     const uuid = this.api.hap.uuid.generate(
       `${PLUGIN_NAME}-accessory-${config.name}`
@@ -136,7 +161,8 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
         config,
         this.api,
         accessory,
-        cloud
+        cloud,
+        roborock
       );
 
     platformInitializer.initialized$.pipe(first()).subscribe((hasServices) => {

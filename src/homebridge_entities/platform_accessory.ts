@@ -1,6 +1,11 @@
 import type { Logging, API, Service } from "homebridge";
 import { Subject, first } from "rxjs";
-import { type CloudService, type Config, DeviceManager } from "../services";
+import {
+  type CloudService,
+  type Config,
+  DeviceManager,
+  type RoborockService,
+} from "../services";
 import { findSpeedModes } from "../utils/find_speed_modes";
 import { type Logger, getLogger } from "../utils/logger";
 import { supports } from "../utils/supports";
@@ -51,7 +56,8 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
     config: Partial<Config>,
     api: API,
     private readonly accessory: XiaomiRoborockVacuumPlatformAccessory,
-    private readonly cloud?: CloudService
+    private readonly cloud?: CloudService,
+    roborock?: RoborockService
   ) {
     this.log = getLogger(log, config);
     if (
@@ -68,9 +74,17 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
       api.hap,
       this.log,
       config,
-      cloud &&
-        ((current) =>
-          cloud.locate({ did: config.did, ...current }, { fresh: true }))
+      cloud && !config.duid
+        ? (current) =>
+            cloud.locate({ did: config.did, ...current }, { fresh: true })
+        : undefined,
+      roborock && config.duid
+        ? (logger) =>
+            roborock.connect(
+              { duid: config.duid as string, ip: config.ip },
+              logger
+            )
+        : undefined
     );
     deviceManager.deviceConnected$.pipe(first()).subscribe(() => {
       this.initialize(config, api, deviceManager).catch((err) =>

@@ -21,6 +21,7 @@ export const createDeviceManagerMock = (): DeviceManagerMock => {
     device: miio.device,
     property: jest.fn(),
     ensureDevice: jest.fn(),
+    roomName: jest.fn(),
   };
 
   return deviceManagerMock as unknown as DeviceManagerMock;

@@ -41,8 +41,14 @@
               "type": "string",
               "default": "fan",
               "oneOf": [
-                { "title": "Fan (on/off + fan speed)", "enum": ["fan"] },
-                { "title": "Switch (on/off only)", "enum": ["switch"] },
+                {
+                  "title": "Fan (on/off + fan speed)",
+                  "enum": ["fan"]
+                },
+                {
+                  "title": "Switch (on/off only)",
+                  "enum": ["switch"]
+                },
                 {
                   "title": "Robot vacuum (Matter, iOS 18.4+)",
                   "enum": ["vacuum"]
@@ -362,6 +368,11 @@
                   }
                 }
               }
+            },
+            "duid": {
+              "title": "Robot ID (Roborock app)",
+              "type": "string",
+              "description": "For robots paired with the Roborock app, with the platform's `roborock` option: no token needed, and the IP is optional (asked to the robot through Roborock's cloud). See `npx node-miio roborock devices`."
             }
           },
           "anyOf": [
@@ -370,6 +381,9 @@
             },
             {
               "required": ["ip"]
+            },
+            {
+              "required": ["duid"]
             }
           ]
         }
@@ -396,6 +410,23 @@
             "description": "(Optional) The server your robots are registered in. Found automatically when empty."
           }
         }
+      },
+      "roborock": {
+        "title": "Roborock app account (optional, experimental)",
+        "description": "For the robots paired with the Roborock app (instead of Mi Home): configure them with their `duid`, no token needed. Before enabling it, log in once with `npx node-miio roborock login` (a code is sent to your email), as the same user that runs Homebridge. The session is saved in node-miio's config directory.",
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "title": "Use a Roborock app account",
+            "type": "boolean",
+            "default": false
+          },
+          "sessionFile": {
+            "title": "Session file",
+            "type": "string",
+            "description": "(Optional) The session saved by `npx node-miio roborock login`, if it's not in the default location (e.g. when Homebridge runs as another user)."
+          }
+        }
       }
     }
   },
@@ -414,7 +445,12 @@
             {
               "type": "flex",
               "flex-flow": "row wrap",
-              "items": ["devices[].ip", "devices[].token", "devices[].did"]
+              "items": [
+                "devices[].ip",
+                "devices[].token",
+                "devices[].did",
+                "devices[].duid"
+              ]
             },
             "devices[].serviceType",
             "devices[].waterBox",
@@ -614,6 +650,14 @@
       "expandable": true,
       "expanded": false,
       "items": ["cloud.enabled", "cloud.sessionFile", "cloud.server"]
+    },
+    {
+      "type": "fieldset",
+      "title": "Roborock app account (optional, experimental)",
+      "description": "For the robots paired with the Roborock app (instead of Mi Home). Before enabling it, log in once with `npx node-miio roborock login`, as the same user that runs Homebridge. Then add each robot with its `duid` (`npx node-miio roborock devices`).",
+      "expandable": true,
+      "expanded": false,
+      "items": ["roborock.enabled", "roborock.sessionFile"]
     }
   ]
 }

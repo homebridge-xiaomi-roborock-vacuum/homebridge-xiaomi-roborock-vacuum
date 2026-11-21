@@ -5,7 +5,7 @@ import { BehaviorSubject } from "rxjs";
 import { createHomebridgeMock, miio } from "../test.mocks";
 import "./platform.test.mock";
 import { XiaomiRoborockVacuumPlatformAccessoryInitializerMock } from "./platform.test.mock";
-import { CloudService } from "../services";
+import { CloudService, RoborockService } from "../services";
 import {
   XiaomiRoborockVacuumPlatform,
   XiaomiRoborockVacuumPlatformAccessory,
@@ -270,5 +270,43 @@ describe("XiaomiRoborockVacuumPlatform", () => {
       'Failed to initialize the vacuum "not-in-the-account": You must provide a token of the vacuum cleaner'
     );
     jest.restoreAllMocks();
+  });
+
+  test("robots configured with their duid use the Roborock service (and are reported without the roborock option)", async () => {
+    homebridge.platformAccessory.mockImplementation(newAccessory);
+    new XiaomiRoborockVacuumPlatform(
+      log,
+      {
+        platform: ACCESSORY_NAME,
+        roborock: { enabled: true },
+        devices: [{ name: "saros", duid: "duid-1" }],
+      },
+      homebridge
+    );
+    homebridge.on.mock.calls[0][1]();
+    await new Promise(setImmediate);
+    const [call] =
+      XiaomiRoborockVacuumPlatformAccessoryInitializerMock.mock.calls;
+    expect(call[1]).toEqual({ name: "saros", duid: "duid-1" });
+    expect(call[5]).toBeInstanceOf(RoborockService);
+
+    XiaomiRoborockVacuumPlatformAccessoryInitializerMock.mockClear();
+    homebridge.on.mockClear();
+    new XiaomiRoborockVacuumPlatform(
+      log,
+      {
+        platform: ACCESSORY_NAME,
+        devices: [{ name: "saros", duid: "duid-1" }],
+      },
+      homebridge
+    );
+    homebridge.on.mock.calls[0][1]();
+    await new Promise(setImmediate);
+    expect(
+      XiaomiRoborockVacuumPlatformAccessoryInitializerMock
+    ).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'The vacuum "saros" has a `duid` (Roborock app): enable the platform\'s `roborock` option.'
+    );
   });
 });
