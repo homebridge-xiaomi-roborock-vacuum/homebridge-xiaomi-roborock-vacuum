@@ -86,6 +86,17 @@ function tagFor(
 
 type Level = "low" | "medium" | "high";
 
+/** More water levels than this are a slider: they get 3 mop modes (light, medium, high), not one each */
+const MAX_MOP_LEVELS = 4;
+/** On a slider, "Level 2" isn't "medium": the levels are picked by position (first, middle, last) */
+const NO_NAMES: Record<Level, RegExp> = { low: /$^/, medium: /$^/, high: /$^/ };
+/**
+ * @param waters The water levels
+ * @returns How to pick their low, medium and high levels
+ */
+const waterNames = (waters: ModesHomekitVsMiLevel[]) =>
+  waters.length > MAX_MOP_LEVELS ? NO_NAMES : WATER_PRESET_NAMES;
+
 const FAN_PRESET_NAMES: Record<Level, RegExp> = {
   low: /quiet|silen/i,
   medium: /balanced|standard|basic|default|medium/i,
@@ -130,7 +141,8 @@ function pick(
  * Builds the Matter clean modes from the robot's fan speeds and water levels (see `findSpeedModes`):
  *
  * - **Vacuum**: one per fan speed (the water is turned off, if the robot has a water box).
- * - **Mop**: with the mop-only fan speed ("Mop"), one per water level.
+ * - **Mop**: with the mop-only fan speed ("Mop"), one per water level. On a slider (more than 4 levels, e.g. 30 on the
+ *   Saros 20), only light, medium and high (the first, middle and last levels).
  * - **Vacuum & mop** presets (Automatic, Deep clean, Quiet), like the native Matter vacuums, when the robot has a
  *   water box. They're listed first, but numbered after the other modes, so the numbers of the other modes don't change
  *   (controllers and automations refer to the modes by number).
@@ -173,7 +185,25 @@ export function buildCleanModes(
     levels: { fan: miLevel, water: waterOff?.miLevel },
   }));
 
-  if (mopFan && waters.length > 0) {
+  if (mopFan && waters.length > MAX_MOP_LEVELS) {
+    // A slider (e.g. 30 levels on the Saros 20): only light, medium and high, not a mode per level
+    const levels: [string, Level, CleanModeTag][] = [
+      ["Light", "low", CleanModeTag.Min],
+      ["Medium", "medium", CleanModeTag.Day],
+      ["High", "high", CleanModeTag.Max],
+    ];
+    for (const [label, level, tag] of levels) {
+      modes.push({
+        label: `${label} Mop`,
+        mode: mode++,
+        modeTags: [{ value: CleanModeTag.Mop }, { value: tag }],
+        levels: {
+          fan: mopFan.miLevel,
+          water: pick(waters, waterNames(waters), level).miLevel,
+        },
+      });
+    }
+  } else if (mopFan && waters.length > 0) {
     waters.forEach(({ name, miLevel }, index) => {
       modes.push({
         label: `${name} Mop`,
@@ -216,7 +246,7 @@ export function buildCleanModes(
     ],
     levels: {
       fan: pick(presetFans, FAN_PRESET_NAMES, level).miLevel,
-      water: pick(presetWaters, WATER_PRESET_NAMES, level).miLevel,
+      water: pick(presetWaters, waterNames(presetWaters), level).miLevel,
     },
   });
   const smartPlan = robotPresets.find(({ name }) =>
