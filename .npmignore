@@ -26,8 +26,8 @@ jest.config.js
 # CI configs
 .github/
 
-# Docs
-images/
+# Docs (the README's images, at the root only: the settings page has its own `images` folder)
+/images/
 # Local Homebridge in Docker
 docker/
 .dockerignore

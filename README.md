@@ -393,3 +393,9 @@ Try a couple of times, in case of a network glitch. If it answers, try other com
 
 **Reporting an issue**: enable `debug` on the vacuum, and attach the logs. See [CONTRIBUTING.md](./CONTRIBUTING.md)
 for what to share when requesting a model or a feature.
+
+## Trademarks
+
+Xiaomi, Xiaomi Home, Mi Home, Roborock and their logos are trademarks of their respective owners. The settings page
+shows the apps' icons only to tell which app each section is for. This plugin is an independent project, not affiliated
+with, endorsed or sponsored by Xiaomi or Roborock.

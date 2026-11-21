@@ -2,6 +2,17 @@
   .xrv-card {
     margin-bottom: 1rem;
   }
+  .xrv-app-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+  }
+  .xrv-trademarks {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
   .xrv-muted {
     opacity: 0.75;
   }
@@ -90,11 +101,19 @@
 
 <div class="card xrv-card">
   <div class="card-body">
-    <h5 class="card-title">Xiaomi Cloud (optional)</h5>
+    <h5 class="card-title">
+      <img
+        class="xrv-app-icon"
+        src="images/xiaomi-home.png"
+        alt="Xiaomi Home app"
+      />Xiaomi Cloud (optional)
+    </h5>
     <p class="xrv-muted">
-      Log in to get your vacuums' tokens, see their map to name the rooms, and
-      (with the "Xiaomi Cloud" option below) know which room they're cleaning.
-      Your password is never needed: scan a QR code with the Mi Home app.
+      For the vacuums paired with the <strong>Mi Home</strong> (Xiaomi Home)
+      app. Log in to get your vacuums' tokens, see their map to name the rooms,
+      and (with the "Xiaomi Cloud" option below) know which room they're
+      cleaning. Your password is never needed: scan a QR code with the Mi Home
+      app.
     </p>
     <p id="cloud-status" class="mb-2">Checking…</p>
     <div class="xrv-qr mb-2" id="qr" hidden>
@@ -115,7 +134,13 @@
 
 <div class="card xrv-card" id="devices-card" hidden>
   <div class="card-body">
-    <h5 class="card-title">Vacuums in your Xiaomi account</h5>
+    <h5 class="card-title">
+      <img
+        class="xrv-app-icon"
+        src="images/xiaomi-home.png"
+        alt="Xiaomi Home app"
+      />Vacuums in your Xiaomi account
+    </h5>
     <button type="button" class="btn btn-primary mb-2" id="load-devices">
       Find my vacuums
     </button>
@@ -137,7 +162,13 @@
 
 <div class="card xrv-card">
   <div class="card-body">
-    <h5 class="card-title">Roborock app account (optional, experimental)</h5>
+    <h5 class="card-title">
+      <img
+        class="xrv-app-icon"
+        src="images/roborock.png"
+        alt="Roborock app"
+      />Roborock app account (optional, experimental)
+    </h5>
     <p class="xrv-muted">
       For the vacuums paired with the <strong>Roborock app</strong> instead of
       Mi Home. Log in with the email of your Roborock account: Roborock emails
@@ -179,7 +210,13 @@
 
 <div class="card xrv-card" id="roborock-devices-card" hidden>
   <div class="card-body">
-    <h5 class="card-title">Vacuums in your Roborock account</h5>
+    <h5 class="card-title">
+      <img
+        class="xrv-app-icon"
+        src="images/roborock.png"
+        alt="Roborock app"
+      />Vacuums in your Roborock account
+    </h5>
     <button
       type="button"
       class="btn btn-primary mb-2"
@@ -303,6 +340,13 @@
     </div>
   </div>
 </div>
+
+<p class="xrv-trademarks mt-3">
+  Xiaomi, Xiaomi Home, Mi Home, Roborock and their logos are trademarks of their
+  respective owners. They're shown only to tell which app each section is for:
+  this plugin is an independent project, not affiliated with, endorsed or
+  sponsored by Xiaomi or Roborock.
+</p>
 
 <script>
   (() => {
