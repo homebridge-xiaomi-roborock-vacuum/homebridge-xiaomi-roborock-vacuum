@@ -6,13 +6,21 @@
 > If you'd like to help, [sign up as a beta tester](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1232): you'll be mentioned when a beta needs a device like yours.
 > See [CONTRIBUTING.md](./CONTRIBUTING.md) for other ways to help. Co-maintainers are welcome too.
 
-# homebridge-xiaomi-roborock-vacuum
+<p align="center">
+  <img src="https://raw.githubusercontent.com/homebridge/branding/latest/logos/homebridge-color-round-stylized.svg" alt="Homebridge logo" width="64" height="64">
+  <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app logo" width="64" height="64">
+  <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/roborock.png" alt="Roborock app logo" width="64" height="64">
+</p>
 
-[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins)
-[![npm version](https://badge.fury.io/js/homebridge-xiaomi-roborock-vacuum.svg)](https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum)
-[![npm](https://img.shields.io/npm/dt/homebridge-xiaomi-roborock-vacuum.svg)](https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum)
-[![GitHub last commit](https://img.shields.io/github/last-commit/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum.svg)](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum)
-[![codecov](https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/branch/master/graph/badge.svg?token=1VW1RV7MCT)](https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum)
+<h1 align="center">homebridge-xiaomi-roborock-vacuum</h1>
+
+<p align="center">
+  <a href="https://github.com/homebridge/homebridge/wiki/Verified-Plugins"><img src="https://badgen.net/badge/homebridge/verified/purple" alt="verified-by-homebridge"></a>
+  <a href="https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum"><img src="https://badge.fury.io/js/homebridge-xiaomi-roborock-vacuum.svg" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum"><img src="https://img.shields.io/npm/dt/homebridge-xiaomi-roborock-vacuum.svg" alt="npm downloads"></a>
+  <a href="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum"><img src="https://img.shields.io/github/last-commit/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum.svg" alt="GitHub last commit"></a>
+  <a href="https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum"><img src="https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/branch/master/graph/badge.svg?token=1VW1RV7MCT" alt="codecov"></a>
+</p>
 
 A [Homebridge](https://homebridge.io) plugin to control the Xiaomi / Roborock robot vacuums in the Apple Home app:
 as Apple Home's **native robot vacuum** (through Homebridge's Matter support), or as a fan with extra switches and
@@ -399,3 +407,6 @@ for what to share when requesting a model or a feature.
 Xiaomi, Xiaomi Home, Mi Home, Roborock and their logos are trademarks of their respective owners. This README and the
 settings page show the apps' icons only to tell which app each section is for. This plugin is an independent project, not affiliated
 with, endorsed or sponsored by Xiaomi or Roborock.
+
+The Homebridge logo is used as allowed by the [Homebridge branding guidelines](https://github.com/homebridge/branding):
+this is a community plugin, not an official Homebridge project.
