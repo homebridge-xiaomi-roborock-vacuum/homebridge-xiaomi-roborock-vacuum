@@ -45,14 +45,52 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+  load:
+    name: "Load the built plugin"
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        # Node versions in "engines.node" that the Jest suite can't run on
+        node-version: [22.x]
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build
+      - name: Load dist/index.js and register with a stub API
+        run: |
+          node -e '
+            const assert = require("node:assert");
+            const plugin = require("./dist/index.js").default;
+            const registered = [];
+            plugin({
+              registerAccessory: (_plugin, name) => registered.push(`accessory:${name}`),
+              registerPlatform: (_plugin, name) => registered.push(`platform:${name}`),
+            });
+            assert.deepStrictEqual(registered, [
+              "accessory:XiaomiRoborockVacuum",
+              "platform:XiaomiRoborockVacuum",
+            ]);
+            console.log(`Loaded on Node ${process.version}:`, registered);
+          '
+
   tests:
     name: "Run tests"
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
-        # Keep in sync with package.json "engines.node"
-        node-version: [22.x, 24.x, 26.x]
+        # Keep in sync with package.json "engines.node".
+        # Node 22 is covered by the "load" job below: Jest only supports
+        # require(esm) (needed for @homebridge/hap-nodejs) from Node 24.9.
+        node-version: [24.x, 26.x]
 
     steps:
       - uses: actions/checkout@v7
