@@ -146,3 +146,29 @@ describe("WaterBoxService", () => {
 
   // TODO: Add more tests
 });
+
+describe("WaterBoxService: water level changed from the app", () => {
+  test('follows node-miio\'s "waterBoxMode" events', async () => {
+    const log = getLoggerMock();
+    const deviceManagerMock = createDeviceManagerMock();
+    const service = new WaterBoxService(
+      {
+        hap: HapJs,
+        log,
+        config: applyConfigDefaults({}),
+        deviceManager: deviceManagerMock,
+      },
+      createProductInfoMock(),
+      createMainServiceMock()
+    );
+    await service.init();
+    (
+      deviceManagerMock.stateChanged$ as unknown as {
+        next: (e: unknown) => void;
+      }
+    ).next({ key: "waterBoxMode", value: 202 });
+    expect(log.info).toHaveBeenCalledWith(
+      "MON changedWaterSpeed | WaterBoxMode is now 202%"
+    );
+  });
+});

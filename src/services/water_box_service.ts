@@ -54,7 +54,7 @@ export class WaterBoxService extends PluginServiceClass {
 
     this.deviceManager.stateChanged$
       .pipe(
-        filter(({ key }) => key === "water_box_mode"),
+        filter(({ key }) => key === "waterBoxMode"),
         distinctUntilKeyChanged("value")
       )
       .subscribe(({ value: speed }) => {

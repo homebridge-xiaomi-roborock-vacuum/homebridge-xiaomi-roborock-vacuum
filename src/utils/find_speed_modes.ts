@@ -1,12 +1,14 @@
 import { MODELS } from "../models";
 import semver from "semver";
 import type { ModelDefinition, ModesHomekitVsMiLevel } from "../models/types";
-import type { VacuumMode } from "node-miio";
+import type { CleanPreset, VacuumMode } from "node-miio";
 
 /** Fan speeds and water levels reported by node-miio (e.g. from the device's MIoT spec) */
 export interface ReportedModes {
   fanSpeeds: VacuumMode[];
   waterBoxModes: VacuumMode[];
+  /** The robot's presets of the 3 settings (e.g. SmartPlan), for the Matter clean modes */
+  presets?: CleanPreset[];
 }
 
 /**

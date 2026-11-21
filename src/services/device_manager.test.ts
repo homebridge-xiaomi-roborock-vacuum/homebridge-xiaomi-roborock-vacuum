@@ -119,11 +119,16 @@ describe("DeviceManager", () => {
       const fanSpeeds = [{ value: 1, name: "Quiet" }];
       const waterBoxModes = [{ value: 200, name: "Off" }];
       miio.device.fanSpeeds = jest.fn().mockResolvedValue(fanSpeeds);
+      const presets = [
+        { name: "SmartPlan", fanSpeed: 110, waterBoxMode: 209, mopRoute: 306 },
+      ];
+      miio.device.cleanPresets.mockResolvedValue(presets);
       miio.device.waterBoxModes = jest.fn().mockResolvedValue(waterBoxModes);
       const deviceManager = await connect();
       expect(deviceManager.reportedModes).toStrictEqual({
         fanSpeeds,
         waterBoxModes,
+        presets,
       });
     });
 

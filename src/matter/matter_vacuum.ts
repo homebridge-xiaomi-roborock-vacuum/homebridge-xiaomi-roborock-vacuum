@@ -107,7 +107,10 @@ export class MatterVacuum {
     this.uuid = this.matter.uuid.generate(
       `${PLUGIN_NAME}-matter-${options.config.did ?? options.config.name}`
     );
-    this.cleanModes = buildCleanModes(options.speedModes);
+    this.cleanModes = buildCleanModes(
+      options.speedModes,
+      this.deviceManager.reportedModes?.presets
+    );
     this.areas = toAreas(options.rooms);
   }
 
@@ -248,7 +251,8 @@ export class MatterVacuum {
     return findCleanMode(
       this.cleanModes,
       this.deviceManager.property<number>("fanSpeed"),
-      this.deviceManager.property<number>("water_box_mode")
+      this.deviceManager.property<number>("waterBoxMode"),
+      this.deviceManager.property<number>("mopRoute")
     )?.mode;
   }
 
@@ -316,9 +320,23 @@ export class MatterVacuum {
         `Unknown clean mode ${newMode}`
       );
     }
-    const { fan, water } = cleanMode.levels;
+    const { fan, water, mop } = cleanMode.levels;
     await this.run(`clean mode "${cleanMode.label}"`, async () => {
       const { device } = this;
+      // The robot's own preset (e.g. SmartPlan): the three settings at once
+      if (
+        fan !== undefined &&
+        water !== undefined &&
+        mop !== undefined &&
+        supports(device, "setCleanMotorMode")
+      ) {
+        await device.setCleanMotorMode({
+          fanSpeed: fan,
+          waterBoxMode: water,
+          mopRoute: mop,
+        });
+        return;
+      }
       if (fan !== undefined) await device.changeFanSpeed(fan);
       if (water !== undefined && supports(device, "setWaterBoxMode")) {
         await device.setWaterBoxMode(water);
@@ -374,7 +392,8 @@ export class MatterVacuum {
         break;
       }
       case "fanSpeed":
-      case "water_box_mode": {
+      case "waterBoxMode":
+      case "mopRoute": {
         const mode = this.currentCleanMode;
         if (mode !== undefined) {
           await this.update("rvcCleanMode", { currentMode: mode });

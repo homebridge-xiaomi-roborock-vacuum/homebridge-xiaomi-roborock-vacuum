@@ -16,6 +16,7 @@ import {
   type VacuumDevice,
 } from "node-miio";
 import { Logger } from "../utils/logger";
+import { supports } from "../utils/supports";
 import { cleaningStatuses } from "../utils/constants";
 import type { ReportedModes } from "../utils/find_speed_modes";
 
@@ -334,15 +335,17 @@ export class DeviceManager {
   ): Promise<ReportedModes | undefined> {
     if (typeof device.fanSpeeds !== "function") return undefined;
     try {
-      const [fanSpeeds, waterBoxModes] = await Promise.all([
+      const [fanSpeeds, waterBoxModes, presets] = await Promise.all([
         device.fanSpeeds(),
         device.waterBoxModes ? device.waterBoxModes() : [],
+        supports(device, "cleanPresets") ? device.cleanPresets() : [],
       ]);
       this.log.debug(`DEB getDevice | Modes reported by node-miio: %j`, {
         fanSpeeds,
         waterBoxModes,
+        presets,
       });
-      return { fanSpeeds, waterBoxModes };
+      return { fanSpeeds, waterBoxModes, presets };
     } catch (err) {
       this.log.debug(
         `DEB getDevice | Failed to load the reported modes: ${err}`

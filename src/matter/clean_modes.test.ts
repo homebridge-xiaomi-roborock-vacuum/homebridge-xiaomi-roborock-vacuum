@@ -191,3 +191,41 @@ describe("findCleanMode", () => {
     );
   });
 });
+
+describe("the robot's SmartPlan preset", () => {
+  const smartPlan = {
+    name: "SmartPlan",
+    fanSpeed: 110,
+    waterBoxMode: 209,
+    mopRoute: 306,
+  };
+  const modes = buildCleanModes(findSpeedModes("roborock.vacuum.a15"), [
+    smartPlan,
+  ]);
+
+  test('replaces "Automatic" (same number and Auto tag), and sets the 3 settings', () => {
+    const automatic = buildCleanModes(
+      findSpeedModes("roborock.vacuum.a15")
+    ).find(({ label }) => label === "Automatic");
+    const mode = modes.find(({ label }) => label === "SmartPlan");
+    expect(mode).toStrictEqual({
+      label: "SmartPlan",
+      mode: automatic?.mode,
+      modeTags: [
+        { value: CleanModeTag.Auto },
+        { value: CleanModeTag.Vacuum },
+        { value: CleanModeTag.Mop },
+      ],
+      levels: { fan: 110, water: 209, mop: 306 },
+    });
+    expect(modes.some(({ label }) => label === "Automatic")).toBe(false);
+    expect(modes).toHaveLength(12);
+  });
+
+  test("is the current mode only with its mop route", () => {
+    expect(findCleanMode(modes, 110, 209, 306)?.label).toBe("SmartPlan");
+    expect(findCleanMode(modes, 110, 209, 300)).toBeUndefined();
+    // The other modes don't depend on the mop route
+    expect(findCleanMode(modes, 101, 200, 306)?.label).toBe("Quiet Vacuum");
+  });
+});

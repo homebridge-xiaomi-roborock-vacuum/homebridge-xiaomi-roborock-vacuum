@@ -56,4 +56,34 @@ describe("MainService", () => {
       );
     });
   });
+
+  describe("fan speed changed from the app", () => {
+    test("the robot's preset (e.g. SmartPlan) is logged as such, not as an unsupported speed", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      deviceManagerMock.reportedModes = {
+        fanSpeeds: [],
+        waterBoxModes: [],
+        presets: [
+          {
+            name: "SmartPlan",
+            fanSpeed: 110,
+            waterBoxMode: 209,
+            mopRoute: 306,
+          },
+        ],
+      };
+      const log = (
+        service as unknown as { log: ReturnType<typeof getLoggerMock> }
+      ).log;
+      await service.init();
+      (deviceManagerMock.stateChanged$ as Subject<unknown>).next({
+        key: "fanSpeed",
+        value: 110,
+      });
+      expect(log.info).toHaveBeenCalledWith(
+        'changedSpeed | The robot\'s "SmartPlan" preset is on (fan speed 110)'
+      );
+      expect(log.warn).not.toHaveBeenCalled();
+    });
+  });
 });
