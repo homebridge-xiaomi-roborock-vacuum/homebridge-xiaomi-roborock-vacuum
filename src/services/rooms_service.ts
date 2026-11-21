@@ -336,10 +336,15 @@ export class RoomsService extends PluginServiceClass {
     try {
       const map = (await this.deviceManager.device.getRoomMap()) as RoomMapping;
       this.log.info(`INF getRoomMap | Map is ${map}`);
-      for (let val of map) {
-        this.createRoom(val[0], val[1]);
+      // Robots of a Roborock app account: the 2nd item is the ID of a room named in the app
+      const named = map.map(([id, roomId]) => ({
+        id,
+        name: this.deviceManager.roomName(roomId) ?? roomId,
+      }));
+      for (const { id, name } of named) {
+        this.createRoom(id, name);
       }
-      this.resolvedRooms = map.map(([id, name]) => ({ id, name }));
+      this.resolvedRooms = named;
     } catch (err) {
       this.log.error(`ERR getRoomMap | Failed getting the Room Map.`, err);
       throw err;

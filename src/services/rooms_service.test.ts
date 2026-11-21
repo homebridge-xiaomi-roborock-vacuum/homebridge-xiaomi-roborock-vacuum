@@ -166,6 +166,42 @@ describe("RoomsService", () => {
       ]);
     });
 
+    test("autoroom: true names the rooms of a Roborock app account", async () => {
+      miio.device.getRoomMap.mockResolvedValue([
+        ["1", "50625967"],
+        ["10", "50638987"],
+        ["11", "unknown-room"],
+      ]);
+      const names = new Map([
+        ["50625967", "Cocina"],
+        ["50638987", "Lavadero"],
+      ]);
+      hap = HapJs;
+      deviceManagerMock = createDeviceManagerMock();
+      deviceManagerMock.roomName.mockImplementation((id) =>
+        names.get(String(id))
+      );
+      roomsService = new RoomsService(
+        {
+          hap,
+          log: getLoggerMock(),
+          config: applyConfigDefaults({ autoroom: true, cachedRooms: [] }),
+          deviceManager: deviceManagerMock,
+        },
+        setCleaning
+      );
+      const initialized = roomsService.init();
+      (
+        deviceManagerMock.deviceConnected$ as unknown as Subject<MiioDevice>
+      ).next(miio.device);
+      await initialized;
+      expect(roomsService.resolvedRooms).toEqual([
+        { id: "1", name: "Cocina" },
+        { id: "10", name: "Lavadero" },
+        { id: "11", name: "unknown-room" },
+      ]);
+    });
+
     test("autoroom: true falls back to the cached rooms when the device fails", async () => {
       miio.device.getRoomMap.mockRejectedValue(new Error("timeout"));
       await createConnectedRoomService({
