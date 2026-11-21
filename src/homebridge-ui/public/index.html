@@ -422,6 +422,13 @@
     }
 
     // ---------- Login ----------
+    // The map card needs one of the accounts: the Xiaomi Cloud or the Roborock app's
+    let xiaomiLoggedIn = false;
+    let roborockLoggedIn = false;
+    function refreshMapCard() {
+      $("map-card").hidden = !(xiaomiLoggedIn || roborockLoggedIn);
+    }
+
     async function refreshStatus() {
       try {
         const { loggedIn } = await homebridge.request(
@@ -434,7 +441,8 @@
         $("login").hidden = loggedIn;
         $("logout").hidden = !loggedIn;
         $("devices-card").hidden = !loggedIn;
-        $("map-card").hidden = !loggedIn;
+        xiaomiLoggedIn = loggedIn;
+        refreshMapCard();
       } catch (err) {
         $("cloud-status").textContent = `Error: ${errorMessage(err)}`;
       }
@@ -582,6 +590,8 @@
         $("roborock-login").hidden = loggedIn;
         $("roborock-logout").hidden = !loggedIn;
         $("roborock-devices-card").hidden = !loggedIn;
+        roborockLoggedIn = loggedIn;
+        refreshMapCard();
       } catch (err) {
         $("roborock-status").textContent = `Error: ${errorMessage(err)}`;
       }
@@ -715,8 +725,10 @@
       const previous = select.value;
       select.replaceChildren();
       platformBlock().devices.forEach((device, index) => {
-        if (!device.did && (!device.ip || !device.token)) return;
-        const option = el("option", device.name || device.ip);
+        // Xiaomi: a device ID, or an IP and a token. Roborock app: a duid
+        if (!device.duid && !device.did && (!device.ip || !device.token))
+          return;
+        const option = el("option", device.name || device.ip || device.duid);
         option.value = String(index);
         select.append(option);
       });
@@ -731,12 +743,22 @@
       if (!device) return;
       homebridge.showSpinner();
       try {
-        const map = await homebridge.request("/map", {
-          ...cloudRequest(),
-          ip: device.ip,
-          token: device.token,
-          did: device.did,
-        });
+        const map = await homebridge.request(
+          "/map",
+          device.duid
+            ? {
+                // A robot of the Roborock app account: its map comes from there
+                duid: device.duid,
+                ip: device.ip,
+                roborockSessionFile: roborockRequest().sessionFile,
+              }
+            : {
+                ...cloudRequest(),
+                ip: device.ip,
+                token: device.token,
+                did: device.did,
+              }
+        );
         showMap(map, device);
       } catch (err) {
         homebridge.toast.error(errorMessage(err), "Couldn't get the map");
@@ -1103,8 +1125,13 @@
       return (
         platformBlock().devices.find(
           (d) =>
+            (device.duid && d.duid === device.duid) ||
             (device.did && d.did === device.did) ||
-            (d.ip === device.ip && d.token === device.token)
+            // Only when they're set: the Roborock-app vacuums have neither
+            (!!device.ip &&
+              !!device.token &&
+              d.ip === device.ip &&
+              d.token === device.token)
         ) || device
       );
     }

@@ -31,6 +31,10 @@ export interface MapRequest extends CloudRequest {
   token?: string;
   /** The device ID: enough on its own, the IP and token are read from the account */
   did?: string;
+  /** A robot of a Roborock app account: its map comes from the Roborock account, not the Xiaomi Cloud */
+  duid?: string;
+  /** Where the Roborock session is (the platform's `roborock.sessionFile`) */
+  roborockSessionFile?: string;
 }
 
 /** The map, ready to draw in the browser */
@@ -74,6 +78,12 @@ export interface HandlerDeps {
   /** Starts a login with a code sent by email (finds the account's region) */
   startRoborockLogin(email: string): Promise<RoborockLoginFlow>;
   getRoborockDevices(session: RoborockSession): Promise<RoborockDevice[]>;
+  /** The map of a robot of a Roborock app account, and the names of its rooms (by segment) */
+  getRoborockMap(
+    session: RoborockSession,
+    duid: string,
+    ip?: string
+  ): Promise<{ map: RoborockMap; names: Map<number, string> }>;
 }
 
 /** A Roborock login in progress: the code and the login must come from the same client */
@@ -100,6 +110,33 @@ const defaultDeps: HandlerDeps = {
   deleteRoborockSession,
   startRoborockLogin: (email) => RoborockLogin.start(email),
   getRoborockDevices: (session) => new RoborockWebApi(session).getDevices(),
+  getRoborockMap: async (session, duid, ip) => {
+    const home = await new RoborockWebApi(session).getHomeData();
+    const robot = miio.toDevices(home).find((r) => r.duid === duid);
+    if (!robot) throw new Error("This vacuum is not in your Roborock account.");
+    const mqtt = new miio.RoborockMqttSession(session.userData.rriot);
+    const api = new miio.RoborockDeviceApi({
+      ...robot,
+      model: robot.model ?? "",
+      address: ip || undefined,
+      mqtt,
+    });
+    try {
+      // The map comes over MQTT; the room mapping locally when possible
+      const [map, mapping] = await Promise.all([
+        api.getMap(),
+        api.call("get_room_mapping", []).catch(() => []),
+      ]);
+      const names = new Map<number, string>();
+      for (const { segmentId, name } of miio.roomNames(mapping, home.rooms)) {
+        if (name) names.set(segmentId, name);
+      }
+      return { map, names };
+    } finally {
+      api.close();
+      await mqtt.close();
+    }
+  },
 };
 
 /** The result of the QR login, pushed to the UI once it ends */
@@ -291,6 +328,18 @@ export function createHandlers(
 
     /** The robot's map (Roborock), with the names of its rooms if it has any */
     "/map": async (request: MapRequest): Promise<MapResponse> => {
+      if (request.duid) {
+        const session = await deps.loadRoborockSession(
+          request.roborockSessionFile || undefined
+        );
+        if (!session) throw new Error("Log in to your Roborock account first.");
+        const { map, names } = await deps.getRoborockMap(
+          session,
+          request.duid,
+          request.ip
+        );
+        return toMapResponse(map, names);
+      }
       if (!request.did && (!request.ip || !request.token)) {
         throw new Error("The vacuum needs a device ID, or an IP and a token.");
       }
@@ -320,23 +369,35 @@ export function createHandlers(
           device.getCloudMap(cloud, server),
           roomNames(device),
         ]);
-        if (!map.image) throw new Error("The map has no image yet.");
-        return {
-          image: {
-            top: map.image.top,
-            left: map.image.left,
-            width: map.image.width,
-            height: map.image.height,
-            pixels: Buffer.from(map.image.pixels).toString("base64"),
-          },
-          rooms: map.rooms.map(({ id }) => ({ id, name: names.get(id) })),
-          robot: map.robot,
-          charger: map.charger,
-        };
+        return toMapResponse(map, names);
       } finally {
         device.destroy();
       }
     },
+  };
+}
+
+/**
+ * @param map The parsed map
+ * @param names The names of its rooms, by segment
+ * @returns The map, ready to draw in the browser
+ */
+function toMapResponse(
+  map: RoborockMap,
+  names: Map<number, string>
+): MapResponse {
+  if (!map.image) throw new Error("The map has no image yet.");
+  return {
+    image: {
+      top: map.image.top,
+      left: map.image.left,
+      width: map.image.width,
+      height: map.image.height,
+      pixels: Buffer.from(map.image.pixels).toString("base64"),
+    },
+    rooms: map.rooms.map(({ id }) => ({ id, name: names.get(id) })),
+    robot: map.robot,
+    charger: map.charger,
   };
 }
 
