@@ -2,6 +2,14 @@
 
 ## Next
 
+## 1.5.0
+
+- [Feature] **Roborock app account in the settings page**: log in with a code sent by email (no terminal needed), list the robots of the account, and add them in one click (with their `duid`, `autoroom`, and the platform's `roborock` option). The Xiaomi and Roborock sections show their app's icon ([#1292](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1292)).
+- [Feature] **The room a Roborock-app robot is cleaning**: `roomSensors` and the Matter vacuum's current area follow it, as the robot reports it in its status, without the Xiaomi Cloud nor downloading the map ([#1290](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1290), [#1293](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1293)).
+- [Bug] Matter vacuum: Apple Home named it after its model (e.g. `roborock.vacuum.a296`) instead of its `name`. Vacuums paired before keep their name: rename them in the Home app. The robots of a Roborock app account report "Roborock" as the manufacturer ([#1291](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1291)).
+- [Chore] Update node-miio to `0.10.0`: the room being cleaned, from the robot's status ([afharo/node-miio#53](https://github.com/afharo/node-miio/pull/53), [#1293](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1293)).
+- [Chore] README: a header with the Homebridge, Xiaomi Home and Roborock logos, the apps' icons in their sections, and a Trademarks section ([#1292](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1292)).
+
 ## 1.4.0
 
 - [Feature] **Robots paired with the Roborock app** (experimental): with the platform's new `roborock` option, after a one-off `npx node-miio roborock login` (a code is sent to your email), configure a robot with its `duid` (`npx node-miio roborock devices`). No token is needed, and the IP is optional: the plugin talks to the robot in your local network when possible, and through Roborock's cloud otherwise. With `"autoroom": true`, the rooms get the names given in the Roborock app. Supported: the robots with protocol `1.0` or `L01` (most S, Q and Saros robots). Read [Roborock app](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum#roborock-app-experimental) ([#104](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/104), [#387](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/387), [#1283](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1283)).
