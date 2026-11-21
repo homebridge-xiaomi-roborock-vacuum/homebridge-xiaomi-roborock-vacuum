@@ -1,6 +1,6 @@
 import type { Service } from "homebridge";
 import type { MapPoint, MapWatcher } from "node-miio";
-import { Observable, Subject, Subscription, switchMap } from "rxjs";
+import { filter, Observable, Subject, Subscription, switchMap } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
 import { ensureName } from "../utils/ensure_name";
@@ -9,7 +9,8 @@ import type { RoomsService } from "./rooms_service";
 
 export interface CurrentRoomConfig {
   /**
-   * Show an occupancy sensor per room, detected while the robot is in it (needs the platform's `cloud` option).
+   * Show an occupancy sensor per room, detected while the robot is in it (needs the platform's `cloud` option, or a
+   * robot of a Roborock app account, which reports the room it's cleaning).
    */
   roomSensors?: boolean;
 }
@@ -35,16 +36,24 @@ export class CurrentRoomService extends PluginServiceClass {
     private readonly cloud?: CloudService
   ) {
     super(coreContext);
-    if (this.config.roomSensors && !this.cloud) {
+    if (this.config.roomSensors && !this.cloud && !this.config.duid) {
       this.log.warn(
         `WAR CurrentRoomService | "roomSensors" needs the Xiaomi Cloud: enable the platform's "cloud" option.`
       );
     }
   }
 
+  /** Whether the map is followed in the Xiaomi Cloud (else, the room comes from the robot's status, if it reports it) */
+  private get followsMap() {
+    return Boolean(this.cloud && !this.config.duid);
+  }
+
   public async init(): Promise<void> {
     const { cloud } = this;
-    if (!cloud) return;
+    if (!cloud || !this.followsMap) {
+      this.followStatus();
+      return;
+    }
     this.subscription = this.deviceManager.deviceConnected$
       .pipe(
         // A new watcher every time the robot (re)connects
@@ -87,6 +96,18 @@ export class CurrentRoomService extends PluginServiceClass {
       .subscribe();
   }
 
+  /**
+   * The room the robot is cleaning, as it reports it in its status (`currentSegment` of node-miio: newer Roborock
+   * robots, e.g. the ones of a Roborock app account), without downloading the map.
+   */
+  private followStatus() {
+    this.subscription = this.deviceManager.stateChanged$
+      .pipe(filter(({ key }) => key === "currentSegment"))
+      .subscribe(({ value }) =>
+        this.updateRoom(typeof value === "number" ? value : undefined)
+      );
+  }
+
   /** Stops following the robot's map */
   public stop() {
     this.subscription?.unsubscribe();
@@ -97,7 +118,9 @@ export class CurrentRoomService extends PluginServiceClass {
    * robot (`autoroom`), so they're only known once it's connected.
    */
   public get services(): Service[] {
-    if (!this.config.roomSensors || !this.cloud) return [];
+    if (!this.config.roomSensors || !(this.cloud || this.config.duid)) {
+      return [];
+    }
     for (const { id, name } of this.rooms.roomList) {
       const roomId = `${id}`;
       if (!this.sensors.has(roomId)) this.createSensor(roomId, name);

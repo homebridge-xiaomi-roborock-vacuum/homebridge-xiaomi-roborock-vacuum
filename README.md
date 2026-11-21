@@ -196,7 +196,7 @@ Each vacuum in `devices` takes these options. They're all in the Homebridge UI's
 | Option                | Default | Description                                                                                                                                                        |
 | --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `dock`                | `false` | Detected while the robot is in the dock                                                                                                                            |
-| `roomSensors`         | `false` | One per room, detected while the robot is in it (Roborock, needs the [Xiaomi Cloud](#xiaomi-cloud))                                                                |
+| `roomSensors`         | `false` | One per room, detected while the robot is in it (Roborock, needs the [Xiaomi Cloud](#xiaomi-cloud) or the [Roborock app](#roborock-app-experimental))              |
 | `waterTankEmpty`      | `false` | Detected when the clean water tank is empty (the models that report it, usually with a self-refilling dock)                                                        |
 | `errorSensor`         | `false` | Detected while the robot reports an error (e.g. stuck): for notifications and automations. The error is in the logs                                                |
 | `maintenanceSensor`   | `false` | Detected when the brushes, the filter or the sensors need maintenance: for notifications and automations                                                           |
@@ -320,6 +320,7 @@ Robots paired with the **Roborock app** (instead of Mi Home) aren't in the Xiaom
 work. With the platform's `roborock` option, the plugin uses your Roborock account instead: it talks to the robot in
 your local network when possible, and through Roborock's cloud otherwise. No token is needed, and the IP is optional.
 With `"autoroom": true`, the rooms get the names given in the Roborock app.
+With `roomSensors` (and the Matter vacuum), the room the robot is cleaning comes from the robot itself: no map downloads.
 
 To set it up:
 

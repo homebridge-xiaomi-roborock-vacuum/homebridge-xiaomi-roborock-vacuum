@@ -145,4 +145,49 @@ describe("CurrentRoomService", () => {
     );
     await expect(service.logPosition()).resolves.toBeUndefined();
   });
+
+  describe("from the robot's status (Roborock app robots, `duid`)", () => {
+    test("the sensors follow `currentSegment`, without the Xiaomi Cloud", async () => {
+      await create({ roomSensors: true, duid: "duid-1" }, false);
+      const rooms$: (string | undefined)[] = [];
+      service.currentRoom$.subscribe((room) => rooms$.push(room));
+      const [kitchen, bedroom] = service.services;
+      expect(service.services).toHaveLength(2);
+      const stateChanged$ = deviceManagerMock.stateChanged$ as Subject<unknown>;
+
+      stateChanged$.next({ key: "currentSegment", value: 17 });
+      expect(
+        bedroom.getCharacteristic(hap.Characteristic.OccupancyDetected).value
+      ).toBe(DETECTED);
+      expect(
+        kitchen.getCharacteristic(hap.Characteristic.OccupancyDetected).value
+      ).toBe(NOT_DETECTED);
+      expect(log.info).toHaveBeenCalledWith(
+        'INF CurrentRoomService | The robot is in "Bedroom"'
+      );
+
+      stateChanged$.next({ key: "currentSegment", value: undefined });
+      expect(
+        bedroom.getCharacteristic(hap.Characteristic.OccupancyDetected).value
+      ).toBe(NOT_DETECTED);
+      expect(rooms$).toStrictEqual(["17", undefined]);
+      expect(log.warn).not.toHaveBeenCalled();
+    });
+
+    test("even with the Xiaomi Cloud enabled, the map isn't followed", async () => {
+      await create({ roomSensors: true, duid: "duid-1" }, true);
+      await flush();
+      expect(cloud.createMapWatcher).not.toHaveBeenCalled();
+      const [kitchen] = service.services;
+      (deviceManagerMock.stateChanged$ as Subject<unknown>).next({
+        key: "currentSegment",
+        value: 16,
+      });
+      expect(
+        service.services[0].getCharacteristic(
+          hap.Characteristic.OccupancyDetected
+        ).value
+      ).toBe(DETECTED);
+    });
+  });
 });
