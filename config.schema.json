@@ -267,7 +267,7 @@
               "required": true
             },
             "roomSensors": {
-              "title": "Show a sensor per room, detected while the robot is in it (Roborock, needs the Xiaomi Cloud option below)",
+              "title": "Show a sensor per room, detected while the robot is in it (Roborock: needs the Xiaomi Cloud option below, or a robot of the Roborock app account)",
               "type": "boolean",
               "default": false
             },
