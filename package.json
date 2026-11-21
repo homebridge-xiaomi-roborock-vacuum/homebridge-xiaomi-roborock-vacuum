@@ -52,7 +52,8 @@
     "lint": "prettier --check .",
     "lint:fix": "prettier --write .",
     "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "docker": "docker compose -f docker/docker-compose.yml up --build"
+    "docker": "docker compose -f docker/docker-compose.yml up --build",
+    "docs:speeds": "npm run build && node -e \"require('node:fs').writeFileSync('docs/speeds-and-modes.md', require('./dist/docs/speeds_doc').renderSpeedsDoc())\" && prettier --write docs/speeds-and-modes.md"
   },
   "dependencies": {
     "@homebridge/plugin-ui-utils": "^2.3.0",

@@ -46,6 +46,8 @@ node dist/bin/miio-vacuum.js --help   # the CLI is a thin wrapper around node-mi
   - Matter rejects rooms with an empty or a repeated name (`toAreas` renames them).
 - `src/utils/find_speed_modes.ts`: models listed in `src/models/` keep the local tables. Any other model uses `reportedModes`
   (an "Off" -1 speed is prepended, which stops the cleaning). The plan is to remove `src/models/` once node-miio's lists are confirmed.
+- `docs/speeds-and-modes.md` is generated from the code (`src/docs/speeds_doc.ts`): run `npm run docs:speeds` after
+  changing the fan speeds, water levels or Matter clean modes. A test fails while it's out of date.
 - node-miio ships its own types (since 0.5.0). The device is a `VacuumDevice` (union of node-miio's vacuum classes): only their
   shared API is available. Guard the class-specific methods (dust collection, zones, go-to, water box, mop wash/dry…) with
   `supports(device, "method")` (`src/utils/supports.ts`): it narrows the type and logs instead of crashing on other models.
