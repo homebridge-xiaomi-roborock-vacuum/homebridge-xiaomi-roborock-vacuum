@@ -13,7 +13,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [current]
+        # Same major as the publish workflow
+        node-version: [26.x]
 
     steps:
       - uses: actions/checkout@v7
@@ -31,7 +32,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [current]
+        # Same major as the publish workflow
+        node-version: [26.x]
 
     steps:
       - uses: actions/checkout@v7
@@ -49,8 +51,8 @@ jobs:
 
     strategy:
       matrix:
-        # Run the tests for the previous and current LTS version + the current version
-        node-version: [lts/-1, lts/*, current]
+        # Keep in sync with package.json "engines.node"
+        node-version: [22.x, 24.x, 26.x]
 
     steps:
       - uses: actions/checkout@v7
