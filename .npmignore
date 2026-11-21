@@ -39,3 +39,6 @@ docker/
 .claude/
 AGENTS.md
 CONTRIBUTING.md
+
+# The generator of docs/speeds-and-modes.md (only for this repo)
+dist/docs/
