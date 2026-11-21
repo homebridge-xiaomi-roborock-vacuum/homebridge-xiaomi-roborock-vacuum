@@ -2,7 +2,7 @@
 > [!NOTE]
 > **Beta testers wanted**
 >
-> The maintainer no longer owns most of the supported vacuums, so changes are developed against automated tests and validated by users.
+> The maintainer doesn't own any of the supported models, so changes are developed against automated tests and validated by users.
 > If you'd like to help, [sign up as a beta tester](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1232): you'll be mentioned when a beta needs a device like yours.
 > See [CONTRIBUTING.md](./CONTRIBUTING.md) for other ways to help. Co-maintainers are welcome too.
 

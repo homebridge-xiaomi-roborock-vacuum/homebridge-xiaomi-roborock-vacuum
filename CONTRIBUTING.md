@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for helping! The maintainer **doesn't own most of the supported vacuums**: changes are developed against
+Thank you for helping! The maintainer **doesn't own any of the supported models**: changes are developed against
 automated tests, and your device is the only way to know if they really work. So the most valuable contributions are
 **testing betas** and **sharing what your vacuum reports**. No coding needed.
 
