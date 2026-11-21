@@ -2,6 +2,11 @@
 
 ## Next
 
+## 1.6.0
+
+- [Feature] **The map of the Roborock-app vacuums in the settings page**: name the rooms (with the 2x / 3x repeats), add "go to" spots and draw zones on the map of the vacuums of a Roborock app account too, not only with the Xiaomi Cloud. The rooms get the names given in the Roborock app ([#1295](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1295)).
+- [Chore] Docs: the README is split into [pages](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/tree/master/docs), with a new [Fan speeds and water levels](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/docs/speeds-and-modes.md) page: for every model, the HomeKit slider range of each fan speed and water level, and the Matter clean modes. It's generated from the plugin's code (`npm run docs:speeds`) ([#1296](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1296)).
+
 ## 1.5.0
 
 - [Feature] **Roborock app account in the settings page**: log in with a code sent by email (no terminal needed), list the robots of the account, and add them in one click (with their `duid`, `autoroom`, and the platform's `roborock` option). The Xiaomi and Roborock sections show their app's icon ([#1292](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1292)).
