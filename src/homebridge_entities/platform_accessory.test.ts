@@ -347,4 +347,51 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
       });
     });
   });
+
+  describe("Roborock app robots (`duid`)", () => {
+    test("connect through the Roborock service, without the Xiaomi Cloud locator", async () => {
+      const { DeviceManager } = jest.requireMock("../services/device_manager");
+      DeviceManager.mockClear();
+      const roborock = { connect: jest.fn().mockResolvedValue(undefined) };
+      const cloud = { locate: jest.fn() };
+      new XiaomiRoborockVacuumPlatformAccessoryInitializer(
+        console as unknown as Logging,
+        { name: "saros", duid: "duid-1", ip: "192.168.86.26" },
+        homebridge,
+        newAccessory(),
+        cloud as never,
+        roborock as never
+      );
+      const [, , , locate, connector] = DeviceManager.mock.calls[0];
+      expect(locate).toBeUndefined();
+      const logger = { debug: jest.fn() };
+      await connector(logger);
+      expect(roborock.connect).toHaveBeenCalledWith(
+        { duid: "duid-1", ip: "192.168.86.26" },
+        logger
+      );
+      expect(cloud.locate).not.toHaveBeenCalled();
+    });
+
+    test("Mi Home robots keep the Xiaomi Cloud locator, and no connector", async () => {
+      const { DeviceManager } = jest.requireMock("../services/device_manager");
+      DeviceManager.mockClear();
+      const cloud = { locate: jest.fn().mockResolvedValue(undefined) };
+      new XiaomiRoborockVacuumPlatformAccessoryInitializer(
+        console as unknown as Logging,
+        { name: "s5", did: "123", ip: "1.1.1.1", token: "t" },
+        homebridge,
+        newAccessory(),
+        cloud as never,
+        { connect: jest.fn() } as never
+      );
+      const [, , , locate, connector] = DeviceManager.mock.calls[0];
+      expect(connector).toBeUndefined();
+      await locate({ ip: "1.1.1.1", token: "t" });
+      expect(cloud.locate).toHaveBeenCalledWith(
+        { did: "123", ip: "1.1.1.1", token: "t" },
+        { fresh: true }
+      );
+    });
+  });
 });

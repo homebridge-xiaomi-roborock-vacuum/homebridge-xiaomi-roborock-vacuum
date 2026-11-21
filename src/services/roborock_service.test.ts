@@ -144,3 +144,66 @@ describe("RoborockService", () => {
     expect(deps.getHomeData).toHaveBeenCalledTimes(2);
   });
 });
+
+describe("RoborockService: other failures", () => {
+  test("the session can't be loaded", async () => {
+    const { service, log, deps } = setup();
+    deps.loadSession.mockRejectedValue(new Error("EACCES"));
+    await expect(service.connect({ duid: "duid-1" })).rejects.toThrow(
+      "the account isn't available"
+    );
+    expect(log.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Roborock: failed to load the session: Error: EACCES."
+      )
+    );
+  });
+
+  test("a robot without a known model", async () => {
+    const { service, deps } = setup();
+    deps.getHomeData.mockResolvedValue({ ...home, products: [] });
+    await expect(service.connect({ duid: "duid-1" })).rejects.toThrow(
+      'Roborock: unknown model for "Saros 20 Neo"'
+    );
+  });
+
+  test("other errors getting the robots", async () => {
+    const { service, log } = setup({ homeError: new Error("offline") });
+    await expect(service.connect({ duid: "duid-1" })).rejects.toThrow();
+    expect(log.warn).toHaveBeenCalledWith(
+      "Roborock: failed to get the robots of your account: Error: offline"
+    );
+  });
+});
+
+describe("RoborockService: default dependencies (node-miio)", () => {
+  test("loads the session, the home data, and connects with node-miio", async () => {
+    const nodeMiio = {
+      loadRoborockSession: jest.fn().mockResolvedValue(session),
+      RoborockWebApi: jest.fn().mockImplementation(() => ({
+        getHomeData: jest.fn().mockResolvedValue(home),
+      })),
+      RoborockMqttSession: jest.fn(),
+      roborockDevice: jest.fn().mockResolvedValue("device"),
+      RoborockSessionExpiredError: class extends Error {},
+      toDevices: jest.requireActual("node-miio").toDevices,
+    };
+    jest.resetModules();
+    jest.doMock("node-miio", () => nodeMiio);
+    const { RoborockService: Service } = await import("./roborock_service");
+    const log = { debug: jest.fn(), info: jest.fn(), warn: jest.fn() };
+    const connection = await new Service(log, { enabled: true }).connect({
+      duid: "duid-1",
+    });
+    expect(connection?.device).toBe("device");
+    expect(nodeMiio.loadRoborockSession).toHaveBeenCalledWith(undefined);
+    expect(nodeMiio.RoborockWebApi).toHaveBeenCalledWith(session);
+    expect(nodeMiio.RoborockMqttSession).toHaveBeenCalledWith(
+      session.userData.rriot
+    );
+    expect(nodeMiio.roborockDevice).toHaveBeenCalledWith(
+      expect.objectContaining({ duid: "duid-1", model: "roborock.vacuum.a296" })
+    );
+    jest.dontMock("node-miio");
+  });
+});

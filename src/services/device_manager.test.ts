@@ -394,3 +394,45 @@ describe("DeviceManager with a connector (Roborock app)", () => {
     nodeMiio.roborockApiOf.mockReturnValue(undefined);
   });
 });
+
+describe("DeviceManager with a connector: failures", () => {
+  const log = getLoggerMock();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test("the robot isn't found: logged, and retried later", async () => {
+    const connector = jest.fn().mockResolvedValue(undefined);
+    new DeviceManager(
+      createHomebridgeMock().hap,
+      log,
+      { duid: "nope" },
+      undefined,
+      connector
+    );
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(log.error).toHaveBeenCalledWith(
+      expect.stringContaining("The robot couldn't be found")
+    );
+  });
+
+  test("not a vacuum: reported and released", async () => {
+    const other = { miioModel: "roborock.lawnmower.x", destroy: jest.fn() };
+    const connector = jest.fn().mockResolvedValue({ device: other });
+    new DeviceManager(
+      createHomebridgeMock().hap,
+      log,
+      { duid: "mower" },
+      undefined,
+      connector
+    );
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(log.error).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Device "roborock.lawnmower.x" is not registered as a vacuum cleaner!'
+      )
+    );
+    expect(other.destroy).toHaveBeenCalled();
+  });
+});
