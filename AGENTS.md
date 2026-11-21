@@ -8,7 +8,7 @@ Guidance for AI coding agents (and humans) working on `homebridge-xiaomi-roboroc
   The same author maintains a Matter alternative: [matterbridge-xiaomi-roborock](https://github.com/afharo/matterbridge-xiaomi-roborock).
 - The device protocol lives in [node-miio](https://github.com/afharo/node-miio). Protocol and per-model fixes belong **there**:
   this plugin should only translate between node-miio and HomeKit.
-- **The maintainer no longer owns test hardware** (see [#1232](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1232)).
+- **The maintainer no longer owns any of the supported models** (see [#1232](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1232)).
   Every behavioural change must be covered by unit tests, and be validated by users on a beta release.
 
 ## Branches and PRs
