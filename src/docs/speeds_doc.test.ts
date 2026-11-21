@@ -12,9 +12,7 @@ describe("docs/speeds-and-modes.md", () => {
 
   test("shows the HomeKit slider ranges and the Matter modes (e.g. the Saros 20's SmartPlan)", () => {
     const doc = renderSpeedsDoc();
-    expect(doc).toContain(
-      "## roborock.vacuum.a296 — Roborock Saros 20 (Roborock app)"
-    );
+    expect(doc).toContain("## roborock.vacuum.a296 — Roborock Saros 20 Neo");
     expect(doc.match(/^## dreame\.vacuum\.mc1808/gm)).toHaveLength(1);
     expect(doc).toMatch(
       /\| SmartPlan \| Auto, Vacuum, Mop \| 110 \| 209 \| 306 \|/
