@@ -28,7 +28,7 @@ sensors. It talks to the robot in your local network, with [node-miio](https://g
 
 > [!NOTE]
 > Made for the vacuums paired with the <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app" width="20" height="20" align="absmiddle"> **Mi Home** app. The ones paired with the <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/roborock.png" alt="Roborock app" width="20" height="20" align="absmiddle"> **Roborock app** are
-> supported too, experimentally: see [Roborock app](#roborock-app-experimental).
+> supported too, experimentally: see [Roborock app](docs/roborock-app.md).
 
 <p>
 <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/rockrobo.vacuum.v1.jpg" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="100">
@@ -42,7 +42,8 @@ sensors. It talks to the robot in your local network, with [node-miio](https://g
 
 ## Features
 
-- **Apple Home's robot vacuum** (iOS 18.4+): rooms, clean modes, battery, dock states and errors.
+- **[Apple Home's robot vacuum](docs/how-it-shows-up.md#robot-vacuum-matter)** (iOS 18.4+): rooms, clean modes, battery,
+  dock states and errors.
 - Or a **fan** (on/off and the [fan speed](docs/speeds-and-modes.md)) or a **switch**, with a second fan for the
   [water level](docs/speeds-and-modes.md).
 - **Room and zone cleaning**, with the rooms read from the robot, or named and drawn on its map in the
@@ -51,7 +52,8 @@ sensors. It talks to the robot in your local network, with [node-miio](https://g
 - **Sensors**: in the dock, room the robot is in, water tank empty, error, needs maintenance, and the remaining
   life of the brushes, filter and sensors (with a reset after replacing them).
 - **No token hunting**: log in to your Xiaomi account with a QR code, and the plugin reads the tokens (and finds the
-  robot again if its IP changes).
+  robot again if its IP changes). Or, for the vacuums paired with the Roborock app, log in to your
+  [Roborock account](docs/roborock-app.md) with a code sent by email.
 
 Most of them are optional: see [Options](docs/options.md). Some depend on the model (e.g. only the Roborock vacuums report
 the room they're in).
@@ -108,18 +110,6 @@ Add one entry to `devices` per vacuum.
 - [Roborock app](docs/roborock-app.md): the vacuums paired with the Roborock app instead of Mi Home.
 - [Settings page](docs/settings-page.md): the plugin's tools in the Homebridge UI (logins, vacuums, map).
 - [Troubleshooting](docs/troubleshooting.md): is my model supported, it doesn't connect, reporting an issue.
-
-## Robot vacuum (Matter)
-
-With `"serviceType": "vacuum"`, the vacuum is Apple Home's native robot vacuum (iOS 18.4+): rooms, clean modes, battery,
-dock states and errors. It needs Matter enabled in the bridge that runs the plugin, and it's paired with its own code.
-See [Robot vacuum (Matter)](docs/how-it-shows-up.md#robot-vacuum-matter).
-
-## Roborock app (experimental)
-
-The vacuums paired with the Roborock app (instead of Mi Home) work with your Roborock account: log in from the
-[settings page](docs/settings-page.md) with a code sent by email, and add them in one click. See
-[Roborock app](docs/roborock-app.md).
 
 ## Trademarks
 
