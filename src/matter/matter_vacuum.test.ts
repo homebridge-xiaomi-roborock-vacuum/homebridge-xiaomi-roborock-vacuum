@@ -95,6 +95,25 @@ describe("MatterVacuum", () => {
   });
 
   describe("build", () => {
+    test("a robot of a Roborock app account is a Roborock", () => {
+      const vacuum = new MatterVacuum({
+        matter,
+        log,
+        config: applyConfigDefaults({ name: "Saros", duid: "duid-1" }),
+        deviceManager,
+        serialNumber: "SN1",
+        firmware: "02.32.54",
+        speedModes: findSpeedModes("roborock.vacuum.a15"),
+        rooms: [],
+        currentRoom$,
+      });
+      expect(vacuum.build()).toMatchObject({
+        displayName: "Saros",
+        manufacturer: "Roborock",
+        model: "Saros",
+      });
+    });
+
     test("a robot vacuum with the robot's current state", () => {
       const accessory = createVacuum().build();
       expect(accessory).toMatchObject({
@@ -103,7 +122,8 @@ describe("MatterVacuum", () => {
         deviceType: matter.deviceTypes.RoboticVacuumCleaner,
         serialNumber: "SN1",
         manufacturer: "Xiaomi",
-        model: "roborock.vacuum.a15",
+        // Apple Home names the accessory after it
+        model: "Robot",
         firmwareRevision: "3.5.8",
       });
       const { clusters } = accessory;
