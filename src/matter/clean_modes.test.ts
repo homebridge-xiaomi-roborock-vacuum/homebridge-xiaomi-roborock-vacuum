@@ -229,3 +229,41 @@ describe("the robot's SmartPlan preset", () => {
     expect(findCleanMode(modes, 101, 200, 306)?.label).toBe("Quiet Vacuum");
   });
 });
+
+describe("a water slider (Saros 20: 30 levels)", () => {
+  const reported = {
+    fanSpeeds: [
+      { value: 105, name: "Mop" },
+      { value: 101, name: "Quiet" },
+      { value: 102, name: "Balanced" },
+      { value: 103, name: "Turbo" },
+      { value: 104, name: "Max" },
+    ],
+    waterBoxModes: [
+      { value: 200, name: "Off" },
+      ...Array.from({ length: 30 }, (_, i) => ({
+        value: 221 + i,
+        name: `Level ${i + 1}`,
+      })),
+    ],
+  };
+  const modes = buildCleanModes(
+    findSpeedModes("roborock.vacuum.a296", undefined, reported)
+  ).map(({ mode, label, levels }) => ({ mode, label, ...levels }));
+
+  test("only light, medium and high mop modes (first, middle, last level), not 30", () => {
+    expect(modes.filter(({ label }) => label.endsWith("Mop"))).toStrictEqual([
+      { mode: 5, label: "Light Mop", fan: 105, water: 221 },
+      { mode: 6, label: "Medium Mop", fan: 105, water: 235 },
+      { mode: 7, label: "High Mop", fan: 105, water: 250 },
+    ]);
+    expect(modes).toHaveLength(10);
+  });
+
+  test('the presets use the slider\'s positions, not "Level 1/2/3"', () => {
+    const byLabel = Object.fromEntries(modes.map((m) => [m.label, m]));
+    expect(byLabel["Automatic"]).toMatchObject({ fan: 102, water: 235 });
+    expect(byLabel["Deep clean"]).toMatchObject({ fan: 104, water: 250 });
+    expect(byLabel["Quiet"]).toMatchObject({ fan: 101, water: 221 });
+  });
+});
