@@ -20,6 +20,8 @@
   <a href="https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum"><img src="https://img.shields.io/npm/dt/homebridge-xiaomi-roborock-vacuum.svg" alt="npm downloads"></a>
   <a href="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum"><img src="https://img.shields.io/github/last-commit/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum.svg" alt="GitHub last commit"></a>
   <a href="https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum"><img src="https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/branch/master/graph/badge.svg?token=1VW1RV7MCT" alt="codecov"></a>
+  <a href="https://github.com/sponsors/afharo"><img src="https://img.shields.io/badge/sponsor-30363D?logo=githubsponsors&logoColor=EA4AAA" alt="Sponsor on GitHub"></a>
+  <a href="https://ko-fi.com/afharo"><img src="https://img.shields.io/badge/Ko--fi-FF5E5B?logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
 </p>
 
 A [Homebridge](https://homebridge.io) plugin to control the Xiaomi / Roborock robot vacuums in the Apple Home app:
@@ -110,6 +112,11 @@ Add one entry to `devices` per vacuum.
 - [Roborock app](docs/roborock-app.md): the vacuums paired with the Roborock app instead of Mi Home.
 - [Settings page](docs/settings-page.md): the plugin's tools in the Homebridge UI (logins, vacuums, map).
 - [Troubleshooting](docs/troubleshooting.md): is my model supported, it doesn't connect, reporting an issue.
+
+## Support
+
+I maintain this in my spare time, with help from [Claude](https://claude.ai). Sponsorships go towards the subscription,
+so I can take on more feature requests and devices. ❤️ [GitHub Sponsors](https://github.com/sponsors/afharo) · [Ko-fi](https://ko-fi.com/afharo)
 
 ## Trademarks
 
