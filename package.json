@@ -30,6 +30,16 @@
   "bugs": {
     "url": "https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues"
   },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/afharo"
+    },
+    {
+      "type": "ko-fi",
+      "url": "https://ko-fi.com/afharo"
+    }
+  ],
   "homepage": "https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum",
   "bin": {
     "miio-vacuum": "dist/bin/miio-vacuum.js"
