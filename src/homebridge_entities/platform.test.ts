@@ -1,6 +1,7 @@
 import type { API, Logging } from "homebridge";
 import { Categories } from "@homebridge/hap-nodejs";
 import { BehaviorSubject } from "rxjs";
+import os from "node:os";
 
 import { createHomebridgeMock, miio } from "../test.mocks";
 import "./platform.test.mock";
@@ -204,6 +205,74 @@ describe("XiaomiRoborockVacuumPlatform", () => {
       expect(homebridge.registerPlatformAccessories).not.toHaveBeenCalled();
       expect(homebridge.unregisterPlatformAccessories).toHaveBeenCalledTimes(1);
       expect(platform["accessories"].size).toBe(0);
+    });
+  });
+
+  describe("Matter setup warnings", () => {
+    const ipv4 = {
+      family: "IPv4",
+      address: "192.168.1.2",
+    } as os.NetworkInterfaceInfo;
+    const ipv6 = {
+      family: "IPv6",
+      address: "fe80::1",
+    } as os.NetworkInterfaceInfo;
+    const start = ({
+      serviceType = "vacuum",
+      matter = true,
+      // `null`: a Homebridge version without `isMatterExternalsOnly`
+      externalsOnly = false as boolean | null,
+      addresses = [ipv4, ipv6],
+    } = {}) => {
+      jest.spyOn(os, "networkInterfaces").mockReturnValue({ eth0: addresses });
+      Object.assign(homebridge, {
+        isMatterEnabled: jest.fn(() => matter),
+        isMatterExternalsOnly:
+          externalsOnly === null ? undefined : jest.fn(() => externalsOnly),
+      });
+      homebridge.platformAccessory.mockImplementation(newAccessory);
+      new XiaomiRoborockVacuumPlatform(
+        log,
+        {
+          platform: ACCESSORY_NAME,
+          devices: [
+            { name: "test", ip: "my.ip", token: "secret", serviceType },
+          ],
+        },
+        homebridge
+      );
+      homebridge.on.mock.lastCall![1]();
+    };
+    const warnings = () => consoleWarnSpy.mock.calls.map(([msg]) => `${msg}`);
+
+    test("suggests externalsOnly when the Matter bridge is published", () => {
+      start();
+      expect(warnings()).toEqual([
+        expect.stringContaining('"externalsOnly": true'),
+      ]);
+    });
+
+    test("no warnings with externalsOnly and IPv6", () => {
+      start({ externalsOnly: true });
+      expect(warnings()).toEqual([]);
+    });
+
+    test("no externalsOnly hint on Homebridge versions without it", () => {
+      start({ externalsOnly: null });
+      expect(warnings()).toEqual([]);
+    });
+
+    test("warns when the host has no IPv6", () => {
+      start({ externalsOnly: true, addresses: [ipv4] });
+      expect(warnings()).toEqual([
+        expect.stringContaining("Matter needs IPv6"),
+      ]);
+    });
+
+    test('no warnings without "vacuum" devices or without Matter', () => {
+      start({ serviceType: "fan", addresses: [ipv4] });
+      start({ matter: false, addresses: [ipv4] });
+      expect(warnings()).toEqual([]);
     });
   });
 

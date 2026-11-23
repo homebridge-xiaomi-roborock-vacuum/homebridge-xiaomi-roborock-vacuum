@@ -16,6 +16,7 @@ import type { RoborockConfig } from "../services/roborock_service";
 import { ACCESSORY_NAME, PLUGIN_NAME } from "../constants";
 import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory";
 import { first } from "rxjs";
+import { networkInterfaces } from "node:os";
 import type { ResolvedRoom } from "../services/rooms_service";
 
 interface XiaomiRoborockVacuumPlatformConfig extends PlatformConfig {
@@ -55,7 +56,9 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
     this.api.on("didFinishLaunching", () => {
       // 1. Unregister all the accessories that have been removed from the config
       this.unregisterRemovedAccessories();
-      // 2. Initialize the connections and new accessories
+      // 2. Warn about the bridge settings that break the Matter robot vacuum
+      this.checkMatterSetup();
+      // 3. Initialize the connections and new accessories
       this.initializeDevices();
     });
   }
@@ -87,6 +90,40 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
         PLUGIN_NAME,
         ACCESSORY_NAME,
         accessoriesToDelete
+      );
+    }
+  }
+
+  /**
+   * Warns about the bridge settings that get in the way of the Matter robot vacuum (`serviceType: "vacuum"`).
+   */
+  private checkMatterSetup() {
+    if (
+      !this.config.devices.some(
+        ({ serviceType }) => serviceType === "vacuum"
+      ) ||
+      !this.api.isMatterEnabled?.()
+    ) {
+      // Without Matter, each vacuum warns that it falls back to "fan"
+      return;
+    }
+    if (!hasIPv6()) {
+      this.log.warn(
+        "Matter needs IPv6, and this host has none: the Matter robot vacuum won't show up in the Home app. " +
+          "Enable IPv6 on the host (e.g. remove `ipv6.disable=1` from the Raspberry Pi's /boot/firmware/cmdline.txt)."
+      );
+    }
+    // The vacuums are external Matter accessories, paired on their own: the bridge's Matter node only shows up in
+    // the Home app as an empty "Not Supported" accessory. `externalsOnly` (Homebridge 2.5+) stops publishing it.
+    if (
+      typeof this.api.isMatterExternalsOnly === "function" &&
+      !this.api.isMatterExternalsOnly()
+    ) {
+      this.log.warn(
+        "The Matter robot vacuums are paired on their own (with their own code), so this bridge's Matter bridge is " +
+          'empty and shows up in the Home app as a "Not Supported" accessory. If this bridge only runs this plugin, ' +
+          'set `"externalsOnly": true` in its Matter settings (`"_bridge": { "matter": { "externalsOnly": true } }`), ' +
+          "and remove that accessory from the Home app if you added it."
       );
     }
   }
@@ -183,4 +220,13 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
       }
     });
   }
+}
+
+/**
+ * Whether the host has an IPv6 address (Matter's mDNS binds on IPv6, so it can't start without one).
+ */
+function hasIPv6(): boolean {
+  return Object.values(networkInterfaces()).some((addresses) =>
+    addresses?.some(({ family }) => family === "IPv6")
+  );
 }
