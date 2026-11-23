@@ -27,6 +27,11 @@ With `"serviceType": "vacuum"`, the plugin logs a warning at startup for these:
 - **Two accessories under "Add Accessory → Nearby"**, one of them "Not Supported" once added: it's the child bridge's
   Matter bridge, empty because the vacuum is paired on its own. Set `"externalsOnly": true` in the child bridge's
   `matter` settings ([how](how-it-shows-up.md#robot-vacuum-matter)), and remove that accessory from the Home app.
+- **Docker**: run the container with `network_mode: host`. If the Home app can't find or reach the vacuum, check that
+  the host has a LAN IPv6 address (not only `fe80::…`): Docker enables IP forwarding, which makes Linux ignore the
+  router advertisements. Accept them on the LAN interface with
+  `sudo sysctl -w net.ipv6.conf.<interface>.accept_ra=2`, and make it permanent in `/etc/sysctl.d/` (e.g.
+  `net.ipv6.conf.eth0.accept_ra = 2` in `/etc/sysctl.d/99-matter.conf`).
 - **`Cannot find module …/@matter/…`**: Homebridge's Matter packages are incomplete (e.g. after an interrupted update
   or a backup restore). Reinstall Homebridge.
 

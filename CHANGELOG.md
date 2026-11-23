@@ -2,7 +2,7 @@
 
 ## Next
 
-- [Feature] Matter vacuum: warn at startup when the host has no IPv6 (Matter can't start), and when the bridge's empty Matter bridge is published (it shows up as "Not Supported" in the Home app): suggest `"externalsOnly": true` (Homebridge 2.5+). The docs recommend it for child bridges, and the new [Troubleshooting → Matter](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/docs/troubleshooting.md#matter) section covers these and missing `@matter/*` modules ([#1232](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1232#issuecomment-7074496561)).
+- [Feature] Matter vacuum: warn at startup when the host has no IPv6 (Matter can't start), and when the bridge's empty Matter bridge is published (it shows up as "Not Supported" in the Home app): suggest `"externalsOnly": true` (Homebridge 2.5+). The docs recommend it for child bridges, and the new [Troubleshooting → Matter](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/docs/troubleshooting.md#matter) section covers these, missing `@matter/*` modules and IPv6 on Docker hosts ([#1232](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1232#issuecomment-7074496561)).
 
 ## 1.7.0
 
