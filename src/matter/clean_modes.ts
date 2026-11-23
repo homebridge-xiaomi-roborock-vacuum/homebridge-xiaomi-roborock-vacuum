@@ -39,7 +39,7 @@ const FAN_TAGS: Record<string, CleanModeTag[]> = {
   auto: [Auto],
 };
 
-/** The high fan speeds, tagged by rank: the fastest is DeepClean and the next one Max (or Max, if it's the only one) */
+/** The high fan speeds, tagged by rank: the fastest is DeepClean and the others Max (or Max, if it's the only one) */
 const HIGH_FAN_SPEEDS = /^(strong|turbo|max|full speed|max\+)$/;
 
 /** Tags by (lowercased) water level name */
@@ -77,7 +77,7 @@ function tagsByPosition(
 
 /**
  * The tags of each fan speed (slowest first): by name, the high speeds (Strong, Turbo, Max, Full Speed, Max+) by rank
- * (the fastest DeepClean, the next one Max, the others Day: e.g. Turbo when there are Max and Max+), and the unknown
+ * (the fastest DeepClean, the others Max: e.g. Turbo and Max when there's Max+), and the unknown
  * names by position.
  *
  * @param names The fan speeds' names
@@ -92,8 +92,8 @@ export function fanTags(names: string[]): CleanModeTag[][] {
     if (HIGH_FAN_SPEEDS.test(key)) {
       if (highs.length === 1) return [Max];
       const fromTheTop = highs.length - 1 - highs.indexOf(index);
-      // The ones below them (e.g. Turbo when there are Max and Max+) are Day: every mode keeps an intensity tag
-      return fromTheTop === 0 ? [DeepClean] : fromTheTop === 1 ? [Max] : [Day];
+      // The ones below them are Max too (e.g. Turbo when there are Max and Max+): "one of the strongest"
+      return fromTheTop === 0 ? [DeepClean] : [Max];
     }
     return FAN_TAGS[key] ?? tagsByPosition(index, keys.length, LowNoise);
   });
