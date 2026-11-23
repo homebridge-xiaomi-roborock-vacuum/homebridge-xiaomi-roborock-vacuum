@@ -5,6 +5,8 @@
   "license": "MIT",
   "keywords": [
     "homebridge-plugin",
+    "supports-hap",
+    "supports-matter",
     "xiaomi",
     "mi robot",
     "vacuum cleaner",
