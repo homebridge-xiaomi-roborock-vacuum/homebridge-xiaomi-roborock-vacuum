@@ -291,9 +291,9 @@ describe("fanTags / waterTags", () => {
       ["LowEnergy", "LowNoise+Night", "Day", "Max", "DeepClean", "Vacation"],
     ],
     [
-      "S7 MaxV: Max and Max+ take them, Turbo gets none",
+      "S7 MaxV: Turbo and Max are Max, Max+ is DeepClean",
       ["Quiet", "Balanced", "Turbo", "Max", "Max+", "Custom"],
-      ["LowNoise+Night", "Day", "", "Max", "DeepClean", "Vacation"],
+      ["LowNoise+Night", "Day", "Max", "Max", "DeepClean", "Vacation"],
     ],
     [
       "Viomi: the only high speed is Max",
