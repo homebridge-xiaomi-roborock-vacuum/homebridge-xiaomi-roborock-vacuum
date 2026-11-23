@@ -3,15 +3,22 @@
  * that select them, and the Matter clean modes. It's generated from the same code the plugin runs, and a test checks
  * that the page is up to date (`npm run docs:speeds` writes it).
  */
-import { resolveVacuumModes, type CleanPreset } from "node-miio";
-import { MODELS } from "../models/models";
+import { resolveVacuumModes, vacuumModels, type CleanPreset } from "node-miio";
 import type { ModelDefinition, ModesHomekitVsMiLevel } from "../models/types";
-import { findSpeedModes, fromReportedModes } from "../utils/find_speed_modes";
+import { findSpeedModes } from "../utils/find_speed_modes";
 import { buildCleanModes, type CleanMode } from "../matter/clean_modes";
 import { CleanModeTag } from "../matter/constants";
 
-/** Models only node-miio knows the modes of (the plugin uses what it reports) */
-const NODE_MIIO_MODELS = ["roborock.vacuum.a296"];
+/**
+ * The models whose fan speeds changed with a firmware update, and the first firmware with the new ones (as in
+ * node-miio's table: a test checks that they match, and that no other model changes with the firmware).
+ */
+export const FIRMWARE_VARIANTS: Record<string, string> = {
+  "roborock.vacuum.s5": "3.5.7",
+};
+
+/** An unknown Roborock model: it gets node-miio's default fan speeds */
+const DEFAULT_MODEL = "roborock.vacuum.default";
 
 /**
  * The commercial names of the models. Sources: Roborock's product catalog, python-miio's model list, Roborock's pages
@@ -88,24 +95,16 @@ function cleanModeRows(modes: CleanMode[]): string[] {
  * @returns Its variants (some models changed their fan speeds with a firmware update)
  */
 function variantsOf(model: string): Variant[] {
-  // The plugin's own tables win over node-miio's (as in `findSpeedModes`)
-  if (!MODELS[model]) {
-    const reported = resolveVacuumModes(model);
-    return [
-      {
-        definition: fromReportedModes(reported),
-        presets: reported.presets,
-      },
-    ];
-  }
-  return MODELS[model].map((option) => ({
-    label: option.firmware ? `firmware ${option.firmware}` : undefined,
-    // The same lookup as the plugin (e.g. the firmware variants)
-    definition: option.firmware
-      ? findSpeedModes(model, option.firmware.replace(/^[^\d]*/, ""))
-      : option,
-    presets: [],
-  }));
+  // The same lookup as the plugin (`findSpeedModes`, from node-miio's table)
+  const variant = (firmware?: string, label?: string): Variant => ({
+    label,
+    definition: findSpeedModes(model, firmware),
+    presets: resolveVacuumModes(model, firmware).presets,
+  });
+  const newFirmware = FIRMWARE_VARIANTS[model];
+  return newFirmware
+    ? [variant(), variant(newFirmware, `firmware >=${newFirmware}`)]
+    : [variant()];
 }
 
 /**
@@ -113,7 +112,7 @@ function variantsOf(model: string): Variant[] {
  * @returns The title of its section
  */
 function titleOf(model: string): string {
-  if (model === "default") return "Other models (default)";
+  if (model === DEFAULT_MODEL) return "Other models (default)";
   const name = MODEL_NAMES[model];
   return name ? `${model} — ${name}` : model;
 }
@@ -174,13 +173,8 @@ function modelSection(model: string): string {
  * @returns The page
  */
 export function renderSpeedsDoc(): string {
-  const models = [
-    ...new Set([
-      ...Object.keys(MODELS).filter((m) => m !== "default" && m !== "viomi"),
-      ...NODE_MIIO_MODELS,
-    ]),
-  ].sort();
-  const index = [...models, "default"]
+  const models = [...vacuumModels()].sort();
+  const index = [...models, DEFAULT_MODEL]
     .map((m) => `- [${titleOf(m)}](#${anchorOf(titleOf(m))})`)
     .join("\n");
   const intro = `# Fan speeds and water levels
@@ -201,5 +195,5 @@ What each step of the HomeKit sliders and each Matter clean mode sends to the ro
 
 Models not listed use the [default](#other-models-default) fan speeds, unless node-miio reports their own (e.g. the
 MIoT vacuums, from their spec: they're in the logs with \`"debug": true\`). The Viomi vacuums have their own list.`;
-  return `${[intro, "## Models", index, ...models.map(modelSection), modelSection("default")].join("\n\n")}\n`;
+  return `${[intro, "## Models", index, ...models.map(modelSection), modelSection(DEFAULT_MODEL)].join("\n\n")}\n`;
 }

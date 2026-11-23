@@ -44,8 +44,11 @@ node dist/bin/miio-vacuum.js --help   # the CLI is a thin wrapper around node-mi
   - `api.matter.types` (Homebridge 2.5) only exports `RvcOperationalState`: the Matter values are in `src/matter/constants.ts`.
   - `skipArea` isn't supported: Homebridge answers it with matter.js's base implementation, which always fails.
   - Matter rejects rooms with an empty or a repeated name (`toAreas` renames them).
-- `src/utils/find_speed_modes.ts`: models listed in `src/models/` keep the local tables. Any other model uses `reportedModes`
-  (an "Off" -1 speed is prepended, which stops the cleaning). The plan is to remove `src/models/` once node-miio's lists are confirmed.
+- `src/utils/find_speed_modes.ts`: the fan speeds and water levels come from node-miio. The models in its table
+  (`vacuumModels()`) use `resolveVacuumModes(model, firmware)`; any other model uses `reportedModes` (e.g. its MIoT spec),
+  or its brand's defaults. The plugin only adds an "Off" -1 speed (which stops the cleaning) and the HomeKit slider levels
+  (proportional). **Add or fix a model's speeds in node-miio, not here**: a snapshot test pins what each model gets.
+  The cleaning states come from node-miio too (`isCleaningState`).
 - `docs/speeds-and-modes.md` is generated from the code (`src/docs/speeds_doc.ts`): run `npm run docs:speeds` after
   changing the fan speeds, water levels or Matter clean modes. A test fails while it's out of date.
 - node-miio ships its own types (since 0.5.0). The device is a `VacuumDevice` (union of node-miio's vacuum classes): only their

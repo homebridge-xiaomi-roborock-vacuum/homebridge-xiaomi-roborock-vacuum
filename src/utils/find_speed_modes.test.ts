@@ -1,26 +1,70 @@
-import { findSpeedModes } from "./find_speed_modes";
-import { MODELS } from "../models";
+import { resolveVacuumModes, vacuumModels } from "node-miio";
+import { findSpeedModes, fromReportedModes } from "./find_speed_modes";
+
+const levels = (model: string, firmware?: string) =>
+  findSpeedModes(model, firmware).speed.map(({ miLevel }) => miLevel);
 
 describe("findSpeedModes", () => {
-  test("should assign the viomi model for any model starting with 'viomi.'", () => {
-    expect(findSpeedModes("viomi.one")).toStrictEqual(MODELS.viomi[0]);
-    expect(findSpeedModes("viomi.two")).toStrictEqual(MODELS.viomi[0]);
-  });
-
-  test("should return the default model for unlisted models", () => {
-    expect(findSpeedModes("random-model")).toStrictEqual(MODELS.default[0]);
-  });
-
-  test("should return a known model in the list", () => {
-    expect(findSpeedModes("roborock.vacuum.s5")).toStrictEqual(
-      MODELS["roborock.vacuum.s5"][0]
+  test("uses node-miio's modes, with an Off speed and HomeKit levels", () => {
+    expect(findSpeedModes("roborock.vacuum.s5e")).toStrictEqual(
+      fromReportedModes(resolveVacuumModes("roborock.vacuum.s5e"))
     );
+    expect(findSpeedModes("roborock.vacuum.s5e")).toStrictEqual({
+      speed: [
+        { homekitTopLevel: 0, miLevel: -1, name: "Off" },
+        { homekitTopLevel: 16, miLevel: 105, name: "Soft" },
+        { homekitTopLevel: 32, miLevel: 101, name: "Quiet" },
+        { homekitTopLevel: 48, miLevel: 102, name: "Balanced" },
+        { homekitTopLevel: 64, miLevel: 103, name: "Turbo" },
+        { homekitTopLevel: 80, miLevel: 104, name: "Max" },
+        { homekitTopLevel: 100, miLevel: 106, name: "Custom" },
+      ],
+      waterspeed: [
+        { homekitTopLevel: 0, miLevel: 200, name: "Off" },
+        { homekitTopLevel: 33, miLevel: 201, name: "Light" },
+        { homekitTopLevel: 66, miLevel: 202, name: "Medium" },
+        { homekitTopLevel: 100, miLevel: 203, name: "High" },
+      ],
+    });
   });
 
-  test("should apply the firmware version to choose a different set of speeds", () => {
-    expect(findSpeedModes("roborock.vacuum.s5", "3.5.7")).toStrictEqual(
-      MODELS["roborock.vacuum.s5"][1]
-    );
+  test("viomi models get the Viomi speeds", () => {
+    expect(levels("viomi.one")).toStrictEqual([-1, 0, 1, 2, 3]);
+  });
+
+  test("unlisted models get the default speeds", () => {
+    expect(levels("random-model")).toStrictEqual([-1, 105, 101, 102, 103, 104]);
+  });
+
+  test("the firmware version picks a different set of speeds", () => {
+    expect(levels("roborock.vacuum.s5")).toStrictEqual([
+      -1, 105, 38, 60, 75, 100,
+    ]);
+    expect(levels("roborock.vacuum.s5", "3.5.7_002034")).toStrictEqual([
+      -1, 105, 101, 102, 103, 104,
+    ]);
+  });
+
+  test.each(["roborock.vacuum.a15", "roborock.vacuum.a62"])(
+    "%s: 105 is Mop (no suction)",
+    (model) => {
+      expect(findSpeedModes(model).speed[1]).toStrictEqual({
+        homekitTopLevel: 16,
+        miLevel: 105,
+        name: "Mop",
+      });
+    }
+  );
+
+  // Pins what each model gets (fan speeds, water levels and HomeKit slider levels), so a change in node-miio's table
+  // shows up here: update the snapshot only if it's intended.
+  test.each(
+    vacuumModels().flatMap((model) => [
+      [model, undefined],
+      [model, "4.0.0"],
+    ])
+  )("%s (firmware %s)", (model, firmware) => {
+    expect(findSpeedModes(model, firmware)).toMatchSnapshot();
   });
 
   describe("with modes reported by node-miio", () => {
@@ -38,10 +82,10 @@ describe("findSpeedModes", () => {
       ],
     };
 
-    test("models listed in MODELS keep the local definitions", () => {
+    test("the models in node-miio's table keep its definitions", () => {
       expect(
         findSpeedModes("roborock.vacuum.s5", "3.5.7", reported)
-      ).toStrictEqual(MODELS["roborock.vacuum.s5"][1]);
+      ).toStrictEqual(findSpeedModes("roborock.vacuum.s5", "3.5.7"));
     });
 
     test("other models use the reported modes (with an Off speed and HomeKit levels)", () => {
@@ -84,10 +128,10 @@ describe("findSpeedModes", () => {
           fanSpeeds: [],
           waterBoxModes: [],
         })
-      ).toStrictEqual(MODELS.default[0]);
+      ).toStrictEqual(findSpeedModes("random-model"));
       expect(
         findSpeedModes("viomi.vacuum.v6", undefined, undefined)
-      ).toStrictEqual(MODELS.viomi[0]);
+      ).toStrictEqual(findSpeedModes("viomi.one"));
     });
   });
 });

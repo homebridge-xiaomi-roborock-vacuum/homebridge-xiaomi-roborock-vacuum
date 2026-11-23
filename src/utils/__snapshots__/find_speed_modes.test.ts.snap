@@ -1,0 +1,2789 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`findSpeedModes dreame.vacuum.mc1808 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 0,
+      "name": "Silent",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 1,
+      "name": "Standard",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 2,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 3,
+      "name": "Turbo",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes dreame.vacuum.mc1808 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 0,
+      "name": "Silent",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 1,
+      "name": "Standard",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 2,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 3,
+      "name": "Turbo",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a08 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a08 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a09 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a09 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a10 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a10 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a11 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a11 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a15 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a15 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a27 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 14,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 28,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 42,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 56,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 70,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 84,
+      "miLevel": 108,
+      "name": "Max+",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a27 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 14,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 28,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 42,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 56,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 70,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 84,
+      "miLevel": 108,
+      "name": "Max+",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a51 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a51 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a62 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a62 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a65 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a65 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a72 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a72 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a73 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a73 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a75 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a75 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 203,
+      "name": "High",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 204,
+      "name": "Custom",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a296 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 20,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 40,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 60,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 3,
+      "miLevel": 221,
+      "name": "Level 1",
+    },
+    {
+      "homekitTopLevel": 6,
+      "miLevel": 222,
+      "name": "Level 2",
+    },
+    {
+      "homekitTopLevel": 9,
+      "miLevel": 223,
+      "name": "Level 3",
+    },
+    {
+      "homekitTopLevel": 12,
+      "miLevel": 224,
+      "name": "Level 4",
+    },
+    {
+      "homekitTopLevel": 15,
+      "miLevel": 225,
+      "name": "Level 5",
+    },
+    {
+      "homekitTopLevel": 18,
+      "miLevel": 226,
+      "name": "Level 6",
+    },
+    {
+      "homekitTopLevel": 21,
+      "miLevel": 227,
+      "name": "Level 7",
+    },
+    {
+      "homekitTopLevel": 24,
+      "miLevel": 228,
+      "name": "Level 8",
+    },
+    {
+      "homekitTopLevel": 27,
+      "miLevel": 229,
+      "name": "Level 9",
+    },
+    {
+      "homekitTopLevel": 30,
+      "miLevel": 230,
+      "name": "Level 10",
+    },
+    {
+      "homekitTopLevel": 33,
+      "miLevel": 231,
+      "name": "Level 11",
+    },
+    {
+      "homekitTopLevel": 36,
+      "miLevel": 232,
+      "name": "Level 12",
+    },
+    {
+      "homekitTopLevel": 39,
+      "miLevel": 233,
+      "name": "Level 13",
+    },
+    {
+      "homekitTopLevel": 42,
+      "miLevel": 234,
+      "name": "Level 14",
+    },
+    {
+      "homekitTopLevel": 45,
+      "miLevel": 235,
+      "name": "Level 15",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 236,
+      "name": "Level 16",
+    },
+    {
+      "homekitTopLevel": 51,
+      "miLevel": 237,
+      "name": "Level 17",
+    },
+    {
+      "homekitTopLevel": 54,
+      "miLevel": 238,
+      "name": "Level 18",
+    },
+    {
+      "homekitTopLevel": 57,
+      "miLevel": 239,
+      "name": "Level 19",
+    },
+    {
+      "homekitTopLevel": 60,
+      "miLevel": 240,
+      "name": "Level 20",
+    },
+    {
+      "homekitTopLevel": 63,
+      "miLevel": 241,
+      "name": "Level 21",
+    },
+    {
+      "homekitTopLevel": 66,
+      "miLevel": 242,
+      "name": "Level 22",
+    },
+    {
+      "homekitTopLevel": 69,
+      "miLevel": 243,
+      "name": "Level 23",
+    },
+    {
+      "homekitTopLevel": 72,
+      "miLevel": 244,
+      "name": "Level 24",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 245,
+      "name": "Level 25",
+    },
+    {
+      "homekitTopLevel": 78,
+      "miLevel": 246,
+      "name": "Level 26",
+    },
+    {
+      "homekitTopLevel": 81,
+      "miLevel": 247,
+      "name": "Level 27",
+    },
+    {
+      "homekitTopLevel": 84,
+      "miLevel": 248,
+      "name": "Level 28",
+    },
+    {
+      "homekitTopLevel": 87,
+      "miLevel": 249,
+      "name": "Level 29",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 250,
+      "name": "Level 30",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.a296 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 20,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 40,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 60,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 3,
+      "miLevel": 221,
+      "name": "Level 1",
+    },
+    {
+      "homekitTopLevel": 6,
+      "miLevel": 222,
+      "name": "Level 2",
+    },
+    {
+      "homekitTopLevel": 9,
+      "miLevel": 223,
+      "name": "Level 3",
+    },
+    {
+      "homekitTopLevel": 12,
+      "miLevel": 224,
+      "name": "Level 4",
+    },
+    {
+      "homekitTopLevel": 15,
+      "miLevel": 225,
+      "name": "Level 5",
+    },
+    {
+      "homekitTopLevel": 18,
+      "miLevel": 226,
+      "name": "Level 6",
+    },
+    {
+      "homekitTopLevel": 21,
+      "miLevel": 227,
+      "name": "Level 7",
+    },
+    {
+      "homekitTopLevel": 24,
+      "miLevel": 228,
+      "name": "Level 8",
+    },
+    {
+      "homekitTopLevel": 27,
+      "miLevel": 229,
+      "name": "Level 9",
+    },
+    {
+      "homekitTopLevel": 30,
+      "miLevel": 230,
+      "name": "Level 10",
+    },
+    {
+      "homekitTopLevel": 33,
+      "miLevel": 231,
+      "name": "Level 11",
+    },
+    {
+      "homekitTopLevel": 36,
+      "miLevel": 232,
+      "name": "Level 12",
+    },
+    {
+      "homekitTopLevel": 39,
+      "miLevel": 233,
+      "name": "Level 13",
+    },
+    {
+      "homekitTopLevel": 42,
+      "miLevel": 234,
+      "name": "Level 14",
+    },
+    {
+      "homekitTopLevel": 45,
+      "miLevel": 235,
+      "name": "Level 15",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 236,
+      "name": "Level 16",
+    },
+    {
+      "homekitTopLevel": 51,
+      "miLevel": 237,
+      "name": "Level 17",
+    },
+    {
+      "homekitTopLevel": 54,
+      "miLevel": 238,
+      "name": "Level 18",
+    },
+    {
+      "homekitTopLevel": 57,
+      "miLevel": 239,
+      "name": "Level 19",
+    },
+    {
+      "homekitTopLevel": 60,
+      "miLevel": 240,
+      "name": "Level 20",
+    },
+    {
+      "homekitTopLevel": 63,
+      "miLevel": 241,
+      "name": "Level 21",
+    },
+    {
+      "homekitTopLevel": 66,
+      "miLevel": 242,
+      "name": "Level 22",
+    },
+    {
+      "homekitTopLevel": 69,
+      "miLevel": 243,
+      "name": "Level 23",
+    },
+    {
+      "homekitTopLevel": 72,
+      "miLevel": 244,
+      "name": "Level 24",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 245,
+      "name": "Level 25",
+    },
+    {
+      "homekitTopLevel": 78,
+      "miLevel": 246,
+      "name": "Level 26",
+    },
+    {
+      "homekitTopLevel": 81,
+      "miLevel": 247,
+      "name": "Level 27",
+    },
+    {
+      "homekitTopLevel": 84,
+      "miLevel": 248,
+      "name": "Level 28",
+    },
+    {
+      "homekitTopLevel": 87,
+      "miLevel": 249,
+      "name": "Level 29",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 250,
+      "name": "Level 30",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.c1 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 38,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 60,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 77,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 90,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.c1 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 38,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 60,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 77,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 90,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.e2 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 20,
+      "miLevel": 41,
+      "name": "Gentle",
+    },
+    {
+      "homekitTopLevel": 40,
+      "miLevel": 50,
+      "name": "Silent",
+    },
+    {
+      "homekitTopLevel": 60,
+      "miLevel": 68,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 79,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 100,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.e2 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 20,
+      "miLevel": 41,
+      "name": "Gentle",
+    },
+    {
+      "homekitTopLevel": 40,
+      "miLevel": 50,
+      "name": "Silent",
+    },
+    {
+      "homekitTopLevel": 60,
+      "miLevel": 68,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 79,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 100,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.m1s (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.m1s (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.s5 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 20,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 40,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 60,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.s5 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 20,
+      "miLevel": 105,
+      "name": "Mop",
+    },
+    {
+      "homekitTopLevel": 40,
+      "miLevel": 38,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 60,
+      "miLevel": 60,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 75,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 100,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.s5e (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 33,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 66,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 203,
+      "name": "High",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.s5e (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 16,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 32,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 48,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 64,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 104,
+      "name": "Max",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 106,
+      "name": "Custom",
+    },
+  ],
+  "waterspeed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": 200,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 33,
+      "miLevel": 201,
+      "name": "Light",
+    },
+    {
+      "homekitTopLevel": 66,
+      "miLevel": 202,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 203,
+      "name": "High",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.s6 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 20,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 40,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 60,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.s6 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 20,
+      "miLevel": 105,
+      "name": "Soft",
+    },
+    {
+      "homekitTopLevel": 40,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 60,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 80,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.t4 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.t4 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.t6 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes roborock.vacuum.t6 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 101,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 102,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 103,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 104,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes rockrobo.vacuum.v1 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 38,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 60,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 75,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 100,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes rockrobo.vacuum.v1 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 38,
+      "name": "Quiet",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 60,
+      "name": "Balanced",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 75,
+      "name": "Turbo",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 100,
+      "name": "Max",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes viomi.vacuum.v7 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 0,
+      "name": "Silent",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 1,
+      "name": "Standard",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 2,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 3,
+      "name": "Turbo",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes viomi.vacuum.v7 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 0,
+      "name": "Silent",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 1,
+      "name": "Standard",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 2,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 3,
+      "name": "Turbo",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes viomi.vacuum.v8 (firmware 4.0.0) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 0,
+      "name": "Silent",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 1,
+      "name": "Standard",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 2,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 3,
+      "name": "Turbo",
+    },
+  ],
+}
+`;
+
+exports[`findSpeedModes viomi.vacuum.v8 (firmware undefined) 1`] = `
+{
+  "speed": [
+    {
+      "homekitTopLevel": 0,
+      "miLevel": -1,
+      "name": "Off",
+    },
+    {
+      "homekitTopLevel": 25,
+      "miLevel": 0,
+      "name": "Silent",
+    },
+    {
+      "homekitTopLevel": 50,
+      "miLevel": 1,
+      "name": "Standard",
+    },
+    {
+      "homekitTopLevel": 75,
+      "miLevel": 2,
+      "name": "Medium",
+    },
+    {
+      "homekitTopLevel": 100,
+      "miLevel": 3,
+      "name": "Turbo",
+    },
+  ],
+}
+`;

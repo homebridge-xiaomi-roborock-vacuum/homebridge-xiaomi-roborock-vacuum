@@ -10,7 +10,15 @@ import {
 } from "./device_manager.mock";
 import { createMainServiceMock, MainServiceMock } from "./main_service.mock";
 import { createProductInfoMock, ProductInfoMock } from "./product_info.mock";
-import { watermodes } from "../models/watermodes";
+import type { ModesHomekitVsMiLevel } from "../models/types";
+
+/** node-miio's "gen1" water levels, with the HomeKit slider levels of `findSpeedModes` */
+const GEN1_WATER: ModesHomekitVsMiLevel[] = [
+  { homekitTopLevel: 0, miLevel: 200, name: "Off" },
+  { homekitTopLevel: 33, miLevel: 201, name: "Light" },
+  { homekitTopLevel: 66, miLevel: 202, name: "Medium" },
+  { homekitTopLevel: 100, miLevel: 203, name: "High" },
+];
 
 describe("WaterBoxService", () => {
   let waterboxService: WaterBoxService;
@@ -71,7 +79,7 @@ describe("WaterBoxService", () => {
     });
 
     test("should return rotation speed 0 and ON as false (actually off)", async () => {
-      findSpeedModesMock.mockReturnValueOnce({ waterspeed: watermodes.gen1 });
+      findSpeedModesMock.mockReturnValueOnce({ waterspeed: GEN1_WATER });
       deviceManagerMock.device.getWaterBoxMode = jest
         .fn()
         .mockResolvedValue(200);
@@ -86,9 +94,9 @@ describe("WaterBoxService", () => {
       ).resolves.toEqual(0);
     });
 
-    test("should return rotation speed 35 and ON as true", async () => {
-      findSpeedModesMock.mockReturnValueOnce({ waterspeed: watermodes.gen1 });
-      findSpeedModesMock.mockReturnValueOnce({ waterspeed: watermodes.gen1 });
+    test("should return rotation speed 33 and ON as true", async () => {
+      findSpeedModesMock.mockReturnValueOnce({ waterspeed: GEN1_WATER });
+      findSpeedModesMock.mockReturnValueOnce({ waterspeed: GEN1_WATER });
       deviceManagerMock.device!.getWaterBoxMode = jest
         .fn()
         .mockResolvedValue(201);
@@ -100,7 +108,7 @@ describe("WaterBoxService", () => {
         service
           .getCharacteristic(hap.Characteristic.RotationSpeed)
           ["getHandler"]()
-      ).resolves.toEqual(35);
+      ).resolves.toEqual(33);
     });
   });
 
@@ -135,7 +143,7 @@ describe("WaterBoxService", () => {
     test("should disable water mode on OFF", async () => {
       expect(mainService.cachedState.get("WaterSpeed")).toBeUndefined();
       expect(mainService.cachedState.get("WaterSpeedName")).toBeUndefined();
-      findSpeedModesMock.mockReturnValueOnce({ waterspeed: watermodes.gen1 });
+      findSpeedModesMock.mockReturnValueOnce({ waterspeed: GEN1_WATER });
       const service = waterboxService.services[0];
       service.getCharacteristic(hap.Characteristic.On).setValue(false);
       await new Promise((resolve) => process.nextTick(resolve));

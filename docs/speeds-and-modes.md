@@ -710,9 +710,9 @@ Water level (the water box's slider):
 | Level  | Robot value | HomeKit slider |
 | ------ | ----------- | -------------- |
 | Off    | 200         | 0%             |
-| Light  | 201         | 1–35%          |
-| Medium | 202         | 36–70%         |
-| High   | 203         | 71–100%        |
+| Light  | 201         | 1–33%          |
+| Medium | 202         | 34–66%         |
+| High   | 203         | 67–100%        |
 
 Matter clean modes (`"serviceType": "vacuum"`):
 

@@ -2,6 +2,9 @@
 
 ## Next
 
+- [Chore] HomeKit water level slider (`waterBox`) of the S5 Max (`roborock.vacuum.s5e`): its ranges are now even, like the other models' (Light 1–33%, Medium 34–66%, High 67–100%, instead of 1–35%, 36–70%, 71–100%). Automations that set it to 34–35% or 67–70% now pick the next level up.
+- [Chore] The fan speeds, water levels and cleaning states come from node-miio (`0.11.0`), which the plugin and matterbridge-xiaomi-roborock share, instead of the plugin's own copy (`src/models/`). No other model changes: a test pins what each one gets ([afharo/node-miio#56](https://github.com/afharo/node-miio/pull/56)).
+
 ## 1.7.1
 
 - [Feature] Matter vacuum: warn at startup when the host has no IPv6 (Matter can't start), and when the bridge's empty Matter bridge is published (it shows up as "Not Supported" in the Home app): suggest `"externalsOnly": true` (Homebridge 2.5+). The docs recommend it for child bridges, and the new [Troubleshooting → Matter](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/main/docs/troubleshooting.md#matter) section covers these, missing `@matter/*` modules and IPv6 on Docker hosts ([#1232](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1232#issuecomment-7074496561)).

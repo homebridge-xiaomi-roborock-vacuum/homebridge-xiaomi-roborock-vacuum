@@ -1,16 +1,13 @@
-import { speedmodes } from "./speedmodes";
-import { watermodes } from "./watermodes";
-
-export type SpeedModes = Record<string, ModesHomekitVsMiLevel[]>;
-
 export interface ModesHomekitVsMiLevel {
+  /** The top of the HomeKit slider's range that selects this mode (0-100) */
   homekitTopLevel: number;
+  /** The value sent to the robot */
   miLevel: number;
   name: string;
 }
 
+/** A robot's fan speeds and water levels, with their HomeKit slider ranges (see `findSpeedModes`) */
 export interface ModelDefinition {
-  speed: (typeof speedmodes)[string];
-  waterspeed?: (typeof watermodes)[string];
-  firmware?: string;
+  speed: ModesHomekitVsMiLevel[];
+  waterspeed?: ModesHomekitVsMiLevel[];
 }
