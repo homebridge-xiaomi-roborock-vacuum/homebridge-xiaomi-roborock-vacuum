@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         Thanks for reporting! The maintainer can't test most models, so the details below are what makes a fix possible.
-        See [CONTRIBUTING.md](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/CONTRIBUTING.md) for how to get them.
+        See [CONTRIBUTING.md](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/main/CONTRIBUTING.md) for how to get them.
         **Remove your token, serial number, MAC and IP addresses** before posting.
   - type: input
     id: model

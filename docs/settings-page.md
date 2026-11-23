@@ -19,4 +19,4 @@ The plugin's settings in the Homebridge UI show these tools above the usual form
 
 Click "Save" to apply the changes.
 
-<img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/settings-page.png?raw=true" alt="The settings page: Xiaomi Cloud login, the vacuums in the account, and the map with the rooms, a spot and a zone" width="400">
+<img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/main/images/settings-page.png?raw=true" alt="The settings page: Xiaomi Cloud login, the vacuums in the account, and the map with the rooms, a spot and a zone" width="400">

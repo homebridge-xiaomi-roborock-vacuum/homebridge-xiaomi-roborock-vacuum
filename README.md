@@ -8,8 +8,8 @@
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/homebridge/branding/latest/logos/homebridge-color-round-stylized.svg" alt="Homebridge logo" width="64" height="64">
-  <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app logo" width="64" height="64">
-  <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/roborock.png" alt="Roborock app logo" width="64" height="64">
+  <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app logo" width="64" height="64">
+  <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/src/homebridge-ui/public/images/roborock.png" alt="Roborock app logo" width="64" height="64">
 </p>
 
 <h1 align="center">homebridge-xiaomi-roborock-vacuum</h1>
@@ -19,7 +19,7 @@
   <a href="https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum"><img src="https://badge.fury.io/js/homebridge-xiaomi-roborock-vacuum.svg" alt="npm version"></a>
   <a href="https://www.npmjs.com/package/homebridge-xiaomi-roborock-vacuum"><img src="https://img.shields.io/npm/dt/homebridge-xiaomi-roborock-vacuum.svg" alt="npm downloads"></a>
   <a href="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum"><img src="https://img.shields.io/github/last-commit/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum.svg" alt="GitHub last commit"></a>
-  <a href="https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum"><img src="https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/branch/master/graph/badge.svg?token=1VW1RV7MCT" alt="codecov"></a>
+  <a href="https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum"><img src="https://codecov.io/gh/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/branch/main/graph/badge.svg?token=1VW1RV7MCT" alt="codecov"></a>
   <a href="https://github.com/sponsors/afharo"><img src="https://img.shields.io/badge/sponsor-30363D?logo=githubsponsors&logoColor=EA4AAA" alt="Sponsor on GitHub"></a>
   <a href="https://ko-fi.com/afharo"><img src="https://img.shields.io/badge/Ko--fi-FF5E5B?logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
 </p>
@@ -29,17 +29,17 @@ as Apple Home's **native robot vacuum** (through Homebridge's Matter support), o
 sensors. It talks to the robot in your local network, with [node-miio](https://github.com/afharo/node-miio).
 
 > [!NOTE]
-> Made for the vacuums paired with the <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app" width="20" height="20" align="absmiddle"> **Mi Home** app. The ones paired with the <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/roborock.png" alt="Roborock app" width="20" height="20" align="absmiddle"> **Roborock app** are
+> Made for the vacuums paired with the <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app" width="20" height="20" align="absmiddle"> **Mi Home** app. The ones paired with the <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/src/homebridge-ui/public/images/roborock.png" alt="Roborock app" width="20" height="20" align="absmiddle"> **Roborock app** are
 > supported too, experimentally: see [Roborock app](docs/roborock-app.md).
 
 <p>
-<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/rockrobo.vacuum.v1.jpg" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="100">
-<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s5.jpg" alt="Roborock S50 2nd Generation" width="100">
-<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s55.jpg" alt="Roborock S55 2nd Generation Black" width="100">
-<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s6.jpg" alt="Roborock S6/T6 3rd Generation" width="100">
-<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.c10.jpg" alt="Roborock Xiaowa Lite C10" width="100">
-<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s5.max.jpg" alt="Roborock S5 Max" width="100">
-<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/images/roborock.vacuum.s6.maxv.jpg" alt="Roborock S6 MaxV" width="100">
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/images/rockrobo.vacuum.v1.jpg" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="100">
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/images/roborock.vacuum.s5.jpg" alt="Roborock S50 2nd Generation" width="100">
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/images/roborock.vacuum.s55.jpg" alt="Roborock S55 2nd Generation Black" width="100">
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/images/roborock.vacuum.s6.jpg" alt="Roborock S6/T6 3rd Generation" width="100">
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/images/roborock.vacuum.c10.jpg" alt="Roborock Xiaowa Lite C10" width="100">
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/images/roborock.vacuum.s5.max.jpg" alt="Roborock S5 Max" width="100">
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/images/roborock.vacuum.s6.maxv.jpg" alt="Roborock S6 MaxV" width="100">
 </p>
 
 ## Features

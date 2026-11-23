@@ -2,7 +2,7 @@
 
 [← Back to the README](../README.md)
 
-<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app" width="20" height="20" align="absmiddle"> The robot works in your local network, but the Xiaomi account knows its token, and its map (Roborock). With the
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app" width="20" height="20" align="absmiddle"> The robot works in your local network, but the Xiaomi account knows its token, and its map (Roborock). With the
 platform's `cloud` option, the plugin can:
 
 - **Read the tokens**: configure a robot with only its `ip`, or with its device ID (`did`) instead of the IP and token.

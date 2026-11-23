@@ -9,8 +9,8 @@
   speed.
 - `"switch"`: a [switch](#switch), on/off only.
 
-<img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/screenshot1.jpg?raw=true" alt="The vacuum as a fan in the Home app" width="220">
-<img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/images/screenshot2.jpg?raw=true" alt="The vacuum in the Eve app" width="220">
+<img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/main/images/screenshot1.jpg?raw=true" alt="The vacuum as a fan in the Home app" width="220">
+<img src="https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/main/images/screenshot2.jpg?raw=true" alt="The vacuum in the Eve app" width="220">
 
 ## Robot vacuum (Matter)
 

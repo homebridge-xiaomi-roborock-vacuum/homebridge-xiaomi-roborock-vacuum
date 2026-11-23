@@ -15,7 +15,7 @@ the maintainer's fork. **The release branch and the tag go to `upstream`.**
 
 ## Before starting
 
-- Start from an up-to-date, clean `master`: `git fetch upstream && git checkout -B master upstream/master`, `git status` clean.
+- Start from an up-to-date, clean `main`: `git fetch upstream && git checkout -B main upstream/main`, `git status` clean.
 - Work out:
   - `PREV`: the current version in `package.json` (previous tag = `v$PREV`).
   - `NEXT`: the version after applying the level to `PREV`.
@@ -55,7 +55,7 @@ npm version <level>
 
 ## 3. Release PR
 
-Title `$NEXT`, base `master`, head `$NEXT` (on `upstream`), label `release`. Body:
+Title `$NEXT`, base `main`, head `$NEXT` (on `upstream`), label `release`. Body:
 
 ```md
 ## Description
@@ -104,7 +104,7 @@ repeated polling.
    with `npm view homebridge-xiaomi-roborock-vacuum dist-tags`. If it fails, report it: don't publish by hand without
    asking.
 
-4. Sync the local checkout: `git checkout master && git pull --ff-only upstream master`.
+4. Sync the local checkout: `git checkout main && git pull --ff-only upstream main`.
 
 ## Ask the testers / tell the reporters
 

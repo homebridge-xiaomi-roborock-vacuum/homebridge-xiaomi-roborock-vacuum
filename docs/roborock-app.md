@@ -2,7 +2,7 @@
 
 [← Back to the README](../README.md)
 
-<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/master/src/homebridge-ui/public/images/roborock.png" alt="Roborock app" width="20" height="20" align="absmiddle"> Robots paired with the **Roborock app** (instead of Mi Home) aren't in the Xiaomi account, and their miIO token doesn't
+<img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/src/homebridge-ui/public/images/roborock.png" alt="Roborock app" width="20" height="20" align="absmiddle"> Robots paired with the **Roborock app** (instead of Mi Home) aren't in the Xiaomi account, and their miIO token doesn't
 work. With the platform's `roborock` option, the plugin uses your Roborock account instead: it talks to the robot in
 your local network when possible, and through Roborock's cloud otherwise. No token is needed, and the IP is optional.
 With `"autoroom": true`, the rooms get the names given in the Roborock app.

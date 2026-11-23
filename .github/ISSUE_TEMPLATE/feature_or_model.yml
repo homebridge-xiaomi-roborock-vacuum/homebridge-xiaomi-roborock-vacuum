@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         The maintainer can't test most models, so a new feature depends on what your vacuum reports and on you testing a beta.
-        See [CONTRIBUTING.md](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/CONTRIBUTING.md#request-support-for-a-model-or-a-feature) for how to get the details below.
+        See [CONTRIBUTING.md](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/main/CONTRIBUTING.md#request-support-for-a-model-or-a-feature) for how to get the details below.
         **Remove your token, serial number, MAC and IP addresses** before posting.
   - type: input
     id: model
