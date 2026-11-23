@@ -13,7 +13,7 @@ Guidance for AI coding agents (and humans) working on `homebridge-xiaomi-roboroc
 
 ## Branches and PRs
 
-- `master` is the only branch: it includes the v1 work (registered as a _platform_, #1037). The old `next` branch was merged into it.
+- `main` is the only branch: it includes the v1 work (registered as a _platform_, #1037). The old `next` branch was merged into it.
 - PRs come from the maintainer's fork (`origin`) into the org repo (`upstream`).
 - Label every PR when creating it: `enhancement`, `bug`, `dependencies` (and `New Model` when adding a device).
   This repo has no `documentation` label.

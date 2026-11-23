@@ -82,7 +82,7 @@ Logs and captures can contain private data. Replace these with `xxx`:
 Pull requests are very welcome, too.
 
 - Read [AGENTS.md](./AGENTS.md): it describes the layout, the commands and the conventions (for humans as well).
-- Open PRs against `master`. Every change needs **unit tests**, because most of them can't be tested on real hardware.
+- Open PRs against `main`. Every change needs **unit tests**, because most of them can't be tested on real hardware.
 - The plugin only translates between node-miio and HomeKit. Protocol and per-model fixes belong in
   [node-miio](https://github.com/afharo/node-miio).
 - Before pushing: `npm run lint` (Prettier), `npm test` and `npm run build`.
