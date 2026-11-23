@@ -2,6 +2,13 @@
 
 ## Next
 
+## 1.7.0
+
+- [Feature] **Roborock S7 Pro Ultra** (`roborock.vacuum.a62`): the same fan speeds and water levels as the S7, so the Matter vacuum gets the mop and vacuum & mop clean modes, and the water level is no longer logged as unsupported ([#1302](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1302), [#1303](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1303)).
+- [Chore] README: Sponsor and Ko-fi badges, a Support section, and `funding` in `package.json` ([#1300](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1300)).
+- [Chore] Docs: the maintainer no longer owns any of the supported models, so changes are validated by beta testers ([#1298](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1298)).
+- [Chore] CI: test the Node versions declared in `engines` explicitly (Node 22 with a load test), and group the generated release notes by label ([#1299](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1299), [#1301](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1301)).
+
 ## 1.6.0
 
 - [Feature] **The map of the Roborock-app vacuums in the settings page**: name the rooms (with the 2x / 3x repeats), add "go to" spots and draw zones on the map of the vacuums of a Roborock app account too, not only with the Xiaomi Cloud. The rooms get the names given in the Roborock app ([#1295](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1295)).
