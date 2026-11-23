@@ -106,6 +106,13 @@ export const MODELS: Record<string, ModelDefinition[]> = {
       waterspeed: watermodes["gen1+custom"],
     },
   ],
+  // S7 Pro Ultra
+  "roborock.vacuum.a62": [
+    {
+      speed: speedmodes["gen4+custom+mop"],
+      waterspeed: watermodes["gen1+custom"],
+    },
+  ],
   // S7 Max Ultra
   "roborock.vacuum.a65": [
     {

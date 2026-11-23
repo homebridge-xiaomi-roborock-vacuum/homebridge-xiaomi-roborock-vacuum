@@ -27,6 +27,7 @@ const MODEL_NAMES: Record<string, string> = {
   "roborock.vacuum.a27": "Roborock S7 MaxV",
   "roborock.vacuum.a296": "Roborock Saros 20 Neo",
   "roborock.vacuum.a51": "Roborock S8",
+  "roborock.vacuum.a62": "Roborock S7 Pro Ultra",
   "roborock.vacuum.a65": "Roborock S7 Max Ultra",
   "roborock.vacuum.a72": "Roborock Q5 Pro",
   "roborock.vacuum.a73": "Roborock Q8 Max",
