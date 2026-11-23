@@ -14,43 +14,103 @@ export interface CleanMode {
   levels: { fan?: number; water?: number; mop?: number };
 }
 
-/** Tags by (lowercased) fan speed name, as named in `models/` and by node-miio */
-const FAN_TAGS: Record<string, CleanModeTag> = {
-  quiet: CleanModeTag.LowNoise,
-  silent: CleanModeTag.LowNoise,
-  silence: CleanModeTag.LowNoise,
-  gentle: CleanModeTag.LowEnergy,
-  soft: CleanModeTag.LowEnergy,
-  balanced: CleanModeTag.Min,
-  standard: CleanModeTag.Min,
-  basic: CleanModeTag.Min,
-  default: CleanModeTag.Min,
-  medium: CleanModeTag.Day,
-  middle: CleanModeTag.Day,
-  strong: CleanModeTag.Day,
-  turbo: CleanModeTag.Max,
-  max: CleanModeTag.Max,
-  "full speed": CleanModeTag.Max,
-  "max+": CleanModeTag.DeepClean,
-  custom: CleanModeTag.Vacation,
-  auto: CleanModeTag.Auto,
+const { Auto, Day, DeepClean, LowEnergy, LowNoise, Max, Min, Night, Vacation } =
+  CleanModeTag;
+
+/**
+ * Tags of the fan speeds by (lowercased) name, following their meaning in the Matter spec: LowNoise / Night (quiet, for
+ * the night), LowEnergy, Day (suitable while people are around: the everyday speeds), Max (the highest setting),
+ * DeepClean (more thorough). The high speeds are tagged by rank instead (see {@link fanTags}). "Custom" is Vacation,
+ * the closest there is (users rely on finding it). Keep it in sync with matterbridge-xiaomi-roborock's `fanTags`.
+ */
+const FAN_TAGS: Record<string, CleanModeTag[]> = {
+  quiet: [LowNoise, Night],
+  silent: [LowNoise, Night],
+  silence: [LowNoise, Night],
+  gentle: [LowEnergy],
+  soft: [LowEnergy],
+  balanced: [Day],
+  standard: [Day],
+  basic: [Day],
+  default: [Day],
+  medium: [Day],
+  middle: [Day],
+  custom: [Vacation],
+  auto: [Auto],
 };
 
+/** The high fan speeds, tagged by rank: the fastest is DeepClean and the next one Max (or Max, if it's the only one) */
+const HIGH_FAN_SPEEDS = /^(strong|turbo|max|full speed|max\+)$/;
+
 /** Tags by (lowercased) water level name */
-const WATER_TAGS: Record<string, CleanModeTag> = {
-  light: CleanModeTag.Min,
-  low: CleanModeTag.Min,
-  "level 1": CleanModeTag.Min,
-  level1: CleanModeTag.Min,
-  medium: CleanModeTag.Day,
-  middle: CleanModeTag.Day,
-  "level 2": CleanModeTag.Day,
-  level2: CleanModeTag.Day,
-  high: CleanModeTag.Max,
-  "level 3": CleanModeTag.Max,
-  level3: CleanModeTag.Max,
-  custom: CleanModeTag.Vacation,
+const WATER_TAGS: Record<string, CleanModeTag[]> = {
+  light: [Min],
+  low: [Min],
+  "level 1": [Min],
+  level1: [Min],
+  medium: [Day],
+  middle: [Day],
+  "level 2": [Day],
+  level2: [Day],
+  high: [Max],
+  "level 3": [Max],
+  level3: [Max],
+  custom: [Vacation],
 };
+
+/**
+ * The tags of a mode whose name is unknown, by position: first low, last max, the others day.
+ *
+ * @param index The mode's position
+ * @param count How many modes there are
+ * @param lowest The tag of the first one
+ * @returns The tags
+ */
+function tagsByPosition(
+  index: number,
+  count: number,
+  lowest: CleanModeTag
+): CleanModeTag[] {
+  if (index === 0) return [lowest];
+  return index === count - 1 ? [Max] : [Day];
+}
+
+/**
+ * The tags of each fan speed (slowest first): by name, the high speeds (Strong, Turbo, Max, Full Speed, Max+) by rank
+ * (the fastest DeepClean, the next one Max, the others none: e.g. Turbo when there are Max and Max+), and the unknown
+ * names by position.
+ *
+ * @param names The fan speeds' names
+ * @returns The tags of each one
+ */
+export function fanTags(names: string[]): CleanModeTag[][] {
+  const keys = names.map((name) => name.trim().toLowerCase());
+  const highs = keys.flatMap((key, index) =>
+    HIGH_FAN_SPEEDS.test(key) ? [index] : []
+  );
+  return keys.map((key, index) => {
+    if (HIGH_FAN_SPEEDS.test(key)) {
+      if (highs.length === 1) return [Max];
+      const fromTheTop = highs.length - 1 - highs.indexOf(index);
+      return fromTheTop === 0 ? [DeepClean] : fromTheTop === 1 ? [Max] : [];
+    }
+    return FAN_TAGS[key] ?? tagsByPosition(index, keys.length, LowNoise);
+  });
+}
+
+/**
+ * The tags of each water level (lowest first, without "off"): by name, or by position.
+ *
+ * @param names The water levels' names
+ * @returns The tags of each one
+ */
+export function waterTags(names: string[]): CleanModeTag[][] {
+  return names.map(
+    (name, index) =>
+      WATER_TAGS[name.trim().toLowerCase()] ??
+      tagsByPosition(index, names.length, Min)
+  );
+}
 
 /** Fan speeds that aren't one: -1 stops the cleaning */
 const isFanOff = ({ miLevel, name }: ModesHomekitVsMiLevel) =>
@@ -60,29 +120,6 @@ const isWaterOff = ({ name }: ModesHomekitVsMiLevel) =>
 /** The mop-only fan speed (105): no suction on the S7 and newer, the lowest suction on the older models */
 const isMopFan = ({ name }: ModesHomekitVsMiLevel) =>
   /^mop$/i.test(name.trim());
-
-/**
- * Picks a tag by name, or by position when the name is unknown (first: low, last: max, others: day).
- *
- * @param tags The tags by name
- * @param name The mode's name
- * @param index The mode's position
- * @param count How many modes there are
- * @param lowest The tag of the first mode
- * @returns The tag
- */
-function tagFor(
-  tags: Record<string, CleanModeTag>,
-  name: string,
-  index: number,
-  count: number,
-  lowest: CleanModeTag
-): CleanModeTag {
-  const tag = tags[name.trim().toLowerCase()];
-  if (tag !== undefined) return tag;
-  if (index === 0) return lowest;
-  return index === count - 1 ? CleanModeTag.Max : CleanModeTag.Day;
-}
 
 type Level = "low" | "medium" | "high";
 
@@ -167,20 +204,13 @@ export function buildCleanModes(
   );
 
   let mode = 1;
+  const vacuumTags = fanTags(vacuumFans.map(({ name }) => name));
   const modes: CleanMode[] = vacuumFans.map(({ name, miLevel }, index) => ({
     label: `${name} Vacuum`,
     mode: mode++,
     modeTags: [
       { value: CleanModeTag.Vacuum },
-      {
-        value: tagFor(
-          FAN_TAGS,
-          name,
-          index,
-          vacuumFans.length,
-          CleanModeTag.LowNoise
-        ),
-      },
+      ...vacuumTags[index].map((value) => ({ value })),
     ],
     levels: { fan: miLevel, water: waterOff?.miLevel },
   }));
@@ -204,21 +234,14 @@ export function buildCleanModes(
       });
     }
   } else if (mopFan && waters.length > 0) {
+    const mopTags = waterTags(waters.map(({ name }) => name));
     waters.forEach(({ name, miLevel }, index) => {
       modes.push({
         label: `${name} Mop`,
         mode: mode++,
         modeTags: [
           { value: CleanModeTag.Mop },
-          {
-            value: tagFor(
-              WATER_TAGS,
-              name,
-              index,
-              waters.length,
-              CleanModeTag.Min
-            ),
-          },
+          ...mopTags[index].map((value) => ({ value })),
         ],
         levels: { fan: mopFan.miLevel, water: miLevel },
       });

@@ -1,5 +1,10 @@
 import { findSpeedModes } from "../utils/find_speed_modes";
-import { buildCleanModes, findCleanMode } from "./clean_modes";
+import {
+  buildCleanModes,
+  fanTags,
+  findCleanMode,
+  waterTags,
+} from "./clean_modes";
 import { CleanModeTag } from "./constants";
 
 const summary = (model: string) =>
@@ -18,14 +23,14 @@ describe("buildCleanModes", () => {
       {
         mode: 1,
         label: "Quiet Vacuum",
-        tags: [CleanModeTag.Vacuum, CleanModeTag.LowNoise],
+        tags: [CleanModeTag.Vacuum, CleanModeTag.LowNoise, CleanModeTag.Night],
         fan: 38,
         water: undefined,
       },
       {
         mode: 2,
         label: "Balanced Vacuum",
-        tags: [CleanModeTag.Vacuum, CleanModeTag.Min],
+        tags: [CleanModeTag.Vacuum, CleanModeTag.Day],
         fan: 60,
         water: undefined,
       },
@@ -39,7 +44,7 @@ describe("buildCleanModes", () => {
       {
         mode: 4,
         label: "Max Vacuum",
-        tags: [CleanModeTag.Vacuum, CleanModeTag.Max],
+        tags: [CleanModeTag.Vacuum, CleanModeTag.DeepClean],
         fan: 100,
         water: undefined,
       },
@@ -152,7 +157,7 @@ describe("buildCleanModes", () => {
       // Without a "water off" level, the vacuum modes keep the current water level
       [
         "Silent Vacuum",
-        [CleanModeTag.Vacuum, CleanModeTag.LowNoise],
+        [CleanModeTag.Vacuum, CleanModeTag.LowNoise, CleanModeTag.Night],
         { fan: 0, water: undefined },
       ],
       [
@@ -265,5 +270,63 @@ describe("a water slider (Saros 20: 30 levels)", () => {
     expect(byLabel["Automatic"]).toMatchObject({ fan: 102, water: 235 });
     expect(byLabel["Deep clean"]).toMatchObject({ fan: 104, water: 250 });
     expect(byLabel["Quiet"]).toMatchObject({ fan: 101, water: 221 });
+  });
+});
+
+describe("fanTags / waterTags", () => {
+  const names = (list: CleanModeTag[][]) =>
+    list.map((tags) =>
+      tags
+        .map(
+          (tag) =>
+            Object.entries(CleanModeTag).find(([, value]) => value === tag)?.[0]
+        )
+        .join("+")
+    );
+
+  test.each([
+    [
+      "Roborock: Turbo and Max are Max and DeepClean",
+      ["Soft", "Quiet", "Balanced", "Turbo", "Max", "Custom"],
+      ["LowEnergy", "LowNoise+Night", "Day", "Max", "DeepClean", "Vacation"],
+    ],
+    [
+      "S7 MaxV: Max and Max+ take them, Turbo gets none",
+      ["Quiet", "Balanced", "Turbo", "Max", "Max+", "Custom"],
+      ["LowNoise+Night", "Day", "", "Max", "DeepClean", "Vacation"],
+    ],
+    [
+      "Viomi: the only high speed is Max",
+      ["Silent", "Standard", "Medium", "Turbo"],
+      ["LowNoise+Night", "Day", "Day", "Max"],
+    ],
+    [
+      "Dreame: Strong and Turbo are Max and DeepClean",
+      ["Quiet", "Standard", "Strong", "Turbo"],
+      ["LowNoise+Night", "Day", "Max", "DeepClean"],
+    ],
+    [
+      "MIoT names",
+      ["Silent", "Basic", "Strong", "Full Speed"],
+      ["LowNoise+Night", "Day", "Max", "DeepClean"],
+    ],
+    [
+      "unknown names, by position",
+      ["Level A", "Level B", "Level C"],
+      ["LowNoise", "Day", "Max"],
+    ],
+  ])("fan speeds: %s", (_, speeds, expected) => {
+    expect(names(fanTags(speeds))).toStrictEqual(expected);
+  });
+
+  test("water levels", () => {
+    expect(
+      names(waterTags(["Light", "Medium", "High", "Custom"]))
+    ).toStrictEqual(["Min", "Day", "Max", "Vacation"]);
+    expect(names(waterTags(["Wet 1", "Wet 2", "Wet 3"]))).toStrictEqual([
+      "Min",
+      "Day",
+      "Max",
+    ]);
   });
 });
