@@ -60,12 +60,12 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags             | Fan | Water | Mop route |
-| ---- | --------------- | ---------------- | --- | ----- | --------- |
-| 1    | Silent Vacuum   | Vacuum, LowNoise | 0   | –     | –         |
-| 2    | Standard Vacuum | Vacuum, Min      | 1   | –     | –         |
-| 3    | Medium Vacuum   | Vacuum, Day      | 2   | –     | –         |
-| 4    | Turbo Vacuum    | Vacuum, Max      | 3   | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Silent Vacuum   | Vacuum, LowNoise, Night | 0   | –     | –         |
+| 2    | Standard Vacuum | Vacuum, Day             | 1   | –     | –         |
+| 3    | Medium Vacuum   | Vacuum, Day             | 2   | –     | –         |
+| 4    | Turbo Vacuum    | Vacuum, Max             | 3   | –     | –         |
 
 ## roborock.vacuum.a08 — Roborock S6 Pure
 
@@ -81,12 +81,12 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags             | Fan | Water | Mop route |
-| ---- | --------------- | ---------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise | 101 | –     | –         |
-| 2    | Balanced Vacuum | Vacuum, Min      | 102 | –     | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max      | 103 | –     | –         |
-| 4    | Max Vacuum      | Vacuum, Max      | 104 | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | –     | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 102 | –     | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 103 | –     | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 104 | –     | –         |
 
 ## roborock.vacuum.a09
 
@@ -114,17 +114,17 @@ Water level (the water box's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags                   | Fan | Water | Mop route |
-| ---- | --------------- | ---------------------- | --- | ----- | --------- |
-| 1    | Soft Vacuum     | Vacuum, LowEnergy      | 105 | 200   | –         |
-| 2    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
-| 3    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
-| 4    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
-| 5    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
-| 6    | Custom Vacuum   | Vacuum, Vacation       | 106 | 200   | –         |
-| 7    | Automatic       | Auto, Vacuum, Mop      | 102 | 202   | –         |
-| 8    | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
-| 9    | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Soft Vacuum     | Vacuum, LowEnergy       | 105 | 200   | –         |
+| 2    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
+| 3    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
+| 4    | Turbo Vacuum    | Vacuum, Max             | 103 | 200   | –         |
+| 5    | Max Vacuum      | Vacuum, DeepClean       | 104 | 200   | –         |
+| 6    | Custom Vacuum   | Vacuum, Vacation        | 106 | 200   | –         |
+| 7    | Automatic       | Auto, Vacuum, Mop       | 102 | 202   | –         |
+| 8    | Deep clean      | DeepClean, Vacuum, Mop  | 104 | 203   | –         |
+| 9    | Quiet           | Quiet, Vacuum, Mop      | 101 | 201   | –         |
 
 ## roborock.vacuum.a10 — Roborock S6 MaxV
 
@@ -152,17 +152,17 @@ Water level (the water box's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags                   | Fan | Water | Mop route |
-| ---- | --------------- | ---------------------- | --- | ----- | --------- |
-| 1    | Soft Vacuum     | Vacuum, LowEnergy      | 105 | 200   | –         |
-| 2    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
-| 3    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
-| 4    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
-| 5    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
-| 6    | Custom Vacuum   | Vacuum, Vacation       | 106 | 200   | –         |
-| 7    | Automatic       | Auto, Vacuum, Mop      | 102 | 202   | –         |
-| 8    | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
-| 9    | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Soft Vacuum     | Vacuum, LowEnergy       | 105 | 200   | –         |
+| 2    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
+| 3    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
+| 4    | Turbo Vacuum    | Vacuum, Max             | 103 | 200   | –         |
+| 5    | Max Vacuum      | Vacuum, DeepClean       | 104 | 200   | –         |
+| 6    | Custom Vacuum   | Vacuum, Vacation        | 106 | 200   | –         |
+| 7    | Automatic       | Auto, Vacuum, Mop       | 102 | 202   | –         |
+| 8    | Deep clean      | DeepClean, Vacuum, Mop  | 104 | 203   | –         |
+| 9    | Quiet           | Quiet, Vacuum, Mop      | 101 | 201   | –         |
 
 ## roborock.vacuum.a11 — Roborock T7 (Chinese S7)
 
@@ -190,17 +190,17 @@ Water level (the water box's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags                   | Fan | Water | Mop route |
-| ---- | --------------- | ---------------------- | --- | ----- | --------- |
-| 1    | Soft Vacuum     | Vacuum, LowEnergy      | 105 | 200   | –         |
-| 2    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
-| 3    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
-| 4    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
-| 5    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
-| 6    | Custom Vacuum   | Vacuum, Vacation       | 106 | 200   | –         |
-| 7    | Automatic       | Auto, Vacuum, Mop      | 102 | 202   | –         |
-| 8    | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
-| 9    | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Soft Vacuum     | Vacuum, LowEnergy       | 105 | 200   | –         |
+| 2    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
+| 3    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
+| 4    | Turbo Vacuum    | Vacuum, Max             | 103 | 200   | –         |
+| 5    | Max Vacuum      | Vacuum, DeepClean       | 104 | 200   | –         |
+| 6    | Custom Vacuum   | Vacuum, Vacation        | 106 | 200   | –         |
+| 7    | Automatic       | Auto, Vacuum, Mop       | 102 | 202   | –         |
+| 8    | Deep clean      | DeepClean, Vacuum, Mop  | 104 | 203   | –         |
+| 9    | Quiet           | Quiet, Vacuum, Mop      | 101 | 201   | –         |
 
 ## roborock.vacuum.a15 — Roborock S7
 
@@ -228,20 +228,20 @@ Water level (the water box's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags                   | Fan | Water | Mop route |
-| ---- | --------------- | ---------------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
-| 2    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
-| 4    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
-| 5    | Custom Vacuum   | Vacuum, Vacation       | 106 | 200   | –         |
-| 6    | Light Mop       | Mop, Min               | 105 | 201   | –         |
-| 7    | Medium Mop      | Mop, Day               | 105 | 202   | –         |
-| 8    | High Mop        | Mop, Max               | 105 | 203   | –         |
-| 9    | Custom Mop      | Mop, Vacation          | 105 | 204   | –         |
-| 10   | Automatic       | Auto, Vacuum, Mop      | 102 | 202   | –         |
-| 11   | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
-| 12   | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 103 | 200   | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 104 | 200   | –         |
+| 5    | Custom Vacuum   | Vacuum, Vacation        | 106 | 200   | –         |
+| 6    | Light Mop       | Mop, Min                | 105 | 201   | –         |
+| 7    | Medium Mop      | Mop, Day                | 105 | 202   | –         |
+| 8    | High Mop        | Mop, Max                | 105 | 203   | –         |
+| 9    | Custom Mop      | Mop, Vacation           | 105 | 204   | –         |
+| 10   | Automatic       | Auto, Vacuum, Mop       | 102 | 202   | –         |
+| 11   | Deep clean      | DeepClean, Vacuum, Mop  | 104 | 203   | –         |
+| 12   | Quiet           | Quiet, Vacuum, Mop      | 101 | 201   | –         |
 
 ## roborock.vacuum.a27 — Roborock S7 MaxV
 
@@ -270,21 +270,21 @@ Water level (the water box's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags                   | Fan | Water | Mop route |
-| ---- | --------------- | ---------------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
-| 2    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
-| 4    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
-| 5    | Max+ Vacuum     | Vacuum, DeepClean      | 108 | 200   | –         |
-| 6    | Custom Vacuum   | Vacuum, Vacation       | 106 | 200   | –         |
-| 7    | Light Mop       | Mop, Min               | 105 | 201   | –         |
-| 8    | Medium Mop      | Mop, Day               | 105 | 202   | –         |
-| 9    | High Mop        | Mop, Max               | 105 | 203   | –         |
-| 10   | Custom Mop      | Mop, Vacation          | 105 | 204   | –         |
-| 11   | Automatic       | Auto, Vacuum, Mop      | 102 | 202   | –         |
-| 12   | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
-| 13   | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
+| 3    | Turbo Vacuum    | Vacuum                  | 103 | 200   | –         |
+| 4    | Max Vacuum      | Vacuum, Max             | 104 | 200   | –         |
+| 5    | Max+ Vacuum     | Vacuum, DeepClean       | 108 | 200   | –         |
+| 6    | Custom Vacuum   | Vacuum, Vacation        | 106 | 200   | –         |
+| 7    | Light Mop       | Mop, Min                | 105 | 201   | –         |
+| 8    | Medium Mop      | Mop, Day                | 105 | 202   | –         |
+| 9    | High Mop        | Mop, Max                | 105 | 203   | –         |
+| 10   | Custom Mop      | Mop, Vacation           | 105 | 204   | –         |
+| 11   | Automatic       | Auto, Vacuum, Mop       | 102 | 202   | –         |
+| 12   | Deep clean      | DeepClean, Vacuum, Mop  | 104 | 203   | –         |
+| 13   | Quiet           | Quiet, Vacuum, Mop      | 101 | 201   | –         |
 
 ## roborock.vacuum.a296 — Roborock Saros 20 Neo
 
@@ -337,18 +337,18 @@ Water level (the water box's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags                   | Fan | Water | Mop route |
-| ---- | --------------- | ---------------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
-| 2    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
-| 4    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
-| 5    | Light Mop       | Mop, Min               | 105 | 221   | –         |
-| 6    | Medium Mop      | Mop, Day               | 105 | 235   | –         |
-| 7    | High Mop        | Mop, Max               | 105 | 250   | –         |
-| 8    | SmartPlan       | Auto, Vacuum, Mop      | 110 | 209   | 306       |
-| 9    | Deep clean      | DeepClean, Vacuum, Mop | 104 | 250   | –         |
-| 10   | Quiet           | Quiet, Vacuum, Mop     | 101 | 221   | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 103 | 200   | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 104 | 200   | –         |
+| 5    | Light Mop       | Mop, Min                | 105 | 221   | –         |
+| 6    | Medium Mop      | Mop, Day                | 105 | 235   | –         |
+| 7    | High Mop        | Mop, Max                | 105 | 250   | –         |
+| 8    | SmartPlan       | Auto, Vacuum, Mop       | 110 | 209   | 306       |
+| 9    | Deep clean      | DeepClean, Vacuum, Mop  | 104 | 250   | –         |
+| 10   | Quiet           | Quiet, Vacuum, Mop      | 101 | 221   | –         |
 
 ## roborock.vacuum.a51 — Roborock S8
 
@@ -376,20 +376,20 @@ Water level (the water box's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags                   | Fan | Water | Mop route |
-| ---- | --------------- | ---------------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
-| 2    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
-| 4    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
-| 5    | Custom Vacuum   | Vacuum, Vacation       | 106 | 200   | –         |
-| 6    | Light Mop       | Mop, Min               | 105 | 201   | –         |
-| 7    | Medium Mop      | Mop, Day               | 105 | 202   | –         |
-| 8    | High Mop        | Mop, Max               | 105 | 203   | –         |
-| 9    | Custom Mop      | Mop, Vacation          | 105 | 204   | –         |
-| 10   | Automatic       | Auto, Vacuum, Mop      | 102 | 202   | –         |
-| 11   | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
-| 12   | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 103 | 200   | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 104 | 200   | –         |
+| 5    | Custom Vacuum   | Vacuum, Vacation        | 106 | 200   | –         |
+| 6    | Light Mop       | Mop, Min                | 105 | 201   | –         |
+| 7    | Medium Mop      | Mop, Day                | 105 | 202   | –         |
+| 8    | High Mop        | Mop, Max                | 105 | 203   | –         |
+| 9    | Custom Mop      | Mop, Vacation           | 105 | 204   | –         |
+| 10   | Automatic       | Auto, Vacuum, Mop       | 102 | 202   | –         |
+| 11   | Deep clean      | DeepClean, Vacuum, Mop  | 104 | 203   | –         |
+| 12   | Quiet           | Quiet, Vacuum, Mop      | 101 | 201   | –         |
 
 ## roborock.vacuum.a62 — Roborock S7 Pro Ultra
 
@@ -417,20 +417,20 @@ Water level (the water box's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags                   | Fan | Water | Mop route |
-| ---- | --------------- | ---------------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
-| 2    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
-| 4    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
-| 5    | Custom Vacuum   | Vacuum, Vacation       | 106 | 200   | –         |
-| 6    | Light Mop       | Mop, Min               | 105 | 201   | –         |
-| 7    | Medium Mop      | Mop, Day               | 105 | 202   | –         |
-| 8    | High Mop        | Mop, Max               | 105 | 203   | –         |
-| 9    | Custom Mop      | Mop, Vacation          | 105 | 204   | –         |
-| 10   | Automatic       | Auto, Vacuum, Mop      | 102 | 202   | –         |
-| 11   | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
-| 12   | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 103 | 200   | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 104 | 200   | –         |
+| 5    | Custom Vacuum   | Vacuum, Vacation        | 106 | 200   | –         |
+| 6    | Light Mop       | Mop, Min                | 105 | 201   | –         |
+| 7    | Medium Mop      | Mop, Day                | 105 | 202   | –         |
+| 8    | High Mop        | Mop, Max                | 105 | 203   | –         |
+| 9    | Custom Mop      | Mop, Vacation           | 105 | 204   | –         |
+| 10   | Automatic       | Auto, Vacuum, Mop       | 102 | 202   | –         |
+| 11   | Deep clean      | DeepClean, Vacuum, Mop  | 104 | 203   | –         |
+| 12   | Quiet           | Quiet, Vacuum, Mop      | 101 | 201   | –         |
 
 ## roborock.vacuum.a65 — Roborock S7 Max Ultra
 
@@ -458,20 +458,20 @@ Water level (the water box's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags                   | Fan | Water | Mop route |
-| ---- | --------------- | ---------------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
-| 2    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
-| 4    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
-| 5    | Custom Vacuum   | Vacuum, Vacation       | 106 | 200   | –         |
-| 6    | Light Mop       | Mop, Min               | 105 | 201   | –         |
-| 7    | Medium Mop      | Mop, Day               | 105 | 202   | –         |
-| 8    | High Mop        | Mop, Max               | 105 | 203   | –         |
-| 9    | Custom Mop      | Mop, Vacation          | 105 | 204   | –         |
-| 10   | Automatic       | Auto, Vacuum, Mop      | 102 | 202   | –         |
-| 11   | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
-| 12   | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 103 | 200   | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 104 | 200   | –         |
+| 5    | Custom Vacuum   | Vacuum, Vacation        | 106 | 200   | –         |
+| 6    | Light Mop       | Mop, Min                | 105 | 201   | –         |
+| 7    | Medium Mop      | Mop, Day                | 105 | 202   | –         |
+| 8    | High Mop        | Mop, Max                | 105 | 203   | –         |
+| 9    | Custom Mop      | Mop, Vacation           | 105 | 204   | –         |
+| 10   | Automatic       | Auto, Vacuum, Mop       | 102 | 202   | –         |
+| 11   | Deep clean      | DeepClean, Vacuum, Mop  | 104 | 203   | –         |
+| 12   | Quiet           | Quiet, Vacuum, Mop      | 101 | 201   | –         |
 
 ## roborock.vacuum.a72 — Roborock Q5 Pro
 
@@ -489,14 +489,14 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags              | Fan | Water | Mop route |
-| ---- | --------------- | ----------------- | --- | ----- | --------- |
-| 1    | Soft Vacuum     | Vacuum, LowEnergy | 105 | –     | –         |
-| 2    | Quiet Vacuum    | Vacuum, LowNoise  | 101 | –     | –         |
-| 3    | Balanced Vacuum | Vacuum, Min       | 102 | –     | –         |
-| 4    | Turbo Vacuum    | Vacuum, Max       | 103 | –     | –         |
-| 5    | Max Vacuum      | Vacuum, Max       | 104 | –     | –         |
-| 6    | Custom Vacuum   | Vacuum, Vacation  | 106 | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Soft Vacuum     | Vacuum, LowEnergy       | 105 | –     | –         |
+| 2    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | –     | –         |
+| 3    | Balanced Vacuum | Vacuum, Day             | 102 | –     | –         |
+| 4    | Turbo Vacuum    | Vacuum, Max             | 103 | –     | –         |
+| 5    | Max Vacuum      | Vacuum, DeepClean       | 104 | –     | –         |
+| 6    | Custom Vacuum   | Vacuum, Vacation        | 106 | –     | –         |
 
 ## roborock.vacuum.a73 — Roborock Q8 Max
 
@@ -524,20 +524,20 @@ Water level (the water box's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags                   | Fan | Water | Mop route |
-| ---- | --------------- | ---------------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
-| 2    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
-| 4    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
-| 5    | Custom Vacuum   | Vacuum, Vacation       | 106 | 200   | –         |
-| 6    | Light Mop       | Mop, Min               | 105 | 201   | –         |
-| 7    | Medium Mop      | Mop, Day               | 105 | 202   | –         |
-| 8    | High Mop        | Mop, Max               | 105 | 203   | –         |
-| 9    | Custom Mop      | Mop, Vacation          | 105 | 204   | –         |
-| 10   | Automatic       | Auto, Vacuum, Mop      | 102 | 202   | –         |
-| 11   | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
-| 12   | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 103 | 200   | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 104 | 200   | –         |
+| 5    | Custom Vacuum   | Vacuum, Vacation        | 106 | 200   | –         |
+| 6    | Light Mop       | Mop, Min                | 105 | 201   | –         |
+| 7    | Medium Mop      | Mop, Day                | 105 | 202   | –         |
+| 8    | High Mop        | Mop, Max                | 105 | 203   | –         |
+| 9    | Custom Mop      | Mop, Vacation           | 105 | 204   | –         |
+| 10   | Automatic       | Auto, Vacuum, Mop       | 102 | 202   | –         |
+| 11   | Deep clean      | DeepClean, Vacuum, Mop  | 104 | 203   | –         |
+| 12   | Quiet           | Quiet, Vacuum, Mop      | 101 | 201   | –         |
 
 ## roborock.vacuum.a75 — Roborock Q Revo
 
@@ -565,20 +565,20 @@ Water level (the water box's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags                   | Fan | Water | Mop route |
-| ---- | --------------- | ---------------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
-| 2    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
-| 4    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
-| 5    | Custom Vacuum   | Vacuum, Vacation       | 106 | 200   | –         |
-| 6    | Light Mop       | Mop, Min               | 105 | 201   | –         |
-| 7    | Medium Mop      | Mop, Day               | 105 | 202   | –         |
-| 8    | High Mop        | Mop, Max               | 105 | 203   | –         |
-| 9    | Custom Mop      | Mop, Vacation          | 105 | 204   | –         |
-| 10   | Automatic       | Auto, Vacuum, Mop      | 102 | 202   | –         |
-| 11   | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
-| 12   | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 103 | 200   | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 104 | 200   | –         |
+| 5    | Custom Vacuum   | Vacuum, Vacation        | 106 | 200   | –         |
+| 6    | Light Mop       | Mop, Min                | 105 | 201   | –         |
+| 7    | Medium Mop      | Mop, Day                | 105 | 202   | –         |
+| 8    | High Mop        | Mop, Max                | 105 | 203   | –         |
+| 9    | Custom Mop      | Mop, Vacation           | 105 | 204   | –         |
+| 10   | Automatic       | Auto, Vacuum, Mop       | 102 | 202   | –         |
+| 11   | Deep clean      | DeepClean, Vacuum, Mop  | 104 | 203   | –         |
+| 12   | Quiet           | Quiet, Vacuum, Mop      | 101 | 201   | –         |
 
 ## roborock.vacuum.c1 — Roborock Xiaowa Lite (C1)
 
@@ -594,12 +594,12 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags             | Fan | Water | Mop route |
-| ---- | --------------- | ---------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise | 38  | –     | –         |
-| 2    | Balanced Vacuum | Vacuum, Min      | 60  | –     | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max      | 77  | –     | –         |
-| 4    | Max Vacuum      | Vacuum, Max      | 90  | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 38  | –     | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 60  | –     | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 77  | –     | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 90  | –     | –         |
 
 ## roborock.vacuum.e2 — Roborock Xiaowa (E2)
 
@@ -616,13 +616,13 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags              | Fan | Water | Mop route |
-| ---- | --------------- | ----------------- | --- | ----- | --------- |
-| 1    | Gentle Vacuum   | Vacuum, LowEnergy | 41  | –     | –         |
-| 2    | Silent Vacuum   | Vacuum, LowNoise  | 50  | –     | –         |
-| 3    | Balanced Vacuum | Vacuum, Min       | 68  | –     | –         |
-| 4    | Turbo Vacuum    | Vacuum, Max       | 79  | –     | –         |
-| 5    | Max Vacuum      | Vacuum, Max       | 100 | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Gentle Vacuum   | Vacuum, LowEnergy       | 41  | –     | –         |
+| 2    | Silent Vacuum   | Vacuum, LowNoise, Night | 50  | –     | –         |
+| 3    | Balanced Vacuum | Vacuum, Day             | 68  | –     | –         |
+| 4    | Turbo Vacuum    | Vacuum, Max             | 79  | –     | –         |
+| 5    | Max Vacuum      | Vacuum, DeepClean       | 100 | –     | –         |
 
 ## roborock.vacuum.m1s — Xiaomi Mi Robot Vacuum 1S
 
@@ -638,12 +638,12 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags             | Fan | Water | Mop route |
-| ---- | --------------- | ---------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise | 101 | –     | –         |
-| 2    | Balanced Vacuum | Vacuum, Min      | 102 | –     | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max      | 103 | –     | –         |
-| 4    | Max Vacuum      | Vacuum, Max      | 104 | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | –     | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 102 | –     | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 103 | –     | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 104 | –     | –         |
 
 ## roborock.vacuum.s5 — Roborock S5 / S50 / S55
 
@@ -660,13 +660,13 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags             | Fan | Water | Mop route |
-| ---- | --------------- | ---------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise | 38  | –     | –         |
-| 2    | Balanced Vacuum | Vacuum, Min      | 60  | –     | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max      | 75  | –     | –         |
-| 4    | Max Vacuum      | Vacuum, Max      | 100 | –     | –         |
-| 5    | Mop             | Mop              | 105 | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 38  | –     | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 60  | –     | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 75  | –     | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 100 | –     | –         |
+| 5    | Mop             | Mop                     | 105 | –     | –         |
 
 **With firmware >=3.5.7**
 
@@ -683,13 +683,13 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags              | Fan | Water | Mop route |
-| ---- | --------------- | ----------------- | --- | ----- | --------- |
-| 1    | Soft Vacuum     | Vacuum, LowEnergy | 105 | –     | –         |
-| 2    | Quiet Vacuum    | Vacuum, LowNoise  | 101 | –     | –         |
-| 3    | Balanced Vacuum | Vacuum, Min       | 102 | –     | –         |
-| 4    | Turbo Vacuum    | Vacuum, Max       | 103 | –     | –         |
-| 5    | Max Vacuum      | Vacuum, Max       | 104 | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Soft Vacuum     | Vacuum, LowEnergy       | 105 | –     | –         |
+| 2    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | –     | –         |
+| 3    | Balanced Vacuum | Vacuum, Day             | 102 | –     | –         |
+| 4    | Turbo Vacuum    | Vacuum, Max             | 103 | –     | –         |
+| 5    | Max Vacuum      | Vacuum, DeepClean       | 104 | –     | –         |
 
 ## roborock.vacuum.s5e — Roborock S5 Max
 
@@ -716,17 +716,17 @@ Water level (the water box's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags                   | Fan | Water | Mop route |
-| ---- | --------------- | ---------------------- | --- | ----- | --------- |
-| 1    | Soft Vacuum     | Vacuum, LowEnergy      | 105 | 200   | –         |
-| 2    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
-| 3    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
-| 4    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
-| 5    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
-| 6    | Custom Vacuum   | Vacuum, Vacation       | 106 | 200   | –         |
-| 7    | Automatic       | Auto, Vacuum, Mop      | 102 | 202   | –         |
-| 8    | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
-| 9    | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Soft Vacuum     | Vacuum, LowEnergy       | 105 | 200   | –         |
+| 2    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
+| 3    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
+| 4    | Turbo Vacuum    | Vacuum, Max             | 103 | 200   | –         |
+| 5    | Max Vacuum      | Vacuum, DeepClean       | 104 | 200   | –         |
+| 6    | Custom Vacuum   | Vacuum, Vacation        | 106 | 200   | –         |
+| 7    | Automatic       | Auto, Vacuum, Mop       | 102 | 202   | –         |
+| 8    | Deep clean      | DeepClean, Vacuum, Mop  | 104 | 203   | –         |
+| 9    | Quiet           | Quiet, Vacuum, Mop      | 101 | 201   | –         |
 
 ## roborock.vacuum.s6 — Roborock S6
 
@@ -743,13 +743,13 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags              | Fan | Water | Mop route |
-| ---- | --------------- | ----------------- | --- | ----- | --------- |
-| 1    | Soft Vacuum     | Vacuum, LowEnergy | 105 | –     | –         |
-| 2    | Quiet Vacuum    | Vacuum, LowNoise  | 101 | –     | –         |
-| 3    | Balanced Vacuum | Vacuum, Min       | 102 | –     | –         |
-| 4    | Turbo Vacuum    | Vacuum, Max       | 103 | –     | –         |
-| 5    | Max Vacuum      | Vacuum, Max       | 104 | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Soft Vacuum     | Vacuum, LowEnergy       | 105 | –     | –         |
+| 2    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | –     | –         |
+| 3    | Balanced Vacuum | Vacuum, Day             | 102 | –     | –         |
+| 4    | Turbo Vacuum    | Vacuum, Max             | 103 | –     | –         |
+| 5    | Max Vacuum      | Vacuum, DeepClean       | 104 | –     | –         |
 
 ## roborock.vacuum.t4
 
@@ -765,12 +765,12 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags             | Fan | Water | Mop route |
-| ---- | --------------- | ---------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise | 101 | –     | –         |
-| 2    | Balanced Vacuum | Vacuum, Min      | 102 | –     | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max      | 103 | –     | –         |
-| 4    | Max Vacuum      | Vacuum, Max      | 104 | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | –     | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 102 | –     | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 103 | –     | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 104 | –     | –         |
 
 ## roborock.vacuum.t6 — Roborock T6 (Chinese S6)
 
@@ -786,12 +786,12 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags             | Fan | Water | Mop route |
-| ---- | --------------- | ---------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise | 101 | –     | –         |
-| 2    | Balanced Vacuum | Vacuum, Min      | 102 | –     | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max      | 103 | –     | –         |
-| 4    | Max Vacuum      | Vacuum, Max      | 104 | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | –     | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 102 | –     | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 103 | –     | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 104 | –     | –         |
 
 ## rockrobo.vacuum.v1 — Xiaomi Mi Robot Vacuum (1st generation)
 
@@ -807,12 +807,12 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags             | Fan | Water | Mop route |
-| ---- | --------------- | ---------------- | --- | ----- | --------- |
-| 1    | Quiet Vacuum    | Vacuum, LowNoise | 38  | –     | –         |
-| 2    | Balanced Vacuum | Vacuum, Min      | 60  | –     | –         |
-| 3    | Turbo Vacuum    | Vacuum, Max      | 75  | –     | –         |
-| 4    | Max Vacuum      | Vacuum, Max      | 100 | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 38  | –     | –         |
+| 2    | Balanced Vacuum | Vacuum, Day             | 60  | –     | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max             | 75  | –     | –         |
+| 4    | Max Vacuum      | Vacuum, DeepClean       | 100 | –     | –         |
 
 ## viomi.vacuum.v7
 
@@ -828,12 +828,12 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags             | Fan | Water | Mop route |
-| ---- | --------------- | ---------------- | --- | ----- | --------- |
-| 1    | Silent Vacuum   | Vacuum, LowNoise | 0   | –     | –         |
-| 2    | Standard Vacuum | Vacuum, Min      | 1   | –     | –         |
-| 3    | Medium Vacuum   | Vacuum, Day      | 2   | –     | –         |
-| 4    | Turbo Vacuum    | Vacuum, Max      | 3   | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Silent Vacuum   | Vacuum, LowNoise, Night | 0   | –     | –         |
+| 2    | Standard Vacuum | Vacuum, Day             | 1   | –     | –         |
+| 3    | Medium Vacuum   | Vacuum, Day             | 2   | –     | –         |
+| 4    | Turbo Vacuum    | Vacuum, Max             | 3   | –     | –         |
 
 ## viomi.vacuum.v8 — Xiaomi Mi Robot Vacuum-Mop Pro
 
@@ -849,12 +849,12 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags             | Fan | Water | Mop route |
-| ---- | --------------- | ---------------- | --- | ----- | --------- |
-| 1    | Silent Vacuum   | Vacuum, LowNoise | 0   | –     | –         |
-| 2    | Standard Vacuum | Vacuum, Min      | 1   | –     | –         |
-| 3    | Medium Vacuum   | Vacuum, Day      | 2   | –     | –         |
-| 4    | Turbo Vacuum    | Vacuum, Max      | 3   | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Silent Vacuum   | Vacuum, LowNoise, Night | 0   | –     | –         |
+| 2    | Standard Vacuum | Vacuum, Day             | 1   | –     | –         |
+| 3    | Medium Vacuum   | Vacuum, Day             | 2   | –     | –         |
+| 4    | Turbo Vacuum    | Vacuum, Max             | 3   | –     | –         |
 
 ## Other models (default)
 
@@ -871,10 +871,10 @@ Fan speed (the main fan's slider):
 
 Matter clean modes (`"serviceType": "vacuum"`):
 
-| Mode | Name            | Tags              | Fan | Water | Mop route |
-| ---- | --------------- | ----------------- | --- | ----- | --------- |
-| 1    | Soft Vacuum     | Vacuum, LowEnergy | 105 | –     | –         |
-| 2    | Quiet Vacuum    | Vacuum, LowNoise  | 101 | –     | –         |
-| 3    | Balanced Vacuum | Vacuum, Min       | 102 | –     | –         |
-| 4    | Turbo Vacuum    | Vacuum, Max       | 103 | –     | –         |
-| 5    | Max Vacuum      | Vacuum, Max       | 104 | –     | –         |
+| Mode | Name            | Tags                    | Fan | Water | Mop route |
+| ---- | --------------- | ----------------------- | --- | ----- | --------- |
+| 1    | Soft Vacuum     | Vacuum, LowEnergy       | 105 | –     | –         |
+| 2    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | –     | –         |
+| 3    | Balanced Vacuum | Vacuum, Day             | 102 | –     | –         |
+| 4    | Turbo Vacuum    | Vacuum, Max             | 103 | –     | –         |
+| 5    | Max Vacuum      | Vacuum, DeepClean       | 104 | –     | –         |
