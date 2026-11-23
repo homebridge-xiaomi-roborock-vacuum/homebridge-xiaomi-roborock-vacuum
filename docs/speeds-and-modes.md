@@ -28,6 +28,7 @@ MIoT vacuums, from their spec: they're in the logs with `"debug": true`). The Vi
 - [roborock.vacuum.a27 — Roborock S7 MaxV](#roborockvacuuma27--roborock-s7-maxv)
 - [roborock.vacuum.a296 — Roborock Saros 20 Neo](#roborockvacuuma296--roborock-saros-20-neo)
 - [roborock.vacuum.a51 — Roborock S8](#roborockvacuuma51--roborock-s8)
+- [roborock.vacuum.a62 — Roborock S7 Pro Ultra](#roborockvacuuma62--roborock-s7-pro-ultra)
 - [roborock.vacuum.a65 — Roborock S7 Max Ultra](#roborockvacuuma65--roborock-s7-max-ultra)
 - [roborock.vacuum.a72 — Roborock Q5 Pro](#roborockvacuuma72--roborock-q5-pro)
 - [roborock.vacuum.a73 — Roborock Q8 Max](#roborockvacuuma73--roborock-q8-max)
@@ -350,6 +351,47 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | 10   | Quiet           | Quiet, Vacuum, Mop     | 101 | 221   | –         |
 
 ## roborock.vacuum.a51 — Roborock S8
+
+Fan speed (the main fan's slider):
+
+| Speed    | Robot value | HomeKit slider |
+| -------- | ----------- | -------------- |
+| Off      | -1          | 0%             |
+| Mop      | 105         | 1–16%          |
+| Quiet    | 101         | 17–32%         |
+| Balanced | 102         | 33–48%         |
+| Turbo    | 103         | 49–64%         |
+| Max      | 104         | 65–80%         |
+| Custom   | 106         | 81–100%        |
+
+Water level (the water box's slider):
+
+| Level  | Robot value | HomeKit slider |
+| ------ | ----------- | -------------- |
+| Off    | 200         | 0%             |
+| Light  | 201         | 1–25%          |
+| Medium | 202         | 26–50%         |
+| High   | 203         | 51–75%         |
+| Custom | 204         | 76–100%        |
+
+Matter clean modes (`"serviceType": "vacuum"`):
+
+| Mode | Name            | Tags                   | Fan | Water | Mop route |
+| ---- | --------------- | ---------------------- | --- | ----- | --------- |
+| 1    | Quiet Vacuum    | Vacuum, LowNoise       | 101 | 200   | –         |
+| 2    | Balanced Vacuum | Vacuum, Min            | 102 | 200   | –         |
+| 3    | Turbo Vacuum    | Vacuum, Max            | 103 | 200   | –         |
+| 4    | Max Vacuum      | Vacuum, Max            | 104 | 200   | –         |
+| 5    | Custom Vacuum   | Vacuum, Vacation       | 106 | 200   | –         |
+| 6    | Light Mop       | Mop, Min               | 105 | 201   | –         |
+| 7    | Medium Mop      | Mop, Day               | 105 | 202   | –         |
+| 8    | High Mop        | Mop, Max               | 105 | 203   | –         |
+| 9    | Custom Mop      | Mop, Vacation          | 105 | 204   | –         |
+| 10   | Automatic       | Auto, Vacuum, Mop      | 102 | 202   | –         |
+| 11   | Deep clean      | DeepClean, Vacuum, Mop | 104 | 203   | –         |
+| 12   | Quiet           | Quiet, Vacuum, Mop     | 101 | 201   | –         |
+
+## roborock.vacuum.a62 — Roborock S7 Pro Ultra
 
 Fan speed (the main fan's slider):
 

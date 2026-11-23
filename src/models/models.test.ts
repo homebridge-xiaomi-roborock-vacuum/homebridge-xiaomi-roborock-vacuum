@@ -18,6 +18,7 @@ describe("Mop-only fan speed (105)", () => {
     "roborock.vacuum.a15",
     "roborock.vacuum.a27",
     "roborock.vacuum.a51",
+    "roborock.vacuum.a62",
     "roborock.vacuum.a65",
     "roborock.vacuum.a73",
     "roborock.vacuum.a75",
