@@ -3,6 +3,7 @@
 ## Next
 
 - [Feature] Matter vacuum: warn at startup when the host has no IPv6 (Matter can't start), and when the bridge's empty Matter bridge is published (it shows up as "Not Supported" in the Home app): suggest `"externalsOnly": true` (Homebridge 2.5+). The docs recommend it for child bridges, and the new [Troubleshooting → Matter](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/blob/master/docs/troubleshooting.md#matter) section covers these, missing `@matter/*` modules and IPv6 on Docker hosts ([#1232](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1232#issuecomment-7074496561)).
+- [Chore] `package.json`: the `supports-hap` and `supports-matter` keywords, so the Homebridge UI shows the Matter badge on the plugin card (Homebridge UI 5.28+, [Matter Plugins](https://github.com/homebridge/homebridge/wiki/Matter-Plugins#declaring-supported-transports)).
 
 ## 1.7.0
 
