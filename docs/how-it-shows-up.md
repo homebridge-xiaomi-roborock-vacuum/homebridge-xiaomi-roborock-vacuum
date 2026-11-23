@@ -29,7 +29,8 @@ vacuum through Homebridge's Matter support:
 To set it up:
 
 1. Enable Matter in the bridge that runs the plugin: a `matter` block in its `_bridge` (a child bridge, recommended)
-   or in `bridge`. In the Homebridge UI, it's in the bridge settings. On a child bridge, also set `"externalsOnly": true`
+   or in `bridge`. In the Homebridge UI, it's in the bridge settings (Homebridge's
+   [Enabling Matter](https://github.com/homebridge-plugins/homebridge-matter/wiki/Enabling-Matter) guide shows where). On a child bridge, also set `"externalsOnly": true`
    (**Externals Only** in the UI, Homebridge 2.5 or later): the vacuums are paired on their own (see below), so the
    child bridge's own Matter bridge stays empty, and the Home app would list it as a "Not Supported" accessory. Matter
    needs IPv6 on the host: see [Troubleshooting](troubleshooting.md#matter).
