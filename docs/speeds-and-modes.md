@@ -274,7 +274,7 @@ Matter clean modes (`"serviceType": "vacuum"`):
 | ---- | --------------- | ----------------------- | --- | ----- | --------- |
 | 1    | Quiet Vacuum    | Vacuum, LowNoise, Night | 101 | 200   | –         |
 | 2    | Balanced Vacuum | Vacuum, Day             | 102 | 200   | –         |
-| 3    | Turbo Vacuum    | Vacuum                  | 103 | 200   | –         |
+| 3    | Turbo Vacuum    | Vacuum, Day             | 103 | 200   | –         |
 | 4    | Max Vacuum      | Vacuum, Max             | 104 | 200   | –         |
 | 5    | Max+ Vacuum     | Vacuum, DeepClean       | 108 | 200   | –         |
 | 6    | Custom Vacuum   | Vacuum, Vacation        | 106 | 200   | –         |
