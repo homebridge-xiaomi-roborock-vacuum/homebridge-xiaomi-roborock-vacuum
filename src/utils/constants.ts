@@ -1,13 +1,3 @@
-// From https://github.com/aholstenson/miio/blob/master/lib/devices/vacuum.js#L128
-export const cleaningStatuses = [
-  "cleaning",
-  "spot-cleaning",
-  "zone-cleaning",
-  "room-cleaning",
-  // Specific to Viomi models (TODO: move cleaning statuses and errors to each device's files)
-  "cleaning-and-mopping",
-];
-
 export const errors = {
   id1: {
     description:

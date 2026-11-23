@@ -10,6 +10,7 @@ import {
 } from "rxjs";
 import * as miio from "node-miio";
 import {
+  isCleaningState,
   isVacuum,
   type ErrorChangedEvent,
   type StateChangedEvent,
@@ -17,7 +18,6 @@ import {
 } from "node-miio";
 import { Logger } from "../utils/logger";
 import { supports } from "../utils/supports";
-import { cleaningStatuses } from "../utils/constants";
 import type { ReportedModes } from "../utils/find_speed_modes";
 
 export interface DeviceManagerConfig {
@@ -156,7 +156,7 @@ export class DeviceManager {
   }
 
   public get isCleaning() {
-    return cleaningStatuses.includes(this.state);
+    return isCleaningState(this.state);
   }
 
   public get isPaused() {

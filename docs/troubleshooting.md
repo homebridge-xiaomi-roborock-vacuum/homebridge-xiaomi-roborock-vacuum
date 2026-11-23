@@ -2,8 +2,8 @@
 
 [← Back to the README](../README.md)
 
-**Is my model supported?** Check [models.ts](../src/models/models.ts). If it's not listed, it likely works with the
-default behaviour: try it. The newer (MIoT) models are driven by their spec from
+**Is my model supported?** Check [Fan speeds and water levels](speeds-and-modes.md). If it's not listed, it likely
+works with the default behaviour: try it. The newer (MIoT) models are driven by their spec from
 [miot-spec.org](https://home.miot-spec.com), with their fan speeds and water levels: `npx node-miio spec your.model.id`
 shows what it resolves for your model. If the fan speeds or water levels are wrong, open an issue (or a PR in
 [node-miio](https://github.com/afharo/node-miio)) with the right ones.
