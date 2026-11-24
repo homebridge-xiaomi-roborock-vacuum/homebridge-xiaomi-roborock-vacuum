@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Bug] **Mijia Robot Vacuum H40** (`xiaomi.vacuum.d101`) and other MIoT vacuums that answer with their device ID instead of the property name: the status, battery, charging state and modes are read again (only one value was kept, so the status didn't sync and the Matter vacuum logged `Value -2 is below the nullable uint8 minimum` for the battery). node-miio `0.11.1` ([#1314](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1314), [afharo/node-miio#59](https://github.com/afharo/node-miio/pull/59)).
+
 ## 1.7.2
 
 - [Bug] Matter vacuum (`"serviceType": "vacuum"`): the clean mode tags follow their meaning in the Matter spec (the modes' names and numbers don't change). Quiet / Silent: LowNoise and Night. Balanced / Standard / Medium: Day, the everyday speeds (Balanced was Min, the lowest setting). The high speeds (e.g. Turbo and Max): the fastest DeepClean, the others Max (both were Max; on the S7 MaxV: Turbo and Max are Max, Max+ is DeepClean). Custom stays Vacation.
