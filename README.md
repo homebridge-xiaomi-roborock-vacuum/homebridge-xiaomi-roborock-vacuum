@@ -32,12 +32,6 @@ sensors. It talks to the robot in your local network, with [node-miio](https://g
 > Made for the vacuums paired with the <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/src/homebridge-ui/public/images/xiaomi-home.png" alt="Xiaomi Home app" width="20" height="20" align="absmiddle"> **Mi Home** app. The ones paired with the <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/src/homebridge-ui/public/images/roborock.png" alt="Roborock app" width="20" height="20" align="absmiddle"> **Roborock app** are
 > supported too, experimentally: see [Roborock app](docs/roborock-app.md).
 
-> [!TIP]
-> **Not using Homebridge?** [matterbridge-xiaomi-roborock](https://github.com/afharo/matterbridge-xiaomi-roborock) is
-> its sibling for [Matterbridge](https://github.com/Luligu/matterbridge): the same vacuums (Mi Home app), as a Matter
-> robot vacuum for any Matter controller (Apple Home, Google Home, Home Assistant, SmartThings…). Both are built on
-> node-miio.
-
 <p>
 <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/images/rockrobo.vacuum.v1.jpg" alt="Xiaomi Mi Robot 1st Generation (Roborock Vacuum V1)" width="100">
 <img src="https://raw.githubusercontent.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/main/images/roborock.vacuum.s5.jpg" alt="Roborock S50 2nd Generation" width="100">
@@ -118,6 +112,9 @@ Add one entry to `devices` per vacuum.
 - [Roborock app](docs/roborock-app.md): the vacuums paired with the Roborock app instead of Mi Home.
 - [Settings page](docs/settings-page.md): the plugin's tools in the Homebridge UI (logins, vacuums, map).
 - [Troubleshooting](docs/troubleshooting.md): is my model supported, it doesn't connect, reporting an issue.
+
+Running [Matterbridge](https://github.com/Luligu/matterbridge) instead of Homebridge? See its sibling plugin,
+[matterbridge-xiaomi-roborock](https://github.com/afharo/matterbridge-xiaomi-roborock).
 
 ## Support
 
