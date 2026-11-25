@@ -1,5 +1,5 @@
 import type { MatterAccessory, MatterAPI } from "homebridge";
-import { concatMap, type Observable, Subscription } from "rxjs";
+import { concatMap, type Observable, startWith, Subscription } from "rxjs";
 import { ACCESSORY_NAME, PLUGIN_NAME } from "../constants";
 import type { ModelDefinition } from "../models/types";
 import type { Config } from "../services/config_service";
@@ -219,8 +219,14 @@ export class MatterVacuum {
 
     this.subscriptions.add(
       this.deviceManager.stateChanged$
-        // One at a time, in order: a later change must not be overwritten by an earlier one
-        .pipe(concatMap((change) => this.onStateChanged(change)))
+        .pipe(
+          // First, the robot's current state: Homebridge restores the cached one over build()'s
+          startWith(undefined),
+          // One at a time, in order: a later change must not be overwritten by an earlier one
+          concatMap((change) =>
+            change ? this.onStateChanged(change) : this.syncState()
+          )
+        )
         .subscribe()
     );
     this.subscriptions.add(
@@ -235,6 +241,75 @@ export class MatterVacuum {
           .subscribe()
       );
     }
+  }
+
+  /**
+   * Sends the robot's current state, the clean modes, and the rooms (keeping the selection, see {@link restoreAreas}). When Homebridge restores a cached accessory, the
+   * cached attributes replace the ones of {@link build}: e.g. a run mode left in "Cleaning" (Apple Home then says it
+   * will continue cleaning later, and doesn't let you change the clean mode). The clean modes are sent too, in case.
+   * The robot's state only reaches Matter when it changes, so it may never fix itself while the robot is docked.
+   */
+  private async syncState() {
+    const { clusters = {} } = this.build();
+    const { rvcRunMode, rvcCleanMode, serviceArea, powerSource } =
+      clusters as Record<string, Record<string, unknown>>;
+    await this.update("rvcCleanMode", {
+      supportedModes: rvcCleanMode.supportedModes,
+      currentMode: rvcCleanMode.currentMode,
+    });
+    const state = `${this.deviceManager.property("state") ?? ""}`;
+    const currentArea = await this.restoreAreas(state);
+    await this.update("serviceArea", {
+      supportedAreas: serviceArea.supportedAreas,
+      selectedAreas: this.selectedAreas,
+      currentArea,
+    });
+    if (toOperationalState(state, this.batteryLevel) !== undefined) {
+      await this.updateOperationalState(state);
+    } else {
+      // Unknown state: at least, not cleaning
+      await this.update("rvcRunMode", { currentMode: rvcRunMode.currentMode });
+    }
+    await this.update("powerSource", {
+      batPercentRemaining: powerSource.batPercentRemaining,
+      batChargeLevel: powerSource.batChargeLevel,
+      batChargeState: powerSource.batChargeState,
+    });
+  }
+
+  /**
+   * The rooms selected before a restart: Homebridge caches the selection (and the room it was in), but the plugin starts
+   * with none (cleaning everywhere, while the controller still shows the rooms). Only the rooms that still exist are
+   * kept. While it's cleaning or paused, they're also the rooms to resume (a guess: the selection it started with).
+   *
+   * @param state The robot's state
+   * @returns The room it was in, while cleaning or paused (otherwise `null`)
+   */
+  private async restoreAreas(state: string): Promise<number | null> {
+    let cached: Record<string, unknown> | undefined;
+    try {
+      cached = await this.matter.getAccessoryState?.(this.uuid, "serviceArea");
+    } catch (error) {
+      this.log.debug(
+        `DEB matter | Failed to read the selected rooms: ${error}`
+      );
+    }
+    const known = (areaId: unknown) =>
+      this.areas.some((area) => area.areaId === areaId);
+    const selected = Array.isArray(cached?.selectedAreas)
+      ? (cached.selectedAreas as number[]).filter(known)
+      : [];
+    this.selectedAreas = [...selected];
+    const operationalState = toOperationalState(state, this.batteryLevel);
+    const inSession =
+      operationalState === OperationalState.Running ||
+      operationalState === OperationalState.Paused;
+    if (inSession) {
+      this.activeAreas = this.areasToClean.map(({ areaId }) => areaId);
+    }
+    return inSession && known(cached?.currentArea)
+      ? (cached?.currentArea as number)
+      : null;
   }
 
   public stop() {
