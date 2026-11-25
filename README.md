@@ -113,6 +113,9 @@ Add one entry to `devices` per vacuum.
 - [Settings page](docs/settings-page.md): the plugin's tools in the Homebridge UI (logins, vacuums, map).
 - [Troubleshooting](docs/troubleshooting.md): is my model supported, it doesn't connect, reporting an issue.
 
+Running [Matterbridge](https://github.com/Luligu/matterbridge) instead of Homebridge? See its sibling plugin,
+[matterbridge-xiaomi-roborock](https://github.com/afharo/matterbridge-xiaomi-roborock).
+
 ## Support
 
 I maintain this in my spare time, with help from [Claude](https://claude.ai). Sponsorships go towards the subscription,
