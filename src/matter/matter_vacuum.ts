@@ -98,8 +98,6 @@ export class MatterVacuum {
    */
   private activeAreas: number[] = [];
   private currentRoom?: string;
-  /** The room it was in before a restart (while cleaning), see {@link restoreAreas} */
-  private restoredCurrentArea?: number;
   private registered = false;
 
   constructor(private readonly options: MatterVacuumOptions) {
@@ -260,11 +258,11 @@ export class MatterVacuum {
       currentMode: rvcCleanMode.currentMode,
     });
     const state = `${this.deviceManager.property("state") ?? ""}`;
-    await this.restoreAreas(state);
+    const currentArea = await this.restoreAreas(state);
     await this.update("serviceArea", {
       supportedAreas: serviceArea.supportedAreas,
       selectedAreas: this.selectedAreas,
-      currentArea: this.restoredCurrentArea ?? null,
+      currentArea,
     });
     if (toOperationalState(state, this.batteryLevel) !== undefined) {
       await this.updateOperationalState(state);
@@ -285,8 +283,9 @@ export class MatterVacuum {
    * kept. While it's cleaning or paused, they're also the rooms to resume (a guess: the selection it started with).
    *
    * @param state The robot's state
+   * @returns The room it was in, while cleaning or paused (otherwise `null`)
    */
-  private async restoreAreas(state: string) {
+  private async restoreAreas(state: string): Promise<number | null> {
     let cached: Record<string, unknown> | undefined;
     try {
       cached = await this.matter.getAccessoryState?.(this.uuid, "serviceArea");
@@ -308,10 +307,9 @@ export class MatterVacuum {
     if (inSession) {
       this.activeAreas = this.areasToClean.map(({ areaId }) => areaId);
     }
-    this.restoredCurrentArea =
-      inSession && known(cached?.currentArea)
-        ? (cached?.currentArea as number)
-        : undefined;
+    return inSession && known(cached?.currentArea)
+      ? (cached?.currentArea as number)
+      : null;
   }
 
   public stop() {
