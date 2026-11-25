@@ -246,7 +246,7 @@ export class MatterVacuum {
   /**
    * Sends the robot's current state, and the clean modes and rooms. When Homebridge restores a cached accessory, the
    * cached attributes replace the ones of {@link build}: e.g. a run mode left in "Cleaning" (Apple Home then says it
-   * will continue cleaning later, and doesn't let you change the clean mode), or the clean modes of an older version.
+   * will continue cleaning later, and doesn't let you change the clean mode). The clean modes are sent too, in case.
    * The robot's state only reaches Matter when it changes, so it may never fix itself while the robot is docked.
    */
   private async syncState() {
