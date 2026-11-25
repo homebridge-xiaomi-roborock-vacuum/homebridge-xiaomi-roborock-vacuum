@@ -28,6 +28,7 @@ const createMatterMock = () =>
     },
     registerPlatformAccessories: jest.fn().mockResolvedValue(undefined),
     updateAccessoryState: jest.fn().mockResolvedValue(undefined),
+    getAccessoryState: jest.fn().mockResolvedValue(undefined),
   }) as unknown as jest.Mocked<MatterAPI>;
 
 type Handlers = Required<NonNullable<MatterAccessory["handlers"]>>;
@@ -319,6 +320,59 @@ describe("MatterVacuum", () => {
       await expect(
         handlers.rvcOperationalState.pause!(undefined)
       ).rejects.toThrow("timeout");
+    });
+  });
+
+  describe("after a restart (Homebridge's cached rooms)", () => {
+    const cachedAreas = (state: Record<string, unknown>) =>
+      matter.getAccessoryState.mockImplementation(async (_uuid, cluster) =>
+        cluster === "serviceArea" ? state : undefined
+      );
+
+    test("keeps the selected rooms that still exist", async () => {
+      cachedAreas({ selectedAreas: [18, 99, 16], currentArea: 16 });
+      const vacuum = createVacuum();
+      await vacuum.register();
+      await new Promise(setImmediate);
+      expect(matter.updateAccessoryState).toHaveBeenCalledWith(
+        vacuum.uuid,
+        "serviceArea",
+        expect.objectContaining({ selectedAreas: [18, 16], currentArea: null })
+      );
+      await handlersOf(vacuum).rvcRunMode.changeToMode!({
+        newMode: RunMode.Cleaning,
+      });
+      expect(deviceManager.device.cleanRooms).toHaveBeenCalledWith([16, 18]);
+      vacuum.stop();
+    });
+
+    test("while cleaning: the room it's in, and the rooms to resume", async () => {
+      cachedAreas({ selectedAreas: [17], currentArea: 17 });
+      properties.state = "paused";
+      const vacuum = createVacuum();
+      await vacuum.register();
+      await new Promise(setImmediate);
+      expect(matter.updateAccessoryState).toHaveBeenCalledWith(
+        vacuum.uuid,
+        "serviceArea",
+        expect.objectContaining({ selectedAreas: [17], currentArea: 17 })
+      );
+      await handlersOf(vacuum).rvcOperationalState.resume!(undefined);
+      expect(deviceManager.device.resumeCleanRooms).toHaveBeenCalledWith([17]);
+      vacuum.stop();
+    });
+
+    test("nothing cached, or it can't be read: everywhere", async () => {
+      matter.getAccessoryState.mockRejectedValueOnce(new Error("not ready"));
+      const vacuum = createVacuum();
+      await vacuum.register();
+      await new Promise(setImmediate);
+      expect(matter.updateAccessoryState).toHaveBeenCalledWith(
+        vacuum.uuid,
+        "serviceArea",
+        expect.objectContaining({ selectedAreas: [], currentArea: null })
+      );
+      vacuum.stop();
     });
   });
 

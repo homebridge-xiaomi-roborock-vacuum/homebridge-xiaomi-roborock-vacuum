@@ -98,6 +98,8 @@ export class MatterVacuum {
    */
   private activeAreas: number[] = [];
   private currentRoom?: string;
+  /** The room it was in before a restart (while cleaning), see {@link restoreAreas} */
+  private restoredCurrentArea?: number;
   private registered = false;
 
   constructor(private readonly options: MatterVacuumOptions) {
@@ -244,7 +246,7 @@ export class MatterVacuum {
   }
 
   /**
-   * Sends the robot's current state, and the clean modes and rooms. When Homebridge restores a cached accessory, the
+   * Sends the robot's current state, the clean modes, and the rooms (keeping the selection, see {@link restoreAreas}). When Homebridge restores a cached accessory, the
    * cached attributes replace the ones of {@link build}: e.g. a run mode left in "Cleaning" (Apple Home then says it
    * will continue cleaning later, and doesn't let you change the clean mode). The clean modes are sent too, in case.
    * The robot's state only reaches Matter when it changes, so it may never fix itself while the robot is docked.
@@ -257,12 +259,13 @@ export class MatterVacuum {
       supportedModes: rvcCleanMode.supportedModes,
       currentMode: rvcCleanMode.currentMode,
     });
+    const state = `${this.deviceManager.property("state") ?? ""}`;
+    await this.restoreAreas(state);
     await this.update("serviceArea", {
       supportedAreas: serviceArea.supportedAreas,
-      selectedAreas: [],
-      currentArea: null,
+      selectedAreas: this.selectedAreas,
+      currentArea: this.restoredCurrentArea ?? null,
     });
-    const state = `${this.deviceManager.property("state") ?? ""}`;
     if (toOperationalState(state, this.batteryLevel) !== undefined) {
       await this.updateOperationalState(state);
     } else {
@@ -274,6 +277,41 @@ export class MatterVacuum {
       batChargeLevel: powerSource.batChargeLevel,
       batChargeState: powerSource.batChargeState,
     });
+  }
+
+  /**
+   * The rooms selected before a restart: Homebridge caches the selection (and the room it was in), but the plugin starts
+   * with none (cleaning everywhere, while the controller still shows the rooms). Only the rooms that still exist are
+   * kept. While it's cleaning or paused, they're also the rooms to resume (a guess: the selection it started with).
+   *
+   * @param state The robot's state
+   */
+  private async restoreAreas(state: string) {
+    let cached: Record<string, unknown> | undefined;
+    try {
+      cached = await this.matter.getAccessoryState?.(this.uuid, "serviceArea");
+    } catch (error) {
+      this.log.debug(
+        `DEB matter | Failed to read the selected rooms: ${error}`
+      );
+    }
+    const known = (areaId: unknown) =>
+      this.areas.some((area) => area.areaId === areaId);
+    const selected = Array.isArray(cached?.selectedAreas)
+      ? (cached.selectedAreas as number[]).filter(known)
+      : [];
+    this.selectedAreas = [...selected];
+    const operationalState = toOperationalState(state, this.batteryLevel);
+    const inSession =
+      operationalState === OperationalState.Running ||
+      operationalState === OperationalState.Paused;
+    if (inSession) {
+      this.activeAreas = this.areasToClean.map(({ areaId }) => areaId);
+    }
+    this.restoredCurrentArea =
+      inSession && known(cached?.currentArea)
+        ? (cached?.currentArea as number)
+        : undefined;
   }
 
   public stop() {
