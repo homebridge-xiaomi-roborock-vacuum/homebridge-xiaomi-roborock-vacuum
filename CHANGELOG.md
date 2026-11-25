@@ -2,6 +2,11 @@
 
 ## Next
 
+## 1.7.4
+
+- [Bug] Matter vacuum (`"serviceType": "vacuum"`): after a restart, the robot's real state replaces the one Homebridge restored from its cache. A run mode left in "Cleaning" stayed there while the robot was docked: Apple Home said it would continue cleaning later and didn't let you change the clean mode. The selected rooms are kept too: Apple Home showed them after a restart while the robot would clean everywhere. Apple Home may take a few minutes to show the new state after a restart ([#1314](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1314), [#1319](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1319)).
+- [Bug] **Mijia Robot Vacuum H40** (`xiaomi.vacuum.d101`) and other MIoT vacuums whose `serial-number` is empty: the serial number is read from `serial-no` instead of showing "unknown". node-miio `0.13.0` ([#1314](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1314), [#1318](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1318), [afharo/node-miio#62](https://github.com/afharo/node-miio/pull/62)).
+
 ## 1.7.3
 
 - [Bug] **Mijia Robot Vacuum H40** (`xiaomi.vacuum.d101`) and other MIoT vacuums that answer with their device ID instead of the property name: the status, battery, charging state and modes are read again (only one value was kept, so the status didn't sync and the Matter vacuum logged `Value -2 is below the nullable uint8 minimum` for the battery). node-miio `0.11.1` ([#1314](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1314), [afharo/node-miio#59](https://github.com/afharo/node-miio/pull/59)).
