@@ -1,5 +1,5 @@
 import type { MatterAccessory, MatterAPI } from "homebridge";
-import { concatMap, type Observable, Subscription } from "rxjs";
+import { concatMap, type Observable, startWith, Subscription } from "rxjs";
 import { ACCESSORY_NAME, PLUGIN_NAME } from "../constants";
 import type { ModelDefinition } from "../models/types";
 import type { Config } from "../services/config_service";
@@ -219,8 +219,14 @@ export class MatterVacuum {
 
     this.subscriptions.add(
       this.deviceManager.stateChanged$
-        // One at a time, in order: a later change must not be overwritten by an earlier one
-        .pipe(concatMap((change) => this.onStateChanged(change)))
+        .pipe(
+          // First, the robot's current state: Homebridge restores the cached one over build()'s
+          startWith(undefined),
+          // One at a time, in order: a later change must not be overwritten by an earlier one
+          concatMap((change) =>
+            change ? this.onStateChanged(change) : this.syncState()
+          )
+        )
         .subscribe()
     );
     this.subscriptions.add(
@@ -235,6 +241,39 @@ export class MatterVacuum {
           .subscribe()
       );
     }
+  }
+
+  /**
+   * Sends the robot's current state, and the clean modes and rooms. When Homebridge restores a cached accessory, the
+   * cached attributes replace the ones of {@link build}: e.g. a run mode left in "Cleaning" (Apple Home then says it
+   * will continue cleaning later, and doesn't let you change the clean mode), or the clean modes of an older version.
+   * The robot's state only reaches Matter when it changes, so it may never fix itself while the robot is docked.
+   */
+  private async syncState() {
+    const { clusters = {} } = this.build();
+    const { rvcRunMode, rvcCleanMode, serviceArea, powerSource } =
+      clusters as Record<string, Record<string, unknown>>;
+    await this.update("rvcCleanMode", {
+      supportedModes: rvcCleanMode.supportedModes,
+      currentMode: rvcCleanMode.currentMode,
+    });
+    await this.update("serviceArea", {
+      supportedAreas: serviceArea.supportedAreas,
+      selectedAreas: [],
+      currentArea: null,
+    });
+    const state = `${this.deviceManager.property("state") ?? ""}`;
+    if (toOperationalState(state, this.batteryLevel) !== undefined) {
+      await this.updateOperationalState(state);
+    } else {
+      // Unknown state: at least, not cleaning
+      await this.update("rvcRunMode", { currentMode: rvcRunMode.currentMode });
+    }
+    await this.update("powerSource", {
+      batPercentRemaining: powerSource.batPercentRemaining,
+      batChargeLevel: powerSource.batChargeLevel,
+      batChargeState: powerSource.batChargeState,
+    });
   }
 
   public stop() {

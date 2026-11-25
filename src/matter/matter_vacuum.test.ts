@@ -338,6 +338,42 @@ describe("MatterVacuum", () => {
       );
     });
 
+    test("replaces the cached state with the robot's (e.g. a run mode left in Cleaning)", () => {
+      expect(lastUpdate("rvcRunMode")).toStrictEqual({
+        currentMode: RunMode.Idle,
+      });
+      expect(lastUpdate("rvcOperationalState")).toStrictEqual({
+        operationalState: OperationalState.Charging,
+      });
+      expect(lastUpdate("rvcCleanMode")).toStrictEqual({
+        supportedModes: vacuum.build().clusters!.rvcCleanMode!.supportedModes,
+        currentMode: vacuum.build().clusters!.rvcCleanMode!.currentMode,
+      });
+      expect(matter.updateAccessoryState).toHaveBeenCalledWith(
+        vacuum.uuid,
+        "serviceArea",
+        expect.objectContaining({ selectedAreas: [], currentArea: null })
+      );
+      expect(lastUpdate("powerSource")).toStrictEqual({
+        batPercentRemaining: 160,
+        batChargeLevel: PowerSource.BatChargeLevel.Ok,
+        batChargeState: PowerSource.BatChargeState.IsCharging,
+      });
+    });
+
+    test("the changes that come during the sync are applied after it", async () => {
+      matter.updateAccessoryState.mockClear();
+      const sync = createVacuum();
+      await sync.register();
+      properties.state = "cleaning";
+      stateChanged$.next({ key: "state", value: "cleaning" });
+      await new Promise(setImmediate);
+      expect(lastUpdate("rvcRunMode")).toStrictEqual({
+        currentMode: RunMode.Cleaning,
+      });
+      sync.stop();
+    });
+
     test("cleaning", async () => {
       properties.state = "room-cleaning";
       stateChanged$.next({ key: "state", value: "room-cleaning" });
