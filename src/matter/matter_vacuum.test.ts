@@ -453,6 +453,24 @@ describe("MatterVacuum", () => {
       expect(lastUpdate("serviceArea")).toStrictEqual({ currentArea: null });
     });
 
+    test("an unknown state (#1314): stopped, not the previous state", async () => {
+      properties.state = "station-working";
+      stateChanged$.next({ key: "state", value: "station-working" });
+      await new Promise(setImmediate);
+      expect(lastUpdate("rvcOperationalState")).toStrictEqual({
+        operationalState: OperationalState.CleaningMop,
+      });
+      properties.state = "unknown-23";
+      stateChanged$.next({ key: "state", value: "unknown-23" });
+      await new Promise(setImmediate);
+      expect(lastUpdate("rvcOperationalState")).toStrictEqual({
+        operationalState: OperationalState.Stopped,
+      });
+      expect(lastUpdate("rvcRunMode")).toStrictEqual({
+        currentMode: RunMode.Idle,
+      });
+    });
+
     test("battery", async () => {
       stateChanged$.next({ key: "batteryLevel", value: 15 });
       await new Promise(setImmediate);

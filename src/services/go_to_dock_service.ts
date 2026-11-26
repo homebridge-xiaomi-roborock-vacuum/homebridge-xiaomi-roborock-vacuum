@@ -1,4 +1,5 @@
 import { Service, CharacteristicValue } from "homebridge";
+import { vacuumActivity } from "node-miio";
 import { distinctUntilChanged, map } from "rxjs";
 import { CoreContext } from "./types";
 import { PluginServiceClass } from "./plugin_service_class";
@@ -8,9 +9,6 @@ export interface GoToDockConfig {
   goToDock: boolean;
   goToDockWord: string;
 }
-
-/** States in which the robot is heading back to the dock */
-const RETURNING_STATES = ["returning", "docking"];
 
 /**
  * A switch that sends the robot back to the dock (#322). It shows as ON while the robot is on its way.
@@ -47,7 +45,8 @@ export class GoToDockService extends PluginServiceClass {
   }
 
   private get isReturning() {
-    return RETURNING_STATES.includes(this.deviceManager.state as string);
+    // Heading back to the dock, whatever for (charging, washing the mop, emptying the dust bin…)
+    return vacuumActivity(this.deviceManager.state) === "returning";
   }
 
   private async setGoToDock(newState: CharacteristicValue) {

@@ -48,7 +48,10 @@ node dist/bin/miio-vacuum.js --help   # the CLI is a thin wrapper around node-mi
   (`vacuumModels()`) use `resolveVacuumModes(model, firmware)`; any other model uses `reportedModes` (e.g. its MIoT spec),
   or its brand's defaults. The plugin only adds an "Off" -1 speed (which stops the cleaning) and the HomeKit slider levels
   (proportional). **Add or fix a model's speeds in node-miio, not here**: a snapshot test pins what each model gets.
-  The cleaning states come from node-miio too (`isCleaningState`).
+  The cleaning states come from node-miio too (`isCleaningState`), and so does what each state means
+  (`vacuumActivity`: one per Matter operational state, used by `toOperationalState`). Don't match state names here:
+  node-miio reports one of its `VACUUM_STATES`, or `unknown-<code>` (the device manager warns about those, with a
+  pre-filled issue link, and Matter shows them as stopped). Translate new statuses in node-miio.
 - `docs/speeds-and-modes.md` is generated from the code (`src/docs/speeds_doc.ts`): run `npm run docs:speeds` after
   changing the fan speeds, water levels or Matter clean modes. A test fails while it's out of date.
 - node-miio ships its own types (since 0.5.0). The device is a `VacuumDevice` (union of node-miio's vacuum classes): only their

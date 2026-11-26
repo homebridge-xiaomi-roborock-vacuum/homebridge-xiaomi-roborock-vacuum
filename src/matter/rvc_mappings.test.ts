@@ -1,3 +1,4 @@
+import { VACUUM_STATES } from "node-miio";
 import { ErrorState, OperationalState, PowerSource } from "./constants";
 import {
   toBatChargeLevel,
@@ -11,20 +12,26 @@ describe("toOperationalState", () => {
     ["cleaning", OperationalState.Running],
     ["room-cleaning", OperationalState.Running],
     ["zone-cleaning", OperationalState.Running],
-    ["sweeping-and-mopping", OperationalState.Running],
+    ["cleaning-and-mopping", OperationalState.Running],
+    ["remote-control", OperationalState.Running],
     ["paused", OperationalState.Paused],
     ["returning", OperationalState.SeekingCharger],
     ["docking", OperationalState.SeekingCharger],
+    ["returning-to-wash-mop", OperationalState.SeekingCharger],
     ["fully-charged", OperationalState.Docked],
+    ["docked", OperationalState.Docked],
     ["error", OperationalState.Error],
     ["charging-error", OperationalState.Error],
     ["idle", OperationalState.Stopped],
+    ["initiating", OperationalState.Stopped],
     ["sleeping", OperationalState.Stopped],
+    ["updating", OperationalState.Stopped],
     ["dust-collection", OperationalState.EmptyingDustBin],
     ["washing-mop", OperationalState.CleaningMop],
-    ["drying", OperationalState.CleaningMop],
-    ["refilling-water", OperationalState.FillingWaterTank],
-    ["building-map", OperationalState.UpdatingMaps],
+    ["drying-mop", OperationalState.CleaningMop],
+    ["station-working", OperationalState.CleaningMop],
+    ["filling-water-tank", OperationalState.FillingWaterTank],
+    ["mapping", OperationalState.UpdatingMaps],
   ])("%s", (state, expected) => {
     expect(toOperationalState(state, 50)).toBe(expected);
   });
@@ -34,8 +41,17 @@ describe("toOperationalState", () => {
     expect(toOperationalState("charging", 100)).toBe(OperationalState.Docked);
   });
 
+  // Every state node-miio can report has a Matter state
+  test.each(Object.keys(VACUUM_STATES))("%s is translated", (state) => {
+    expect(Object.values(OperationalState)).toContain(
+      toOperationalState(state, 50)
+    );
+  });
+
   test("unknown states", () => {
+    expect(toOperationalState("unknown-42")).toBeUndefined();
     expect(toOperationalState("something-new")).toBeUndefined();
+    expect(toOperationalState("")).toBeUndefined();
   });
 });
 

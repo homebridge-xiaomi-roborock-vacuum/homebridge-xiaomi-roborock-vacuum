@@ -232,6 +232,43 @@ describe("DeviceManager", () => {
       expect(errors).toStrictEqual([5, null, 5, null, 8]);
     });
 
+    test("warns once about each status node-miio can't translate, with a link to report it", async () => {
+      const describeStatus = jest.fn().mockReturnValue("New Station Mode");
+      Object.assign(miio.device, { describeStatus });
+      try {
+        await createConnectedDeviceManager();
+        const onStateChanged = miio.device.on.mock.calls.find(
+          ([event]) => event === "stateChanged"
+        )?.[1] as (change: { key: string; value: unknown }) => void;
+        onStateChanged({ key: "state", value: "unknown-31" });
+        onStateChanged({ key: "state", value: "charging" });
+        onStateChanged({ key: "state", value: "unknown-31" });
+        onStateChanged({ key: "batteryLevel", value: "unknown-5" });
+
+        expect(describeStatus).toHaveBeenCalledWith(31);
+        expect(log.warn).toHaveBeenCalledTimes(1);
+        const message = log.warn.mock.calls[0][0] as string;
+        expect(message).toContain(
+          `doesn't know: 31 ("New Station Mode"). Please report it`
+        );
+        const url = new URL(message.slice(message.indexOf("https://")));
+        expect(url.pathname).toBe(
+          "/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/new"
+        );
+        expect(Object.fromEntries(url.searchParams)).toStrictEqual({
+          template: "bug_report.yml",
+          title: `Unknown status 31 ("New Station Mode") on test-model`,
+          model: "test-model",
+          version: expect.stringMatching(/^\d+\.\d+\.\d+/),
+          description: expect.stringContaining(
+            "What was the robot doing when it reported it"
+          ),
+        });
+      } finally {
+        delete (miio.device as { describeStatus?: unknown }).describeStatus;
+      }
+    });
+
     test("replaces the polling timer when the device reconnects", async () => {
       const deviceManager = await createConnectedDeviceManager();
       await jest.advanceTimersByTimeAsync(0);

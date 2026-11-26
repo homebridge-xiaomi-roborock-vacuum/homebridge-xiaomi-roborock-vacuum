@@ -100,10 +100,16 @@ export const miio = {
     configureLogging: jest.fn(),
     // Only robots of a Roborock app account have a Roborock connection
     roborockApiOf: jest.fn().mockReturnValue(undefined),
-    // node-miio's own (pure function of the state)
+    // node-miio's own (pure functions of the state)
     isCleaningState:
       jest.requireActual<typeof import("node-miio")>("node-miio")
         .isCleaningState,
+    isKnownVacuumState:
+      jest.requireActual<typeof import("node-miio")>("node-miio")
+        .isKnownVacuumState,
+    vacuumActivity:
+      jest.requireActual<typeof import("node-miio")>("node-miio")
+        .vacuumActivity,
     // Same logic as node-miio's
     isVacuum: (device: unknown) =>
       typeof (device as { matches?: unknown })?.matches === "function" &&
