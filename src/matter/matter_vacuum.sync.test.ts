@@ -1,5 +1,6 @@
 import type { MatterAPI } from "homebridge";
 import type { MiotSpec } from "node-miio";
+import type { Subscription } from "rxjs";
 import { applyConfigDefaults } from "../services/config_service";
 import { DeviceManager } from "../services/device_manager";
 import { createHomebridgeMock } from "../test.mocks";
@@ -88,7 +89,8 @@ function createRobot() {
   });
   const handle = {
     ref: { release: jest.fn() },
-    api: { id: 1234, model: "xiaomi.vacuum.d101", call },
+    // `connected`: otherwise the device manager reconnects on every poll
+    api: { id: 1234, model: "xiaomi.vacuum.d101", call, connected: true },
   };
   return new miio.MiotVacuum(handle as never, spec);
 }
@@ -98,6 +100,10 @@ describe("MatterVacuum, following a real node-miio vacuum", () => {
   let matter: jest.Mocked<MatterAPI>;
   let deviceManager: DeviceManager;
   let vacuum: MatterVacuum;
+
+  /** What the device manager does every 30s (called directly: the test doesn't wait for the timer) */
+  const poll = () =>
+    (deviceManager as unknown as { getState(): Promise<void> }).getState();
 
   /** The last operational state sent to Matter */
   const operationalState = () =>
@@ -109,7 +115,6 @@ describe("MatterVacuum, following a real node-miio vacuum", () => {
       .at(-1)?.[2].operationalState;
 
   beforeEach(async () => {
-    jest.useFakeTimers();
     Object.assign(robot, { "2.2": 14, "3.1": 80 });
     miio.device.mockResolvedValue(createRobot() as never);
     matter = {
@@ -125,8 +130,13 @@ describe("MatterVacuum, following a real node-miio vacuum", () => {
       ip: "192.168.0.1",
       token: "token",
     });
-    // Connected, and the first poll
-    await jest.advanceTimersByTimeAsync(0);
+    // Connected (and polled once)
+    await new Promise(setImmediate);
+    // Its 30s polling: the test polls by itself
+    (
+      deviceManager as unknown as { statePollingSubscription?: Subscription }
+    ).statePollingSubscription?.unsubscribe();
+    await poll();
     vacuum = new MatterVacuum({
       matter,
       log,
@@ -138,20 +148,18 @@ describe("MatterVacuum, following a real node-miio vacuum", () => {
       rooms: [],
     });
     await vacuum.register();
-    await jest.advanceTimersByTimeAsync(0);
+    await new Promise(setImmediate);
   });
 
-  afterEach(() => {
-    vacuum.stop();
-    jest.useRealTimers();
-  });
+  afterEach(() => vacuum.stop());
 
   test("follows the robot's state, also when it's changed from the robot's app (#1314)", async () => {
     expect(operationalState()).toBe(OperationalState.CleaningMop);
 
     // The mop washing is stopped from the Mijia app
     robot["2.2"] = 2;
-    await jest.advanceTimersByTimeAsync(30000);
+    await poll();
+    await new Promise(setImmediate);
     expect(operationalState()).toBe(OperationalState.Charging);
     expect(
       matter.updateAccessoryState.mock.calls
@@ -160,13 +168,15 @@ describe("MatterVacuum, following a real node-miio vacuum", () => {
     ).toStrictEqual({ currentMode: RunMode.Idle });
 
     robot["2.2"] = 4;
-    await jest.advanceTimersByTimeAsync(30000);
+    await poll();
+    await new Promise(setImmediate);
     expect(operationalState()).toBe(OperationalState.Running);
   });
 
   test("resends the state on every poll, even when it doesn't change", async () => {
     matter.updateAccessoryState.mockClear();
-    await jest.advanceTimersByTimeAsync(30000);
+    await poll();
+    await new Promise(setImmediate);
     expect(operationalState()).toBe(OperationalState.CleaningMop);
   });
 });
