@@ -2,6 +2,13 @@
 
 ## Next
 
+## 1.7.5
+
+- [Bug] Matter vacuum (`"serviceType": "vacuum"`): Apple Home follows the robot's state after Homebridge starts too. It only got it at startup, so a change made from the robot's app (e.g. stopping the mop washing) never showed, and Apple Home could stay on "cleaning the mop" with its controls locked. The state is also resent every 30 seconds, like in the HomeKit accessories. node-miio `0.14.0` ([#1314](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1314), [#1323](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1323), [afharo/node-miio#66](https://github.com/afharo/node-miio/pull/66)).
+- [Bug] Matter vacuum: every robot state has a Matter equivalent. node-miio now translates every status published for the MIoT vacuums (all 243, checked against their Chinese descriptions) and says what each one means. States the plugin dropped before (e.g. updating, remote control, going to a point, returning to wash the mop) are shown, and Dreame's mopping states count as cleaning. A status the plugin doesn't know shows as stopped instead of keeping the previous state, and the logs show a warning with a link to a pre-filled bug report ([#1323](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1323)).
+- [Bug] Go-to-dock switch (`goToDock`): it's on whenever the robot heads back to the dock, also to wash the mop ([#1323](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1323)).
+- [Chore] Docs: point non-Homebridge users to matterbridge-xiaomi-roborock, and refresh the npm keywords ([#1321](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1321), [#1322](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1322)).
+
 ## 1.7.4
 
 - [Bug] Matter vacuum (`"serviceType": "vacuum"`): after a restart, the robot's real state replaces the one Homebridge restored from its cache. A run mode left in "Cleaning" stayed there while the robot was docked: Apple Home said it would continue cleaning later and didn't let you change the clean mode. The selected rooms are kept too: Apple Home showed them after a restart while the robot would clean everywhere. Apple Home may take a few minutes to show the new state after a restart ([#1314](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1314), [#1319](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1319)).
