@@ -1,6 +1,6 @@
 {
   "name": "homebridge-xiaomi-roborock-vacuum",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "description": "Homebridge plugin for Xiaomi and Roborock robot vacuums (Mi Home or Roborock app): control them in Apple Home as the native robot vacuum (Matter), a fan, or switches.",
   "license": "MIT",
   "keywords": [
