@@ -18,6 +18,7 @@ import {
 } from "node-miio";
 import { Logger } from "../utils/logger";
 import { supports } from "../utils/supports";
+import { unknownStateCode, unknownStateIssueUrl } from "../utils/unknown_state";
 import type { ReportedModes } from "../utils/find_speed_modes";
 
 export interface DeviceManagerConfig {
@@ -84,6 +85,8 @@ export class DeviceManager {
   private ip: string;
   private token: string;
   private roomNames = new Map<string, string>();
+  /** The unknown status codes already reported (see {@link reportUnknownState}) */
+  private readonly reportedUnknownStates = new Set<number>();
   private failedPolls = 0;
   private lastLocatedAt = 0;
 
@@ -153,6 +156,26 @@ export class DeviceManager {
    */
   public roomName(roomId: string | number): string | undefined {
     return this.roomNames.get(String(roomId));
+  }
+
+  /**
+   * Warns about a status that node-miio can't translate (`unknown-<code>`), once per status, with a link to report it.
+   *
+   * @param state The vacuum's `state` property
+   */
+  private reportUnknownState(state: unknown) {
+    const code = unknownStateCode(state);
+    if (code === undefined || this.reportedUnknownStates.has(code)) return;
+    this.reportedUnknownStates.add(code);
+    const device = this.internalDevice$.value as
+      { describeStatus?: (code: number) => string | undefined } | undefined;
+    const description = device?.describeStatus?.(code);
+    const url = unknownStateIssueUrl({ model: this.model, code, description });
+    this.log.warn(
+      `WAR getState | The robot reports a status the plugin doesn't know: ${code}` +
+        (description ? ` ("${description}")` : "") +
+        `. Please report it, saying what the robot was doing: ${url}`
+    );
   }
 
   public get isCleaning() {
@@ -296,6 +319,7 @@ export class DeviceManager {
       this.log.info("STA getDevice | Connected to: %s", this.ip);
       this.log.info("STA getDevice | Model: " + this.model);
       this.log.info("STA getDevice | State: " + this.property("state"));
+      this.reportUnknownState(this.property("state"));
       this.log.info("STA getDevice | FanSpeed: " + this.property("fanSpeed"));
       this.log.info(
         "STA getDevice | BatteryLevel: " + this.property("batteryLevel")
@@ -304,9 +328,10 @@ export class DeviceManager {
       this.device.on("errorChanged", (error: ErrorChangedEvent) =>
         this.internalErrorChanged$.next(error)
       );
-      this.device.on("stateChanged", (state: StateChangedEvent) =>
-        this.internalStateChanged$.next(state)
-      );
+      this.device.on("stateChanged", (state: StateChangedEvent) => {
+        if (state.key === "state") this.reportUnknownState(state.value);
+        this.internalStateChanged$.next(state);
+      });
 
       // Refresh the state every 30s so miio maintains a fresh connection (or recovers connection if lost until we fix https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/81)
       this.statePollingSubscription?.unsubscribe();

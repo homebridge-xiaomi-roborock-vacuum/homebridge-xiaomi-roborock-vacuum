@@ -49,6 +49,7 @@ describe("GoToDockService", () => {
   test.each([
     ["returning", true],
     ["docking", true],
+    ["returning-to-wash-mop", true],
     ["cleaning", false],
     ["charging", false],
   ])("onGet when the state is %p", async (state, expected) => {

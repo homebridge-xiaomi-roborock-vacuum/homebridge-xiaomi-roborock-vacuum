@@ -251,8 +251,10 @@ export class MatterVacuum {
    */
   private async syncState() {
     const { clusters = {} } = this.build();
-    const { rvcRunMode, rvcCleanMode, serviceArea, powerSource } =
-      clusters as Record<string, Record<string, unknown>>;
+    const { rvcCleanMode, serviceArea, powerSource } = clusters as Record<
+      string,
+      Record<string, unknown>
+    >;
     await this.update("rvcCleanMode", {
       supportedModes: rvcCleanMode.supportedModes,
       currentMode: rvcCleanMode.currentMode,
@@ -264,12 +266,7 @@ export class MatterVacuum {
       selectedAreas: this.selectedAreas,
       currentArea,
     });
-    if (toOperationalState(state, this.batteryLevel) !== undefined) {
-      await this.updateOperationalState(state);
-    } else {
-      // Unknown state: at least, not cleaning
-      await this.update("rvcRunMode", { currentMode: rvcRunMode.currentMode });
-    }
+    await this.updateOperationalState(state);
     await this.update("powerSource", {
       batPercentRemaining: powerSource.batPercentRemaining,
       batChargeLevel: powerSource.batChargeLevel,
@@ -483,11 +480,10 @@ export class MatterVacuum {
 
   private async updateOperationalState(state: string) {
     const battery = this.batteryLevel;
-    const operationalState = toOperationalState(state, battery);
-    if (operationalState === undefined) {
-      this.log.debug(`DEB matter | Unknown state "${state}"`);
-      return;
-    }
+    // An unknown state (reported by the device manager): not cleaning, so the controller doesn't keep the previous
+    // state (e.g. "cleaning the mop") and lock its controls
+    const operationalState =
+      toOperationalState(state, battery) ?? OperationalState.Stopped;
     const running =
       operationalState === OperationalState.Running ||
       operationalState === OperationalState.Paused;

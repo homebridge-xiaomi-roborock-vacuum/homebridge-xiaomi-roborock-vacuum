@@ -1,3 +1,5 @@
+import { vacuumActivity, type VacuumActivity } from "node-miio";
+
 import { ErrorState, OperationalState, PowerSource } from "./constants";
 
 /** The error reported by node-miio (`errorChanged`) */
@@ -85,64 +87,40 @@ export function toErrorStateId(model: string, error: MiioError): ErrorState {
   return ErrorState.UnableToCompleteOperation;
 }
 
-const RUNNING_STATES = new Set([
-  "cleaning",
-  "spot-cleaning",
-  "room-cleaning",
-  "zone-cleaning",
-  "manual-cleaning",
-  "sweeping",
-  "mopping",
-  "sweeping-and-mopping",
-]);
+/** Matter operational state of each activity reported by node-miio (`vacuumActivity`) */
+const OPERATIONAL_STATES: Record<VacuumActivity, OperationalState> = {
+  stopped: OperationalState.Stopped,
+  running: OperationalState.Running,
+  paused: OperationalState.Paused,
+  returning: OperationalState.SeekingCharger,
+  charging: OperationalState.Charging,
+  docked: OperationalState.Docked,
+  error: OperationalState.Error,
+  "emptying-dust-bin": OperationalState.EmptyingDustBin,
+  "cleaning-mop": OperationalState.CleaningMop,
+  "filling-water-tank": OperationalState.FillingWaterTank,
+  "updating-maps": OperationalState.UpdatingMaps,
+};
 
 /**
- * Translates the state reported by node-miio into a Matter RVC operational state.
- *
- * - `charging` is reported as `Docked` when the battery is full.
- * - The auxiliary states (dock and maintenance activities) use the states added in revision 4 of the cluster. node-miio
- *   normalizes them, e.g. `dust-collection` (Roborock), or the kebab-cased descriptions of the MIoT spec
- *   (`dustcollecting`, `drying`…).
+ * Translates the state reported by node-miio into a Matter RVC operational state, from its activity (node-miio's
+ * `vacuumActivity`: the dock and maintenance activities use the states added in revision 4 of the cluster).
+ * `charging` is reported as `Docked` when the battery is full.
  *
  * @param state The state reported by node-miio
  * @param batteryLevel The battery level (to tell `Charging` from `Docked`)
- * @returns The Matter state, or `undefined` if the state is unknown
+ * @returns The Matter state, or `undefined` if the state is unknown (`unknown-<code>`)
  */
 export function toOperationalState(
   state: string,
   batteryLevel?: number
 ): OperationalState | undefined {
-  if (RUNNING_STATES.has(state)) return OperationalState.Running;
-  switch (state) {
-    case "paused":
-      return OperationalState.Paused;
-    case "returning":
-    case "docking":
-      return OperationalState.SeekingCharger;
-    case "charging":
-      return batteryLevel === 100
-        ? OperationalState.Docked
-        : OperationalState.Charging;
-    case "fully-charged":
-      return OperationalState.Docked;
-    case "error":
-    case "charging-error":
-      return OperationalState.Error;
-    case "initializing":
-    case "idle":
-    case "sleeping":
-    case "waiting":
-      return OperationalState.Stopped;
+  const activity = vacuumActivity(state);
+  if (activity === undefined) return undefined;
+  if (activity === "charging" && batteryLevel === 100) {
+    return OperationalState.Docked;
   }
-  if (/dust|emptying/.test(state)) return OperationalState.EmptyingDustBin;
-  if (/wash|dry|self-?clean|station-?working/.test(state)) {
-    return OperationalState.CleaningMop;
-  }
-  if (/water|refill|filling/.test(state)) {
-    return OperationalState.FillingWaterTank;
-  }
-  if (/map|building|relocat/.test(state)) return OperationalState.UpdatingMaps;
-  return undefined;
+  return OPERATIONAL_STATES[activity];
 }
 
 /**
