@@ -1,3 +1,4 @@
+import { describe, test, expect } from "vitest";
 import { unknownStateCode, unknownStateIssueUrl } from "./unknown_state";
 
 describe("unknownStateCode", () => {

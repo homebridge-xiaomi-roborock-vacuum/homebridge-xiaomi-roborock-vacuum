@@ -1,3 +1,4 @@
+import { describe, test, expect, vi } from "vitest";
 import { EventEmitter } from "node:events";
 import {
   CloudSessionExpiredError,
@@ -11,7 +12,7 @@ const session = {
   ssecurity: "ssecurity",
   serviceToken: "token",
 };
-const roborock = { getCloudMap: jest.fn() };
+const roborock = { getCloudMap: vi.fn() };
 const cloudDevice = (overrides: Partial<CloudDevice>) =>
   ({
     did: "1",
@@ -30,19 +31,19 @@ function setup(
     server?: string;
   } = {}
 ) {
-  const log = { debug: jest.fn(), info: jest.fn(), warn: jest.fn() };
+  const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() };
   const cloud = {
-    getDevices: jest.fn(async () => options.devices ?? [cloudDevice({})]),
-    getMapFileUrl: jest.fn(),
-    download: jest.fn(),
+    getDevices: vi.fn(async () => options.devices ?? [cloudDevice({})]),
+    getMapFileUrl: vi.fn(),
+    download: vi.fn(),
   };
   const watcher = new EventEmitter() as unknown as MapWatcher;
   const deps = {
-    loadSession: jest.fn(async () =>
+    loadSession: vi.fn(async () =>
       "session" in options ? options.session : session
     ),
-    createCloud: jest.fn(() => cloud),
-    createWatcher: jest.fn(() => watcher),
+    createCloud: vi.fn(() => cloud),
+    createWatcher: vi.fn(() => watcher),
   };
   const service = new CloudService(
     log,

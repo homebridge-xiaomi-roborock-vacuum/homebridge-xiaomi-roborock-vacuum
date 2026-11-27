@@ -1,3 +1,4 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
@@ -15,7 +16,7 @@ describe("RoomsService", () => {
   let roomsService: RoomsService;
   let deviceManagerMock: DeviceManagerMock;
   let hap: HAP;
-  const setCleaning = jest.fn();
+  const setCleaning = vi.fn();
 
   async function createRoomService(partialConfig: Partial<Config>) {
     hap = HapJs;
@@ -38,7 +39,7 @@ describe("RoomsService", () => {
 
   afterEach(() => {
     (deviceManagerMock.stateChanged$ as Subject<unknown>).complete();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("with the default config", () => {

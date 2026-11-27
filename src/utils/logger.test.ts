@@ -1,21 +1,22 @@
+import { describe, test, expect, beforeEach, vi, type Mocked } from "vitest";
 import { Logging } from "homebridge";
 import { getLogger } from "./logger";
 
 describe("getLogger", () => {
-  let homebridgeLogger: jest.Mocked<Logging> = Object.assign(
+  let homebridgeLogger: Mocked<Logging> = Object.assign(
     {
       prefix: "test",
-      error: jest.fn(),
-      warn: jest.fn(),
-      info: jest.fn(),
-      debug: jest.fn(),
-      log: jest.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+      log: vi.fn(),
     },
-    jest.fn()
-  );
+    vi.fn()
+  ) as unknown as Mocked<Logging>;
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test("it should create a new logger out of the Logging structure", () => {
@@ -38,7 +39,7 @@ describe("getLogger", () => {
   test.each(["debug", "info", "warn", "error"] as const)(
     "it should log %p messages by default",
     (level) => {
-      const logSpy = jest.spyOn(homebridgeLogger, level);
+      const logSpy = vi.spyOn(homebridgeLogger, level);
       const logger = getLogger(homebridgeLogger, {});
       logger[level]("Test message");
       expect(logSpy).toHaveBeenCalledWith("[Model=unknown] Test message");
@@ -48,7 +49,7 @@ describe("getLogger", () => {
   test.each(["debug", "info", "warn", "error"] as const)(
     "it should log %p messages with a model set",
     (level) => {
-      const logSpy = jest.spyOn(homebridgeLogger, level);
+      const logSpy = vi.spyOn(homebridgeLogger, level);
       const logger = getLogger(homebridgeLogger, {});
       logger.setModel("test-model");
       logger[level]("Test message");
@@ -82,7 +83,7 @@ describe("getLogger", () => {
     test.each(["debug", "info"] as const)(
       "it not should log %p messages",
       (level) => {
-        const logSpy = jest.spyOn(homebridgeLogger, level);
+        const logSpy = vi.spyOn(homebridgeLogger, level);
         const logger = getLogger(homebridgeLogger, { silent: true });
         logger[level]("Test message");
         expect(logSpy).not.toHaveBeenCalled();
@@ -92,7 +93,7 @@ describe("getLogger", () => {
     test.each(["warn", "error"] as const)(
       "it should log %p messages",
       (level) => {
-        const logSpy = jest.spyOn(homebridgeLogger, level);
+        const logSpy = vi.spyOn(homebridgeLogger, level);
         const logger = getLogger(homebridgeLogger, { silent: true });
         logger[level]("Test message");
         expect(logSpy).toHaveBeenCalledWith("[Model=unknown] Test message");

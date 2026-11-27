@@ -1,11 +1,12 @@
+import { vi, type Mocked } from "vitest";
 import { BehaviorSubject } from "rxjs";
 import { ProductInfo } from "./product_info";
 
-export type ProductInfoMock = jest.Mocked<ProductInfo>;
+export type ProductInfoMock = Mocked<ProductInfo>;
 
 export const createProductInfoMock = (): ProductInfoMock => {
-  const productInfoMock: jest.Mocked<Pick<ProductInfo, keyof ProductInfo>> = {
-    init: jest.fn(),
+  const productInfoMock: Mocked<Pick<ProductInfo, keyof ProductInfo>> = {
+    init: vi.fn(),
     services: [],
     firmware: "test",
     firmware$: new BehaviorSubject<string | undefined>("test"),

@@ -1,8 +1,9 @@
+import { vi, type Mocked } from "vitest";
 import { Subject } from "rxjs";
 import type { XiaomiRoborockVacuumAccessory } from "./accessory";
 
 export const createXiaomiRoborockVacuumAccessoryMock = () => {
-  const mock: jest.Mocked<
+  const mock: Mocked<
     Omit<
       Pick<XiaomiRoborockVacuumAccessory, keyof XiaomiRoborockVacuumAccessory>,
       "resolvedRooms" | "roomsReady" | "roomList" | "currentRoom$"
@@ -13,8 +14,8 @@ export const createXiaomiRoborockVacuumAccessoryMock = () => {
     roomList: Array<{ id: string; name: string }>;
     currentRoom$: Subject<string | undefined>;
   } = {
-    identify: jest.fn(),
-    getServices: jest.fn().mockReturnValue([]),
+    identify: vi.fn(),
+    getServices: vi.fn().mockReturnValue([]),
     roomsReady: Promise.resolve(),
     resolvedRooms: [],
     roomList: [],
@@ -23,10 +24,13 @@ export const createXiaomiRoborockVacuumAccessoryMock = () => {
 
   return mock;
 };
-export const XiaomiRoborockVacuumAccessoryMock = jest
+export const XiaomiRoborockVacuumAccessoryMock = vi
   .fn()
-  .mockImplementation(createXiaomiRoborockVacuumAccessoryMock);
+  // A `function`: the plugin calls it with `new`
+  .mockImplementation(function () {
+    return createXiaomiRoborockVacuumAccessoryMock();
+  });
 
-jest.doMock("./accessory", () => ({
+vi.doMock("./accessory", () => ({
   XiaomiRoborockVacuumAccessory: XiaomiRoborockVacuumAccessoryMock,
 }));

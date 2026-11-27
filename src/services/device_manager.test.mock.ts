@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import { miio } from "../test.mocks";
 
-jest.doMock("node-miio", () => miio.createMock());
+vi.doMock("node-miio", () => miio.createMock());

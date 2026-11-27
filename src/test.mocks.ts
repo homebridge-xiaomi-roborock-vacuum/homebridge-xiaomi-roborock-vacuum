@@ -1,5 +1,6 @@
 // ============= MIIO MOCKS ================
 
+import { vi, type Mocked } from "vitest";
 import { API } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import type { Vacuum } from "node-miio";
@@ -43,89 +44,88 @@ type MockedMembers =
   | "poll"
   | "state";
 
-export type MiioDeviceMock = jest.Mocked<Pick<Vacuum, MockedMembers>> & {
+export type MiioDeviceMock = Mocked<Pick<Vacuum, MockedMembers>> & {
   miioModel: string;
   connected: boolean;
   properties: Record<string, unknown>;
-  fanSpeeds?: jest.Mocked<Vacuum>["fanSpeeds"];
-  waterBoxModes?: jest.Mocked<Vacuum>["waterBoxModes"];
+  fanSpeeds?: Mocked<Vacuum>["fanSpeeds"];
+  waterBoxModes?: Mocked<Vacuum>["waterBoxModes"];
 };
 
 const miioDevice: MiioDeviceMock = {
   miioModel: "test-model",
   connected: true,
-  activateCharging: jest.fn(),
-  activateCleaning: jest.fn(),
-  batteryLevel: jest.fn(),
-  changeFanSpeed: jest.fn(),
-  cleanRooms: jest.fn(),
-  cleanZones: jest.fn(),
-  fanSpeed: jest.fn(),
-  find: jest.fn(),
-  getDeviceInfo: jest.fn(),
-  getDoNotDisturb: jest.fn(),
-  setDoNotDisturb: jest.fn(),
-  disableDoNotDisturb: jest.fn(),
-  getRoomMap: jest.fn(),
-  getSerialNumber: jest.fn(),
-  getTimer: jest.fn(),
-  getWaterBoxMode: jest.fn(),
-  pause: jest.fn(),
+  activateCharging: vi.fn(),
+  activateCleaning: vi.fn(),
+  batteryLevel: vi.fn(),
+  changeFanSpeed: vi.fn(),
+  cleanRooms: vi.fn(),
+  cleanZones: vi.fn(),
+  fanSpeed: vi.fn(),
+  find: vi.fn(),
+  getDeviceInfo: vi.fn(),
+  getDoNotDisturb: vi.fn(),
+  setDoNotDisturb: vi.fn(),
+  disableDoNotDisturb: vi.fn(),
+  getRoomMap: vi.fn(),
+  getSerialNumber: vi.fn(),
+  getTimer: vi.fn(),
+  getWaterBoxMode: vi.fn(),
+  pause: vi.fn(),
   properties: {},
-  resetConsumable: jest.fn(),
-  resumeCleanRooms: jest.fn(),
-  sendToLocation: jest.fn(),
-  setRawProperty: jest.fn(),
-  setWaterBoxMode: jest.fn(),
-  setCleanMotorMode: jest.fn(),
-  cleanPresets: jest.fn().mockResolvedValue([]),
-  startDustCollection: jest.fn(),
-  stopDustCollection: jest.fn(),
-  startMopWash: jest.fn(),
-  stopMopWash: jest.fn(),
-  startMopDrying: jest.fn(),
-  stopMopDrying: jest.fn(),
-  matches: jest.fn(),
-  destroy: jest.fn(),
-  property: jest.fn(),
-  on: jest.fn(),
-  poll: jest.fn(),
-  state: jest.fn().mockReturnValue({}),
+  resetConsumable: vi.fn(),
+  resumeCleanRooms: vi.fn(),
+  sendToLocation: vi.fn(),
+  setRawProperty: vi.fn(),
+  setWaterBoxMode: vi.fn(),
+  setCleanMotorMode: vi.fn(),
+  cleanPresets: vi.fn().mockResolvedValue([]),
+  startDustCollection: vi.fn(),
+  stopDustCollection: vi.fn(),
+  startMopWash: vi.fn(),
+  stopMopWash: vi.fn(),
+  startMopDrying: vi.fn(),
+  stopMopDrying: vi.fn(),
+  matches: vi.fn(),
+  destroy: vi.fn(),
+  // Generic: vi.fn() can't infer it
+  property: vi.fn() as MiioDeviceMock["property"],
+  on: vi.fn(),
+  poll: vi.fn(),
+  state: vi.fn().mockReturnValue({}),
 };
 
 export const miio = {
   device: miioDevice,
-  createMock: () => ({
-    device: jest.fn().mockImplementation(() => miioDevice),
-    configureLogging: jest.fn(),
-    // Only robots of a Roborock app account have a Roborock connection
-    roborockApiOf: jest.fn().mockReturnValue(undefined),
-    // node-miio's own (pure functions of the state)
-    isCleaningState:
-      jest.requireActual<typeof import("node-miio")>("node-miio")
-        .isCleaningState,
-    isKnownVacuumState:
-      jest.requireActual<typeof import("node-miio")>("node-miio")
-        .isKnownVacuumState,
-    vacuumActivity:
-      jest.requireActual<typeof import("node-miio")>("node-miio")
-        .vacuumActivity,
-    // Same logic as node-miio's
-    isVacuum: (device: unknown) =>
-      typeof (device as { matches?: unknown })?.matches === "function" &&
-      (device as MiioDeviceMock).matches("type:vacuum"),
-  }),
+  createMock: async () => {
+    const actual =
+      await vi.importActual<typeof import("node-miio")>("node-miio");
+    return {
+      device: vi.fn().mockImplementation(() => miioDevice),
+      configureLogging: vi.fn(),
+      // Only robots of a Roborock app account have a Roborock connection
+      roborockApiOf: vi.fn().mockReturnValue(undefined),
+      // node-miio's own (pure functions of the state)
+      isCleaningState: actual.isCleaningState,
+      isKnownVacuumState: actual.isKnownVacuumState,
+      vacuumActivity: actual.vacuumActivity,
+      // Same logic as node-miio's
+      isVacuum: (device: unknown) =>
+        typeof (device as { matches?: unknown })?.matches === "function" &&
+        (device as MiioDeviceMock).matches("type:vacuum"),
+    };
+  },
 };
 
 // ============= HOMEBRIDGE MOCKS ================
 
 export const createHomebridgeMock = () =>
   ({
-    registerAccessory: jest.fn(),
+    registerAccessory: vi.fn(),
     hap: HapJs,
     // Platform methods
-    on: jest.fn(),
-    platformAccessory: jest.fn(),
-    registerPlatformAccessories: jest.fn(),
-    unregisterPlatformAccessories: jest.fn(),
-  }) as unknown as jest.Mocked<API>;
+    on: vi.fn(),
+    platformAccessory: vi.fn(),
+    registerPlatformAccessories: vi.fn(),
+    unregisterPlatformAccessories: vi.fn(),
+  }) as unknown as Mocked<API>;

@@ -1,15 +1,16 @@
+import { vi, type Mocked } from "vitest";
 import { MainService } from "./main_service";
 
-export type MainServiceMock = jest.Mocked<MainService>;
+export type MainServiceMock = Mocked<MainService>;
 
 export const createMainServiceMock = (): MainServiceMock => {
-  const mainServiceMock: jest.Mocked<Pick<MainService, keyof MainService>> = {
+  const mainServiceMock: Mocked<Pick<MainService, keyof MainService>> = {
     cachedState: new Map(),
-    init: jest.fn(),
+    init: vi.fn(),
     services: [],
-    getCleaning: jest.fn(),
-    setCleaning: jest.fn(),
-    setSpeed: jest.fn(),
+    getCleaning: vi.fn(),
+    setCleaning: vi.fn(),
+    setSpeed: vi.fn(),
   };
 
   return mainServiceMock as MainServiceMock;

@@ -1,3 +1,4 @@
+import { describe, test, expect } from "vitest";
 import { VACUUM_STATES } from "node-miio";
 import { ErrorState, OperationalState, PowerSource } from "./constants";
 import {

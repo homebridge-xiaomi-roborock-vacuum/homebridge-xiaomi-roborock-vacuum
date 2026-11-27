@@ -1,3 +1,13 @@
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock,
+  type MockInstance,
+} from "vitest";
 import { HAP, Service } from "homebridge";
 import { Subject } from "rxjs";
 import * as HapJs from "@homebridge/hap-nodejs";
@@ -16,7 +26,7 @@ describe("CareService", () => {
   describe("legacyCareSensors", () => {
     let careService: CareService;
     let deviceManagerMock: DeviceManagerMock;
-    let fanServices: jest.Mock;
+    let fanServices: Mock;
     let hap: HAP;
 
     beforeEach(() => {
@@ -26,7 +36,7 @@ describe("CareService", () => {
       deviceManagerMock = createDeviceManagerMock();
       deviceManagerMock.property.mockReturnValue(10);
 
-      fanServices = jest.fn();
+      fanServices = vi.fn();
       const fan = {
         get services() {
           return fanServices();
@@ -47,8 +57,8 @@ describe("CareService", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
-      jest.resetAllMocks();
+      vi.clearAllMocks();
+      vi.resetAllMocks();
     });
 
     test("fan is not called", () => {
@@ -75,8 +85,8 @@ describe("CareService", () => {
   describe("nativeCareSensors", () => {
     let careService: CareService;
     let deviceManagerMock: DeviceManagerMock;
-    let fanServices: jest.Mock;
-    let fanGetCaracteristicSpy: jest.SpyInstance;
+    let fanServices: Mock;
+    let fanGetCaracteristicSpy: MockInstance;
     let hap: HAP;
 
     beforeEach(() => {
@@ -87,14 +97,14 @@ describe("CareService", () => {
       deviceManagerMock = createDeviceManagerMock();
       deviceManagerMock.property.mockReturnValue(10);
 
-      fanServices = jest.fn().mockImplementation(() => {
+      fanServices = vi.fn().mockImplementation(() => {
         const fan = new hbMock.hap.Service.Fan();
         const originalGetCharacteristic = fan.getCharacteristic.bind(fan);
-        fanGetCaracteristicSpy = jest
+        fanGetCaracteristicSpy = vi
           .spyOn(fan, "getCharacteristic")
           .mockImplementation((...args) => {
             const result = originalGetCharacteristic(...args);
-            jest.spyOn(result!, "onGet");
+            vi.spyOn(result!, "onGet");
             return result;
           });
         return [fan];
@@ -196,11 +206,11 @@ describe("CareService", () => {
         key: "state",
         value: "charging",
       });
-      await jest.advanceTimersByTimeAsync(1000);
+      await vi.advanceTimersByTimeAsync(1000);
     };
 
     beforeEach(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       hap = HapJs;
       log = getLoggerMock();
       fan = new hap.Service.Fan("Robot");
@@ -217,8 +227,8 @@ describe("CareService", () => {
     });
 
     afterEach(() => {
-      jest.useRealTimers();
-      jest.resetAllMocks();
+      vi.useRealTimers();
+      vi.resetAllMocks();
     });
 
     test("HomeKit is updated after each poll", async () => {

@@ -1,9 +1,10 @@
+import { describe, test, expect, vi } from "vitest";
 import type { VacuumDevice } from "node-miio";
 import { supports } from "./supports";
 
 describe("supports", () => {
   const device = {
-    cleanZones: jest.fn(),
+    cleanZones: vi.fn(),
     notAFunction: 42,
   } as unknown as VacuumDevice;
 

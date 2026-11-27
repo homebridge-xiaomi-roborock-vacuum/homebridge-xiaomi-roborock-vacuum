@@ -1,7 +1,17 @@
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type MockInstance,
+  type Mocked,
+} from "vitest";
 import type { API, Logging } from "homebridge";
 import { Categories } from "@homebridge/hap-nodejs";
 import { BehaviorSubject } from "rxjs";
-import os from "node:os";
+import os, { networkInterfaces } from "node:os";
 
 import { createHomebridgeMock, miio } from "../test.mocks";
 import "./platform.test.mock";
@@ -14,36 +24,46 @@ import {
 import { ACCESSORY_NAME } from "../constants";
 import { applyConfigDefaults } from "../services";
 
+// `platform.ts` imports `networkInterfaces` itself: spying on `os` doesn't reach it
+vi.mock("node:os", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:os")>();
+  return {
+    ...actual,
+    default: actual,
+    networkInterfaces: vi.fn(actual.networkInterfaces),
+  };
+});
+
 function newAccessory(): XiaomiRoborockVacuumPlatformAccessory {
   const name = "test";
   const uuid = "test-test";
   return {
     context: { name },
-    on: jest.fn(),
-    emit: jest.fn(),
+    on: vi.fn(),
+    emit: vi.fn(),
     displayName: name,
     UUID: uuid,
     category: Categories.FAN,
     services: [],
-    addListener: jest.fn(),
-    addService: jest.fn(),
+    addListener: vi.fn(),
+    addService: vi.fn(),
   } as unknown as XiaomiRoborockVacuumPlatformAccessory;
 }
 
 describe("XiaomiRoborockVacuumPlatform", () => {
-  let homebridge: jest.Mocked<API>;
-  let consoleErrorSpy: jest.SpyInstance;
-  let consoleWarnSpy: jest.SpyInstance;
-  let consoleDebugSpy: jest.SpyInstance;
+  let homebridge: Mocked<API>;
+  let consoleErrorSpy: MockInstance;
+  let consoleWarnSpy: MockInstance;
+  let consoleDebugSpy: MockInstance;
   const log: Logging = console as unknown as Logging;
 
   beforeEach(() => {
     homebridge = createHomebridgeMock();
     // Silencing the logger in the tests to reduce noise.
-    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
-    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
-    jest.spyOn(console, "info").mockImplementation();
-    consoleDebugSpy = jest.spyOn(console, "debug").mockImplementation();
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(console, "info").mockImplementation(() => {});
+    consoleDebugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
 
     miio.device.find.mockRejectedValue(
       new Error("Something went terribly wrong")
@@ -51,7 +71,7 @@ describe("XiaomiRoborockVacuumPlatform", () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("returns the dynamic platform class", () => {
@@ -169,7 +189,9 @@ describe("XiaomiRoborockVacuumPlatform", () => {
   describe('without HomeKit services (serviceType: "vacuum" without extras)', () => {
     const startWithoutServices = (cached: boolean) => {
       XiaomiRoborockVacuumPlatformAccessoryInitializerMock.mockImplementationOnce(
-        () => ({ initialized$: new BehaviorSubject(false) })
+        function () {
+          return { initialized$: new BehaviorSubject(false) };
+        }
       );
       homebridge.platformAccessory.mockImplementationOnce(newAccessory);
       const platform = new XiaomiRoborockVacuumPlatform(
@@ -224,11 +246,11 @@ describe("XiaomiRoborockVacuumPlatform", () => {
       externalsOnly = false as boolean | null,
       addresses = [ipv4, ipv6],
     } = {}) => {
-      jest.spyOn(os, "networkInterfaces").mockReturnValue({ eth0: addresses });
+      vi.mocked(networkInterfaces).mockReturnValue({ eth0: addresses });
       Object.assign(homebridge, {
-        isMatterEnabled: jest.fn(() => matter),
+        isMatterEnabled: vi.fn(() => matter),
         isMatterExternalsOnly:
-          externalsOnly === null ? undefined : jest.fn(() => externalsOnly),
+          externalsOnly === null ? undefined : vi.fn(() => externalsOnly),
       });
       homebridge.platformAccessory.mockImplementation(newAccessory);
       new XiaomiRoborockVacuumPlatform(
@@ -277,7 +299,7 @@ describe("XiaomiRoborockVacuumPlatform", () => {
   });
 
   test("gets the IP and token of the robots configured with their did, or without a token, from the Xiaomi Cloud", async () => {
-    const locate = jest
+    const locate = vi
       .spyOn(CloudService.prototype, "locate")
       .mockImplementation(async ({ did, ip }) => {
         if (did === "123") return { ip: "4.4.4.4", token: "did-token" };
@@ -317,10 +339,10 @@ describe("XiaomiRoborockVacuumPlatform", () => {
   });
 
   test("a robot whose token can't be initialized is reported, without failing the others", async () => {
-    jest.spyOn(CloudService.prototype, "locate").mockResolvedValue(undefined);
+    vi.spyOn(CloudService.prototype, "locate").mockResolvedValue(undefined);
     homebridge.platformAccessory.mockImplementation(newAccessory);
     XiaomiRoborockVacuumPlatformAccessoryInitializerMock.mockImplementationOnce(
-      () => {
+      function () {
         throw new Error("You must provide a token of the vacuum cleaner");
       }
     );
@@ -338,7 +360,7 @@ describe("XiaomiRoborockVacuumPlatform", () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Failed to initialize the vacuum "not-in-the-account": You must provide a token of the vacuum cleaner'
     );
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   test("robots configured with their duid use the Roborock service (and are reported without the roborock option)", async () => {

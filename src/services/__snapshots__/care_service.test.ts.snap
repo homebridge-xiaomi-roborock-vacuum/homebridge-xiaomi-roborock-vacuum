@@ -1,41 +1,41 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CareService legacyCareSensors the custom Care service characteristics call all getters 1`] = `0.009259259259259259`;
+exports[`CareService > legacyCareSensors > the custom Care service characteristics call all getters 1`] = `0.009259259259259259`;
 
-exports[`CareService legacyCareSensors the custom Care service characteristics call all getters 2`] = `0.001851851851851852`;
+exports[`CareService > legacyCareSensors > the custom Care service characteristics call all getters 2`] = `0.001851851851851852`;
 
-exports[`CareService legacyCareSensors the custom Care service characteristics call all getters 3`] = `0.001388888888888889`;
+exports[`CareService > legacyCareSensors > the custom Care service characteristics call all getters 3`] = `0.001388888888888889`;
 
-exports[`CareService legacyCareSensors the custom Care service characteristics call all getters 4`] = `0.000925925925925926`;
+exports[`CareService > legacyCareSensors > the custom Care service characteristics call all getters 4`] = `0.000925925925925926`;
 
-exports[`CareService nativeCareSensors handles -1 responses 1`] = `false`;
+exports[`CareService > nativeCareSensors > handles -1 responses 1`] = `false`;
 
-exports[`CareService nativeCareSensors handles -1 responses 2`] = `100`;
+exports[`CareService > nativeCareSensors > handles -1 responses 2`] = `100`;
 
-exports[`CareService nativeCareSensors handles -1 responses 3`] = `false`;
+exports[`CareService > nativeCareSensors > handles -1 responses 3`] = `false`;
 
-exports[`CareService nativeCareSensors handles -1 responses 4`] = `100`;
+exports[`CareService > nativeCareSensors > handles -1 responses 4`] = `100`;
 
-exports[`CareService nativeCareSensors handles -1 responses 5`] = `false`;
+exports[`CareService > nativeCareSensors > handles -1 responses 5`] = `false`;
 
-exports[`CareService nativeCareSensors handles -1 responses 6`] = `100`;
+exports[`CareService > nativeCareSensors > handles -1 responses 6`] = `100`;
 
-exports[`CareService nativeCareSensors handles -1 responses 7`] = `false`;
+exports[`CareService > nativeCareSensors > handles -1 responses 7`] = `false`;
 
-exports[`CareService nativeCareSensors handles -1 responses 8`] = `100`;
+exports[`CareService > nativeCareSensors > handles -1 responses 8`] = `100`;
 
-exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 1`] = `false`;
+exports[`CareService > nativeCareSensors > the FilterMaintenance services' characteristics call all getters 1`] = `false`;
 
-exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 2`] = `99.99074074074075`;
+exports[`CareService > nativeCareSensors > the FilterMaintenance services' characteristics call all getters 2`] = `99.99074074074075`;
 
-exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 3`] = `false`;
+exports[`CareService > nativeCareSensors > the FilterMaintenance services' characteristics call all getters 3`] = `false`;
 
-exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 4`] = `99.99814814814815`;
+exports[`CareService > nativeCareSensors > the FilterMaintenance services' characteristics call all getters 4`] = `99.99814814814815`;
 
-exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 5`] = `false`;
+exports[`CareService > nativeCareSensors > the FilterMaintenance services' characteristics call all getters 5`] = `false`;
 
-exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 6`] = `99.99861111111112`;
+exports[`CareService > nativeCareSensors > the FilterMaintenance services' characteristics call all getters 6`] = `99.99861111111112`;
 
-exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 7`] = `false`;
+exports[`CareService > nativeCareSensors > the FilterMaintenance services' characteristics call all getters 7`] = `false`;
 
-exports[`CareService nativeCareSensors the FilterMaintenance services' characteristics call all getters 8`] = `99.99907407407407`;
+exports[`CareService > nativeCareSensors > the FilterMaintenance services' characteristics call all getters 8`] = `99.99907407407407`;

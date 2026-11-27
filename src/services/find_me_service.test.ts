@@ -1,3 +1,4 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
@@ -32,7 +33,7 @@ describe("FindMeService", () => {
 
   afterEach(() => {
     (deviceManagerMock.stateChanged$ as Subject<unknown>).complete();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test("returns a service", () => {
@@ -67,9 +68,9 @@ describe("FindMeService", () => {
   });
 
   test("onSet (with failure)", async () => {
-    jest
-      .spyOn(deviceManagerMock.device, "find")
-      .mockRejectedValue(new Error("Something went terribly wrong"));
+    vi.spyOn(deviceManagerMock.device, "find").mockRejectedValue(
+      new Error("Something went terribly wrong")
+    );
     const [service] = findMeService.services;
     await expect(
       service.getCharacteristic(hap.Characteristic.On).handleSetRequest(true)

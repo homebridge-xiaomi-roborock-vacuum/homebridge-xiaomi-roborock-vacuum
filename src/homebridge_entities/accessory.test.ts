@@ -1,9 +1,20 @@
 "use strict";
 
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock,
+  type MockInstance,
+  type Mocked,
+} from "vitest";
 import { API, Logging } from "homebridge";
 import { Subject } from "rxjs";
 
-jest.useFakeTimers();
+vi.useFakeTimers();
 
 import { createHomebridgeMock, miio } from "../test.mocks";
 import { deviceManagerMock } from "./accessory.test.mock";
@@ -11,23 +22,23 @@ import { deviceManagerMock } from "./accessory.test.mock";
 import { XiaomiRoborockVacuumAccessory } from "./accessory";
 
 describe("XiaomiRoborockVacuum", () => {
-  let homebridge: jest.Mocked<API>;
-  let consoleErrorSpy: jest.SpyInstance;
-  let consoleWarnSpy: jest.SpyInstance;
-  let consoleDebugSpy: jest.SpyInstance;
+  let homebridge: Mocked<API>;
+  let consoleErrorSpy: MockInstance;
+  let consoleWarnSpy: MockInstance;
+  let consoleDebugSpy: MockInstance;
   const log: Logging = console as unknown as Logging;
 
   beforeEach(() => {
     homebridge = createHomebridgeMock();
     // Silencing the logger in the tests to reduce noise.
-    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
-    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
-    jest.spyOn(console, "info").mockImplementation();
-    consoleDebugSpy = jest.spyOn(console, "debug").mockImplementation();
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(console, "info").mockImplementation(() => {});
+    consoleDebugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("Returns the accessory class", () => {
@@ -266,7 +277,7 @@ describe("XiaomiRoborockVacuum", () => {
     miio.device.find.mockRejectedValue(
       new Error("Something went terribly wrong")
     );
-    const identifySpy = jest.spyOn(client["pluginServices"].findMe, "identify");
+    const identifySpy = vi.spyOn(client["pluginServices"].findMe, "identify");
     expect(client.identify()).toBeUndefined();
     expect(identifySpy).toHaveBeenCalledTimes(1);
   });
@@ -281,7 +292,7 @@ describe("XiaomiRoborockVacuum", () => {
   });
 
   test("errorChanged$ (known error)", async () => {
-    (miio.device.setRawProperty as jest.Mock).mockRejectedValue(
+    (miio.device.setRawProperty as Mock).mockRejectedValue(
       new Error("Something went terribly wrong")
     );
 

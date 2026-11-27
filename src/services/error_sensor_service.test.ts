@@ -1,3 +1,4 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
@@ -28,7 +29,7 @@ describe("ErrorSensorService", () => {
 
   afterEach(() => {
     (deviceManagerMock.errorChanged$ as Subject<unknown>).complete();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const occupancy = () =>
@@ -43,7 +44,7 @@ describe("ErrorSensorService", () => {
   });
 
   test("detected while the robot reports an error, every time", async () => {
-    const spy = jest.spyOn(occupancy(), "updateValue");
+    const spy = vi.spyOn(occupancy(), "updateValue");
     const errors$ = deviceManagerMock.errorChanged$ as Subject<unknown>;
     errors$.next({ id: 8, description: "Device stuck" });
     await expect(occupancy().handleGetRequest()).resolves.toBe(1);

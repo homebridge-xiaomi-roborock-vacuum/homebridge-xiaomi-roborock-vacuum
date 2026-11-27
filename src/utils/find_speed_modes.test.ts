@@ -1,3 +1,4 @@
+import { describe, test, expect } from "vitest";
 import { resolveVacuumModes, vacuumModels } from "node-miio";
 import { findSpeedModes, fromReportedModes } from "./find_speed_modes";
 

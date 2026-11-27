@@ -1,3 +1,4 @@
+import { describe, test, expect } from "vitest";
 import schema from "../config.schema.json";
 import { ACCESSORY_NAME } from "./constants";
 

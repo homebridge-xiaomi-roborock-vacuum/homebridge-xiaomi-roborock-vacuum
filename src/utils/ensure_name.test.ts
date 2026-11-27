@@ -1,14 +1,18 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import * as hap from "@homebridge/hap-nodejs";
 import { ensureName } from "./ensure_name";
 
 describe("ensureName", () => {
-  const getItemSpy = jest.spyOn(hap.HAPStorage.storage(), "getItem");
-  const setItemSpy = jest.spyOn(hap.HAPStorage.storage(), "setItemSync");
+  const getItemSpy = vi.spyOn(hap.HAPStorage.storage(), "getItem");
+  const setItemSpy = vi.spyOn(hap.HAPStorage.storage(), "setItemSync");
 
   const service = new hap.Service.Switch("test", "test");
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
+    // Nothing is stored: a reset spy calls the real storage again (unlike Jest)
+    getItemSpy.mockReturnValue(undefined);
+    setItemSpy.mockReturnValue(undefined);
   });
 
   afterEach(() => {
@@ -18,7 +22,7 @@ describe("ensureName", () => {
   });
 
   test("sets the default name", () => {
-    const setCharacteristicSpy = jest.spyOn(service, "setCharacteristic");
+    const setCharacteristicSpy = vi.spyOn(service, "setCharacteristic");
     ensureName(hap, service, "custom test");
     expect(setCharacteristicSpy).toHaveBeenCalledTimes(1);
     expect(setCharacteristicSpy).toHaveBeenCalledWith(
@@ -30,7 +34,7 @@ describe("ensureName", () => {
 
   test("does not set the default name", () => {
     getItemSpy.mockReturnValueOnce("hi there!");
-    const setCharacteristicSpy = jest.spyOn(service, "setCharacteristic");
+    const setCharacteristicSpy = vi.spyOn(service, "setCharacteristic");
     ensureName(hap, service, "custom test");
     expect(setCharacteristicSpy).toHaveBeenCalledTimes(0);
     expect(setItemSpy).toHaveBeenCalledTimes(0);

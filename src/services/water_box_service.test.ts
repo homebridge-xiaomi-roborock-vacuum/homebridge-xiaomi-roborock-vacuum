@@ -1,3 +1,4 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { findSpeedModesMock } from "./water_box_service.test.mock";
@@ -81,9 +82,7 @@ describe("WaterBoxService", () => {
 
     test("should return rotation speed 0 and ON as false (actually off)", async () => {
       findSpeedModesMock.mockReturnValueOnce({ waterspeed: GEN1_WATER });
-      deviceManagerMock.device.getWaterBoxMode = jest
-        .fn()
-        .mockResolvedValue(200);
+      deviceManagerMock.device.getWaterBoxMode = vi.fn().mockResolvedValue(200);
       const service = waterboxService.services[0];
       await expect(
         service.getCharacteristic(hap.Characteristic.On)["getHandler"]()
@@ -98,7 +97,7 @@ describe("WaterBoxService", () => {
     test("should return rotation speed 33 and ON as true", async () => {
       findSpeedModesMock.mockReturnValueOnce({ waterspeed: GEN1_WATER });
       findSpeedModesMock.mockReturnValueOnce({ waterspeed: GEN1_WATER });
-      deviceManagerMock.device!.getWaterBoxMode = jest
+      deviceManagerMock.device!.getWaterBoxMode = vi
         .fn()
         .mockResolvedValue(201);
       const service = waterboxService.services[0];

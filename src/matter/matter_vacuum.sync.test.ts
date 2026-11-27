@@ -1,4 +1,14 @@
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mocked,
+} from "vitest";
 import type { MatterAPI } from "homebridge";
+import * as nodeMiio from "node-miio";
 import type { MiotSpec } from "node-miio";
 import type { Subscription } from "rxjs";
 import { applyConfigDefaults } from "../services/config_service";
@@ -10,12 +20,11 @@ import { OperationalState, RunMode } from "./constants";
 import { MatterVacuum } from "./matter_vacuum";
 
 // The real node-miio, except for the connection: `device()` returns a MIoT vacuum that answers from `robot`
-jest.mock("node-miio", () => ({
-  ...jest.requireActual<typeof import("node-miio")>("node-miio"),
-  device: jest.fn(),
+vi.mock("node-miio", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("node-miio")>()),
+  device: vi.fn(),
 }));
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const miio = require("node-miio") as jest.Mocked<typeof import("node-miio")>;
+const miio = vi.mocked(nodeMiio);
 
 /** The robot's MIoT properties, by `siid.piid` */
 const robot: Record<string, unknown> = {};
@@ -74,7 +83,7 @@ const spec = {
 } as unknown as MiotSpec;
 
 function createRobot() {
-  const call = jest.fn(async (method: string, params: unknown) => {
+  const call = vi.fn(async (method: string, params: unknown) => {
     if (method !== "get_properties") {
       throw new Error(`Unexpected call to "${method}"`);
     }
@@ -88,7 +97,7 @@ function createRobot() {
     );
   });
   const handle = {
-    ref: { release: jest.fn() },
+    ref: { release: vi.fn() },
     // `connected`: otherwise the device manager reconnects on every poll
     api: { id: 1234, model: "xiaomi.vacuum.d101", call, connected: true },
   };
@@ -97,7 +106,7 @@ function createRobot() {
 
 describe("MatterVacuum, following a real node-miio vacuum", () => {
   const log = getLoggerMock();
-  let matter: jest.Mocked<MatterAPI>;
+  let matter: Mocked<MatterAPI>;
   let deviceManager: DeviceManager;
   let vacuum: MatterVacuum;
 
@@ -118,13 +127,13 @@ describe("MatterVacuum, following a real node-miio vacuum", () => {
     Object.assign(robot, { "2.2": 14, "3.1": 80 });
     miio.device.mockResolvedValue(createRobot() as never);
     matter = {
-      uuid: { generate: jest.fn((id: string) => `uuid:${id}`) },
+      uuid: { generate: vi.fn((id: string) => `uuid:${id}`) },
       deviceTypes: { RoboticVacuumCleaner: { name: "RoboticVacuumCleaner" } },
       status: {},
-      registerPlatformAccessories: jest.fn().mockResolvedValue(undefined),
-      updateAccessoryState: jest.fn().mockResolvedValue(undefined),
-      getAccessoryState: jest.fn().mockResolvedValue(undefined),
-    } as unknown as jest.Mocked<MatterAPI>;
+      registerPlatformAccessories: vi.fn().mockResolvedValue(undefined),
+      updateAccessoryState: vi.fn().mockResolvedValue(undefined),
+      getAccessoryState: vi.fn().mockResolvedValue(undefined),
+    } as unknown as Mocked<MatterAPI>;
 
     deviceManager = new DeviceManager(createHomebridgeMock().hap, log, {
       ip: "192.168.0.1",
