@@ -42,7 +42,7 @@
   "main": "dist/index.js",
   "engines": {
     "homebridge": "^2.3.0",
-    "node": "^22.12.0 || ^24 || ^26"
+    "node": "^22.13.0 || ^24 || ^26"
   },
   "scripts": {
     "clean": "rimraf ./dist",
