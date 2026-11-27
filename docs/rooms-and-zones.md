@@ -76,8 +76,7 @@ The rooms, zones and spots belong to a map: a floor's room ids aren't the same a
 
 ## Scenes of the app
 
-`scenes` adds a switch per scene of the robot's app: turning it on runs it, and the switch turns itself off. They run
-in the app's cloud, so a scene can do what a HomeKit scene can't: for example, clean several rooms one after the other,
+`scenes` adds a switch per scene of the robot's app: turning it on runs it. They run in the app's cloud, so a scene can do what a HomeKit scene can't: for example, clean several rooms one after the other,
 each with its own fan speed and mop settings, in a single run (a HomeKit scene starts a cleaning per room, and the
 robot goes back to the dock after each one).
 
@@ -86,3 +85,8 @@ robot goes back to the dock after each one).
   use the robot.
 
 Pick them in the [settings page](settings-page.md) (**Scenes**): it lists them from the account.
+
+The switch stays on while the robot works (cleaning, washing the mop, going back to the dock…) and turns off once it's
+done, so an automation can follow the end of the scene. The apps don't say when a scene ends: if the robot doesn't
+start within a minute (e.g. the scene only changes a setting), the switch turns off. Turning it off by hand only turns
+the switch off: the scene keeps running in the app.
