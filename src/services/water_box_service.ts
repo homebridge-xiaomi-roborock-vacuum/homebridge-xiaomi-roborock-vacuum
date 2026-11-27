@@ -1,5 +1,5 @@
 import { Service } from "homebridge";
-import { distinctUntilKeyChanged, filter } from "rxjs";
+import { combineLatest, distinctUntilKeyChanged, filter } from "rxjs";
 import { CoreContext } from "./types";
 import { findSpeedModes } from "../utils/find_speed_modes";
 import { ProductInfo } from "./product_info";
@@ -52,41 +52,43 @@ export class WaterBoxService extends PluginServiceClass {
           .updateValue(isCleaning as boolean);
       });
 
-    this.deviceManager.stateChanged$
-      .pipe(
+    // The water levels depend on the firmware: wait for it (the first state can arrive before it)
+    combineLatest([
+      this.deviceManager.stateChanged$.pipe(
         filter(({ key }) => key === "waterBoxMode"),
         distinctUntilKeyChanged("value")
-      )
-      .subscribe(({ value: speed }) => {
-        this.log.info(`MON changedWaterSpeed | WaterBoxMode is now ${speed}%`);
+      ),
+      this.productInfo.firmware$,
+    ]).subscribe(([{ value: speed }]) => {
+      this.log.info(`MON changedWaterSpeed | WaterBoxMode is now ${speed}%`);
 
-        const speedMode = this.findWaterSpeedModeFromMiio(speed);
-        const preset = this.deviceManager.reportedModes?.presets?.find(
-          ({ waterBoxMode }) => waterBoxMode === speed
+      const speedMode = this.findWaterSpeedModeFromMiio(speed);
+      const preset = this.deviceManager.reportedModes?.presets?.find(
+        ({ waterBoxMode }) => waterBoxMode === speed
+      );
+
+      if (typeof speedMode === "undefined" && preset) {
+        // e.g. SmartPlan: the robot picks the settings (a Matter clean mode, with `serviceType: "vacuum"`)
+        this.log.info(
+          `changedWaterSpeed | The robot's "${preset.name}" preset is on (water level ${speed})`
         );
-
-        if (typeof speedMode === "undefined" && preset) {
-          // e.g. SmartPlan: the robot picks the settings (a Matter clean mode, with `serviceType: "vacuum"`)
-          this.log.info(
-            `changedWaterSpeed | The robot's "${preset.name}" preset is on (water level ${speed})`
-          );
-        } else if (typeof speedMode === "undefined") {
-          this.log.warn(
-            `WAR changedWaterSpeed | Speed was changed to ${speed}%, this speed is not supported`
-          );
-        } else {
-          const { homekitTopLevel, name } = speedMode;
-          this.log.info(
-            `changedWaterSpeed | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`
-          );
-          this.service
-            .getCharacteristic(this.hap.Characteristic.RotationSpeed)
-            .updateValue(homekitTopLevel);
-          this.service
-            .getCharacteristic(this.hap.Characteristic.On)
-            .updateValue(homekitTopLevel > 0);
-        }
-      });
+      } else if (typeof speedMode === "undefined") {
+        this.log.warn(
+          `WAR changedWaterSpeed | Speed was changed to ${speed}%, this speed is not supported`
+        );
+      } else {
+        const { homekitTopLevel, name } = speedMode;
+        this.log.info(
+          `changedWaterSpeed | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`
+        );
+        this.service
+          .getCharacteristic(this.hap.Characteristic.RotationSpeed)
+          .updateValue(homekitTopLevel);
+        this.service
+          .getCharacteristic(this.hap.Characteristic.On)
+          .updateValue(homekitTopLevel > 0);
+      }
+    });
   }
 
   public get services() {

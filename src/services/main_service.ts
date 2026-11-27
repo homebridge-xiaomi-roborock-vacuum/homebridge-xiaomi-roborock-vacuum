@@ -1,5 +1,6 @@
 import { Service } from "homebridge";
 import {
+  combineLatest,
   distinctUntilChanged,
   distinctUntilKeyChanged,
   filter,
@@ -56,8 +57,8 @@ export class MainService extends PluginServiceClass {
 
   public async init() {
     if (this.config.serviceType === "fan") {
-      this.deviceManager.deviceConnected$.subscribe(() => {
-        // Now that we know the model, amend the steps in the Rotation speed (for better usability)
+      this.productInfo.firmware$.subscribe(() => {
+        // Now that we know the model and firmware, amend the steps in the Rotation speed (for better usability)
         const minStep =
           100 /
           (findSpeedModes(
@@ -71,37 +72,39 @@ export class MainService extends PluginServiceClass {
           .setProps({ minStep: minStep });
       });
 
-      this.deviceManager.stateChanged$
-        .pipe(
+      // The speed table depends on the firmware: wait for it (the first state can arrive before it)
+      combineLatest([
+        this.deviceManager.stateChanged$.pipe(
           filter(({ key }) => key === "fanSpeed"),
           distinctUntilKeyChanged("value")
-        )
-        .subscribe(({ value: speed }) => {
-          this.log.info(`MON changedSpeed | FanSpeed is now ${speed}%`);
-          const speedMode = this.findSpeedModeFromMiio(speed);
+        ),
+        this.productInfo.firmware$,
+      ]).subscribe(([{ value: speed }]) => {
+        this.log.info(`MON changedSpeed | FanSpeed is now ${speed}%`);
+        const speedMode = this.findSpeedModeFromMiio(speed);
 
-          const preset = this.deviceManager.reportedModes?.presets?.find(
-            ({ fanSpeed }) => fanSpeed === speed
+        const preset = this.deviceManager.reportedModes?.presets?.find(
+          ({ fanSpeed }) => fanSpeed === speed
+        );
+        if (typeof speedMode === "undefined" && preset) {
+          // e.g. SmartPlan: the robot picks the settings (a Matter clean mode, with `serviceType: "vacuum"`)
+          this.log.info(
+            `changedSpeed | The robot's "${preset.name}" preset is on (fan speed ${speed})`
           );
-          if (typeof speedMode === "undefined" && preset) {
-            // e.g. SmartPlan: the robot picks the settings (a Matter clean mode, with `serviceType: "vacuum"`)
-            this.log.info(
-              `changedSpeed | The robot's "${preset.name}" preset is on (fan speed ${speed})`
-            );
-          } else if (typeof speedMode === "undefined") {
-            this.log.warn(
-              `WAR changedSpeed | Speed was changed to ${speed}%, this speed is not supported`
-            );
-          } else {
-            const { homekitTopLevel, name } = speedMode;
-            this.log.info(
-              `changedSpeed | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`
-            );
-            this.service
-              .getCharacteristic(this.hap.Characteristic.RotationSpeed)
-              .updateValue(homekitTopLevel);
-          }
-        });
+        } else if (typeof speedMode === "undefined") {
+          this.log.warn(
+            `WAR changedSpeed | Speed was changed to ${speed}%, this speed is not supported`
+          );
+        } else {
+          const { homekitTopLevel, name } = speedMode;
+          this.log.info(
+            `changedSpeed | Speed was changed to ${speed}% (${name}), for HomeKit ${homekitTopLevel}%`
+          );
+          this.service
+            .getCharacteristic(this.hap.Characteristic.RotationSpeed)
+            .updateValue(homekitTopLevel);
+        }
+      });
     }
 
     this.deviceManager.stateChanged$
