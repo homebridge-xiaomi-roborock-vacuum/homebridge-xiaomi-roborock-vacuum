@@ -400,4 +400,120 @@ describe("XiaomiRoborockVacuumPlatform", () => {
       'The vacuum "saros" has a `duid` (Roborock app): enable the platform\'s `roborock` option.'
     );
   });
+
+  describe("room switches' accessories (#467)", () => {
+    const accessoryOf = (name: string, uuid: string, context = {}) =>
+      ({ displayName: name, UUID: uuid, context }) as never;
+
+    const registryFor = async (cached: unknown[] = []) => {
+      homebridge.platformAccessory.mockImplementation(function (
+        name: string,
+        uuid: string
+      ) {
+        return accessoryOf(name, uuid, {});
+      } as never);
+      const platform = new XiaomiRoborockVacuumPlatform(
+        log,
+        {
+          platform: ACCESSORY_NAME,
+          devices: [{ name: "robot", ip: "1.1.1.1", token: "t" }],
+        },
+        homebridge
+      );
+      cached.forEach((accessory) =>
+        platform.configureAccessory(accessory as never)
+      );
+      XiaomiRoborockVacuumPlatformAccessoryInitializerMock.mockClear();
+      homebridge.on.mock.calls.at(-1)![1]();
+      await new Promise(setImmediate);
+      const [call] =
+        XiaomiRoborockVacuumPlatformAccessoryInitializerMock.mock.calls;
+      return call[6] as import("./platform").RoomAccessories;
+    };
+    const uuidOf = (room: string) =>
+      homebridge.hap.uuid.generate(
+        `homebridge-xiaomi-roborock-vacuum-accessory-robot-${room}`
+      );
+
+    test("new accessories are named after the switch, and registered on commit", async () => {
+      const registry = await registryFor();
+      const kitchen = registry.accessoryFor(
+        "roomService16",
+        "cleaning Kitchen"
+      );
+      expect(kitchen).toMatchObject({
+        displayName: "cleaning Kitchen",
+        UUID: uuidOf("roomService16"),
+        context: { name: "robot", room: "roomService16" },
+      });
+      expect(homebridge.registerPlatformAccessories).not.toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        [kitchen]
+      );
+      registry.commit([kitchen]);
+      expect(homebridge.registerPlatformAccessories).toHaveBeenCalledWith(
+        "homebridge-xiaomi-roborock-vacuum",
+        ACCESSORY_NAME,
+        [kitchen]
+      );
+    });
+
+    test("cached ones are reused, and the ones no longer used are unregistered (only this vacuum's)", async () => {
+      const cachedKitchen = accessoryOf(
+        "cleaning Kitchen",
+        uuidOf("roomService16"),
+        {
+          name: "robot",
+          room: "roomService16",
+        }
+      );
+      const removedRoom = accessoryOf(
+        "cleaning Garage",
+        uuidOf("roomService20"),
+        {
+          name: "robot",
+          room: "roomService20",
+        }
+      );
+      const vacuum = accessoryOf("robot", "vacuum-uuid", { name: "robot" });
+      const registry = await registryFor([cachedKitchen, removedRoom, vacuum]);
+
+      const kitchen = registry.accessoryFor(
+        "roomService16",
+        "cleaning Kitchen"
+      );
+      expect(kitchen).toBe(cachedKitchen);
+      registry.commit([kitchen]);
+      expect(homebridge.registerPlatformAccessories).not.toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        [kitchen]
+      );
+      expect(homebridge.unregisterPlatformAccessories).toHaveBeenCalledWith(
+        "homebridge-xiaomi-roborock-vacuum",
+        ACCESSORY_NAME,
+        [removedRoom]
+      );
+    });
+
+    test("they're removed with their vacuum", () => {
+      const room = accessoryOf("cleaning Kitchen", "room-uuid", {
+        name: "gone",
+        room: "roomService16",
+      });
+      const platform = new XiaomiRoborockVacuumPlatform(
+        log,
+        { platform: ACCESSORY_NAME, devices: [] },
+        homebridge
+      );
+      platform.configureAccessory(room);
+      homebridge.on.mock.calls.at(-1)![1]();
+      expect(homebridge.unregisterPlatformAccessories).toHaveBeenCalledWith(
+        "homebridge-xiaomi-roborock-vacuum",
+        ACCESSORY_NAME,
+        [room]
+      );
+    });
+  });
 });

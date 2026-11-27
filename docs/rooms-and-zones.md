@@ -8,6 +8,10 @@ Turn on the room switches in the order they should be cleaned, then start the cl
 vacuum). With `roomTimeout`, the cleaning starts on its own after the last change. With the Matter vacuum, pick the
 rooms in the Home app instead.
 
+Each room switch (and its 2x / 3x repeats) is an accessory of its own, so you can put it in its room in the Home app
+(platform only; in the old `accessories` format, they're part of the vacuum). With the Matter vacuum, Siri understands
+the rooms too ("vacuum the kitchen"), which works better than the room switches.
+
 There are three ways to get the room IDs:
 
 - **From the map**, in the [settings page](settings-page.md): click each room to name it. It's saved as `rooms`.

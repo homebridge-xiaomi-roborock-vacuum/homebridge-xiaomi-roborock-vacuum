@@ -1,7 +1,7 @@
 "use strict";
 
 import { catchError, concatMap, filter } from "rxjs";
-import { AccessoryPlugin, API, Logging } from "homebridge";
+import { AccessoryPlugin, API, Logging, Service } from "homebridge";
 
 import { getLogger, Logger } from "../utils/logger";
 import { fromUiPlatformForm } from "../services/config_service";
@@ -320,7 +320,23 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
    * HomeBridge calls this method during initialization to fetch all the services exposed by this Accessory.
    * @returns {Service[]} The list of services (Switches, Fans, Occupancy Detectors, ...) set up by this accessory.
    */
-  public getServices() {
+  /**
+   * The room switches. On the platform, each one is an accessory of its own (see `getServices({ withoutRooms })`), so
+   * it can be put in its room in the Home app (#467).
+   */
+  public get roomSwitches(): Service[] {
+    return this.config.serviceType === "vacuum"
+      ? [] // The Matter vacuum has the rooms
+      : this.pluginServices.rooms.services;
+  }
+
+  /**
+   * @param options.withoutRooms Leave the room switches out (the platform exposes them as accessories of their own)
+   * @returns The services of the vacuum's accessory
+   */
+  public getServices({
+    withoutRooms = false,
+  }: { withoutRooms?: boolean } = {}) {
     this.log.debug(`DEB getServices`);
 
     if (this.config.serviceType === "vacuum") {
@@ -341,9 +357,9 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
 
     const firstService = mainService.services[0];
 
-    return Object.values(rest).reduce(
-      (acc, service) => {
-        if (!service) return acc;
+    return Object.entries(rest).reduce(
+      (acc, [name, service]) => {
+        if (!service || (withoutRooms && name === "rooms")) return acc;
         service.services.forEach((srv) => {
           // Explicitly declare all other services as non-primary
           if (srv.setPrimaryService) srv.setPrimaryService(false);

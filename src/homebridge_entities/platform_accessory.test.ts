@@ -9,7 +9,7 @@ import {
   type Mocked,
 } from "vitest";
 import type { API, Logging } from "homebridge";
-import { Service, Categories } from "@homebridge/hap-nodejs";
+import { Service, Categories, Characteristic } from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
 
 import { createHomebridgeMock, miio } from "../test.mocks";
@@ -41,6 +41,9 @@ function newAccessory(): XiaomiRoborockVacuumPlatformAccessory {
     removeService: vi.fn(),
     getServices: vi.fn(() => accessory.services),
     getServiceById: vi.fn(),
+    getService: vi.fn((type: typeof Service.AccessoryInformation) =>
+      accessory.services.find((s) => s instanceof type)
+    ),
   } as unknown as XiaomiRoborockVacuumPlatformAccessory;
   return accessory;
 }
@@ -454,6 +457,87 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
         token: "t",
       });
       expect(runnerOf({ ip: "1.1.1.1", token: "t" })).toBeUndefined();
+    });
+  });
+
+  describe("room switches (#467)", () => {
+    const start = async (withRegistry: boolean) => {
+      const instanceMock = createXiaomiRoborockVacuumAccessoryMock();
+      const kitchen = new Service.Switch("cleaning Kitchen", "roomService16");
+      const kitchen2x = new Service.Switch(
+        "cleaning Kitchen 2x",
+        "roomService16x2"
+      );
+      const info = new Service.AccessoryInformation("robot", "info");
+      info.setCharacteristic(Characteristic.Manufacturer, "Roborock");
+      instanceMock.getServices.mockReturnValue([info]);
+      Object.assign(instanceMock, { roomSwitches: [kitchen, kitchen2x] });
+      XiaomiRoborockVacuumAccessoryMock.mockImplementation(function () {
+        return instanceMock;
+      });
+      const roomAccessories = new Map<
+        string,
+        XiaomiRoborockVacuumPlatformAccessory
+      >();
+      const registry = {
+        accessoryFor: vi.fn((room: string) => {
+          const accessory = newAccessory();
+          accessory.services.splice(1); // Only the accessory information
+          roomAccessories.set(room, accessory);
+          return accessory;
+        }),
+        commit: vi.fn(),
+      };
+      new XiaomiRoborockVacuumPlatformAccessoryInitializer(
+        log,
+        { name: "robot", ip: "my.ip" },
+        homebridge,
+        newAccessory(),
+        undefined,
+        undefined,
+        withRegistry ? registry : undefined
+      );
+      (
+        deviceManagerMock.deviceConnected$ as unknown as Subject<MiioDevice>
+      ).next(miio.device);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      return { instanceMock, registry, roomAccessories, kitchen, kitchen2x };
+    };
+
+    test("each one gets an accessory of its own, so it can go in its room", async () => {
+      const { instanceMock, registry, roomAccessories, kitchen, kitchen2x } =
+        await start(true);
+      expect(instanceMock.getServices).toHaveBeenCalledWith({
+        withoutRooms: true,
+      });
+      expect(registry.accessoryFor.mock.calls).toEqual([
+        ["roomService16", "cleaning Kitchen"],
+        ["roomService16x2", "cleaning Kitchen 2x"],
+      ]);
+      const accessory = roomAccessories.get("roomService16")!;
+      expect(accessory.addService).toHaveBeenCalledWith(kitchen);
+      expect(kitchen.isPrimaryService).toBe(true);
+      expect(
+        roomAccessories.get("roomService16x2")!.addService
+      ).toHaveBeenCalledWith(kitchen2x);
+      const info = accessory.getService(Service.AccessoryInformation)!;
+      expect(info.getCharacteristic(Characteristic.Manufacturer).value).toBe(
+        "Roborock"
+      );
+      expect(info.getCharacteristic(Characteristic.SerialNumber).value).toBe(
+        "test roomService16"
+      );
+      expect(registry.commit).toHaveBeenCalledWith([
+        accessory,
+        roomAccessories.get("roomService16x2"),
+      ]);
+    });
+
+    test("without the platform's registry, they stay in the vacuum's accessory", async () => {
+      const { instanceMock } = await start(false);
+      expect(instanceMock.getServices).toHaveBeenCalledWith({
+        withoutRooms: false,
+      });
     });
   });
 });

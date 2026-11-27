@@ -160,6 +160,29 @@ describe("XiaomiRoborockVacuum", () => {
     expect(Object.keys(client["pluginServices"])).toMatchSnapshot();
   });
 
+  test("the room switches can be left out, to expose them as accessories of their own (#467)", () => {
+    const client = new XiaomiRoborockVacuumAccessory(
+      log,
+      {
+        ip: "192.168.0.1",
+        token: "TOKEN",
+        rooms: [{ id: "16", name: "Kitchen", repeats: [2] }],
+      },
+      homebridge
+    );
+    const names = (services: { displayName: string }[]) =>
+      services.map(({ displayName }) => displayName);
+    expect(names(client.roomSwitches)).toEqual([
+      "cleaning Kitchen",
+      "cleaning Kitchen 2x",
+    ]);
+    expect(names(client.getServices())).toContain("cleaning Kitchen");
+    const withoutRooms = names(client.getServices({ withoutRooms: true }));
+    expect(withoutRooms).not.toContain("cleaning Kitchen");
+    expect(withoutRooms).not.toContain("cleaning Kitchen 2x");
+    expect(withoutRooms.length).toBe(client.getServices().length - 2);
+  });
+
   describe('serviceType: "vacuum"', () => {
     test("legacy accessory: not available, falls back to the fan", () => {
       const client = new XiaomiRoborockVacuumAccessory(
@@ -194,6 +217,8 @@ describe("XiaomiRoborockVacuum", () => {
       );
       expect(client.getServices()).toStrictEqual([]);
       expect(client.roomList).toStrictEqual([{ id: "16", name: "Kitchen" }]);
+      // Nor room switches: the rooms are in the Matter vacuum
+      expect(client.roomSwitches).toStrictEqual([]);
     });
 
     test("platform: only the extras that Matter doesn't cover, with the accessory information", () => {
