@@ -36,6 +36,7 @@ export interface RoborockServiceDeps {
   getHomeData(session: RoborockSession): Promise<RoborockHomeData>;
   createMqtt(session: RoborockSession): RoborockMqttSession;
   connect(options: RoborockDeviceOptions): Promise<unknown>;
+  runRoutine(session: RoborockSession, id: number): Promise<void>;
 }
 
 const defaultDeps: RoborockServiceDeps = {
@@ -43,6 +44,7 @@ const defaultDeps: RoborockServiceDeps = {
   getHomeData: (session) => new RoborockWebApi(session).getHomeData(),
   createMqtt: (session) => new RoborockMqttSession(session.userData.rriot),
   connect: roborockDevice,
+  runRoutine: (session, id) => new RoborockWebApi(session).runRoutine(id),
 };
 
 export const ROBOROCK_LOGIN_HINT =
@@ -173,5 +175,28 @@ export class RoborockService {
         home.rooms.map((room) => [String(room.id), room.name])
       ),
     };
+  }
+
+  /**
+   * Runs a routine of the Roborock app.
+   *
+   * @param id The routine (from the plugin's settings)
+   * @throws If the account isn't available, or the routine didn't run
+   */
+  async runRoutine(id: number) {
+    const session = await this.getSession();
+    if (!session) {
+      throw new Error(
+        "Roborock: the account isn't available (see the warning above)"
+      );
+    }
+    try {
+      await this.deps.runRoutine(session, id);
+    } catch (error) {
+      if (error instanceof RoborockSessionExpiredError) {
+        this.log.warn(`Roborock: the session expired. ${ROBOROCK_LOGIN_HINT}`);
+      }
+      throw error;
+    }
   }
 }

@@ -59,6 +59,7 @@ function setup(
     }),
     createMqtt: vi.fn(() => mqtt),
     connect: vi.fn(async () => device),
+    runRoutine: vi.fn(),
   };
   const service = new RoborockService(
     log,
@@ -180,10 +181,14 @@ describe("RoborockService: other failures", () => {
 
 describe("RoborockService: default dependencies (node-miio)", () => {
   test("loads the session, the home data, and connects with node-miio", async () => {
+    const nodeMiioRunRoutine = vi.fn();
     const nodeMiio = {
       loadRoborockSession: vi.fn().mockResolvedValue(session),
       RoborockWebApi: vi.fn(function () {
-        return { getHomeData: vi.fn().mockResolvedValue(home) };
+        return {
+          getHomeData: vi.fn().mockResolvedValue(home),
+          runRoutine: nodeMiioRunRoutine,
+        };
       }),
       RoborockMqttSession: vi.fn(),
       roborockDevice: vi.fn().mockResolvedValue("device"),
@@ -208,6 +213,33 @@ describe("RoborockService: default dependencies (node-miio)", () => {
     expect(nodeMiio.roborockDevice).toHaveBeenCalledWith(
       expect.objectContaining({ duid: "duid-1", model: "roborock.vacuum.a296" })
     );
+    await new Service(log, { enabled: true }).runRoutine(7);
+    expect(nodeMiioRunRoutine).toHaveBeenCalledWith(7);
     vi.doUnmock("node-miio");
+  });
+
+  describe("runRoutine", () => {
+    test("runs it with the account's session", async () => {
+      const { service, deps } = setup();
+      await service.runRoutine(19799177);
+      expect(deps.runRoutine).toHaveBeenCalledWith(session, 19799177);
+    });
+
+    test("fails without a session", async () => {
+      await expect(
+        setup({ session: undefined }).service.runRoutine(1)
+      ).rejects.toThrow("the account isn't available");
+    });
+
+    test("an expired session is explained", async () => {
+      const { service, deps, log } = setup();
+      deps.runRoutine.mockRejectedValueOnce(new RoborockSessionExpiredError());
+      await expect(service.runRoutine(1)).rejects.toBeInstanceOf(
+        RoborockSessionExpiredError
+      );
+      expect(log.warn).toHaveBeenCalledWith(
+        expect.stringContaining("the session expired")
+      );
+    });
   });
 });

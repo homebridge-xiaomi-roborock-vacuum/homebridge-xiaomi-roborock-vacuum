@@ -36,6 +36,7 @@ function setup(
     getDevices: vi.fn(async () => options.devices ?? [cloudDevice({})]),
     getMapFileUrl: vi.fn(),
     download: vi.fn(),
+    runScene: vi.fn(),
   };
   const watcher = new EventEmitter() as unknown as MapWatcher;
   const deps = {
@@ -243,6 +244,32 @@ describe("CloudService", () => {
         ip: "10.0.0.1",
         token: "tok1",
       });
+    });
+  });
+
+  describe("runScene", () => {
+    test("runs it in the robot's server", async () => {
+      const { service, cloud } = setup({
+        devices: [cloudDevice({ did: "7", server: "sg" })],
+      });
+      await service.runScene("2075", { did: "7" });
+      expect(cloud.runScene).toHaveBeenCalledWith("sg", "2075");
+    });
+
+    test("the configured server is used as is", async () => {
+      const { service, cloud } = setup({ server: "de" });
+      await service.runScene("2075", { did: "404" });
+      expect(cloud.runScene).toHaveBeenCalledWith("de", "2075");
+      expect(cloud.getDevices).not.toHaveBeenCalled();
+    });
+
+    test("fails without a session, or when the robot isn't in the account", async () => {
+      await expect(
+        setup({ session: undefined }).service.runScene("1", { did: "1" })
+      ).rejects.toThrow("the account isn't available");
+      await expect(
+        setup().service.runScene("1", { did: "404" })
+      ).rejects.toThrow("the robot is not in your Xiaomi account");
     });
   });
 });

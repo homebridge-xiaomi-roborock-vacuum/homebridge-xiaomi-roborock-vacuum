@@ -20,6 +20,8 @@ import {
   GoToService,
   GoToSpotsService,
   MapsService,
+  ScenesService,
+  type SceneRunner,
   GoToDockService,
   DockService,
   DoNotDisturbService,
@@ -50,6 +52,7 @@ const EXTRA_SERVICES_IN_VACUUM_MODE = new Set<keyof PluginServices>([
   "goTo",
   "goToSpots",
   "maps",
+  "scenes",
   "mopDock",
   "waterTank",
   "zones",
@@ -70,6 +73,7 @@ interface PluginServices {
   goTo?: GoToService;
   goToSpots?: GoToSpotsService;
   maps?: MapsService;
+  scenes?: ScenesService;
   goToDock?: GoToDockService;
   dock?: DockService;
   cleaningSensor?: CleaningSensorService;
@@ -95,7 +99,9 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
     api: API,
     deviceManager?: DeviceManager,
     /** The Xiaomi Cloud (platform mode, with the `cloud` option) */
-    private readonly cloud?: CloudService
+    private readonly cloud?: CloudService,
+    /** Runs a scene of the robot's app account (platform mode, with the `cloud` or `roborock` option) */
+    private readonly runScene?: SceneRunner
   ) {
     // Legacy "accessory" mode only: an `accessories` block edited with the Homebridge UI's platform form (#1248)
     const uiForm = deviceManager ? undefined : fromUiPlatformForm(config);
@@ -237,6 +243,9 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
         ? new GoToSpotsService(coreContext)
         : undefined,
       maps: config.maps?.length ? new MapsService(coreContext) : undefined,
+      scenes: config.scenes?.length
+        ? new ScenesService(coreContext, this.runScene)
+        : undefined,
       goToDock: config.goToDock ? new GoToDockService(coreContext) : undefined,
       dock: config.dock ? new DockService(coreContext) : undefined,
       cleaningSensor: config.cleaningSensor

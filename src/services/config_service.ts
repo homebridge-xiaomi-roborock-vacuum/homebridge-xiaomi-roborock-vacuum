@@ -19,6 +19,7 @@ import { MainServiceConfig } from "./main_service";
 import { DustBinConfig } from "./dust_bin_service";
 import { CurrentRoomConfig } from "./current_room_service";
 import { MapsConfig } from "./maps_service";
+import { ScenesConfig } from "./scenes_service";
 import { CleaningSensorConfig } from "./cleaning_sensor_service";
 
 export interface Config
@@ -44,7 +45,8 @@ export interface Config
     CareConfig,
     CurrentRoomConfig,
     MapsConfig,
-    CleaningSensorConfig {
+    CleaningSensorConfig,
+    ScenesConfig {
   /**
    * The name of the main service as it will show up in the Home App.
    */

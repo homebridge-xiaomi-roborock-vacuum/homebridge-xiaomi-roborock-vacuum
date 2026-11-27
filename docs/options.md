@@ -25,19 +25,20 @@ Each vacuum in `devices` takes these options. They're all in the Homebridge UI's
 
 **Switches**
 
-| Option                                 | Default                        | Description                                                                                                                                |
-| -------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `pause`, `pauseWord`                   | `false`, `"Pause"`             | A pause switch: on while the robot cleans. Turning it off pauses it, and on resumes it                                                     |
-| `findMe`, `findMeWord`                 | `false`, `"where are you"`     | A "find me" switch: the robot says "I'm here"                                                                                              |
-| `goToDock`, `goToDockWord`             | `false`, `"go to dock"`        | Sends the robot to the dock. It's on while the robot is on its way, and turning it off stops it                                            |
-| `goTo`, `goToWord`, `goToX`, `goToY`   | `false`, `"go to coordinates"` | Sends the robot to a spot (`goToX`, `goToY`, `25500` by default): see [Go to a spot](rooms-and-zones.md#go-to-a-spot)                      |
-| `goToSpots`, `goToSpotWord`            | `[]`, `"go to"`                | A switch per spot, `[{ "name", "x", "y" }]`: on sends the robot there, off sends it to the dock                                            |
-| `maps`, `mapWord`                      | `[]`, `"map"`                  | A switch per map, `[{ "name", "id" }]` (a floor) or `[{ "name", "savedAt" }]` (a backup): on loads it. See [Maps](rooms-and-zones.md#maps) |
-| `dustCollection`                       | `false`                        | Empty the dust bin in the auto-empty dock (e.g. S7+)                                                                                       |
-| `mopWash`                              | `false`                        | A button to wash the mop in the dock (e.g. S7 MaxV Ultra, S8 Pro Ultra)                                                                    |
-| `mopDrying`                            | `false`                        | Dry the mop in the dock (e.g. S8 Pro Ultra). It's on while the mop dries                                                                   |
-| `doNotDisturb`, `doNotDisturbWord`     | `false`, `"Do Not Disturb"`    | The robot's Do Not Disturb schedule (Roborock): no voice, dimmed lights, and the dock doesn't empty the dust bin                           |
-| `doNotDisturbStart`, `doNotDisturbEnd` |                                | The schedule (`"HH:mm"`) set when the Do Not Disturb switch turns on, e.g. `"00:00"` to `"23:59"`. Without them, the app's schedule        |
+| Option                                 | Default                        | Description                                                                                                                                                           |
+| -------------------------------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pause`, `pauseWord`                   | `false`, `"Pause"`             | A pause switch: on while the robot cleans. Turning it off pauses it, and on resumes it                                                                                |
+| `findMe`, `findMeWord`                 | `false`, `"where are you"`     | A "find me" switch: the robot says "I'm here"                                                                                                                         |
+| `goToDock`, `goToDockWord`             | `false`, `"go to dock"`        | Sends the robot to the dock. It's on while the robot is on its way, and turning it off stops it                                                                       |
+| `goTo`, `goToWord`, `goToX`, `goToY`   | `false`, `"go to coordinates"` | Sends the robot to a spot (`goToX`, `goToY`, `25500` by default): see [Go to a spot](rooms-and-zones.md#go-to-a-spot)                                                 |
+| `goToSpots`, `goToSpotWord`            | `[]`, `"go to"`                | A switch per spot, `[{ "name", "x", "y" }]`: on sends the robot there, off sends it to the dock                                                                       |
+| `scenes`                               | `[]`                           | A switch per scene of the app, `[{ "name", "id" }]`: on runs it, and it stays on while the robot works. See [Scenes of the app](rooms-and-zones.md#scenes-of-the-app) |
+| `maps`, `mapWord`                      | `[]`, `"map"`                  | A switch per map, `[{ "name", "id" }]` (a floor) or `[{ "name", "savedAt" }]` (a backup): on loads it. See [Maps](rooms-and-zones.md#maps)                            |
+| `dustCollection`                       | `false`                        | Empty the dust bin in the auto-empty dock (e.g. S7+)                                                                                                                  |
+| `mopWash`                              | `false`                        | A button to wash the mop in the dock (e.g. S7 MaxV Ultra, S8 Pro Ultra)                                                                                               |
+| `mopDrying`                            | `false`                        | Dry the mop in the dock (e.g. S8 Pro Ultra). It's on while the mop dries                                                                                              |
+| `doNotDisturb`, `doNotDisturbWord`     | `false`, `"Do Not Disturb"`    | The robot's Do Not Disturb schedule (Roborock): no voice, dimmed lights, and the dock doesn't empty the dust bin                                                      |
+| `doNotDisturbStart`, `doNotDisturbEnd` |                                | The schedule (`"HH:mm"`) set when the Do Not Disturb switch turns on, e.g. `"00:00"` to `"23:59"`. Without them, the app's schedule                                   |
 
 **Sensors**
 

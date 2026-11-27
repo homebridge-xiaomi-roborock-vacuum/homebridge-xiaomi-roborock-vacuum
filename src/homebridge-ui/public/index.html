@@ -365,6 +365,29 @@
   </div>
 </div>
 
+<div class="card xrv-card" id="scenes-card" hidden>
+  <div class="card-body">
+    <h5 class="card-title">Scenes of the app</h5>
+    <p class="xrv-muted mb-2">
+      A switch per scene: turning it on runs it in the app's cloud. Robots of
+      the Roborock app list their routines; robots of the Xiaomi Home app list
+      the manual scenes ("Tap to run") that use them.
+    </p>
+    <div class="form-inline mb-2">
+      <select class="form-control mr-2 mb-2" id="scenes-device"></select>
+      <button type="button" class="btn btn-primary mb-2" id="load-scenes">
+        Read the scenes
+      </button>
+    </div>
+    <div id="scenes-tools" hidden>
+      <div id="scenes-list"></div>
+      <button type="button" class="btn btn-primary" id="save-scenes">
+        Use these scenes
+      </button>
+    </div>
+  </div>
+</div>
+
 <p class="xrv-trademarks mt-3">
   Xiaomi, Xiaomi Home, Mi Home, Roborock and their logos are trademarks of their
   respective owners. They're shown only to tell which app each section is for:
@@ -492,6 +515,10 @@
     let roborockLoggedIn = false;
     function refreshMapCard() {
       $("map-card").hidden = !(xiaomiLoggedIn || roborockLoggedIn);
+      // The scenes come from one of the accounts too
+      $("scenes-card").hidden =
+        !(xiaomiLoggedIn || roborockLoggedIn) ||
+        $("scenes-device").options.length === 0;
     }
 
     async function refreshStatus() {
@@ -791,6 +818,8 @@
       fillDeviceSelect($("maps-device"));
       // Reading the maps needs no account with an IP and a token
       $("maps-card").hidden = $("maps-device").options.length === 0;
+      fillDeviceSelect($("scenes-device"));
+      refreshMapCard();
     }
 
     $("load-map").addEventListener("click", async () => {
@@ -1380,6 +1409,122 @@
       }
       await updateConfig(
         `${selected.length} map${selected.length === 1 ? "" : "s"} set for "${target.name}".`
+      );
+    });
+
+    // ---------- Scenes of the app ----------
+    let currentScenes; // { device, rows: [{ id, name, label, selected, gone? }] }
+
+    $("load-scenes").addEventListener("click", async () => {
+      const device = platformBlock().devices[Number($("scenes-device").value)];
+      if (!device) return;
+      homebridge.showSpinner();
+      try {
+        const { source, scenes } = await homebridge.request(
+          "/scenes",
+          deviceRequest(device)
+        );
+        showScenes(device, source, scenes);
+      } catch (err) {
+        homebridge.toast.error(errorMessage(err), "Couldn't read the scenes");
+      } finally {
+        homebridge.hideSpinner();
+      }
+    });
+
+    function showScenes(device, source, scenes) {
+      const saved = Array.isArray(device.scenes) ? device.scenes : [];
+      const savedScene = (id) => saved.find((s) => String(s.id) === id);
+      const app =
+        source === "roborock" ? "Roborock routine" : "Xiaomi Home scene";
+      const rows = scenes.map(({ id, name, enabled }) => ({
+        id,
+        name: savedScene(id)?.name ?? name,
+        label: `${app} "${name}"${enabled ? "" : " (disabled in the app)"}`,
+        selected: !!savedScene(id),
+      }));
+      // The configured scenes the app no longer has
+      for (const scene of saved) {
+        if (scenes.some((s) => s.id === String(scene.id))) continue;
+        rows.push({
+          id: String(scene.id),
+          name: scene.name || "",
+          label: "No longer in the app",
+          selected: true,
+          gone: true,
+        });
+      }
+      currentScenes = { device, rows };
+      renderScenes(source);
+      $("scenes-tools").hidden = false;
+    }
+
+    function renderScenes(source) {
+      const container = $("scenes-list");
+      container.replaceChildren();
+      const { rows } = currentScenes;
+      if (rows.length === 0) {
+        container.append(
+          el(
+            "p",
+            source === "roborock"
+              ? "This robot has no routines: create them in the Roborock app."
+              : 'No manual scene uses this robot: create one in the Xiaomi Home app ("Tap to run").',
+            "xrv-muted"
+          )
+        );
+      }
+      rows.forEach((row) => {
+        const line = el("div", undefined, "xrv-row");
+        const check = el("input");
+        check.type = "checkbox";
+        check.checked = row.selected;
+        const input = el(
+          "input",
+          undefined,
+          "form-control form-control-sm xrv-name"
+        );
+        input.type = "text";
+        input.placeholder = "Switch name";
+        input.value = row.name;
+        input.disabled = !row.selected;
+        check.addEventListener("change", () => {
+          row.selected = check.checked;
+          input.disabled = !row.selected;
+          if (row.selected) input.focus();
+        });
+        input.addEventListener("input", () => {
+          row.name = input.value;
+        });
+        line.append(
+          check,
+          input,
+          el("span", row.label, row.gone ? "text-warning" : "xrv-coords")
+        );
+        container.append(line);
+      });
+    }
+
+    $("save-scenes").addEventListener("click", async () => {
+      const { device, rows } = currentScenes;
+      const selected = rows.filter((row) => row.selected);
+      if (selected.some((row) => !row.name.trim())) {
+        homebridge.toast.error(
+          "Name all the scenes you picked (or untick them)."
+        );
+        return;
+      }
+      const target = targetDevice(device);
+      if (selected.length) {
+        target.scenes = selected.map((row) => ({
+          name: row.name.trim(),
+          id: row.id,
+        }));
+      } else {
+        delete target.scenes;
+      }
+      await updateConfig(
+        `${selected.length} scene${selected.length === 1 ? "" : "s"} set for "${target.name}".`
       );
     });
 

@@ -22,6 +22,15 @@ function setup(options: { session?: typeof session } = { session }) {
     ]),
     getMapFileUrl: vi.fn(),
     download: vi.fn(),
+    getScenes: vi.fn().mockResolvedValue([
+      {
+        id: "2075222181387190272",
+        name: "Kitchen then bathroom",
+        enabled: true,
+        homeId: "749",
+        dids: ["1"],
+      },
+    ]),
   };
   const device = {
     getCloudMap: vi.fn().mockResolvedValue({
@@ -184,6 +193,36 @@ describe("custom UI handlers", () => {
       handlers["/map"]({ ip: "10.0.0.2", token: "abc", server: "de" })
     ).rejects.toThrow("map failed");
     expect(device.destroy).toHaveBeenCalled();
+  });
+
+  describe("/scenes", () => {
+    test("the manual scenes that use the robot, from its server", async () => {
+      const { handlers, cloud } = setup();
+      await expect(handlers["/scenes"]({ did: "1" })).resolves.toStrictEqual({
+        source: "xiaomi",
+        scenes: [
+          {
+            id: "2075222181387190272",
+            name: "Kitchen then bathroom",
+            enabled: true,
+          },
+        ],
+      });
+      expect(cloud.getScenes).toHaveBeenCalledWith("de", { did: "1" });
+    });
+
+    test("needs the robot in the account, and the login", async () => {
+      const { handlers } = setup();
+      await expect(handlers["/scenes"]({ ip: "10.0.0.9" })).rejects.toThrow(
+        "The vacuum needs a device ID, or an IP and a token."
+      );
+      await expect(handlers["/scenes"]({ did: "404" })).rejects.toThrow(
+        "This vacuum is not in your Xiaomi account (check its device ID)."
+      );
+      await expect(
+        setup({}).handlers["/scenes"]({ ip: "10.0.0.2", token: "ABC" })
+      ).rejects.toThrow("Log in to the Xiaomi Cloud first.");
+    });
   });
 
   describe("/maps", () => {
@@ -449,6 +488,28 @@ describe("Roborock app account", () => {
     expect(device.destroy).toHaveBeenCalled();
     await expect(
       setupRoborock().handlers["/maps"]({ duid: "duid-1" })
+    ).rejects.toThrow("Log in to your Roborock account first.");
+  });
+
+  test("the routines of a robot of the Roborock account", async () => {
+    const { handlers, deps } = setupRoborock(roborockSession);
+    const getRoborockRoutines = vi.fn().mockResolvedValue([
+      { id: 19799177, name: "Limpieza completa", enabled: true },
+      { id: 19799118, name: "Limpieza inteligente", enabled: false },
+    ]);
+    Object.assign(deps, { getRoborockRoutines });
+    await expect(
+      handlers["/scenes"]({ duid: "duid-1", roborockSessionFile: "/rr.json" })
+    ).resolves.toStrictEqual({
+      source: "roborock",
+      scenes: [
+        { id: "19799177", name: "Limpieza completa", enabled: true },
+        { id: "19799118", name: "Limpieza inteligente", enabled: false },
+      ],
+    });
+    expect(getRoborockRoutines).toHaveBeenCalledWith(roborockSession, "duid-1");
+    await expect(
+      setupRoborock().handlers["/scenes"]({ duid: "duid-1" })
     ).rejects.toThrow("Log in to your Roborock account first.");
   });
 });

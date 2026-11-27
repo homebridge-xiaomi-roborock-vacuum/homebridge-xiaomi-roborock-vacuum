@@ -5,6 +5,7 @@ import {
   type Config,
   DeviceManager,
   type RoborockService,
+  type SceneRunner,
 } from "../services";
 import { findSpeedModes } from "../utils/find_speed_modes";
 import { type Logger, getLogger } from "../utils/logger";
@@ -57,7 +58,7 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
     api: API,
     private readonly accessory: XiaomiRoborockVacuumPlatformAccessory,
     private readonly cloud?: CloudService,
-    roborock?: RoborockService
+    private readonly roborock?: RoborockService
   ) {
     this.log = getLogger(log, config);
     if (
@@ -93,6 +94,26 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
     });
   }
 
+  /**
+   * @param config The robot's config
+   * @returns How to run the scenes of its app: the Roborock app's routines (`duid` robots), or the Xiaomi Home app's
+   * manual scenes (with the `cloud` option)
+   */
+  private sceneRunner(config: Partial<Config>): SceneRunner | undefined {
+    const { cloud, roborock } = this;
+    if (config.duid) {
+      return roborock ? (id) => roborock.runRoutine(Number(id)) : undefined;
+    }
+    return cloud
+      ? (id) =>
+          cloud.runScene(id, {
+            did: config.did,
+            ip: config.ip,
+            token: config.token,
+          })
+      : undefined;
+  }
+
   private async initialize(
     config: Partial<Config>,
     api: API,
@@ -117,7 +138,8 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
       },
       api,
       deviceManager,
-      this.cloud
+      this.cloud,
+      this.sceneRunner(config)
     );
 
     // Wait for the rooms to be resolved (autoroom), so their switches are registered too
