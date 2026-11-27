@@ -61,7 +61,17 @@ type Cloud = Pick<
 interface MapDevice {
   getCloudMap?: (cloud: Cloud, server: string) => Promise<RoborockMap>;
   getRoomMap?: () => Promise<unknown>;
+  getMaps?: () => Promise<Array<{ id: number; name: string }>>;
+  getBackupMaps?: () => Promise<Array<{ id: number; savedAt: Date }>>;
   destroy(): void;
+}
+
+/** The maps the robot can switch to (the `maps` option) */
+export interface MapsResponse {
+  /** The floors (multi-floor maps) */
+  floors: Array<{ id: number; name: string }>;
+  /** The map backups (e.g. S5), newest first: identified by when they were saved (ISO 8601) */
+  backups: Array<{ savedAt: string }>;
 }
 
 /** What the handlers use from node-miio (replaced in the tests) */
@@ -84,6 +94,12 @@ export interface HandlerDeps {
     duid: string,
     ip?: string
   ): Promise<{ map: RoborockMap; names: Map<number, string> }>;
+  /** A robot of a Roborock app account, connected (`destroy()` closes its connections) */
+  connectRoborock(
+    session: RoborockSession,
+    duid: string,
+    ip?: string
+  ): Promise<MapDevice>;
 }
 
 /** A Roborock login in progress: the code and the login must come from the same client */
@@ -137,6 +153,31 @@ const defaultDeps: HandlerDeps = {
       await mqtt.close();
     }
   },
+  connectRoborock: async (session, duid, ip) => {
+    const home = await new RoborockWebApi(session).getHomeData();
+    const robot = miio.toDevices(home).find((r) => r.duid === duid);
+    if (!robot) throw new Error("This vacuum is not in your Roborock account.");
+    const mqtt = new miio.RoborockMqttSession(session.userData.rriot);
+    try {
+      const device = (await miio.roborockDevice({
+        ...robot,
+        model: robot.model ?? "",
+        address: ip || undefined,
+        mqtt,
+      })) as unknown as MapDevice;
+      return {
+        getMaps: device.getMaps?.bind(device),
+        getBackupMaps: device.getBackupMaps?.bind(device),
+        destroy: () => {
+          device.destroy();
+          void mqtt.close();
+        },
+      };
+    } catch (err) {
+      await mqtt.close();
+      throw err;
+    }
+  },
 };
 
 /** The result of the QR login, pushed to the UI once it ends */
@@ -187,6 +228,38 @@ export function createHandlers(
       caches.set(key, cache);
     }
     return cache;
+  }
+
+  /**
+   * Connects to the robot: a Roborock-app robot through its account, otherwise locally (with a device ID, the Xiaomi
+   * account knows its IP and token).
+   */
+  async function connectTo(request: MapRequest): Promise<MapDevice> {
+    if (request.duid) {
+      const session = await deps.loadRoborockSession(
+        request.roborockSessionFile || undefined
+      );
+      if (!session) throw new Error("Log in to your Roborock account first.");
+      return deps.connectRoborock(session, request.duid, request.ip);
+    }
+    if (request.did) {
+      const cloud = await getCloud(request);
+      const found = await deviceCache(request, cloud).find({
+        did: request.did,
+      });
+      const ip = found?.localip || request.ip;
+      const token = found?.token || request.token;
+      if (!ip || !token) {
+        throw new Error(
+          "This vacuum is not in your Xiaomi account (check its device ID)."
+        );
+      }
+      return deps.connect(ip, token);
+    }
+    if (!request.ip || !request.token) {
+      throw new Error("The vacuum needs a device ID, or an IP and a token.");
+    }
+    return deps.connect(request.ip, request.token);
   }
 
   return {
@@ -324,6 +397,26 @@ export function createHandlers(
           supported: /^(1\.0|L01)$/.test(protocolVersion),
         })
       );
+    },
+
+    /** The maps the robot can switch to: its floors (multi-floor maps) and its map backups */
+    "/maps": async (request: MapRequest): Promise<MapsResponse> => {
+      const device = await connectTo(request);
+      try {
+        // Each model has one kind or the other (or none): a model without one answers an error, or nothing
+        const [floors, backups] = await Promise.all([
+          device.getMaps?.().catch(() => []) ?? [],
+          device.getBackupMaps?.().catch(() => []) ?? [],
+        ]);
+        return {
+          floors,
+          backups: backups.map(({ savedAt }) => ({
+            savedAt: savedAt.toISOString(),
+          })),
+        };
+      } finally {
+        device.destroy();
+      }
     },
 
     /** The robot's map (Roborock), with the names of its rooms if it has any */

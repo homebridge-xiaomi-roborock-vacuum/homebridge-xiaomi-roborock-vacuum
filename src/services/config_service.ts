@@ -18,6 +18,7 @@ import { CareConfig } from "./care_service";
 import { MainServiceConfig } from "./main_service";
 import { DustBinConfig } from "./dust_bin_service";
 import { CurrentRoomConfig } from "./current_room_service";
+import { MapsConfig } from "./maps_service";
 
 export interface Config
   extends
@@ -40,7 +41,8 @@ export interface Config
     WaterTankConfig,
     ZonesConfig,
     CareConfig,
-    CurrentRoomConfig {
+    CurrentRoomConfig,
+    MapsConfig {
   /**
    * The name of the main service as it will show up in the Home App.
    */
@@ -93,6 +95,7 @@ export function applyConfigDefaults(config: Partial<Config>): Config {
     goToSpotWord: "go to",
     goToDock: false,
     goToDockWord: "go to dock",
+    mapWord: "map",
     roomTimeout: 0,
     waterBox: false,
     dustBin: false,

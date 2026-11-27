@@ -16,6 +16,8 @@ The plugin's settings in the Homebridge UI show these tools above the usual form
   it): click the rooms to name them (`rooms`, with **2x** / **3x** for the repeats), click
   to add "go to" spots (`goToSpots`), and drag to draw zones (`zones`). Spots and zones belong to the current map:
   pick them again if it's reset.
+- **Maps**: reads the robot's saved maps (its floors, or the backups of its last maps) and adds a switch per map you
+  tick (`maps`). See [Maps](rooms-and-zones.md#maps).
 
 Click "Save" to apply the changes.
 
