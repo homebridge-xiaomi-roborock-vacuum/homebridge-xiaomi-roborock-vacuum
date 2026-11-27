@@ -2,6 +2,10 @@
 
 ## Next
 
+## 1.9.0
+
+- [Feature] **Room switches in their own rooms**: on the platform, each room switch (and its 2x / 3x repeats) is an accessory of its own, so you can put it in its room in the Home app. **After updating**, the room switches show up as new accessories in the bridge's default room: move them to their rooms, and update the scenes and automations that used them. The old `accessories` format keeps them inside the vacuum. With `"serviceType": "vacuum"`, the rooms are in the Matter vacuum, and Siri understands them ([#467](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/discussions/467), [#1336](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1336)).
+
 ## 1.8.0
 
 - [Feature] **Map switches** (`maps`): a switch per saved map, to load it before a cleaning (e.g. in an automation). Use it for one map per floor, each with its own rooms and no-go zones, or to go back to an older map when the robot learned a closed door as a wall. Robots with multi-floor maps load a floor. The others (e.g. Roborock S5, S50) restore one of the backups of their last maps, when "Map saving" is on in the app. The settings page lists the robot's maps to pick them. node-miio `0.17.0` ([#393](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/393), [#582](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/582), [#1332](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1332), [afharo/node-miio#79](https://github.com/afharo/node-miio/pull/79)).
