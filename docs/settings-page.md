@@ -18,6 +18,8 @@ The plugin's settings in the Homebridge UI show these tools above the usual form
   pick them again if it's reset.
 - **Maps**: reads the robot's saved maps (its floors, or the backups of its last maps) and adds a switch per map you
   tick (`maps`). See [Maps](rooms-and-zones.md#maps).
+- **Scenes**: lists the routines of the Roborock app, or the manual scenes of the Xiaomi Home app that use the robot,
+  and adds a switch per scene you tick (`scenes`). See [Scenes of the app](rooms-and-zones.md#scenes-of-the-app).
 
 Click "Save" to apply the changes.
 

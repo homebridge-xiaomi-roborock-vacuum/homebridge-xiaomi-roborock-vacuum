@@ -155,7 +155,8 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
         }),
         homebridge,
         expect.anything(),
-        undefined // No Xiaomi Cloud
+        undefined, // No Xiaomi Cloud
+        undefined // So no scenes
       );
       expect(accessory.context.rooms).toEqual(instanceMock.resolvedRooms);
     });
@@ -412,6 +413,47 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
         { did: "123", ip: "1.1.1.1", token: "t" },
         { fresh: true }
       );
+    });
+  });
+
+  describe("scenes of the app", () => {
+    type Runner = ((id: string) => Promise<void>) | undefined;
+    const runnerOf = (
+      config: Record<string, unknown>,
+      cloud?: unknown,
+      roborock?: unknown
+    ) => {
+      const initializer = new XiaomiRoborockVacuumPlatformAccessoryInitializer(
+        console as unknown as Logging,
+        { name: "robot", ...config },
+        homebridge,
+        newAccessory(),
+        cloud as never,
+        roborock as never
+      );
+      return (
+        initializer as unknown as {
+          sceneRunner(config: Record<string, unknown>): Runner;
+        }
+      ).sceneRunner(config);
+    };
+
+    test("Roborock app robots run their routines", async () => {
+      const roborock = { connect: vi.fn(), runRoutine: vi.fn() };
+      await runnerOf({ duid: "duid-1" }, undefined, roborock)!("19799177");
+      expect(roborock.runRoutine).toHaveBeenCalledWith(19799177);
+      expect(runnerOf({ duid: "duid-1" }, { locate: vi.fn() })).toBeUndefined();
+    });
+
+    test("Mi Home robots run the manual scenes through the Xiaomi Cloud", async () => {
+      const cloud = { locate: vi.fn(), runScene: vi.fn() };
+      await runnerOf({ did: "123", ip: "1.1.1.1", token: "t" }, cloud)!("2075");
+      expect(cloud.runScene).toHaveBeenCalledWith("2075", {
+        did: "123",
+        ip: "1.1.1.1",
+        token: "t",
+      });
+      expect(runnerOf({ ip: "1.1.1.1", token: "t" })).toBeUndefined();
     });
   });
 });

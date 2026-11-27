@@ -1,4 +1,4 @@
-# Rooms, zones, spots and maps
+# Rooms, zones, spots, maps and scenes
 
 [← Back to the README](../README.md)
 
@@ -73,3 +73,16 @@ Pick them in the [settings page](settings-page.md) (**Maps**): it lists what the
   replaces the current map.
 
 The rooms, zones and spots belong to a map: a floor's room ids aren't the same as another floor's.
+
+## Scenes of the app
+
+`scenes` adds a switch per scene of the robot's app: turning it on runs it, and the switch turns itself off. They run
+in the app's cloud, so a scene can do what a HomeKit scene can't: for example, clean several rooms one after the other,
+each with its own fan speed and mop settings, in a single run (a HomeKit scene starts a cleaning per room, and the
+robot goes back to the dock after each one).
+
+- Robots of the [Roborock app](roborock-app.md): the robot's **routines**.
+- Robots of the Xiaomi Home app, with the [Xiaomi Cloud](xiaomi-cloud.md): the **manual scenes** ("Tap to run") that
+  use the robot.
+
+Pick them in the [settings page](settings-page.md) (**Scenes**): it lists them from the account.

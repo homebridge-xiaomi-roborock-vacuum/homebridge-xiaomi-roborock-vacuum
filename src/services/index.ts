@@ -20,6 +20,7 @@ export { MapsService } from "./maps_service";
 export { MopDockService } from "./mop_dock_service";
 export { ProductInfo } from "./product_info";
 export { RoomsService } from "./rooms_service";
+export { ScenesService, type SceneRunner } from "./scenes_service";
 export { RoborockService } from "./roborock_service";
 export { WaterBoxService } from "./water_box_service";
 export { WaterTankService } from "./water_tank_service";

@@ -270,6 +270,26 @@
                 }
               }
             },
+            "scenes": {
+              "title": "Scenes of the app",
+              "type": "array",
+              "description": "A switch per routine of the Roborock app, or per manual scene of the Xiaomi Home app: on runs it. Needs the Roborock app or Xiaomi Cloud login. Pick them in \"Scenes\" above.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "required": true
+                  },
+                  "id": {
+                    "title": "Scene",
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              }
+            },
             "mapWord": {
               "title": "Maps word",
               "type": "string",
@@ -587,6 +607,31 @@
               ]
             },
             "devices[].mapWord",
+            {
+              "key": "devices[].scenes",
+              "type": "array",
+              "items": [
+                {
+                  "type": "div",
+                  "displayFlex": true,
+                  "flex-direction": "row",
+                  "items": [
+                    {
+                      "key": "devices[].scenes[].name",
+                      "flex": "4 4 200px",
+                      "notitle": true,
+                      "placeholder": "Name"
+                    },
+                    {
+                      "key": "devices[].scenes[].id",
+                      "flex": "2 2 160px",
+                      "notitle": true,
+                      "placeholder": "Scene id"
+                    }
+                  ]
+                }
+              ]
+            },
             "devices[].goToDock",
             "devices[].goToDockWord",
             "devices[].dock",

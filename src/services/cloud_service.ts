@@ -30,7 +30,10 @@ export interface CloudLogger {
   warn(message: string): void;
 }
 
-type Cloud = Pick<XiaomiCloud, "getDevices" | "getMapFileUrl" | "download">;
+type Cloud = Pick<
+  XiaomiCloud,
+  "getDevices" | "getMapFileUrl" | "download" | "runScene"
+>;
 
 /** What the service uses from node-miio (replaced in the tests) */
 export interface CloudServiceDeps {
@@ -148,6 +151,29 @@ export class CloudService {
       );
     }
     return undefined;
+  }
+
+  /**
+   * Runs a manual scene of the Xiaomi Home app.
+   *
+   * @param sceneId The scene (from the plugin's settings)
+   * @param match The robot, to find the server its account is in
+   * @throws If the account isn't available, or the scene didn't run
+   */
+  async runScene(sceneId: string, match: CloudDeviceMatch) {
+    const cloud = await this.getCloud();
+    if (!cloud) {
+      throw new Error(
+        "Xiaomi Cloud: the account isn't available (see the warning above)"
+      );
+    }
+    const server = await this.serverOf(match);
+    if (!server) {
+      throw new Error(
+        "Xiaomi Cloud: the robot is not in your Xiaomi account, so its server is unknown."
+      );
+    }
+    await cloud.runScene(server, sceneId);
   }
 
   /**

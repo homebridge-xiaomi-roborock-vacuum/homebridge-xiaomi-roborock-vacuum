@@ -54,7 +54,7 @@ export interface MapResponse {
 
 type Cloud = Pick<
   XiaomiCloud,
-  "session" | "getDevices" | "getMapFileUrl" | "download"
+  "session" | "getDevices" | "getMapFileUrl" | "download" | "getScenes"
 >;
 
 /** A vacuum, connected locally */
@@ -64,6 +64,13 @@ interface MapDevice {
   getMaps?: () => Promise<Array<{ id: number; name: string }>>;
   getBackupMaps?: () => Promise<Array<{ id: number; savedAt: Date }>>;
   destroy(): void;
+}
+
+/** The scenes of the robot's app (the `scenes` option) */
+export interface ScenesResponse {
+  /** Which app they come from */
+  source: "roborock" | "xiaomi";
+  scenes: Array<{ id: string; name: string; enabled: boolean }>;
 }
 
 /** The maps the robot can switch to (the `maps` option) */
@@ -94,6 +101,11 @@ export interface HandlerDeps {
     duid: string,
     ip?: string
   ): Promise<{ map: RoborockMap; names: Map<number, string> }>;
+  /** The routines of a robot of a Roborock app account */
+  getRoborockRoutines(
+    session: RoborockSession,
+    duid: string
+  ): Promise<Array<{ id: number; name: string; enabled: boolean }>>;
   /** A robot of a Roborock app account, connected (`destroy()` closes its connections) */
   connectRoborock(
     session: RoborockSession,
@@ -153,6 +165,8 @@ const defaultDeps: HandlerDeps = {
       await mqtt.close();
     }
   },
+  getRoborockRoutines: (session, duid) =>
+    new RoborockWebApi(session).getRoutines(duid),
   connectRoborock: async (session, duid, ip) => {
     const home = await new RoborockWebApi(session).getHomeData();
     const robot = miio.toDevices(home).find((r) => r.duid === duid);
@@ -417,6 +431,48 @@ export function createHandlers(
       } finally {
         device.destroy();
       }
+    },
+
+    /**
+     * The scenes of the robot's app: the Roborock app's routines (`duid` robots), or the Xiaomi Home app's manual
+     * scenes that use the robot
+     */
+    "/scenes": async (request: MapRequest): Promise<ScenesResponse> => {
+      if (request.duid) {
+        const session = await deps.loadRoborockSession(
+          request.roborockSessionFile || undefined
+        );
+        if (!session) throw new Error("Log in to your Roborock account first.");
+        const routines = await deps.getRoborockRoutines(session, request.duid);
+        return {
+          source: "roborock",
+          scenes: routines.map(({ id, name, enabled }) => ({
+            id: String(id),
+            name,
+            enabled,
+          })),
+        };
+      }
+      if (!request.did && (!request.ip || !request.token)) {
+        throw new Error("The vacuum needs a device ID, or an IP and a token.");
+      }
+      const cloud = await getCloud(request);
+      const found = await deviceCache(request, cloud).find({
+        did: request.did,
+        token: request.token,
+        ip: request.ip,
+      });
+      const server = request.server || found?.server;
+      if (!found || !server) {
+        throw new Error(
+          `This vacuum is not in your Xiaomi account (check its ${request.did ? "device ID" : "IP and token"}).`
+        );
+      }
+      const scenes = await cloud.getScenes(server, { did: found.did });
+      return {
+        source: "xiaomi",
+        scenes: scenes.map(({ id, name, enabled }) => ({ id, name, enabled })),
+      };
     },
 
     /** The robot's map (Roborock), with the names of its rooms if it has any */
