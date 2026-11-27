@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Chore] node-miio `0.16.0`: the plugin needs Node.js 22.13 or newer (it was 22.12; Node 24 and 26 are unchanged), and installs 80 packages instead of 140. The `miio-vacuum inspect` command lists the actions each device supports again ([afharo/node-miio#72](https://github.com/afharo/node-miio/pull/72), [#1331](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1331)).
+
 ## 1.7.6
 
 - [Bug] Fan speed and water level: the first one the robot reports after connecting is looked up once the firmware is known. On models whose speeds depend on the firmware (e.g. the Roborock S5 with 3.5.7+), it was looked up in the wrong table: the logs said `Speed was changed to 102%, this speed is not supported`, and HomeKit didn't show the speed until it changed again ([#1326](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1326)).
