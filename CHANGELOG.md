@@ -2,6 +2,12 @@
 
 ## Next
 
+## 1.7.6
+
+- [Bug] Fan speed and water level: the first one the robot reports after connecting is looked up once the firmware is known. On models whose speeds depend on the firmware (e.g. the Roborock S5 with 3.5.7+), it was looked up in the wrong table: the logs said `Speed was changed to 102%, this speed is not supported`, and HomeKit didn't show the speed until it changed again ([#1326](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1326)).
+- [Bug] Xiaomi Cloud map: no more `Xiaomi Cloud: failed to get the robot's map: ... objectname invalid` at the start of a cleaning (the Roborock S5 answers "locating" before its map is ready, and that was used as the map name). node-miio `0.15.1` ([afharo/node-miio#70](https://github.com/afharo/node-miio/pull/70), [#1327](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1327)).
+- [Chore] node-miio `0.15.0`: it no longer depends on the unmaintained abstract-things, so installing the plugin no longer warns about the deprecated `appdirectory` and `fs-write-stream-atomic` packages ([afharo/node-miio#69](https://github.com/afharo/node-miio/pull/69), [#1325](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1325)).
+
 ## 1.7.5
 
 - [Bug] Matter vacuum (`"serviceType": "vacuum"`): Apple Home follows the robot's state after Homebridge starts too. It only got it at startup, so a change made from the robot's app (e.g. stopping the mop washing) never showed, and Apple Home could stay on "cleaning the mop" with its controls locked. The state is also resent every 30 seconds, like in the HomeKit accessories. node-miio `0.14.0` ([#1314](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/issues/1314), [#1323](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1323), [afharo/node-miio#66](https://github.com/afharo/node-miio/pull/66)).
