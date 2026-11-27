@@ -16,6 +16,7 @@ export const createXiaomiRoborockVacuumAccessoryMock = () => {
   } = {
     identify: vi.fn(),
     getServices: vi.fn().mockReturnValue([]),
+    roomSwitches: [],
     roomsReady: Promise.resolve(),
     resolvedRooms: [],
     roomList: [],

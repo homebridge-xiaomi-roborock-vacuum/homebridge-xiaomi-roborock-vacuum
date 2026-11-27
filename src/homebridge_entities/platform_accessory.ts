@@ -12,7 +12,10 @@ import { type Logger, getLogger } from "../utils/logger";
 import { supports } from "../utils/supports";
 import { MatterVacuum } from "../matter/matter_vacuum";
 import { XiaomiRoborockVacuumAccessory } from "./accessory";
-import type { XiaomiRoborockVacuumPlatformAccessory } from "./platform";
+import type {
+  RoomAccessories,
+  XiaomiRoborockVacuumPlatformAccessory,
+} from "./platform";
 
 /** How long to wait for the rooms to be resolved before registering the services */
 const ROOMS_TIMEOUT_MS = 30_000;
@@ -58,7 +61,9 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
     api: API,
     private readonly accessory: XiaomiRoborockVacuumPlatformAccessory,
     private readonly cloud?: CloudService,
-    private readonly roborock?: RoborockService
+    private readonly roborock?: RoborockService,
+    /** Where the room switches go: an accessory each (when missing, they stay in the vacuum's accessory) */
+    private readonly roomAccessories?: RoomAccessories
   ) {
     this.log = getLogger(log, config);
     if (
@@ -148,60 +153,38 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
       this.accessory.context.rooms = vacuumService.resolvedRooms;
     }
 
-    // Loop through the services in `vacuumService.getServices()`
-    // and attach them to the accessory with
-    // https://developers.homebridge.io/#/api/platform-plugins#platformaccessoryaddservice
-    const services = vacuumService.getServices();
-    services.forEach((service) => {
-      let svc: Service | undefined;
-
-      if (service.subtype) {
-        svc = this.accessory.getServiceById(
-          service.getServiceId(),
-          service.subtype
-        );
-      }
-
-      if (!svc) {
-        // Hack to cover those services that do not declare a subtype
-        svc = this.accessory.services.find(
-          (cachedSvc) =>
-            cachedSvc.UUID === service.UUID &&
-            cachedSvc.subtype === service.subtype
-        );
-      }
-
-      if (svc) {
-        // Cached service, we need to copy the listeners
-        this.log.info("Copying services...");
-        if (svc instanceof api.hap.Service.AccessoryInformation) {
-          svc.replaceCharacteristicsFromService(service);
-        } else {
-          svc.characteristics = service.characteristics;
-          svc.optionalCharacteristics = service.optionalCharacteristics;
-          svc.setPrimaryService(service.isPrimaryService);
-        }
-      } else {
-        // New service to add to the accessory
-        this.log.info("Adding new service...");
-        svc = this.accessory.addService(service);
-      }
+    // The room switches are accessories of their own, so they can be put in their rooms in the Home app (#467)
+    const services = vacuumService.getServices({
+      withoutRooms: !!this.roomAccessories,
     });
-
-    // Remove the cached services that are no longer exposed (e.g. a room that was removed)
-    const exposed = new Set(services.map((s) => `${s.UUID}/${s.subtype}`));
-    [...this.accessory.services]
-      .filter(
-        (cachedSvc) =>
-          !(cachedSvc instanceof api.hap.Service.AccessoryInformation) &&
-          !exposed.has(`${cachedSvc.UUID}/${cachedSvc.subtype}`)
-      )
-      .forEach((staleSvc) => {
-        this.log.info(
-          `Removing the service "${staleSvc.displayName}" that is no longer exposed`
+    this.syncServices(api, this.accessory, services);
+    if (this.roomAccessories) {
+      const manufacturer = services
+        .find((s) => s instanceof api.hap.Service.AccessoryInformation)
+        ?.getCharacteristic(api.hap.Characteristic.Manufacturer).value;
+      const used = vacuumService.roomSwitches.map((roomSwitch) => {
+        const room = roomSwitch.subtype ?? roomSwitch.displayName;
+        const accessory = this.roomAccessories!.accessoryFor(
+          room,
+          roomSwitch.displayName
         );
-        this.accessory.removeService(staleSvc);
+        accessory
+          .getService(api.hap.Service.AccessoryInformation)
+          ?.setCharacteristic(
+            api.hap.Characteristic.Manufacturer,
+            `${manufacturer ?? "Xiaomi"}`
+          )
+          .setCharacteristic(api.hap.Characteristic.Model, deviceManager.model)
+          .setCharacteristic(
+            api.hap.Characteristic.SerialNumber,
+            `${this.accessory.context.name} ${room}`
+          );
+        roomSwitch.setPrimaryService(true);
+        this.syncServices(api, accessory, [roomSwitch]);
+        return accessory;
       });
+      this.roomAccessories.commit(used);
+    }
 
     if (config.serviceType === "vacuum" && api.matter) {
       const serialNumber = await deviceManager.device
@@ -232,6 +215,64 @@ export class XiaomiRoborockVacuumPlatformAccessoryInitializer {
     }
 
     this.initialized$.next(services.length > 0);
+  }
+
+  /**
+   * Attaches the services to the accessory (reusing the cached ones, so HomeKit keeps them), and removes the cached
+   * services that are no longer exposed (e.g. a room that was removed).
+   * https://developers.homebridge.io/#/api/platform-plugins#platformaccessoryaddservice
+   */
+  private syncServices(
+    api: API,
+    accessory: XiaomiRoborockVacuumPlatformAccessory,
+    services: Service[]
+  ) {
+    services.forEach((service) => {
+      let svc: Service | undefined;
+
+      if (service.subtype) {
+        svc = accessory.getServiceById(service.getServiceId(), service.subtype);
+      }
+
+      if (!svc) {
+        // Hack to cover those services that do not declare a subtype
+        svc = accessory.services.find(
+          (cachedSvc) =>
+            cachedSvc.UUID === service.UUID &&
+            cachedSvc.subtype === service.subtype
+        );
+      }
+
+      if (svc) {
+        // Cached service, we need to copy the listeners
+        this.log.info("Copying services...");
+        if (svc instanceof api.hap.Service.AccessoryInformation) {
+          svc.replaceCharacteristicsFromService(service);
+        } else {
+          svc.characteristics = service.characteristics;
+          svc.optionalCharacteristics = service.optionalCharacteristics;
+          svc.setPrimaryService(service.isPrimaryService);
+        }
+      } else {
+        // New service to add to the accessory
+        this.log.info("Adding new service...");
+        accessory.addService(service);
+      }
+    });
+
+    const exposed = new Set(services.map((s) => `${s.UUID}/${s.subtype}`));
+    [...accessory.services]
+      .filter(
+        (cachedSvc) =>
+          !(cachedSvc instanceof api.hap.Service.AccessoryInformation) &&
+          !exposed.has(`${cachedSvc.UUID}/${cachedSvc.subtype}`)
+      )
+      .forEach((staleSvc) => {
+        this.log.info(
+          `Removing the service "${staleSvc.displayName}" that is no longer exposed`
+        );
+        accessory.removeService(staleSvc);
+      });
   }
 
   private applyDefaultsBasedOnModel(

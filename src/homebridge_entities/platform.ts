@@ -28,13 +28,31 @@ interface XiaomiRoborockVacuumPlatformConfig extends PlatformConfig {
 }
 
 interface PlatformAccessoryContext {
+  /** The vacuum's name (for a room switch's accessory too: it's removed with its vacuum) */
   name: string;
+  /** A room switch's accessory: its switch's subtype (#467) */
+  room?: string;
   /** Rooms resolved in a previous run (when using `autoroom`), used as a fallback */
   rooms?: ResolvedRoom[];
 }
 
 export type XiaomiRoborockVacuumPlatformAccessory =
   PlatformAccessory<PlatformAccessoryContext>;
+
+/** The accessories of a vacuum's room switches: one per switch, so each one can be put in its room (#467) */
+export interface RoomAccessories {
+  /**
+   * @param room The switch's subtype
+   * @param name The switch's name
+   * @returns Its accessory: the cached one, or a new one
+   */
+  accessoryFor(
+    room: string,
+    name: string
+  ): XiaomiRoborockVacuumPlatformAccessory;
+  /** Registers the new accessories, and removes the cached ones that aren't used anymore (e.g. a removed room) */
+  commit(used: XiaomiRoborockVacuumPlatformAccessory[]): void;
+}
 
 export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
   private readonly config: XiaomiRoborockVacuumPlatformConfig;
@@ -169,6 +187,58 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
   }
 
   /**
+   * @param vacuum The vacuum's name
+   * @returns The accessories of its room switches
+   */
+  private roomAccessories(vacuum: string): RoomAccessories {
+    const created = new Set<XiaomiRoborockVacuumPlatformAccessory>();
+    return {
+      accessoryFor: (room, name) => {
+        const uuid = this.api.hap.uuid.generate(
+          `${PLUGIN_NAME}-accessory-${vacuum}-${room}`
+        );
+        let accessory = [...this.accessories].find(({ UUID }) => UUID === uuid);
+        if (!accessory) {
+          accessory = new this.api.platformAccessory(name, uuid);
+          accessory.context.name = vacuum;
+          accessory.context.room = room;
+          this.accessories.add(accessory);
+          created.add(accessory);
+        }
+        return accessory;
+      },
+      commit: (used) => {
+        const toRegister = used.filter((accessory) => created.has(accessory));
+        if (toRegister.length > 0) {
+          this.api.registerPlatformAccessories(
+            PLUGIN_NAME,
+            ACCESSORY_NAME,
+            toRegister
+          );
+        }
+        created.clear();
+        const stale = [...this.accessories].filter(
+          (accessory) =>
+            accessory.context.name === vacuum &&
+            accessory.context.room !== undefined &&
+            !used.includes(accessory)
+        );
+        if (stale.length > 0) {
+          this.log.info(
+            `Unregistering the room switches no longer exposed [${stale.map(({ displayName }) => displayName).join(", ")}]`
+          );
+          stale.forEach((accessory) => this.accessories.delete(accessory));
+          this.api.unregisterPlatformAccessories(
+            PLUGIN_NAME,
+            ACCESSORY_NAME,
+            stale
+          );
+        }
+      },
+    };
+  }
+
+  /**
    * Initializes the connection of a device, and registers its accessory if not previously cached.
    * @param config The device's config
    * @param cloud The Xiaomi Cloud, if enabled
@@ -199,7 +269,8 @@ export class XiaomiRoborockVacuumPlatform implements DynamicPlatformPlugin {
         this.api,
         accessory,
         cloud,
-        roborock
+        roborock,
+        this.roomAccessories(accessory.context.name)
       );
 
     platformInitializer.initialized$.pipe(first()).subscribe((hasServices) => {
