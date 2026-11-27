@@ -19,6 +19,7 @@ import { MainServiceConfig } from "./main_service";
 import { DustBinConfig } from "./dust_bin_service";
 import { CurrentRoomConfig } from "./current_room_service";
 import { MapsConfig } from "./maps_service";
+import { CleaningSensorConfig } from "./cleaning_sensor_service";
 
 export interface Config
   extends
@@ -42,7 +43,8 @@ export interface Config
     ZonesConfig,
     CareConfig,
     CurrentRoomConfig,
-    MapsConfig {
+    MapsConfig,
+    CleaningSensorConfig {
   /**
    * The name of the main service as it will show up in the Home App.
    */
@@ -101,6 +103,7 @@ export function applyConfigDefaults(config: Partial<Config>): Config {
     dustBin: false,
     dustCollection: false,
     dock: false,
+    cleaningSensor: false,
     doNotDisturb: false,
     doNotDisturbWord: "Do Not Disturb",
     mopWash: false,
