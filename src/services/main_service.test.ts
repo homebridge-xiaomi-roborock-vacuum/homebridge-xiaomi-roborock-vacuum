@@ -1,3 +1,4 @@
+import { describe, test, expect, afterEach, vi } from "vitest";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { ReplaySubject, Subject } from "rxjs";
 import { MainService } from "./main_service";
@@ -39,14 +40,14 @@ describe("MainService", () => {
         firmware$,
       } as unknown as ProductInfo,
       roomsService,
-      jest.fn(),
-      jest.fn()
+      vi.fn(),
+      vi.fn()
     );
   }
 
   afterEach(() => {
     (deviceManagerMock.stateChanged$ as Subject<unknown>).complete();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("setCleaning with selected rooms", () => {

@@ -1,3 +1,4 @@
+import { describe, test, expect, afterEach, vi, type Mock } from "vitest";
 import { EventEmitter } from "node:events";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
@@ -18,9 +19,9 @@ const flush = () => new Promise(setImmediate);
 
 const createWatcher = () =>
   Object.assign(new EventEmitter(), {
-    start: jest.fn(async () => undefined),
-    stop: jest.fn(),
-    refresh: jest.fn(),
+    start: vi.fn(async () => undefined),
+    stop: vi.fn(),
+    refresh: vi.fn(),
   });
 
 describe("CurrentRoomService", () => {
@@ -28,7 +29,7 @@ describe("CurrentRoomService", () => {
   let log: LoggerMock;
   let deviceManagerMock: DeviceManagerMock;
   let watcher: ReturnType<typeof createWatcher>;
-  let cloud: { createMapWatcher: jest.Mock };
+  let cloud: { createMapWatcher: Mock };
   let service: CurrentRoomService;
   const rooms = {
     roomList: [
@@ -44,7 +45,7 @@ describe("CurrentRoomService", () => {
     log = getLoggerMock();
     deviceManagerMock = createDeviceManagerMock();
     watcher = createWatcher();
-    cloud = { createMapWatcher: jest.fn(async () => watcher) };
+    cloud = { createMapWatcher: vi.fn(async () => watcher) };
     service = new CurrentRoomService(
       {
         hap,
@@ -74,7 +75,7 @@ describe("CurrentRoomService", () => {
 
   afterEach(() => {
     service.stop();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test("an occupancy sensor per room, detected while the robot is in it", async () => {

@@ -1,3 +1,12 @@
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mocked,
+} from "vitest";
 import type { MatterAccessory, MatterAPI } from "homebridge";
 import { Subject } from "rxjs";
 import { createDeviceManagerMock } from "../services/device_manager.mock";
@@ -20,21 +29,21 @@ class StatusError extends Error {}
 
 const createMatterMock = () =>
   ({
-    uuid: { generate: jest.fn((id: string) => `uuid:${id}`) },
+    uuid: { generate: vi.fn((id: string) => `uuid:${id}`) },
     deviceTypes: { RoboticVacuumCleaner: { name: "RoboticVacuumCleaner" } },
     status: {
       ConstraintError: class extends StatusError {},
       InvalidInState: class extends StatusError {},
     },
-    registerPlatformAccessories: jest.fn().mockResolvedValue(undefined),
-    updateAccessoryState: jest.fn().mockResolvedValue(undefined),
-    getAccessoryState: jest.fn().mockResolvedValue(undefined),
-  }) as unknown as jest.Mocked<MatterAPI>;
+    registerPlatformAccessories: vi.fn().mockResolvedValue(undefined),
+    updateAccessoryState: vi.fn().mockResolvedValue(undefined),
+    getAccessoryState: vi.fn().mockResolvedValue(undefined),
+  }) as unknown as Mocked<MatterAPI>;
 
 type Handlers = Required<NonNullable<MatterAccessory["handlers"]>>;
 
 describe("MatterVacuum", () => {
-  let matter: jest.Mocked<MatterAPI>;
+  let matter: Mocked<MatterAPI>;
   let deviceManager: ReturnType<typeof createDeviceManagerMock>;
   let properties: Record<string, unknown>;
   let currentRoom$: Subject<string | undefined>;
@@ -72,7 +81,7 @@ describe("MatterVacuum", () => {
       .at(-1)?.[2];
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     matter = createMatterMock();
     deviceManager = createDeviceManagerMock();
     stateChanged$ = new Subject();
@@ -381,6 +390,8 @@ describe("MatterVacuum", () => {
     beforeEach(async () => {
       vacuum = createVacuum();
       await vacuum.register();
+      // register() doesn't wait for the first sync of the robot's state
+      await new Promise(setImmediate);
     });
     afterEach(() => vacuum.stop());
 

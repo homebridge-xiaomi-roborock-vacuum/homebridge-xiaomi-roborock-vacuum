@@ -1,3 +1,4 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
@@ -32,7 +33,7 @@ describe("GoToDockService", () => {
 
   afterEach(() => {
     (deviceManagerMock.stateChanged$ as Subject<unknown>).complete();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const onCharacteristic = () =>
@@ -58,7 +59,7 @@ describe("GoToDockService", () => {
   });
 
   test("updates the switch on state changes", () => {
-    const spy = jest.spyOn(onCharacteristic(), "updateValue");
+    const spy = vi.spyOn(onCharacteristic(), "updateValue");
     setState("returning");
     (deviceManagerMock.stateChanged$ as Subject<unknown>).next({
       key: "cleaning",
@@ -99,9 +100,9 @@ describe("GoToDockService", () => {
 
   test("throws when the device fails", async () => {
     setState("cleaning");
-    jest
-      .spyOn(deviceManagerMock.device, "activateCharging")
-      .mockRejectedValue(new Error("Something went terribly wrong"));
+    vi.spyOn(deviceManagerMock.device, "activateCharging").mockRejectedValue(
+      new Error("Something went terribly wrong")
+    );
     await expect(onCharacteristic().handleSetRequest(true)).rejects.toBe(
       -70402
     );

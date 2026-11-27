@@ -1,13 +1,18 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import "./device_manager.test.mock";
+import * as miioModule from "node-miio";
 import { getLoggerMock } from "../utils/logger.mock";
 import { createHomebridgeMock, miio } from "../test.mocks";
 import { DeviceManager } from "./device_manager";
+
+/** The `node-miio` module, as `device_manager.test.mock.ts` mocks it */
+type MiioModuleMock = Awaited<ReturnType<typeof miio.createMock>>;
 
 describe("DeviceManager", () => {
   const log = getLoggerMock();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     miio.device.matches.mockReturnValue(false);
     miio.device.property.mockReturnValue(undefined);
     miio.device.poll.mockResolvedValue(undefined);
@@ -43,7 +48,7 @@ describe("DeviceManager", () => {
 
   describe("node-miio logger", () => {
     test("passes the plugin's logger to node-miio", async () => {
-      const nodeMiio = jest.requireMock("node-miio");
+      const nodeMiio = miioModule as unknown as MiioModuleMock;
       new DeviceManager(createHomebridgeMock().hap, log, {
         ip: "192.168.0.1",
         token: "token",
@@ -66,7 +71,7 @@ describe("DeviceManager", () => {
 
   describe("get device", () => {
     afterEach(() => {
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     test("fails when not connected yet", () => {
@@ -81,14 +86,14 @@ describe("DeviceManager", () => {
     });
 
     test("connects and loads", async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       miio.device.matches.mockReturnValue(true);
       miio.device.property.mockReturnValue("cleaning");
       const deviceManager = new DeviceManager(createHomebridgeMock().hap, log, {
         ip: "192.168.0.1",
         token: "token",
       });
-      await jest.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(0);
       expect(deviceManager.model).toStrictEqual("test-model");
       expect(deviceManager.device).toStrictEqual(miio.device);
       expect(deviceManager.state).toStrictEqual("cleaning");
@@ -101,29 +106,29 @@ describe("DeviceManager", () => {
     afterEach(() => {
       delete (miio.device as Partial<typeof miio.device>).fanSpeeds;
       delete (miio.device as Partial<typeof miio.device>).waterBoxModes;
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     const connect = async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       miio.device.matches.mockReturnValue(true);
       const deviceManager = new DeviceManager(createHomebridgeMock().hap, log, {
         ip: "192.168.0.1",
         token: "token",
       });
-      await jest.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(0);
       return deviceManager;
     };
 
     test("loads the fan speeds and water levels from node-miio", async () => {
       const fanSpeeds = [{ value: 1, name: "Quiet" }];
       const waterBoxModes = [{ value: 200, name: "Off" }];
-      miio.device.fanSpeeds = jest.fn().mockResolvedValue(fanSpeeds);
+      miio.device.fanSpeeds = vi.fn().mockResolvedValue(fanSpeeds);
       const presets = [
         { name: "SmartPlan", fanSpeed: 110, waterBoxMode: 209, mopRoute: 306 },
       ];
       miio.device.cleanPresets.mockResolvedValue(presets);
-      miio.device.waterBoxModes = jest.fn().mockResolvedValue(waterBoxModes);
+      miio.device.waterBoxModes = vi.fn().mockResolvedValue(waterBoxModes);
       const deviceManager = await connect();
       expect(deviceManager.reportedModes).toStrictEqual({
         fanSpeeds,
@@ -133,7 +138,7 @@ describe("DeviceManager", () => {
     });
 
     test("is undefined when node-miio fails", async () => {
-      miio.device.fanSpeeds = jest.fn().mockRejectedValue(new Error("timeout"));
+      miio.device.fanSpeeds = vi.fn().mockRejectedValue(new Error("timeout"));
       const deviceManager = await connect();
       expect(deviceManager.device).toBe(miio.device);
       expect(deviceManager.reportedModes).toBeUndefined();
@@ -147,13 +152,13 @@ describe("DeviceManager", () => {
 
   describe("state polling", () => {
     beforeEach(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       miio.device.matches.mockReturnValue(true);
       miio.device.property.mockReturnValue("charging");
     });
 
     afterEach(() => {
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     const createConnectedDeviceManager = async () => {
@@ -169,14 +174,14 @@ describe("DeviceManager", () => {
     test("refreshes the device state every 30 seconds", async () => {
       await createConnectedDeviceManager();
 
-      await jest.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(0);
       expect(miio.device.poll).toHaveBeenCalledTimes(1);
       expect(miio.device.state).toHaveBeenCalledTimes(1);
 
-      await jest.advanceTimersByTimeAsync(29999);
+      await vi.advanceTimersByTimeAsync(29999);
       expect(miio.device.poll).toHaveBeenCalledTimes(1);
 
-      await jest.advanceTimersByTimeAsync(1);
+      await vi.advanceTimersByTimeAsync(1);
       expect(miio.device.poll).toHaveBeenCalledTimes(2);
       expect(miio.device.state).toHaveBeenCalledTimes(2);
     });
@@ -191,19 +196,19 @@ describe("DeviceManager", () => {
       );
       await createConnectedDeviceManager();
 
-      jest.advanceTimersByTime(0);
+      vi.advanceTimersByTime(0);
       await Promise.resolve();
       await Promise.resolve();
       expect(miio.device.poll).toHaveBeenCalledTimes(1);
 
-      jest.advanceTimersByTime(90000);
+      vi.advanceTimersByTime(90000);
       await Promise.resolve();
       expect(miio.device.poll).toHaveBeenCalledTimes(1);
 
       completePoll?.();
       await Promise.resolve();
       await Promise.resolve();
-      await jest.advanceTimersByTimeAsync(30000);
+      await vi.advanceTimersByTimeAsync(30000);
       expect(miio.device.poll).toHaveBeenCalledTimes(2);
     });
 
@@ -227,13 +232,13 @@ describe("DeviceManager", () => {
         errors.push(error === null ? null : (error as { id: number }).id)
       );
       for (let poll = 0; poll < 7; poll++) {
-        await jest.advanceTimersByTimeAsync(poll === 0 ? 0 : 30000);
+        await vi.advanceTimersByTimeAsync(poll === 0 ? 0 : 30000);
       }
       expect(errors).toStrictEqual([5, null, 5, null, 8]);
     });
 
     test("warns once about each status node-miio can't translate, with a link to report it", async () => {
-      const describeStatus = jest.fn().mockReturnValue("New Station Mode");
+      const describeStatus = vi.fn().mockReturnValue("New Station Mode");
       Object.assign(miio.device, { describeStatus });
       try {
         await createConnectedDeviceManager();
@@ -271,42 +276,42 @@ describe("DeviceManager", () => {
 
     test("replaces the polling timer when the device reconnects", async () => {
       const deviceManager = await createConnectedDeviceManager();
-      await jest.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(0);
 
       await (
         deviceManager as unknown as { initializeDevice: () => Promise<void> }
       ).initializeDevice();
-      await jest.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(0);
       expect(miio.device.poll).toHaveBeenCalledTimes(2);
 
-      await jest.advanceTimersByTimeAsync(30000);
+      await vi.advanceTimersByTimeAsync(30000);
       expect(miio.device.poll).toHaveBeenCalledTimes(3);
     });
   });
 
   describe("finding the robot again (Xiaomi Cloud)", () => {
-    const nodeMiio = jest.requireMock("node-miio");
+    const nodeMiio = miioModule as unknown as MiioModuleMock;
 
     beforeEach(() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       miio.device.matches.mockReturnValue(true);
       miio.device.property.mockReturnValue("charging");
     });
 
     afterEach(() => {
-      jest.useRealTimers();
+      vi.useRealTimers();
       nodeMiio.device.mockImplementation(() => miio.device);
     });
 
     const addresses = () =>
       nodeMiio.device.mock.calls.map(
-        ([options]: [{ address: string; token: string }]) =>
+        ([options]: { address: string; token: string }[]) =>
           `${options.address}/${options.token}`
       );
 
     test("when it can't connect, it asks where the robot is, and connects there right away", async () => {
       nodeMiio.device.mockRejectedValueOnce(new Error("timeout"));
-      const locate = jest
+      const locate = vi
         .fn()
         .mockResolvedValue({ ip: "192.168.0.7", token: "new-token" });
       new DeviceManager(
@@ -315,7 +320,7 @@ describe("DeviceManager", () => {
         { ip: "192.168.0.1", token: "token" },
         locate
       );
-      await jest.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(0);
       expect(locate).toHaveBeenCalledWith({
         ip: "192.168.0.1",
         token: "token",
@@ -334,7 +339,7 @@ describe("DeviceManager", () => {
 
     test("an unplugged robot (same location) is retried every 2 minutes, asking the cloud at most every 10 minutes", async () => {
       nodeMiio.device.mockRejectedValue(new Error("timeout"));
-      const locate = jest
+      const locate = vi
         .fn()
         .mockResolvedValue({ ip: "192.168.0.1", token: "token" });
       new DeviceManager(
@@ -343,22 +348,22 @@ describe("DeviceManager", () => {
         { ip: "192.168.0.1", token: "token" },
         locate
       );
-      await jest.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(0);
       expect(nodeMiio.device).toHaveBeenCalledTimes(1);
       expect(locate).toHaveBeenCalledTimes(1);
 
-      await jest.advanceTimersByTimeAsync(120000);
+      await vi.advanceTimersByTimeAsync(120000);
       expect(nodeMiio.device).toHaveBeenCalledTimes(2);
       expect(locate).toHaveBeenCalledTimes(1);
 
       // 18 minutes: 8 more retries, and the cloud asked again after 10 minutes
-      await jest.advanceTimersByTimeAsync(8 * 120000);
+      await vi.advanceTimersByTimeAsync(8 * 120000);
       expect(nodeMiio.device).toHaveBeenCalledTimes(10);
       expect(locate).toHaveBeenCalledTimes(2);
     });
 
     test("when it stops answering, it reconnects at the robot's new IP", async () => {
-      const locate = jest
+      const locate = vi
         .fn()
         .mockResolvedValue({ ip: "192.168.0.7", token: "token" });
       new DeviceManager(
@@ -367,16 +372,16 @@ describe("DeviceManager", () => {
         { ip: "192.168.0.1", token: "token" },
         locate
       );
-      await jest.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(0);
       expect(addresses()).toEqual(["192.168.0.1/token"]);
 
       miio.device.poll.mockRejectedValue(new Error("timeout"));
-      await jest.advanceTimersByTimeAsync(30000);
-      await jest.advanceTimersByTimeAsync(30000);
+      await vi.advanceTimersByTimeAsync(30000);
+      await vi.advanceTimersByTimeAsync(30000);
       expect(locate).not.toHaveBeenCalled();
 
       // The 3rd failure in a row
-      await jest.advanceTimersByTimeAsync(30000);
+      await vi.advanceTimersByTimeAsync(30000);
       expect(locate).toHaveBeenCalledTimes(1);
       expect(miio.device.destroy).toHaveBeenCalled();
       expect(addresses()).toEqual(["192.168.0.1/token", "192.168.0.7/token"]);
@@ -389,9 +394,9 @@ describe("DeviceManager", () => {
         ip: "192.168.0.1",
         token: "token",
       });
-      await jest.advanceTimersByTimeAsync(0);
+      await vi.advanceTimersByTimeAsync(0);
       expect(nodeMiio.device).toHaveBeenCalledTimes(1);
-      await jest.advanceTimersByTimeAsync(120000);
+      await vi.advanceTimersByTimeAsync(120000);
       expect(addresses()).toEqual(["192.168.0.1/token", "192.168.0.1/token"]);
     });
   });
@@ -401,7 +406,7 @@ describe("DeviceManager with a connector (Roborock app)", () => {
   const log = getLoggerMock();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     miio.device.matches.mockReturnValue(true);
     miio.device.property.mockReturnValue(undefined);
     miio.device.poll.mockResolvedValue(undefined);
@@ -409,9 +414,9 @@ describe("DeviceManager with a connector (Roborock app)", () => {
   });
 
   test("connects with it: no IP nor token needed, room names kept", async () => {
-    const nodeMiio = jest.requireMock("node-miio");
+    const nodeMiio = miioModule as unknown as MiioModuleMock;
     nodeMiio.roborockApiOf.mockReturnValue({ address: "192.168.86.26" });
-    const connector = jest.fn().mockResolvedValue({
+    const connector = vi.fn().mockResolvedValue({
       device: miio.device,
       roomNames: new Map([["50625967", "Cocina"]]),
     });
@@ -441,11 +446,11 @@ describe("DeviceManager with a connector: failures", () => {
   const log = getLoggerMock();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("the robot isn't found: logged, and retried later", async () => {
-    const connector = jest.fn().mockResolvedValue(undefined);
+    const connector = vi.fn().mockResolvedValue(undefined);
     new DeviceManager(
       createHomebridgeMock().hap,
       log,
@@ -460,8 +465,8 @@ describe("DeviceManager with a connector: failures", () => {
   });
 
   test("not a vacuum: reported and released", async () => {
-    const other = { miioModel: "roborock.lawnmower.x", destroy: jest.fn() };
-    const connector = jest.fn().mockResolvedValue({ device: other });
+    const other = { miioModel: "roborock.lawnmower.x", destroy: vi.fn() };
+    const connector = vi.fn().mockResolvedValue({ device: other });
     new DeviceManager(
       createHomebridgeMock().hap,
       log,

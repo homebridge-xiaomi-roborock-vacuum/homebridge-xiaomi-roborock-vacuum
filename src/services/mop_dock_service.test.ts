@@ -1,3 +1,4 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
@@ -36,8 +37,8 @@ describe("MopDockService", () => {
 
   afterEach(() => {
     (deviceManagerMock.stateChanged$ as Subject<unknown>).complete();
-    jest.resetAllMocks();
-    jest.useRealTimers();
+    vi.resetAllMocks();
+    vi.useRealTimers();
   });
 
   test("only returns the enabled switches", async () => {
@@ -62,13 +63,13 @@ describe("MopDockService", () => {
     });
 
     test("ON starts washing the mop, and goes back to OFF", async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       const service = await create({ mopWash: true });
-      const spy = jest.spyOn(on(service, "Wash Mop"), "updateValue");
+      const spy = vi.spyOn(on(service, "Wash Mop"), "updateValue");
       await on(service, "Wash Mop").handleSetRequest(true);
       expect(deviceManagerMock.ensureDevice).toHaveBeenCalledWith("washMop");
       expect(deviceManagerMock.device.startMopWash).toHaveBeenCalledTimes(1);
-      jest.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(1000);
       expect(spy).toHaveBeenCalledWith(false);
     });
 
@@ -79,11 +80,11 @@ describe("MopDockService", () => {
     });
 
     test("throws when the device fails", async () => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       const service = await create({ mopWash: true });
-      jest
-        .spyOn(deviceManagerMock.device, "startMopWash")
-        .mockRejectedValue(new Error("Something went terribly wrong"));
+      vi.spyOn(deviceManagerMock.device, "startMopWash").mockRejectedValue(
+        new Error("Something went terribly wrong")
+      );
       await expect(on(service, "Wash Mop").handleSetRequest(true)).rejects.toBe(
         -70402
       );
@@ -106,7 +107,7 @@ describe("MopDockService", () => {
 
     test("updates the switch when mopDrying changes", async () => {
       const service = await create({ mopDrying: true });
-      const spy = jest.spyOn(on(service, "Dry Mop"), "updateValue");
+      const spy = vi.spyOn(on(service, "Dry Mop"), "updateValue");
       const state$ = deviceManagerMock.stateChanged$ as Subject<unknown>;
       state$.next({ key: "cleaning", value: true });
       state$.next({ key: "mopDrying", value: true });
@@ -145,9 +146,9 @@ describe("MopDockService", () => {
 
     test("throws when the device fails", async () => {
       const service = await create({ mopDrying: true });
-      jest
-        .spyOn(deviceManagerMock.device, "startMopDrying")
-        .mockRejectedValue(new Error("Something went terribly wrong"));
+      vi.spyOn(deviceManagerMock.device, "startMopDrying").mockRejectedValue(
+        new Error("Something went terribly wrong")
+      );
       await expect(on(service, "Dry Mop").handleSetRequest(true)).rejects.toBe(
         -70402
       );

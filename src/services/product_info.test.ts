@@ -1,3 +1,12 @@
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type MockInstance,
+} from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
@@ -32,24 +41,24 @@ describe("ProductInfo", () => {
 
   afterEach(() => {
     (deviceManagerMock.stateChanged$ as Subject<unknown>).complete();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("deviceConnected$", () => {
-    let updateCharacteristicSpy: jest.SpyInstance;
+    let updateCharacteristicSpy: MockInstance;
 
     beforeEach(() => {
       const [service] = productInfo.services;
-      updateCharacteristicSpy = jest.spyOn(service, "updateCharacteristic");
+      updateCharacteristicSpy = vi.spyOn(service, "updateCharacteristic");
     });
 
     test("fetches the serial number and firmware on first connection", async () => {
-      jest
-        .spyOn(deviceManagerMock.device, "getSerialNumber")
-        .mockResolvedValue("1234");
-      jest
-        .spyOn(deviceManagerMock.device, "getDeviceInfo")
-        .mockResolvedValue({ fw_ver: "1.2.3" } as never);
+      vi.spyOn(deviceManagerMock.device, "getSerialNumber").mockResolvedValue(
+        "1234"
+      );
+      vi.spyOn(deviceManagerMock.device, "getDeviceInfo").mockResolvedValue({
+        fw_ver: "1.2.3",
+      } as never);
 
       (deviceManagerMock.deviceConnected$ as Subject<unknown>).next({});
 
@@ -74,13 +83,13 @@ describe("ProductInfo", () => {
     });
 
     test("firmware$ emits once the firmware is read, and replays it", async () => {
-      jest
-        .spyOn(deviceManagerMock.device, "getSerialNumber")
-        .mockResolvedValue("1234");
-      jest
-        .spyOn(deviceManagerMock.device, "getDeviceInfo")
-        .mockResolvedValue({ fw_ver: "1.2.3" } as never);
-      const before = jest.fn();
+      vi.spyOn(deviceManagerMock.device, "getSerialNumber").mockResolvedValue(
+        "1234"
+      );
+      vi.spyOn(deviceManagerMock.device, "getDeviceInfo").mockResolvedValue({
+        fw_ver: "1.2.3",
+      } as never);
+      const before = vi.fn();
       productInfo.firmware$.subscribe(before);
       expect(before).not.toHaveBeenCalled();
 
@@ -88,16 +97,16 @@ describe("ProductInfo", () => {
       await new Promise((resolve) => process.nextTick(resolve));
 
       expect(before).toHaveBeenCalledWith("1.2.3");
-      const after = jest.fn();
+      const after = vi.fn();
       productInfo.firmware$.subscribe(after);
       expect(after).toHaveBeenCalledWith("1.2.3");
     });
 
     test("firmware$ emits undefined when the firmware can't be read", async () => {
-      jest
-        .spyOn(deviceManagerMock.device, "getDeviceInfo")
-        .mockRejectedValue(new Error("timeout"));
-      const firmware = jest.fn();
+      vi.spyOn(deviceManagerMock.device, "getDeviceInfo").mockRejectedValue(
+        new Error("timeout")
+      );
+      const firmware = vi.fn();
       productInfo.firmware$.subscribe(firmware);
 
       (deviceManagerMock.deviceConnected$ as Subject<unknown>).next({});
@@ -108,12 +117,12 @@ describe("ProductInfo", () => {
 
     test("handles errors", async () => {
       const err = new Error("Something went terribly wrong");
-      jest
-        .spyOn(deviceManagerMock.device, "getSerialNumber")
-        .mockRejectedValue(err);
-      jest
-        .spyOn(deviceManagerMock.device, "getDeviceInfo")
-        .mockRejectedValue(err);
+      vi.spyOn(deviceManagerMock.device, "getSerialNumber").mockRejectedValue(
+        err
+      );
+      vi.spyOn(deviceManagerMock.device, "getDeviceInfo").mockRejectedValue(
+        err
+      );
 
       (deviceManagerMock.deviceConnected$ as Subject<unknown>).next({});
 
@@ -134,9 +143,9 @@ describe("ProductInfo", () => {
   });
 
   test("getFirmware", async () => {
-    jest
-      .spyOn(deviceManagerMock.device, "getDeviceInfo")
-      .mockResolvedValue({ fw_ver: "1.2.3" } as never);
+    vi.spyOn(deviceManagerMock.device, "getDeviceInfo").mockResolvedValue({
+      fw_ver: "1.2.3",
+    } as never);
     const [service] = productInfo.services;
     await expect(
       service
@@ -153,9 +162,9 @@ describe("ProductInfo", () => {
   });
 
   test("getSerialNumber", async () => {
-    jest
-      .spyOn(deviceManagerMock.device, "getSerialNumber")
-      .mockResolvedValue("1234");
+    vi.spyOn(deviceManagerMock.device, "getSerialNumber").mockResolvedValue(
+      "1234"
+    );
     const [service] = productInfo.services;
     await expect(
       service

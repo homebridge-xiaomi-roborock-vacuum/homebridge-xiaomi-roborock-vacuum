@@ -1,3 +1,12 @@
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock,
+} from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
@@ -14,8 +23,8 @@ describe("ZonesService", () => {
   let service: ZonesService;
   let deviceManagerMock: DeviceManagerMock;
   let log: ReturnType<typeof getLoggerMock>;
-  let mainService: { setSpeed: jest.Mock; getCleaning: jest.Mock };
-  let setWaterSpeed: jest.Mock | undefined;
+  let mainService: { setSpeed: Mock; getCleaning: Mock };
+  let setWaterSpeed: Mock | undefined;
   const hap: HAP = HapJs;
 
   const kitchen = [[24500, 27000, 28000, 30000, 2]] as [
@@ -28,13 +37,13 @@ describe("ZonesService", () => {
 
   async function create(
     zones: NonNullable<Config["zones"]>,
-    waterSpeed: jest.Mock | null = jest.fn(),
+    waterSpeed: Mock | null = vi.fn(),
     config: Partial<Config> = {}
   ) {
     deviceManagerMock = createDeviceManagerMock();
     (deviceManagerMock as { isCleaning: boolean }).isCleaning = false;
     log = getLoggerMock();
-    mainService = { setSpeed: jest.fn(), getCleaning: jest.fn() };
+    mainService = { setSpeed: vi.fn(), getCleaning: vi.fn() };
     setWaterSpeed = waterSpeed ?? undefined;
     service = new ZonesService(
       {
@@ -44,7 +53,7 @@ describe("ZonesService", () => {
         deviceManager: deviceManagerMock,
       },
       mainService as unknown as MainService,
-      jest.fn(),
+      vi.fn(),
       setWaterSpeed
     );
     await service.init();
@@ -55,8 +64,8 @@ describe("ZonesService", () => {
 
   afterEach(() => {
     (deviceManagerMock.stateChanged$ as Subject<unknown>).complete();
-    jest.resetAllMocks();
-    jest.useRealTimers();
+    vi.resetAllMocks();
+    vi.useRealTimers();
   });
 
   const stoppedCleaning = () =>
@@ -178,10 +187,10 @@ describe("ZonesService", () => {
       },
     ];
 
-    beforeEach(() => jest.useFakeTimers());
+    beforeEach(() => vi.useFakeTimers());
 
     test("the zones turned on are cleaned together once the timeout expires", async () => {
-      await create(zones, jest.fn(), { zoneTimeout: 10 });
+      await create(zones, vi.fn(), { zoneTimeout: 10 });
       await on(1).handleSetRequest(true);
       await on(0).handleSetRequest(true);
       expect(deviceManagerMock.device.cleanZones).not.toHaveBeenCalled();
@@ -190,7 +199,7 @@ describe("ZonesService", () => {
       expect(await on(1).handleGetRequest()).toBe(true);
       expect(await on(2).handleGetRequest()).toBe(false);
 
-      await jest.advanceTimersByTimeAsync(10_000);
+      await vi.advanceTimersByTimeAsync(10_000);
       // In the order they were turned on, with the first zone's fan speed
       expect(deviceManagerMock.device.cleanZones).toHaveBeenCalledWith([
         [1, 2, 3, 4, 1],
@@ -206,23 +215,23 @@ describe("ZonesService", () => {
     });
 
     test("each change restarts the timeout", async () => {
-      await create(zones, jest.fn(), { zoneTimeout: 10 });
+      await create(zones, vi.fn(), { zoneTimeout: 10 });
       await on(0).handleSetRequest(true);
-      await jest.advanceTimersByTimeAsync(8_000);
+      await vi.advanceTimersByTimeAsync(8_000);
       await on(1).handleSetRequest(true);
-      await jest.advanceTimersByTimeAsync(8_000);
+      await vi.advanceTimersByTimeAsync(8_000);
       expect(deviceManagerMock.device.cleanZones).not.toHaveBeenCalled();
-      await jest.advanceTimersByTimeAsync(2_000);
+      await vi.advanceTimersByTimeAsync(2_000);
       expect(deviceManagerMock.device.cleanZones).toHaveBeenCalledTimes(1);
     });
 
     test("turning a zone off before it starts unselects it", async () => {
-      await create(zones, jest.fn(), { zoneTimeout: 10 });
+      await create(zones, vi.fn(), { zoneTimeout: 10 });
       await on(0).handleSetRequest(true);
       await on(1).handleSetRequest(true);
       await on(0).handleSetRequest(false);
       expect(deviceManagerMock.device.activateCharging).not.toHaveBeenCalled();
-      await jest.advanceTimersByTimeAsync(10_000);
+      await vi.advanceTimersByTimeAsync(10_000);
       expect(deviceManagerMock.device.cleanZones).toHaveBeenCalledWith([
         [1, 2, 3, 4, 1],
       ]);
@@ -231,10 +240,10 @@ describe("ZonesService", () => {
     });
 
     test("unselecting every zone cancels the cleaning", async () => {
-      await create(zones, jest.fn(), { zoneTimeout: 10 });
+      await create(zones, vi.fn(), { zoneTimeout: 10 });
       await on(0).handleSetRequest(true);
       await on(0).handleSetRequest(false);
-      await jest.advanceTimersByTimeAsync(10_000);
+      await vi.advanceTimersByTimeAsync(10_000);
       expect(deviceManagerMock.device.cleanZones).not.toHaveBeenCalled();
     });
   });

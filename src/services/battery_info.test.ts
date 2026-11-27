@@ -1,3 +1,12 @@
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type MockInstance,
+} from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
@@ -32,25 +41,25 @@ describe("BatteryInfo", () => {
 
   afterEach(() => {
     (deviceManagerMock.stateChanged$ as Subject<unknown>).complete();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("stateChanged$", () => {
-    let updateBatteryLevelSpy: jest.SpyInstance;
-    let updateStatusLowBatterySpy: jest.SpyInstance;
-    let updateChargingStateSpy: jest.SpyInstance;
+    let updateBatteryLevelSpy: MockInstance;
+    let updateStatusLowBatterySpy: MockInstance;
+    let updateChargingStateSpy: MockInstance;
 
     beforeEach(() => {
       const [service] = batteryInfo.services;
-      updateBatteryLevelSpy = jest.spyOn(
+      updateBatteryLevelSpy = vi.spyOn(
         service.getCharacteristic(hap.Characteristic.BatteryLevel),
         "updateValue"
       );
-      updateStatusLowBatterySpy = jest.spyOn(
+      updateStatusLowBatterySpy = vi.spyOn(
         service.getCharacteristic(hap.Characteristic.StatusLowBattery),
         "updateValue"
       );
-      updateChargingStateSpy = jest.spyOn(
+      updateChargingStateSpy = vi.spyOn(
         service.getCharacteristic(hap.Characteristic.ChargingState),
         "updateValue"
       );
@@ -121,7 +130,7 @@ describe("BatteryInfo", () => {
   });
 
   test("getBattery", async () => {
-    jest.spyOn(deviceManagerMock.device, "batteryLevel").mockResolvedValue(3);
+    vi.spyOn(deviceManagerMock.device, "batteryLevel").mockResolvedValue(3);
     const [service] = batteryInfo.services;
     await expect(
       service
@@ -131,7 +140,7 @@ describe("BatteryInfo", () => {
   });
 
   test("getBatteryLow - low", async () => {
-    jest.spyOn(deviceManagerMock.device, "batteryLevel").mockResolvedValue(3);
+    vi.spyOn(deviceManagerMock.device, "batteryLevel").mockResolvedValue(3);
     const [service] = batteryInfo.services;
     await expect(
       service
@@ -143,7 +152,7 @@ describe("BatteryInfo", () => {
   });
 
   test("getBatteryLow - normal", async () => {
-    jest.spyOn(deviceManagerMock.device, "batteryLevel").mockResolvedValue(25);
+    vi.spyOn(deviceManagerMock.device, "batteryLevel").mockResolvedValue(25);
     const [service] = batteryInfo.services;
     await expect(
       service

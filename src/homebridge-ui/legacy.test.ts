@@ -1,3 +1,4 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -158,7 +159,7 @@ describe("legacy accessories", () => {
     });
 
     test("the settings page's requests", async () => {
-      const handlers = createHandlers(jest.fn(), undefined, configPath);
+      const handlers = createHandlers(vi.fn(), undefined, configPath);
       await expect(handlers["/legacy"]()).resolves.toMatchObject({
         blocks: 1,
       });
@@ -171,7 +172,7 @@ describe("legacy accessories", () => {
     });
 
     test("without the config's path, the requests fail", async () => {
-      const handlers = createHandlers(jest.fn());
+      const handlers = createHandlers(vi.fn());
       expect(() => handlers["/legacy"]()).toThrow(
         "Homebridge's config file is unknown."
       );

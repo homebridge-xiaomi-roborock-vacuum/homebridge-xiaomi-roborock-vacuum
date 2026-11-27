@@ -1,3 +1,12 @@
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type MockInstance,
+} from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
@@ -32,15 +41,15 @@ describe("DockService", () => {
 
   afterEach(() => {
     (deviceManagerMock.stateChanged$ as Subject<unknown>).complete();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("stateChanged$", () => {
-    let occupancyDetectedSpy: jest.SpyInstance;
+    let occupancyDetectedSpy: MockInstance;
 
     beforeEach(() => {
       const [service] = dockService.services;
-      occupancyDetectedSpy = jest.spyOn(
+      occupancyDetectedSpy = vi.spyOn(
         service.getCharacteristic(hap.Characteristic.OccupancyDetected),
         "updateValue"
       );

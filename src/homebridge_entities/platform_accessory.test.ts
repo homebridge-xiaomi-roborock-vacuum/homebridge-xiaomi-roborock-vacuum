@@ -1,3 +1,13 @@
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type MockInstance,
+  type Mocked,
+} from "vitest";
 import type { API, Logging } from "homebridge";
 import { Service, Categories } from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
@@ -17,8 +27,8 @@ function newAccessory(): XiaomiRoborockVacuumPlatformAccessory {
   const uuid = "test-test";
   const accessory = {
     context: { name },
-    on: jest.fn(),
-    emit: jest.fn(),
+    on: vi.fn(),
+    emit: vi.fn(),
     displayName: name,
     UUID: uuid,
     category: Categories.FAN,
@@ -26,29 +36,29 @@ function newAccessory(): XiaomiRoborockVacuumPlatformAccessory {
       new Service.AccessoryInformation("Preexisting info", "info"),
       new Service.Switch("Preexisting"),
     ],
-    addListener: jest.fn(),
-    addService: jest.fn(),
-    removeService: jest.fn(),
-    getServices: jest.fn(() => accessory.services),
-    getServiceById: jest.fn(),
+    addListener: vi.fn(),
+    addService: vi.fn(),
+    removeService: vi.fn(),
+    getServices: vi.fn(() => accessory.services),
+    getServiceById: vi.fn(),
   } as unknown as XiaomiRoborockVacuumPlatformAccessory;
   return accessory;
 }
 
 describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
-  let homebridge: jest.Mocked<API>;
-  let consoleErrorSpy: jest.SpyInstance;
-  let consoleWarnSpy: jest.SpyInstance;
-  let consoleDebugSpy: jest.SpyInstance;
+  let homebridge: Mocked<API>;
+  let consoleErrorSpy: MockInstance;
+  let consoleWarnSpy: MockInstance;
+  let consoleDebugSpy: MockInstance;
   const log: Logging = console as unknown as Logging;
 
   beforeEach(() => {
     homebridge = createHomebridgeMock();
     // Silencing the logger in the tests to reduce noise.
-    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation();
-    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation();
-    jest.spyOn(console, "info").mockImplementation();
-    consoleDebugSpy = jest.spyOn(console, "debug").mockImplementation();
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    vi.spyOn(console, "info").mockImplementation(() => {});
+    consoleDebugSpy = vi.spyOn(console, "debug").mockImplementation(() => {});
 
     miio.device.find.mockRejectedValue(
       new Error("Something went terribly wrong")
@@ -56,7 +66,7 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("constructor", () => {
@@ -68,9 +78,9 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
     test("after connect, adds services to the accessory", async () => {
       const accessory = newAccessory();
       const instanceMock = createXiaomiRoborockVacuumAccessoryMock();
-      jest
-        .spyOn(accessory, "getServiceById")
-        .mockReturnValueOnce(accessory.services[0]);
+      vi.spyOn(accessory, "getServiceById").mockReturnValueOnce(
+        accessory.services[0]
+      );
 
       instanceMock.getServices.mockReturnValue([
         ...accessory.services,
@@ -78,17 +88,19 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
         new Service.Switch("Test 2"),
       ]);
 
-      const accessorySpy = jest.spyOn(
+      const accessorySpy = vi.spyOn(
         accessory.services[0],
         "replaceCharacteristicsFromService"
       );
 
-      const setPrimaryServiceSpy = jest.spyOn(
+      const setPrimaryServiceSpy = vi.spyOn(
         accessory.services[1],
         "setPrimaryService"
       );
 
-      XiaomiRoborockVacuumAccessoryMock.mockReturnValue(instanceMock);
+      XiaomiRoborockVacuumAccessoryMock.mockImplementation(function () {
+        return instanceMock;
+      });
       const platformAccessory =
         new XiaomiRoborockVacuumPlatformAccessoryInitializer(
           log,
@@ -111,7 +123,9 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
       accessory: XiaomiRoborockVacuumPlatformAccessory,
       instanceMock: ReturnType<typeof createXiaomiRoborockVacuumAccessoryMock>
     ) => {
-      XiaomiRoborockVacuumAccessoryMock.mockReturnValue(instanceMock);
+      XiaomiRoborockVacuumAccessoryMock.mockImplementation(function () {
+        return instanceMock;
+      });
       new XiaomiRoborockVacuumPlatformAccessoryInitializer(
         log,
         config,
@@ -187,11 +201,11 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
     describe('serviceType: "vacuum"', () => {
       const vacuumConfig = { ...config, did: "123", serviceType: "vacuum" };
       const matter = {
-        uuid: { generate: jest.fn((id: string) => `uuid:${id}`) },
+        uuid: { generate: vi.fn((id: string) => `uuid:${id}`) },
         deviceTypes: { RoboticVacuumCleaner: {} },
         status: {},
-        registerPlatformAccessories: jest.fn(),
-        updateAccessoryState: jest.fn(),
+        registerPlatformAccessories: vi.fn(),
+        updateAccessoryState: vi.fn(),
       };
       const configFor = () =>
         XiaomiRoborockVacuumAccessoryMock.mock.calls[0][1] as Record<
@@ -213,7 +227,9 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
         miio.device.getSerialNumber.mockResolvedValue("SN1");
         const instanceMock = createXiaomiRoborockVacuumAccessoryMock();
         instanceMock.roomList = [{ id: "16", name: "Kitchen" }];
-        XiaomiRoborockVacuumAccessoryMock.mockReturnValue(instanceMock);
+        XiaomiRoborockVacuumAccessoryMock.mockImplementation(function () {
+          return instanceMock;
+        });
         const initializer =
           new XiaomiRoborockVacuumPlatformAccessoryInitializer(
             log,
@@ -221,7 +237,7 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
             homebridge,
             newAccessory()
           );
-        const initialized = jest.fn();
+        const initialized = vi.fn();
         initializer.initialized$.subscribe(initialized);
         (
           deviceManagerMock.deviceConnected$ as unknown as Subject<MiioDevice>
@@ -330,9 +346,9 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
           fanSpeeds: [{ value: 1, name: "Quiet" }],
           waterBoxModes: [{ value: 1, name: "Level1" }],
         };
-        XiaomiRoborockVacuumAccessoryMock.mockReturnValue(
-          createXiaomiRoborockVacuumAccessoryMock()
-        );
+        XiaomiRoborockVacuumAccessoryMock.mockImplementation(function () {
+          return createXiaomiRoborockVacuumAccessoryMock();
+        });
         new XiaomiRoborockVacuumPlatformAccessoryInitializer(
           log,
           { ...config, waterBox: false },
@@ -350,10 +366,12 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
 
   describe("Roborock app robots (`duid`)", () => {
     test("connect through the Roborock service, without the Xiaomi Cloud locator", async () => {
-      const { DeviceManager } = jest.requireMock("../services/device_manager");
+      const DeviceManager = vi.mocked(
+        (await import("../services/device_manager.js")).DeviceManager
+      );
       DeviceManager.mockClear();
-      const roborock = { connect: jest.fn().mockResolvedValue(undefined) };
-      const cloud = { locate: jest.fn() };
+      const roborock = { connect: vi.fn().mockResolvedValue(undefined) };
+      const cloud = { locate: vi.fn() };
       new XiaomiRoborockVacuumPlatformAccessoryInitializer(
         console as unknown as Logging,
         { name: "saros", duid: "duid-1", ip: "192.168.86.26" },
@@ -364,8 +382,8 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
       );
       const [, , , locate, connector] = DeviceManager.mock.calls[0];
       expect(locate).toBeUndefined();
-      const logger = { debug: jest.fn() };
-      await connector(logger);
+      const logger = { debug: vi.fn() };
+      await connector!(logger);
       expect(roborock.connect).toHaveBeenCalledWith(
         { duid: "duid-1", ip: "192.168.86.26" },
         logger
@@ -374,20 +392,22 @@ describe("XiaomiRoborockVacuumPlatformAccessoryInitializer", () => {
     });
 
     test("Mi Home robots keep the Xiaomi Cloud locator, and no connector", async () => {
-      const { DeviceManager } = jest.requireMock("../services/device_manager");
+      const DeviceManager = vi.mocked(
+        (await import("../services/device_manager.js")).DeviceManager
+      );
       DeviceManager.mockClear();
-      const cloud = { locate: jest.fn().mockResolvedValue(undefined) };
+      const cloud = { locate: vi.fn().mockResolvedValue(undefined) };
       new XiaomiRoborockVacuumPlatformAccessoryInitializer(
         console as unknown as Logging,
         { name: "s5", did: "123", ip: "1.1.1.1", token: "t" },
         homebridge,
         newAccessory(),
         cloud as never,
-        { connect: jest.fn() } as never
+        { connect: vi.fn() } as never
       );
       const [, , , locate, connector] = DeviceManager.mock.calls[0];
       expect(connector).toBeUndefined();
-      await locate({ ip: "1.1.1.1", token: "t" });
+      await locate!({ ip: "1.1.1.1", token: "t" });
       expect(cloud.locate).toHaveBeenCalledWith(
         { did: "123", ip: "1.1.1.1", token: "t" },
         { fresh: true }

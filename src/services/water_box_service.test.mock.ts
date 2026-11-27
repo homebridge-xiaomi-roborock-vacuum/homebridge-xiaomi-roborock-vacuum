@@ -1,5 +1,7 @@
-export const findSpeedModesMock = jest.fn().mockReturnValue({});
+import { vi } from "vitest";
 
-jest.doMock("../utils/find_speed_modes", () => ({
+export const findSpeedModesMock = vi.fn().mockReturnValue({});
+
+vi.doMock("../utils/find_speed_modes", () => ({
   findSpeedModes: findSpeedModesMock,
 }));

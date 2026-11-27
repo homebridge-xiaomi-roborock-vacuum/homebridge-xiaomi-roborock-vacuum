@@ -1,3 +1,4 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
@@ -28,7 +29,7 @@ describe("WaterTankService", () => {
 
   afterEach(() => {
     (deviceManagerMock.stateChanged$ as Subject<unknown>).complete();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   const occupancy = () =>
@@ -55,7 +56,7 @@ describe("WaterTankService", () => {
   });
 
   test("updates the sensor when waterShortage changes", () => {
-    const spy = jest.spyOn(occupancy(), "updateValue");
+    const spy = vi.spyOn(occupancy(), "updateValue");
     const state$ = deviceManagerMock.stateChanged$ as Subject<unknown>;
     state$.next({ key: "charging", value: true });
     state$.next({ key: "waterShortage", value: true });

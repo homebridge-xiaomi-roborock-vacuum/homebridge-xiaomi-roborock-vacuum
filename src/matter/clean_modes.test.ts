@@ -1,3 +1,4 @@
+import { describe, test, expect } from "vitest";
 import { findSpeedModes } from "../utils/find_speed_modes";
 import {
   buildCleanModes,

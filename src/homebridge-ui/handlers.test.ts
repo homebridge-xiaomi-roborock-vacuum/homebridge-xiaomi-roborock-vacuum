@@ -1,13 +1,14 @@
+import { describe, test, expect, vi } from "vitest";
 import { createHandlers, type HandlerDeps } from "./handlers";
 
 const session = { userId: "1", ssecurity: "s", serviceToken: "t" };
 const flush = () => new Promise(setImmediate);
 
 function setup(options: { session?: typeof session } = { session }) {
-  const push = jest.fn();
+  const push = vi.fn();
   const cloud = {
     session,
-    getDevices: jest.fn().mockResolvedValue([
+    getDevices: vi.fn().mockResolvedValue([
       {
         did: "1",
         name: "Robot",
@@ -19,11 +20,11 @@ function setup(options: { session?: typeof session } = { session }) {
       },
       { did: "2", name: "Lamp", model: "yeelink.light.x", token: "zzz" },
     ]),
-    getMapFileUrl: jest.fn(),
-    download: jest.fn(),
+    getMapFileUrl: vi.fn(),
+    download: vi.fn(),
   };
   const device = {
-    getCloudMap: jest.fn().mockResolvedValue({
+    getCloudMap: vi.fn().mockResolvedValue({
       image: {
         top: 10,
         left: 20,
@@ -35,19 +36,19 @@ function setup(options: { session?: typeof session } = { session }) {
       robot: { x: 1000, y: 600 },
       charger: { x: 1050, y: 600 },
     }),
-    getRoomMap: jest.fn().mockResolvedValue([
+    getRoomMap: vi.fn().mockResolvedValue([
       ["16", "Kitchen"],
       ["17", "12345678"], // Not a name (some models)
     ]),
-    destroy: jest.fn(),
+    destroy: vi.fn(),
   };
   const deps = {
-    loadSession: jest.fn().mockResolvedValue(options.session),
-    saveSession: jest.fn(),
-    deleteSession: jest.fn(),
-    createCloud: jest.fn(() => cloud),
-    loginWithQrCode: jest.fn(),
-    connect: jest.fn().mockResolvedValue(device),
+    loadSession: vi.fn().mockResolvedValue(options.session),
+    saveSession: vi.fn(),
+    deleteSession: vi.fn(),
+    createCloud: vi.fn(() => cloud),
+    loginWithQrCode: vi.fn(),
+    connect: vi.fn().mockResolvedValue(device),
   };
   const handlers = createHandlers(push, deps as unknown as HandlerDeps);
   return { push, cloud, device, deps, handlers };
@@ -173,7 +174,7 @@ describe("custom UI handlers", () => {
     ).rejects.toThrow("not in your Xiaomi account");
 
     const notRoborock = setup();
-    notRoborock.deps.connect.mockResolvedValue({ destroy: jest.fn() });
+    notRoborock.deps.connect.mockResolvedValue({ destroy: vi.fn() });
     await expect(
       notRoborock.handlers["/map"]({ ip: "10.0.0.2", token: "abc" })
     ).rejects.toThrow("Only Roborock vacuums");
@@ -199,15 +200,15 @@ describe("Roborock app account", () => {
 
   function setupRoborock(saved?: typeof roborockSession) {
     const login = {
-      requestCode: jest.fn().mockResolvedValue(undefined),
-      loginWithCode: jest.fn().mockResolvedValue(roborockSession),
+      requestCode: vi.fn().mockResolvedValue(undefined),
+      loginWithCode: vi.fn().mockResolvedValue(roborockSession),
     };
     const deps = {
-      loadRoborockSession: jest.fn().mockResolvedValue(saved),
-      saveRoborockSession: jest.fn(),
-      deleteRoborockSession: jest.fn(),
-      startRoborockLogin: jest.fn().mockResolvedValue(login),
-      getRoborockMap: jest.fn().mockResolvedValue({
+      loadRoborockSession: vi.fn().mockResolvedValue(saved),
+      saveRoborockSession: vi.fn(),
+      deleteRoborockSession: vi.fn(),
+      startRoborockLogin: vi.fn().mockResolvedValue(login),
+      getRoborockMap: vi.fn().mockResolvedValue({
         map: {
           image: {
             top: 10,
@@ -222,7 +223,7 @@ describe("Roborock app account", () => {
         },
         names: new Map([[10, "Lavadero"]]),
       }),
-      getRoborockDevices: jest.fn().mockResolvedValue([
+      getRoborockDevices: vi.fn().mockResolvedValue([
         {
           duid: "duid-1",
           name: "Saros 20 Neo",
@@ -244,7 +245,7 @@ describe("Roborock app account", () => {
         },
       ]),
     };
-    const handlers = createHandlers(jest.fn(), deps as unknown as HandlerDeps);
+    const handlers = createHandlers(vi.fn(), deps as unknown as HandlerDeps);
     return { handlers, deps, login };
   }
 

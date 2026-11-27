@@ -1,3 +1,4 @@
+import { describe, test, expect, vi } from "vitest";
 import { RoborockSessionExpiredError, type RoborockHomeData } from "node-miio";
 import { RoborockService, type RoborockServiceDeps } from "./roborock_service";
 
@@ -45,19 +46,19 @@ const home: RoborockHomeData = {
 function setup(
   options: { session?: typeof session | undefined; homeError?: Error } = {}
 ) {
-  const log = { debug: jest.fn(), info: jest.fn(), warn: jest.fn() };
-  const mqtt = { close: jest.fn() };
+  const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() };
+  const mqtt = { close: vi.fn() };
   const device = { name: "the device" };
   const deps = {
-    loadSession: jest.fn(async () =>
+    loadSession: vi.fn(async () =>
       "session" in options ? options.session : session
     ),
-    getHomeData: jest.fn(async () => {
+    getHomeData: vi.fn(async () => {
       if (options.homeError) throw options.homeError;
       return home;
     }),
-    createMqtt: jest.fn(() => mqtt),
-    connect: jest.fn(async () => device),
+    createMqtt: vi.fn(() => mqtt),
+    connect: vi.fn(async () => device),
   };
   const service = new RoborockService(
     log,
@@ -70,7 +71,7 @@ function setup(
 describe("RoborockService", () => {
   test("connects to a robot of the account, with its local key, model and the shared MQTT session", async () => {
     const { service, deps, mqtt, device } = setup();
-    const logger = { debug: jest.fn() };
+    const logger = { debug: vi.fn() };
 
     const connection = await service.connect({ duid: "duid-1" }, logger);
 
@@ -180,21 +181,21 @@ describe("RoborockService: other failures", () => {
 describe("RoborockService: default dependencies (node-miio)", () => {
   test("loads the session, the home data, and connects with node-miio", async () => {
     const nodeMiio = {
-      loadRoborockSession: jest.fn().mockResolvedValue(session),
-      RoborockWebApi: jest.fn().mockImplementation(() => ({
-        getHomeData: jest.fn().mockResolvedValue(home),
-      })),
-      RoborockMqttSession: jest.fn(),
-      roborockDevice: jest.fn().mockResolvedValue("device"),
+      loadRoborockSession: vi.fn().mockResolvedValue(session),
+      RoborockWebApi: vi.fn(function () {
+        return { getHomeData: vi.fn().mockResolvedValue(home) };
+      }),
+      RoborockMqttSession: vi.fn(),
+      roborockDevice: vi.fn().mockResolvedValue("device"),
       RoborockSessionExpiredError: class extends Error {},
-      toDevices: jest.requireActual("node-miio").toDevices,
+      toDevices: (
+        await vi.importActual<typeof import("node-miio")>("node-miio")
+      ).toDevices,
     };
-    jest.resetModules();
-    jest.doMock("node-miio", () => nodeMiio);
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { RoborockService: Service } =
-      require("./roborock_service") as typeof import("./roborock_service");
-    const log = { debug: jest.fn(), info: jest.fn(), warn: jest.fn() };
+    vi.resetModules();
+    vi.doMock("node-miio", () => nodeMiio);
+    const { RoborockService: Service } = await import("./roborock_service.js");
+    const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() };
     const connection = await new Service(log, { enabled: true }).connect({
       duid: "duid-1",
     });
@@ -207,6 +208,6 @@ describe("RoborockService: default dependencies (node-miio)", () => {
     expect(nodeMiio.roborockDevice).toHaveBeenCalledWith(
       expect.objectContaining({ duid: "duid-1", model: "roborock.vacuum.a296" })
     );
-    jest.dontMock("node-miio");
+    vi.doUnmock("node-miio");
   });
 });
