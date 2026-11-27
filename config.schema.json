@@ -300,6 +300,11 @@
               "default": true,
               "required": true
             },
+            "cleaningSensor": {
+              "title": "Show a sensor detected while the robot cleans (e.g. to get notified when it starts)",
+              "type": "boolean",
+              "default": false
+            },
             "roomSensors": {
               "title": "Show a sensor per room, detected while the robot is in it (Roborock: needs the Xiaomi Cloud option below, or a robot of the Roborock app account)",
               "type": "boolean",
@@ -585,6 +590,7 @@
             "devices[].goToDock",
             "devices[].goToDockWord",
             "devices[].dock",
+            "devices[].cleaningSensor",
             "devices[].roomSensors",
             "devices[].cleanword",
             "devices[].roomTimeout",

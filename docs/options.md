@@ -44,6 +44,7 @@ Each vacuum in `devices` takes these options. They're all in the Homebridge UI's
 | Option                | Default | Description                                                                                                                                                        |
 | --------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `dock`                | `false` | Detected while the robot is in the dock                                                                                                                            |
+| `cleaningSensor`      | `false` | Detected while the robot cleans (not while it's paused or going back to the dock): the Home app can notify when it starts. Named "<name> <`cleanword`>"            |
 | `roomSensors`         | `false` | One per room, detected while the robot is in it (Roborock, needs the [Xiaomi Cloud](xiaomi-cloud.md) or the [Roborock app](roborock-app.md))                       |
 | `waterTankEmpty`      | `false` | Detected when the clean water tank is empty (the models that report it, usually with a self-refilling dock)                                                        |
 | `errorSensor`         | `false` | Detected while the robot reports an error (e.g. stuck): for notifications and automations. The error is in the logs                                                |

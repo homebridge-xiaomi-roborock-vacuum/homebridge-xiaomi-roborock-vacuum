@@ -28,6 +28,7 @@ import {
   Config,
   ZonesService,
   CareService,
+  CleaningSensorService,
   DustBinService,
   CurrentRoomService,
   type CloudService,
@@ -45,6 +46,7 @@ const EXTRA_SERVICES_IN_VACUUM_MODE = new Set<keyof PluginServices>([
   "dustBin",
   "dustCollection",
   "errorSensor",
+  "cleaningSensor",
   "goTo",
   "goToSpots",
   "maps",
@@ -70,6 +72,7 @@ interface PluginServices {
   maps?: MapsService;
   goToDock?: GoToDockService;
   dock?: DockService;
+  cleaningSensor?: CleaningSensorService;
   doNotDisturb?: DoNotDisturbService;
   mopDock?: MopDockService;
   waterTank?: WaterTankService;
@@ -236,6 +239,9 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
       maps: config.maps?.length ? new MapsService(coreContext) : undefined,
       goToDock: config.goToDock ? new GoToDockService(coreContext) : undefined,
       dock: config.dock ? new DockService(coreContext) : undefined,
+      cleaningSensor: config.cleaningSensor
+        ? new CleaningSensorService(coreContext)
+        : undefined,
       doNotDisturb: config.doNotDisturb
         ? new DoNotDisturbService(coreContext)
         : undefined,
