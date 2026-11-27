@@ -96,6 +96,35 @@ describe("MainService", () => {
       expect(log.warn).not.toHaveBeenCalled();
     });
 
+    test("an unknown speed is logged as not supported", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      Object.assign(deviceManagerMock, { model: "roborock.vacuum.s5" });
+      const log = (
+        service as unknown as { log: ReturnType<typeof getLoggerMock> }
+      ).log;
+      await service.init();
+      firmware$.next("3.5.8_002034");
+      (deviceManagerMock.stateChanged$ as Subject<unknown>).next({
+        key: "fanSpeed",
+        value: 999,
+      });
+      expect(log.warn).toHaveBeenCalledWith(
+        "WAR changedSpeed | Speed was changed to 999%, this speed is not supported"
+      );
+    });
+
+    test("the speed steps follow the firmware's speeds", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      Object.assign(deviceManagerMock, { model: "roborock.vacuum.s5" });
+      await service.init();
+      firmware$.next("3.5.8_002034");
+      const rotationSpeed = service.services[0].getCharacteristic(
+        HapJs.Characteristic.RotationSpeed
+      );
+      // Off, Soft, Quiet, Balanced, Turbo, Max: 5 steps
+      expect(rotationSpeed.props.minStep).toBe(20);
+    });
+
     test("a speed reported before the firmware is known is looked up once it is", async () => {
       // The roborock.vacuum.s5's speeds depend on the firmware: 102 is only "Balanced" with 3.5.7+
       const service = create({ ids: [], repeat: 1 });
