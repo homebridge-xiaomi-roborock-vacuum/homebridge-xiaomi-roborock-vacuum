@@ -11,6 +11,7 @@ import {
 import { createMainServiceMock, MainServiceMock } from "./main_service.mock";
 import { createProductInfoMock, ProductInfoMock } from "./product_info.mock";
 import type { ModesHomekitVsMiLevel } from "../models/types";
+import { ReplaySubject } from "rxjs";
 
 /** node-miio's "gen1" water levels, with the HomeKit slider levels of `findSpeedModes` */
 const GEN1_WATER: ModesHomekitVsMiLevel[] = [
@@ -212,6 +213,70 @@ describe("WaterBoxService: water level changed from the app", () => {
     ).next({ key: "waterBoxMode", value: 202 });
     expect(log.info).toHaveBeenCalledWith(
       "MON changedWaterSpeed | WaterBoxMode is now 202%"
+    );
+  });
+
+  test("a level reported before the firmware is known is looked up once it is", async () => {
+    const log = getLoggerMock();
+    const deviceManagerMock = createDeviceManagerMock();
+    const firmware$ = new ReplaySubject<string | undefined>(1);
+    const productInfo = Object.assign(createProductInfoMock(), { firmware$ });
+    const service = new WaterBoxService(
+      {
+        hap: HapJs,
+        log,
+        config: applyConfigDefaults({}),
+        deviceManager: deviceManagerMock,
+      },
+      productInfo,
+      createMainServiceMock()
+    );
+    await service.init();
+    findSpeedModesMock.mockReturnValue({ waterspeed: GEN1_WATER });
+    try {
+      (
+        deviceManagerMock.stateChanged$ as unknown as {
+          next: (e: unknown) => void;
+        }
+      ).next({ key: "waterBoxMode", value: 202 });
+      expect(log.info).not.toHaveBeenCalled();
+
+      firmware$.next("3.5.8");
+      expect(log.info).toHaveBeenCalledWith(
+        "changedWaterSpeed | Speed was changed to 202% (Medium), for HomeKit 66%"
+      );
+      const [rotationSpeed, on] = [
+        HapJs.Characteristic.RotationSpeed,
+        HapJs.Characteristic.On,
+      ].map((c) => service.services[0].getCharacteristic(c).value);
+      expect(rotationSpeed).toBe(66);
+      expect(on).toBe(true);
+    } finally {
+      findSpeedModesMock.mockReturnValue({});
+    }
+  });
+
+  test("an unknown level is logged as not supported", async () => {
+    const log = getLoggerMock();
+    const deviceManagerMock = createDeviceManagerMock();
+    const service = new WaterBoxService(
+      {
+        hap: HapJs,
+        log,
+        config: applyConfigDefaults({}),
+        deviceManager: deviceManagerMock,
+      },
+      createProductInfoMock(),
+      createMainServiceMock()
+    );
+    await service.init();
+    (
+      deviceManagerMock.stateChanged$ as unknown as {
+        next: (e: unknown) => void;
+      }
+    ).next({ key: "waterBoxMode", value: 299 });
+    expect(log.warn).toHaveBeenCalledWith(
+      "WAR changedWaterSpeed | Speed was changed to 299%, this speed is not supported"
     );
   });
 });

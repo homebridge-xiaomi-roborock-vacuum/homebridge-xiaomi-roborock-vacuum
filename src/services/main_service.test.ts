@@ -1,5 +1,5 @@
 import * as HapJs from "@homebridge/hap-nodejs";
-import { Subject } from "rxjs";
+import { ReplaySubject, Subject } from "rxjs";
 import { MainService } from "./main_service";
 import {
   createDeviceManagerMock,
@@ -12,10 +12,14 @@ import type { RoomsService } from "./rooms_service";
 
 describe("MainService", () => {
   let deviceManagerMock: DeviceManagerMock;
+  let firmware$: ReplaySubject<string | undefined>;
 
   function create(rooms: { ids: number[]; repeat: number }) {
+    firmware$ = new ReplaySubject(1);
     deviceManagerMock = createDeviceManagerMock();
     Object.assign(deviceManagerMock, { isCleaning: false });
+    let latestFirmware: string | undefined;
+    firmware$.subscribe((fw) => (latestFirmware = fw));
     const roomsService = {
       roomIdsToClean: new Set(rooms.ids.map(String)),
       roomIdsForDevice: rooms.ids,
@@ -28,7 +32,12 @@ describe("MainService", () => {
         config: applyConfigDefaults({}),
         deviceManager: deviceManagerMock,
       },
-      {} as ProductInfo,
+      {
+        get firmware() {
+          return latestFirmware;
+        },
+        firmware$,
+      } as unknown as ProductInfo,
       roomsService,
       jest.fn(),
       jest.fn()
@@ -76,12 +85,66 @@ describe("MainService", () => {
         service as unknown as { log: ReturnType<typeof getLoggerMock> }
       ).log;
       await service.init();
+      firmware$.next(undefined);
       (deviceManagerMock.stateChanged$ as Subject<unknown>).next({
         key: "fanSpeed",
         value: 110,
       });
       expect(log.info).toHaveBeenCalledWith(
         'changedSpeed | The robot\'s "SmartPlan" preset is on (fan speed 110)'
+      );
+      expect(log.warn).not.toHaveBeenCalled();
+    });
+
+    test("an unknown speed is logged as not supported", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      Object.assign(deviceManagerMock, { model: "roborock.vacuum.s5" });
+      const log = (
+        service as unknown as { log: ReturnType<typeof getLoggerMock> }
+      ).log;
+      await service.init();
+      firmware$.next("3.5.8_002034");
+      (deviceManagerMock.stateChanged$ as Subject<unknown>).next({
+        key: "fanSpeed",
+        value: 999,
+      });
+      expect(log.warn).toHaveBeenCalledWith(
+        "WAR changedSpeed | Speed was changed to 999%, this speed is not supported"
+      );
+    });
+
+    test("the speed steps follow the firmware's speeds", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      Object.assign(deviceManagerMock, { model: "roborock.vacuum.s5" });
+      await service.init();
+      firmware$.next("3.5.8_002034");
+      const rotationSpeed = service.services[0].getCharacteristic(
+        HapJs.Characteristic.RotationSpeed
+      );
+      // Off, Soft, Quiet, Balanced, Turbo, Max: 5 steps
+      expect(rotationSpeed.props.minStep).toBe(20);
+    });
+
+    test("a speed reported before the firmware is known is looked up once it is", async () => {
+      // The roborock.vacuum.s5's speeds depend on the firmware: 102 is only "Balanced" with 3.5.7+
+      const service = create({ ids: [], repeat: 1 });
+      Object.assign(deviceManagerMock, { model: "roborock.vacuum.s5" });
+      const log = (
+        service as unknown as { log: ReturnType<typeof getLoggerMock> }
+      ).log;
+      await service.init();
+
+      (deviceManagerMock.stateChanged$ as Subject<unknown>).next({
+        key: "fanSpeed",
+        value: 102,
+      });
+      expect(log.info).not.toHaveBeenCalledWith(
+        expect.stringContaining("changedSpeed")
+      );
+
+      firmware$.next("3.5.8_002034");
+      expect(log.info).toHaveBeenCalledWith(
+        "changedSpeed | Speed was changed to 102% (Balanced), for HomeKit 60%"
       );
       expect(log.warn).not.toHaveBeenCalled();
     });

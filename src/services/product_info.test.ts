@@ -73,6 +73,39 @@ describe("ProductInfo", () => {
       );
     });
 
+    test("firmware$ emits once the firmware is read, and replays it", async () => {
+      jest
+        .spyOn(deviceManagerMock.device, "getSerialNumber")
+        .mockResolvedValue("1234");
+      jest
+        .spyOn(deviceManagerMock.device, "getDeviceInfo")
+        .mockResolvedValue({ fw_ver: "1.2.3" } as never);
+      const before = jest.fn();
+      productInfo.firmware$.subscribe(before);
+      expect(before).not.toHaveBeenCalled();
+
+      (deviceManagerMock.deviceConnected$ as Subject<unknown>).next({});
+      await new Promise((resolve) => process.nextTick(resolve));
+
+      expect(before).toHaveBeenCalledWith("1.2.3");
+      const after = jest.fn();
+      productInfo.firmware$.subscribe(after);
+      expect(after).toHaveBeenCalledWith("1.2.3");
+    });
+
+    test("firmware$ emits undefined when the firmware can't be read", async () => {
+      jest
+        .spyOn(deviceManagerMock.device, "getDeviceInfo")
+        .mockRejectedValue(new Error("timeout"));
+      const firmware = jest.fn();
+      productInfo.firmware$.subscribe(firmware);
+
+      (deviceManagerMock.deviceConnected$ as Subject<unknown>).next({});
+      await new Promise((resolve) => process.nextTick(resolve));
+
+      expect(firmware).toHaveBeenCalledWith(undefined);
+    });
+
     test("handles errors", async () => {
       const err = new Error("Something went terribly wrong");
       jest

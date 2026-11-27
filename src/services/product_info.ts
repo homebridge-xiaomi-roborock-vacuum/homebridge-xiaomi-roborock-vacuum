@@ -1,10 +1,16 @@
 import { Service } from "homebridge";
 import { CoreContext } from "./types";
-import { concatMap, filter } from "rxjs";
+import { concatMap, distinctUntilChanged, filter, ReplaySubject } from "rxjs";
 import { PluginServiceClass } from "./plugin_service_class";
 
 export class ProductInfo extends PluginServiceClass {
   public firmware?: string;
+  private readonly firmwareLoaded$ = new ReplaySubject<string | undefined>(1);
+  /**
+   * The firmware, once it's been read after connecting (`undefined` if it couldn't be read). The speed tables depend
+   * on it, and the first state can arrive before it: wait for it to look the speeds up.
+   */
+  public readonly firmware$ = this.firmwareLoaded$.pipe(distinctUntilChanged());
   private readonly service: Service;
   constructor(coreContext: CoreContext) {
     super(coreContext);
@@ -53,6 +59,7 @@ export class ProductInfo extends PluginServiceClass {
           } catch (err) {
             this.log.error(`ERR getDevice | miIO.info | ${err}`);
           }
+          this.firmwareLoaded$.next(this.firmware);
         })
       )
       .subscribe();
