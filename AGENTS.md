@@ -34,7 +34,7 @@ node dist/bin/miio-vacuum.js --help   # the CLI is a thin wrapper around node-mi
 
 - `src/index.ts`: registers the plugin both as a platform (recommended) and as a legacy accessory. `src/homebridge_entities/`: the HomeKit entities (`platform.ts`, `platform_accessory.ts`, `accessory.ts`).
 - `src/services/device_manager.ts`: connects with `miio.device({ address, token })` from node-miio, polls the state and emits changes.
-  - `device.matches("type:vaccuum")` is intentional: it's how abstract-things (used by node-miio) spells the type.
+  - `device.matches("type:vacuum")`: node-miio spells the vacuum type `vacuum` (it was `vaccuum` before 0.15.0).
   - `reportedModes`: fan speeds / water levels from node-miio (`device.fanSpeeds()` / `waterBoxModes()`), loaded once after connecting.
 - `src/services/*`: one HomeKit service each (main fan/switch, battery, dock, rooms, zones, water box, care…).
 - `src/matter/`: `serviceType: "vacuum"` (platform only, Homebridge's Matter API `api.matter`). `MatterVacuum` registers a

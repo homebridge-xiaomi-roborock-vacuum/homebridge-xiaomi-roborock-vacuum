@@ -113,7 +113,7 @@ export const miio = {
     // Same logic as node-miio's
     isVacuum: (device: unknown) =>
       typeof (device as { matches?: unknown })?.matches === "function" &&
-      (device as MiioDeviceMock).matches("type:vaccuum"),
+      (device as MiioDeviceMock).matches("type:vacuum"),
   }),
 };
 
