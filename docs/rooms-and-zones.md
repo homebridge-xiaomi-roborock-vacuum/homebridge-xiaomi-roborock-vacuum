@@ -1,4 +1,4 @@
-# Rooms, zones and spots
+# Rooms, zones, spots and maps
 
 [← Back to the README](../README.md)
 
@@ -55,3 +55,21 @@ To find a spot's coordinates:
 - Or, with the [Xiaomi Cloud](xiaomi-cloud.md): drive the robot there (e.g. with the remote control in the app), and
   turn on the "find me" switch. The logs show `The robot is at x=…, y=…`. They also show where the robot stops after
   each cleaning.
+
+## Maps
+
+`maps` adds a switch per saved map: turning it on loads that map, and the switch turns itself off (the robot doesn't
+say which map is loaded). Use it in an automation before starting a cleaning, for example:
+
+- One map per floor, each with its own rooms and no-go zones.
+- An older map, when the robot learned a closed door as a wall and won't go to the rooms behind it.
+
+Pick them in the [settings page](settings-page.md) (**Maps**): it lists what the robot has saved.
+
+- Robots with multi-floor maps (e.g. Roborock S5 Max, S6 and newer) list their floors: `{ "name": "Upstairs", "id": 1 }`.
+- The others (e.g. S5, S50) keep backups of their last few maps, when "Map saving" is on in the app: `{ "name":
+"Doors open", "savedAt": "2026-10-05T08:43:55.000Z" }`. The robot replaces the oldest backup when it saves a new
+  one, so a backup's switch fails (with the dates the robot still has in the logs) once it's gone. Restoring a backup
+  replaces the current map.
+
+The rooms, zones and spots belong to a map: a floor's room ids aren't the same as another floor's.

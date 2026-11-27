@@ -15,6 +15,7 @@ export { GoToService } from "./go_to_service";
 export { GoToSpotsService } from "./go_to_spots_service";
 export { GoToDockService } from "./go_to_dock_service";
 export { MainService } from "./main_service";
+export { MapsService } from "./maps_service";
 export { MopDockService } from "./mop_dock_service";
 export { ProductInfo } from "./product_info";
 export { RoomsService } from "./rooms_service";

@@ -245,6 +245,40 @@
                 "functionBody": "var spots = model.devices[arrayIndices].goToSpots; return !!spots && spots.length > 0;"
               }
             },
+            "maps": {
+              "title": "Maps",
+              "type": "array",
+              "description": "A switch per map: on loads that map (a floor of the multi-floor maps, or a backup of an older map). Pick them in \"Maps\" above.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "required": true
+                  },
+                  "id": {
+                    "title": "Floor",
+                    "type": "integer",
+                    "description": "The id of a floor (multi-floor maps)"
+                  },
+                  "savedAt": {
+                    "title": "Backup",
+                    "type": "string",
+                    "description": "When the backup was saved (map backups)"
+                  }
+                }
+              }
+            },
+            "mapWord": {
+              "title": "Maps word",
+              "type": "string",
+              "default": "map",
+              "description": "The first word(s) of the maps' switches, in your language: \"map Upstairs\".",
+              "condition": {
+                "functionBody": "var maps = model.devices[arrayIndices].maps; return !!maps && maps.length > 0;"
+              }
+            },
             "goToDock": {
               "title": "Show switch for \"go to dock\"",
               "type": "boolean",
@@ -516,6 +550,38 @@
               ]
             },
             "devices[].goToSpotWord",
+            {
+              "key": "devices[].maps",
+              "type": "array",
+              "items": [
+                {
+                  "type": "div",
+                  "displayFlex": true,
+                  "flex-direction": "row",
+                  "items": [
+                    {
+                      "key": "devices[].maps[].name",
+                      "flex": "4 4 200px",
+                      "notitle": true,
+                      "placeholder": "Name"
+                    },
+                    {
+                      "key": "devices[].maps[].id",
+                      "flex": "1 1 80px",
+                      "notitle": true,
+                      "placeholder": "Floor"
+                    },
+                    {
+                      "key": "devices[].maps[].savedAt",
+                      "flex": "2 2 160px",
+                      "notitle": true,
+                      "placeholder": "Backup"
+                    }
+                  ]
+                }
+              ]
+            },
+            "devices[].mapWord",
             "devices[].goToDock",
             "devices[].goToDockWord",
             "devices[].dock",

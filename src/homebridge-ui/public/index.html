@@ -341,6 +341,30 @@
   </div>
 </div>
 
+<div class="card xrv-card" id="maps-card" hidden>
+  <div class="card-body">
+    <h5 class="card-title">Maps (Roborock)</h5>
+    <p class="xrv-muted mb-2">
+      A switch per map: turning it on loads that map, e.g. one per floor, or an
+      older map saved by the robot (when it learned a closed door as a wall).
+      Robots with multi-floor maps list their floors; the others (e.g. S5) list
+      the backups of their last maps, if "Map saving" is on in the app.
+    </p>
+    <div class="form-inline mb-2">
+      <select class="form-control mr-2 mb-2" id="maps-device"></select>
+      <button type="button" class="btn btn-primary mb-2" id="load-maps">
+        Read the robot's maps
+      </button>
+    </div>
+    <div id="maps-tools" hidden>
+      <div id="maps-list"></div>
+      <button type="button" class="btn btn-primary" id="save-maps">
+        Use these maps
+      </button>
+    </div>
+  </div>
+</div>
+
 <p class="xrv-trademarks mt-3">
   Xiaomi, Xiaomi Home, Mi Home, Roborock and their logos are trademarks of their
   respective owners. They're shown only to tell which app each section is for:
@@ -408,6 +432,47 @@
       refreshDeviceSelect();
       refreshDevicesTable();
       refreshRoborockDevicesTable();
+    }
+
+    /** The configured vacuums the settings page can reach: a duid, a device ID, or an IP and a token */
+    function reachableDevices() {
+      return platformBlock()
+        .devices.map((device, index) => ({ device, index }))
+        .filter(
+          ({ device }) =>
+            device.duid || device.did || (device.ip && device.token)
+        );
+    }
+
+    /** Fills a vacuum picker, keeping the selection */
+    function fillDeviceSelect(select) {
+      const previous = select.value;
+      select.replaceChildren();
+      for (const { device, index } of reachableDevices()) {
+        const option = el("option", device.name || device.ip || device.duid);
+        option.value = String(index);
+        select.append(option);
+      }
+      if ([...select.options].some((o) => o.value === previous)) {
+        select.value = previous;
+      }
+    }
+
+    /** What the server needs to reach the vacuum */
+    function deviceRequest(device) {
+      return device.duid
+        ? {
+            // A robot of the Roborock app account: through that account
+            duid: device.duid,
+            ip: device.ip,
+            roborockSessionFile: roborockRequest().sessionFile,
+          }
+        : {
+            ...cloudRequest(),
+            ip: device.ip,
+            token: device.token,
+            did: device.did,
+          };
     }
 
     function errorMessage(err) {
@@ -721,21 +786,11 @@
 
     // ---------- Map ----------
     function refreshDeviceSelect() {
-      const select = $("map-device");
-      const previous = select.value;
-      select.replaceChildren();
-      platformBlock().devices.forEach((device, index) => {
-        // Xiaomi: a device ID, or an IP and a token. Roborock app: a duid
-        if (!device.duid && !device.did && (!device.ip || !device.token))
-          return;
-        const option = el("option", device.name || device.ip || device.duid);
-        option.value = String(index);
-        select.append(option);
-      });
-      if ([...select.options].some((o) => o.value === previous)) {
-        select.value = previous;
-      }
-      $("load-map").disabled = select.options.length === 0;
+      fillDeviceSelect($("map-device"));
+      $("load-map").disabled = $("map-device").options.length === 0;
+      fillDeviceSelect($("maps-device"));
+      // Reading the maps needs no account with an IP and a token
+      $("maps-card").hidden = $("maps-device").options.length === 0;
     }
 
     $("load-map").addEventListener("click", async () => {
@@ -743,22 +798,7 @@
       if (!device) return;
       homebridge.showSpinner();
       try {
-        const map = await homebridge.request(
-          "/map",
-          device.duid
-            ? {
-                // A robot of the Roborock app account: its map comes from there
-                duid: device.duid,
-                ip: device.ip,
-                roborockSessionFile: roborockRequest().sessionFile,
-              }
-            : {
-                ...cloudRequest(),
-                ip: device.ip,
-                token: device.token,
-                did: device.did,
-              }
-        );
+        const map = await homebridge.request("/map", deviceRequest(device));
         showMap(map, device);
       } catch (err) {
         homebridge.toast.error(errorMessage(err), "Couldn't get the map");
@@ -1196,6 +1236,150 @@
       }
       await updateConfig(
         `${spots.length} "go to" spot${spots.length === 1 ? "" : "s"} set for "${target.name}".`
+      );
+    });
+
+    // ---------- Maps ----------
+    let currentMaps; // { device, rows: [{ kind, id?, savedAt?, label, name, selected, gone? }] }
+
+    $("load-maps").addEventListener("click", async () => {
+      const device = platformBlock().devices[Number($("maps-device").value)];
+      if (!device) return;
+      homebridge.showSpinner();
+      try {
+        const { floors, backups } = await homebridge.request(
+          "/maps",
+          deviceRequest(device)
+        );
+        showMaps(device, floors, backups);
+      } catch (err) {
+        homebridge.toast.error(errorMessage(err), "Couldn't read the maps");
+      } finally {
+        homebridge.hideSpinner();
+      }
+    });
+
+    function sameTime(a, b) {
+      return (
+        Math.round(Date.parse(a) / 1000) === Math.round(Date.parse(b) / 1000)
+      );
+    }
+
+    function showMaps(device, floors, backups) {
+      const saved = Array.isArray(device.maps) ? device.maps : [];
+      const savedFloor = (id) => saved.find((m) => m.id === id);
+      const savedBackup = (at) =>
+        saved.find(
+          (m) => m.id === undefined && m.savedAt && sameTime(m.savedAt, at)
+        );
+      const rows = [
+        ...floors.map(({ id, name }) => ({
+          kind: "floor",
+          id,
+          label: `Floor "${name}"`,
+          name: savedFloor(id)?.name ?? name,
+          selected: !!savedFloor(id),
+        })),
+        ...backups.map(({ savedAt }) => ({
+          kind: "backup",
+          savedAt,
+          label: `Backup saved on ${new Date(savedAt).toLocaleString()}`,
+          name: savedBackup(savedAt)?.name ?? "",
+          selected: !!savedBackup(savedAt),
+        })),
+      ];
+      // The configured maps the robot no longer has (e.g. a backup replaced by newer ones)
+      for (const map of saved) {
+        const listed =
+          map.id !== undefined
+            ? floors.some((f) => f.id === map.id)
+            : backups.some(
+                (b) => map.savedAt && sameTime(b.savedAt, map.savedAt)
+              );
+        if (listed) continue;
+        rows.push({
+          kind: map.id !== undefined ? "floor" : "backup",
+          id: map.id,
+          savedAt: map.savedAt,
+          label: "No longer on the robot",
+          name: map.name || "",
+          selected: true,
+          gone: true,
+        });
+      }
+      currentMaps = { device, rows };
+      renderMaps();
+      $("maps-tools").hidden = false;
+    }
+
+    function renderMaps() {
+      const container = $("maps-list");
+      container.replaceChildren();
+      const { rows } = currentMaps;
+      if (rows.length === 0) {
+        container.append(
+          el(
+            "p",
+            'This robot has no saved maps: no multi-floor maps, and no backups (turn on "Map saving" in the app).',
+            "xrv-muted"
+          )
+        );
+      }
+      rows.forEach((row) => {
+        const line = el("div", undefined, "xrv-row");
+        const check = el("input");
+        check.type = "checkbox";
+        check.checked = row.selected;
+        const input = el(
+          "input",
+          undefined,
+          "form-control form-control-sm xrv-name"
+        );
+        input.type = "text";
+        input.placeholder =
+          row.kind === "floor"
+            ? "Name (e.g. Upstairs)"
+            : "Name (e.g. Doors open)";
+        input.value = row.name;
+        input.disabled = !row.selected;
+        check.addEventListener("change", () => {
+          row.selected = check.checked;
+          input.disabled = !row.selected;
+          if (row.selected) input.focus();
+        });
+        input.addEventListener("input", () => {
+          row.name = input.value;
+        });
+        line.append(
+          check,
+          input,
+          el("span", row.label, row.gone ? "text-warning" : "xrv-coords")
+        );
+        container.append(line);
+      });
+    }
+
+    $("save-maps").addEventListener("click", async () => {
+      const { device, rows } = currentMaps;
+      const selected = rows.filter((row) => row.selected);
+      if (selected.some((row) => !row.name.trim())) {
+        homebridge.toast.error(
+          "Name all the maps you picked (or untick them)."
+        );
+        return;
+      }
+      const target = targetDevice(device);
+      if (selected.length) {
+        target.maps = selected.map((row) =>
+          row.kind === "floor"
+            ? { name: row.name.trim(), id: row.id }
+            : { name: row.name.trim(), savedAt: row.savedAt }
+        );
+      } else {
+        delete target.maps;
+      }
+      await updateConfig(
+        `${selected.length} map${selected.length === 1 ? "" : "s"} set for "${target.name}".`
       );
     });
 

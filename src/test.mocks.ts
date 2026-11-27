@@ -20,6 +20,10 @@ type MockedMembers =
   | "setDoNotDisturb"
   | "disableDoNotDisturb"
   | "getRoomMap"
+  | "getMaps"
+  | "loadMap"
+  | "getBackupMaps"
+  | "loadBackupMap"
   | "getSerialNumber"
   | "getTimer"
   | "getWaterBoxMode"
@@ -68,6 +72,10 @@ const miioDevice: MiioDeviceMock = {
   setDoNotDisturb: vi.fn(),
   disableDoNotDisturb: vi.fn(),
   getRoomMap: vi.fn(),
+  getMaps: vi.fn().mockResolvedValue([]),
+  loadMap: vi.fn(),
+  getBackupMaps: vi.fn().mockResolvedValue([]),
+  loadBackupMap: vi.fn(),
   getSerialNumber: vi.fn(),
   getTimer: vi.fn(),
   getWaterBoxMode: vi.fn(),

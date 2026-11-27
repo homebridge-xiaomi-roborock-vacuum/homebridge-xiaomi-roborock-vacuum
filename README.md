@@ -107,7 +107,7 @@ Add one entry to `devices` per vacuum.
 - [Options](docs/options.md): every option of a vacuum, by group (connection, switches, sensors, rooms and zones).
 - [Fan speeds and water levels](docs/speeds-and-modes.md): what each step of the HomeKit sliders and each Matter clean
   mode sends to the robot, by model.
-- [Rooms, zones and spots](docs/rooms-and-zones.md): clean a room or a zone, and send the robot to a spot.
+- [Rooms, zones, spots and maps](docs/rooms-and-zones.md): clean a room or a zone, send the robot to a spot, and switch maps.
 - [Xiaomi Cloud](docs/xiaomi-cloud.md): no token hunting, the robot found again when its IP changes, the current room.
 - [Roborock app](docs/roborock-app.md): the vacuums paired with the Roborock app instead of Mi Home.
 - [Settings page](docs/settings-page.md): the plugin's tools in the Homebridge UI (logins, vacuums, map).

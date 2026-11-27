@@ -19,6 +19,7 @@ import {
   FindMeService,
   GoToService,
   GoToSpotsService,
+  MapsService,
   GoToDockService,
   DockService,
   DoNotDisturbService,
@@ -46,6 +47,7 @@ const EXTRA_SERVICES_IN_VACUUM_MODE = new Set<keyof PluginServices>([
   "errorSensor",
   "goTo",
   "goToSpots",
+  "maps",
   "mopDock",
   "waterTank",
   "zones",
@@ -65,6 +67,7 @@ interface PluginServices {
   findMe: FindMeService;
   goTo?: GoToService;
   goToSpots?: GoToSpotsService;
+  maps?: MapsService;
   goToDock?: GoToDockService;
   dock?: DockService;
   doNotDisturb?: DoNotDisturbService;
@@ -230,6 +233,7 @@ export class XiaomiRoborockVacuumAccessory implements AccessoryPlugin {
       goToSpots: config.goToSpots?.length
         ? new GoToSpotsService(coreContext)
         : undefined,
+      maps: config.maps?.length ? new MapsService(coreContext) : undefined,
       goToDock: config.goToDock ? new GoToDockService(coreContext) : undefined,
       dock: config.dock ? new DockService(coreContext) : undefined,
       doNotDisturb: config.doNotDisturb

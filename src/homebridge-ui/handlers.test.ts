@@ -185,6 +185,62 @@ describe("custom UI handlers", () => {
     ).rejects.toThrow("map failed");
     expect(device.destroy).toHaveBeenCalled();
   });
+
+  describe("/maps", () => {
+    test("with an IP and a token: no cloud needed. Floors and backups (newest first, by date)", async () => {
+      const { handlers, deps, device } = setup({});
+      Object.assign(device, {
+        getMaps: vi.fn().mockResolvedValue([]),
+        getBackupMaps: vi.fn().mockResolvedValue([
+          { id: 1, savedAt: new Date(1791368336000) },
+          { id: 2, savedAt: new Date(1791189835000) },
+        ]),
+      });
+      await expect(
+        handlers["/maps"]({ ip: "10.0.0.9", token: "abc" })
+      ).resolves.toStrictEqual({
+        floors: [],
+        backups: [
+          { savedAt: "2026-10-07T10:18:56.000Z" },
+          { savedAt: "2026-10-05T08:43:55.000Z" },
+        ],
+      });
+      expect(deps.connect).toHaveBeenCalledWith("10.0.0.9", "abc");
+      expect(deps.loadSession).not.toHaveBeenCalled();
+      expect(device.destroy).toHaveBeenCalled();
+    });
+
+    test("with a device ID, the account knows its IP and token", async () => {
+      const { handlers, deps, device } = setup();
+      Object.assign(device, {
+        getMaps: vi.fn().mockResolvedValue([{ id: 0, name: "Ground floor" }]),
+        // A model without backups
+        getBackupMaps: vi.fn().mockRejectedValue(new Error("unknown_method")),
+      });
+      await expect(handlers["/maps"]({ did: "1" })).resolves.toStrictEqual({
+        floors: [{ id: 0, name: "Ground floor" }],
+        backups: [],
+      });
+      expect(deps.connect).toHaveBeenCalledWith("10.0.0.2", "ABC");
+    });
+
+    test("models without maps, and missing details", async () => {
+      const { handlers, device } = setup();
+      await expect(
+        handlers["/maps"]({ ip: "10.0.0.9", token: "abc" })
+      ).resolves.toStrictEqual({ floors: [], backups: [] });
+      expect(device.destroy).toHaveBeenCalled();
+      await expect(handlers["/maps"]({ ip: "10.0.0.9" })).rejects.toThrow(
+        "The vacuum needs a device ID, or an IP and a token."
+      );
+      await expect(handlers["/maps"]({ did: "404" })).rejects.toThrow(
+        "This vacuum is not in your Xiaomi account (check its device ID)."
+      );
+      await expect(setup({}).handlers["/maps"]({ did: "1" })).rejects.toThrow(
+        "Log in to the Xiaomi Cloud first."
+      );
+    });
+  });
 });
 
 describe("Roborock app account", () => {
@@ -371,5 +427,28 @@ describe("Roborock app account", () => {
       handlers["/roborock/logout"]({ sessionFile: "/rr.json" })
     ).resolves.toStrictEqual({ loggedIn: false });
     expect(deps.deleteRoborockSession).toHaveBeenCalledWith("/rr.json");
+  });
+
+  test("the maps of a robot of the Roborock account", async () => {
+    const { handlers, deps } = setupRoborock(roborockSession);
+    const device = {
+      getMaps: vi.fn().mockResolvedValue([{ id: 1, name: "Upstairs" }]),
+      getBackupMaps: vi.fn().mockResolvedValue([]),
+      destroy: vi.fn(),
+    };
+    Object.assign(deps, { connectRoborock: vi.fn().mockResolvedValue(device) });
+    await expect(
+      handlers["/maps"]({ duid: "duid-1", roborockSessionFile: "/rr.json" })
+    ).resolves.toStrictEqual({
+      floors: [{ id: 1, name: "Upstairs" }],
+      backups: [],
+    });
+    expect(
+      (deps as unknown as { connectRoborock: unknown }).connectRoborock
+    ).toHaveBeenCalledWith(roborockSession, "duid-1", undefined);
+    expect(device.destroy).toHaveBeenCalled();
+    await expect(
+      setupRoborock().handlers["/maps"]({ duid: "duid-1" })
+    ).rejects.toThrow("Log in to your Roborock account first.");
   });
 });
