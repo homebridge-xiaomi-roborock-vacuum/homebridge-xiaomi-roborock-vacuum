@@ -211,41 +211,34 @@ export class RoomsService extends PluginServiceClass {
     await this.deviceManager.ensureDevice("setCleaning");
     const { roomId, repeat } = room;
 
-    try {
-      if (
-        state &&
-        !this.deviceManager.isCleaning &&
-        !this.deviceManager.isPaused
-      ) {
-        this.log.info(
-          `ACT setCleaningRoom | Enable cleaning Room ID ${roomId}${repeat > 1 ? ` ${repeat} times` : ""}.`
-        );
-        // Delete then add, to maintain the correct order.
-        this.roomIdsToClean.delete(roomId);
-        this.roomIdsToClean.add(roomId);
-        this.roomRepeats.set(roomId, repeat);
-        // Only one switch per room: e.g. "Kitchen 2x" turns "Kitchen" off
-        this.refreshRoomSwitches(roomId);
-        this.checkRoomTimeout();
-      } else if (
-        !state &&
-        !this.deviceManager.isCleaning &&
-        !this.deviceManager.isPaused &&
-        this.isSelected(room)
-      ) {
-        this.log.info(
-          `ACT setCleaningRoom | Disable cleaning Room ID ${roomId}.`
-        );
-        this.roomIdsToClean.delete(roomId);
-        this.roomRepeats.delete(roomId);
-        this.checkRoomTimeout();
-      }
-    } catch (err) {
-      this.log.error(
-        `ERR setCleaningRoom | Failed to set cleaning to ${state}`,
-        err
+    // Only bookkeeping (no device call): nothing here can throw
+    if (
+      state &&
+      !this.deviceManager.isCleaning &&
+      !this.deviceManager.isPaused
+    ) {
+      this.log.info(
+        `ACT setCleaningRoom | Enable cleaning Room ID ${roomId}${repeat > 1 ? ` ${repeat} times` : ""}.`
       );
-      throw err;
+      // Delete then add, to maintain the correct order.
+      this.roomIdsToClean.delete(roomId);
+      this.roomIdsToClean.add(roomId);
+      this.roomRepeats.set(roomId, repeat);
+      // Only one switch per room: e.g. "Kitchen 2x" turns "Kitchen" off
+      this.refreshRoomSwitches(roomId);
+      this.checkRoomTimeout();
+    } else if (
+      !state &&
+      !this.deviceManager.isCleaning &&
+      !this.deviceManager.isPaused &&
+      this.isSelected(room)
+    ) {
+      this.log.info(
+        `ACT setCleaningRoom | Disable cleaning Room ID ${roomId}.`
+      );
+      this.roomIdsToClean.delete(roomId);
+      this.roomRepeats.delete(roomId);
+      this.checkRoomTimeout();
     }
   }
 
