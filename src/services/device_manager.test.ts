@@ -102,6 +102,77 @@ describe("DeviceManager", () => {
     });
   });
 
+  describe("ensureDevice", () => {
+    const nodeMiio = miioModule as unknown as MiioModuleMock;
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      miio.device.matches.mockReturnValue(true);
+      miio.device.property.mockReturnValue("charging");
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+      miio.device.connected = true;
+      nodeMiio.device.mockImplementation(() => miio.device);
+    });
+
+    const connected = async () => {
+      const deviceManager = new DeviceManager(createHomebridgeMock().hap, log, {
+        ip: "192.168.0.1",
+        token: "token",
+      });
+      await vi.advanceTimersByTimeAsync(0);
+      nodeMiio.device.mockClear();
+      return deviceManager;
+    };
+
+    test("reuses the connected device", async () => {
+      const deviceManager = await connected();
+      await deviceManager.ensureDevice("test");
+      expect(nodeMiio.device).not.toHaveBeenCalled();
+      expect(log.debug).toHaveBeenCalledWith(
+        "DEB ensureDevice | test-model | The socket is still on. Reusing it."
+      );
+    });
+
+    test("reconnects when the socket was destroyed", async () => {
+      const deviceManager = await connected();
+      miio.device.connected = false;
+      await deviceManager.ensureDevice("test");
+      expect(nodeMiio.device).toHaveBeenCalledTimes(1);
+      expect(log.error).not.toHaveBeenCalledWith(
+        "test | No vacuum cleaner is discovered yet."
+      );
+    });
+
+    test("connects (and logs it) when there's no device yet", async () => {
+      nodeMiio.device.mockRejectedValueOnce(new Error("timeout"));
+      const deviceManager = new DeviceManager(createHomebridgeMock().hap, log, {
+        ip: "192.168.0.1",
+        token: "token",
+      });
+      await vi.advanceTimersByTimeAsync(0);
+      await deviceManager.ensureDevice("test");
+      expect(log.error).toHaveBeenCalledWith(
+        "test | No vacuum cleaner is discovered yet."
+      );
+      expect(deviceManager.device).toBe(miio.device);
+    });
+
+    test("fails when it can't connect", async () => {
+      nodeMiio.device.mockRejectedValue(new Error("timeout"));
+      const deviceManager = new DeviceManager(createHomebridgeMock().hap, log, {
+        ip: "192.168.0.1",
+        token: "token",
+      });
+      await vi.advanceTimersByTimeAsync(0);
+      await expect(deviceManager.ensureDevice("test")).rejects.toThrow(
+        "timeout"
+      );
+    });
+  });
+
   describe("reported modes", () => {
     afterEach(() => {
       delete (miio.device as Partial<typeof miio.device>).fanSpeeds;
