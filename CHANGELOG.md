@@ -2,6 +2,13 @@
 
 ## Next
 
+## 1.10.0
+
+- [Bug] Dust collection switch: it only starts emptying the dust bin while the robot is on the dock (charging or fully charged). It was sent in any state, even while cleaning. Away from the dock, the switch now turns back off ([#1343](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1343)).
+- [Bug] Logs: no more stray `}` in `Set cleaning to …` ([#1345](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1345)).
+- [Chore] The plugin is an ES module now, like node-miio `0.19.0`. Nothing changes for users ([#1338](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1338), [afharo/node-miio#81](https://github.com/afharo/node-miio/pull/81)).
+- [Chore] Tests: coverage from 89.7% to 97.6% of the lines, and error handling that could never run removed ([#1342](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1342), [#1344](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1344)).
+
 ## 1.9.0
 
 - [Feature] **Room switches in their own rooms**: on the platform, each room switch (and its 2x / 3x repeats) is an accessory of its own, so you can put it in its room in the Home app. **After updating**, the room switches show up as new accessories in the bridge's default room: move them to their rooms, and update the scenes and automations that used them. The old `accessories` format keeps them inside the vacuum. With `"serviceType": "vacuum"`, the rooms are in the Matter vacuum, and Siri understands them ([#467](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/discussions/467), [#1336](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1336)).
