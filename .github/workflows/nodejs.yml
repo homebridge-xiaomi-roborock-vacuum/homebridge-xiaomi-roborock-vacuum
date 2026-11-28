@@ -101,7 +101,11 @@ jobs:
       - run: npm test -- --coverage
         env:
           CI: true
-      - run: npx codecov@3.7.0
-        env:
-          CI: true
-          CODECOV_TOKEN: eb2ac9d8-8f8f-4901-aaa9-73670a149904
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          # Pull requests from forks get no secrets: the action uploads them tokenless (public repo)
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          disable_search: true
+          flags: node-${{ matrix.node-version }}
