@@ -2,6 +2,8 @@
 
 ## Next
 
+- [Chore] node-miio `0.19.1`: robots connected without a token (or before it's known) at different addresses no longer get mixed up, and a few smaller fixes. `1.10.0` already installed it on new installs, but could keep `0.19.0` on the ones that updated before it was out ([afharo/node-miio#86](https://github.com/afharo/node-miio/pull/86)).
+
 ## 1.10.0
 
 - [Bug] Dust collection switch: it only starts emptying the dust bin while the robot is on the dock (charging or fully charged). It was sent in any state, even while cleaning. Away from the dock, the switch now turns back off ([#1343](https://github.com/homebridge-xiaomi-roborock-vacuum/homebridge-xiaomi-roborock-vacuum/pull/1343)).
