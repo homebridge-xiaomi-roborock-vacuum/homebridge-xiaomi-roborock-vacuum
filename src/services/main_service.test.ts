@@ -1,4 +1,4 @@
-import { describe, test, expect, afterEach, vi } from "vitest";
+import { describe, test, expect, afterEach, vi, type Mock } from "vitest";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { ReplaySubject, Subject } from "rxjs";
 import { MainService } from "./main_service.js";
@@ -15,7 +15,15 @@ describe("MainService", () => {
   let deviceManagerMock: DeviceManagerMock;
   let firmware$: ReplaySubject<string | undefined>;
 
-  function create(rooms: { ids: number[]; repeat: number }) {
+  let setWaterSpeed: Mock<(mode: string) => Promise<void>>;
+  let changedPause: Mock<(isCleaning: boolean) => void>;
+
+  function create(
+    rooms: { ids: number[]; repeat: number },
+    config: Record<string, unknown> = {}
+  ) {
+    setWaterSpeed = vi.fn();
+    changedPause = vi.fn();
     firmware$ = new ReplaySubject(1);
     deviceManagerMock = createDeviceManagerMock();
     Object.assign(deviceManagerMock, { isCleaning: false });
@@ -30,7 +38,7 @@ describe("MainService", () => {
       {
         hap: HapJs,
         log: getLoggerMock(),
-        config: applyConfigDefaults({}),
+        config: applyConfigDefaults(config),
         deviceManager: deviceManagerMock,
       },
       {
@@ -40,8 +48,8 @@ describe("MainService", () => {
         firmware$,
       } as unknown as ProductInfo,
       roomsService,
-      vi.fn(),
-      vi.fn()
+      setWaterSpeed,
+      changedPause
     );
   }
 
@@ -148,6 +156,260 @@ describe("MainService", () => {
         "changedSpeed | Speed was changed to 102% (Balanced), for HomeKit 60%"
       );
       expect(log.warn).not.toHaveBeenCalled();
+    });
+  });
+
+  const logOf = (service: MainService) =>
+    (service as unknown as { log: ReturnType<typeof getLoggerMock> }).log;
+  const stateChanged = (key: string, value: unknown) =>
+    (deviceManagerMock.stateChanged$ as Subject<unknown>).next({ key, value });
+  /** A model node-miio doesn't list: its speeds come from what the robot reports */
+  const withReportedSpeeds = () => {
+    deviceManagerMock.reportedModes = {
+      fanSpeeds: [
+        { value: 101, name: "Quiet" },
+        { value: 102, name: "Balanced" },
+        { value: 106, name: "Custom" },
+      ],
+      waterBoxModes: [],
+      presets: [],
+    };
+  };
+
+  describe("service type", () => {
+    test("a fan (the default) with the rotation speed, as the primary service", () => {
+      const [service] = create({ ids: [], repeat: 1 }).services;
+      expect(service.UUID).toBe(HapJs.Service.Fan.UUID);
+      expect(service.isPrimaryService).toBe(true);
+      expect(
+        service.testCharacteristic(HapJs.Characteristic.RotationSpeed)
+      ).toBe(true);
+    });
+
+    test("a switch, without the rotation speed", async () => {
+      const mainService = create(
+        { ids: [], repeat: 1 },
+        { serviceType: "switch" }
+      );
+      const [service] = mainService.services;
+      expect(service.UUID).toBe(HapJs.Service.Switch.UUID);
+      expect(
+        service.testCharacteristic(HapJs.Characteristic.RotationSpeed)
+      ).toBe(false);
+      // No speed subscriptions: the firmware isn't awaited
+      await mainService.init();
+      stateChanged("fanSpeed", 102);
+      expect(logOf(mainService).info).not.toHaveBeenCalledWith(
+        expect.stringContaining("changedSpeed")
+      );
+    });
+  });
+
+  describe("cleaning state", () => {
+    test.each([true, false])(
+      "onGet returns isCleaning (%p)",
+      async (isCleaning) => {
+        const service = create({ ids: [], repeat: 1 });
+        Object.assign(deviceManagerMock, { isCleaning });
+        await expect(
+          service.services[0]
+            .getCharacteristic(HapJs.Characteristic.On)
+            .handleGetRequest()
+        ).resolves.toBe(isCleaning);
+      }
+    );
+
+    test("follows the robot, and tells the pause switch", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      await service.init();
+      const on = service.services[0].getCharacteristic(HapJs.Characteristic.On);
+      stateChanged("cleaning", true);
+      expect(on.value).toBe(true);
+      expect(changedPause).toHaveBeenLastCalledWith(true);
+      stateChanged("cleaning", false);
+      expect(on.value).toBe(false);
+      expect(changedPause).toHaveBeenLastCalledWith(false);
+      expect(logOf(service).info).toHaveBeenCalledWith(
+        "changedCleaning | Cleaning is OFF."
+      );
+    });
+  });
+
+  describe("setCleaning", () => {
+    test("the On switch starts the cleaning", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      await service.services[0]
+        .getCharacteristic(HapJs.Characteristic.On)
+        .handleSetRequest(true);
+      expect(deviceManagerMock.device.activateCleaning).toHaveBeenCalledTimes(
+        1
+      );
+    });
+
+    test("ON starts a full cleaning when no room is selected", async () => {
+      await create({ ids: [], repeat: 1 }).setCleaning(true);
+      expect(deviceManagerMock.ensureDevice).toHaveBeenCalledWith(
+        "setCleaning"
+      );
+      expect(deviceManagerMock.device.activateCleaning).toHaveBeenCalledTimes(
+        1
+      );
+      expect(deviceManagerMock.device.cleanRooms).not.toHaveBeenCalled();
+    });
+
+    test("ON does nothing while it's already cleaning", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      Object.assign(deviceManagerMock, { isCleaning: true });
+      await service.setCleaning(true);
+      expect(deviceManagerMock.device.activateCleaning).not.toHaveBeenCalled();
+    });
+
+    test.each([
+      [{ isCleaning: true, isPaused: false }],
+      [{ isCleaning: false, isPaused: true }],
+    ])("OFF sends it to the dock (%o)", async (flags) => {
+      const service = create({ ids: [], repeat: 1 });
+      Object.assign(deviceManagerMock, flags);
+      await service.setCleaning(false);
+      expect(deviceManagerMock.device.activateCharging).toHaveBeenCalledTimes(
+        1
+      );
+    });
+
+    test("OFF does nothing when it's idle", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      Object.assign(deviceManagerMock, { isCleaning: false, isPaused: false });
+      await service.setCleaning(false);
+      expect(deviceManagerMock.device.activateCharging).not.toHaveBeenCalled();
+    });
+
+    test("logs and rethrows the device's errors", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      const error = new Error("Boom");
+      deviceManagerMock.device.activateCleaning.mockRejectedValueOnce(error);
+      await expect(service.setCleaning(true)).rejects.toBe(error);
+      expect(logOf(service).error).toHaveBeenCalledWith(
+        "setCleaning | Failed to set cleaning to true",
+        error
+      );
+    });
+  });
+
+  describe("fan speed from HomeKit", () => {
+    const rotationSpeed = (service: MainService) =>
+      service.services[0].getCharacteristic(HapJs.Characteristic.RotationSpeed);
+
+    test("onGet converts the robot's speed to the HomeKit level", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      withReportedSpeeds();
+      deviceManagerMock.device.fanSpeed.mockResolvedValue(102);
+      await expect(rotationSpeed(service).handleGetRequest()).resolves.toBe(66);
+      expect(deviceManagerMock.ensureDevice).toHaveBeenCalledWith("getSpeed");
+    });
+
+    test("onGet is 0 for an unknown speed", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      withReportedSpeeds();
+      deviceManagerMock.device.fanSpeed.mockResolvedValue(999);
+      await expect(rotationSpeed(service).handleGetRequest()).resolves.toBe(0);
+    });
+
+    test.each([
+      [1, 101, "Quiet"],
+      [33, 101, "Quiet"],
+      [34, 102, "Balanced"],
+      [100, 106, "Custom"],
+    ])("onSet %p%% sets the speed %p (%s)", async (level, miLevel, name) => {
+      const service = create({ ids: [], repeat: 1 });
+      withReportedSpeeds();
+      await rotationSpeed(service).handleSetRequest(level);
+      expect(deviceManagerMock.device.changeFanSpeed).toHaveBeenCalledWith(
+        miLevel
+      );
+      expect(service.cachedState.get("FanSpeed")).toBe(miLevel);
+      expect(service.cachedState.get("FanSpeedName")).toBe(name);
+    });
+
+    test("0% stops the cleaning instead of changing the speed", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      withReportedSpeeds();
+      Object.assign(deviceManagerMock, { isCleaning: true });
+      await service.setSpeed(0);
+      expect(deviceManagerMock.device.changeFanSpeed).not.toHaveBeenCalled();
+      expect(deviceManagerMock.device.activateCharging).toHaveBeenCalledTimes(
+        1
+      );
+    });
+
+    test("sets a speed by its mode name", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      withReportedSpeeds();
+      await service.setSpeed("Balanced");
+      expect(deviceManagerMock.device.changeFanSpeed).toHaveBeenCalledWith(102);
+    });
+
+    test("ignores an unknown mode name", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      withReportedSpeeds();
+      await service.setSpeed("Hurricane");
+      expect(deviceManagerMock.device.changeFanSpeed).not.toHaveBeenCalled();
+      expect(logOf(service).info).toHaveBeenCalledWith(
+        'setSpeed | Mode "Hurricane" does not exist.'
+      );
+    });
+
+    describe("with the water box", () => {
+      test("the Custom speed sets the water to Custom too", async () => {
+        const service = create({ ids: [], repeat: 1 }, { waterBox: true });
+        withReportedSpeeds();
+        await service.setSpeed("Custom");
+        expect(setWaterSpeed).toHaveBeenCalledWith("Custom");
+      });
+
+      test("the Custom speed leaves the water alone when it's already Custom", async () => {
+        const service = create({ ids: [], repeat: 1 }, { waterBox: true });
+        withReportedSpeeds();
+        service.cachedState.set("WaterSpeedName", "Custom");
+        await service.setSpeed("Custom");
+        expect(setWaterSpeed).not.toHaveBeenCalled();
+      });
+
+      test("leaving the Custom speed sets the water to Medium", async () => {
+        const service = create({ ids: [], repeat: 1 }, { waterBox: true });
+        withReportedSpeeds();
+        service.cachedState.set("WaterSpeedName", "Custom");
+        await service.setSpeed("Quiet");
+        expect(setWaterSpeed).toHaveBeenCalledWith("Medium");
+      });
+
+      test("other speeds leave the water alone", async () => {
+        const service = create({ ids: [], repeat: 1 }, { waterBox: true });
+        withReportedSpeeds();
+        await service.setSpeed("Quiet");
+        expect(setWaterSpeed).not.toHaveBeenCalled();
+      });
+    });
+
+    test("without the water box, the Custom speed leaves the water alone", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      withReportedSpeeds();
+      await service.setSpeed("Custom");
+      expect(setWaterSpeed).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("fan speed changed from the app (known speed)", () => {
+    test("updates the HomeKit level", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      withReportedSpeeds();
+      await service.init();
+      firmware$.next(undefined);
+      stateChanged("fanSpeed", 106);
+      expect(
+        service.services[0].getCharacteristic(
+          HapJs.Characteristic.RotationSpeed
+        ).value
+      ).toBe(100);
     });
   });
 });
