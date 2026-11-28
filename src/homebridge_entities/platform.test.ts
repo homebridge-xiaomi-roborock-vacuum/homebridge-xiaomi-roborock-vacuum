@@ -13,16 +13,16 @@ import { Categories } from "@homebridge/hap-nodejs";
 import { BehaviorSubject } from "rxjs";
 import os, { networkInterfaces } from "node:os";
 
-import { createHomebridgeMock, miio } from "../test.mocks";
-import "./platform.test.mock";
-import { XiaomiRoborockVacuumPlatformAccessoryInitializerMock } from "./platform.test.mock";
-import { CloudService, RoborockService } from "../services";
+import { createHomebridgeMock, miio } from "../test.mocks.js";
+import "./platform.test.mock.js";
+import { XiaomiRoborockVacuumPlatformAccessoryInitializerMock } from "./platform.test.mock.js";
+import { CloudService, RoborockService } from "../services/index.js";
 import {
   XiaomiRoborockVacuumPlatform,
   XiaomiRoborockVacuumPlatformAccessory,
-} from "./platform";
-import { ACCESSORY_NAME } from "../constants";
-import { applyConfigDefaults } from "../services";
+} from "./platform.js";
+import { ACCESSORY_NAME } from "../constants.js";
+import { applyConfigDefaults } from "../services/index.js";
 
 // `platform.ts` imports `networkInterfaces` itself: spying on `os` doesn't reach it
 vi.mock("node:os", async (importOriginal) => {
@@ -428,7 +428,7 @@ describe("XiaomiRoborockVacuumPlatform", () => {
       await new Promise(setImmediate);
       const [call] =
         XiaomiRoborockVacuumPlatformAccessoryInitializerMock.mock.calls;
-      return call[6] as import("./platform").RoomAccessories;
+      return call[6] as import("./platform.js").RoomAccessories;
     };
     const uuidOf = (room: string) =>
       homebridge.hap.uuid.generate(

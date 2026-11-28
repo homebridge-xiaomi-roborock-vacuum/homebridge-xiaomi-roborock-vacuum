@@ -1,10 +1,8 @@
-"use strict";
-
 import { catchError, concatMap, filter } from "rxjs";
 import { AccessoryPlugin, API, Logging, Service } from "homebridge";
 
-import { getLogger, Logger } from "../utils/logger";
-import { fromUiPlatformForm } from "../services/config_service";
+import { getLogger, Logger } from "../utils/logger.js";
+import { fromUiPlatformForm } from "../services/config_service.js";
 import {
   applyConfigDefaults,
   DeviceManager,
@@ -34,10 +32,10 @@ import {
   DustBinService,
   CurrentRoomService,
   type CloudService,
-} from "../services";
-import { errors } from "../utils/constants";
-import { ErrorChangedEvent } from "../services/device_manager";
-import { CoreContext } from "../services/types";
+} from "../services/index.js";
+import { errors } from "../utils/constants.js";
+import { ErrorChangedEvent } from "../services/device_manager.js";
+import { CoreContext } from "../services/types.js";
 
 /**
  * The HomeKit services that are still exposed with `serviceType: "vacuum"`: the ones the Matter robot vacuum doesn't

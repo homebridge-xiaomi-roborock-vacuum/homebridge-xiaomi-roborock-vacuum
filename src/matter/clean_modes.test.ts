@@ -1,12 +1,12 @@
 import { describe, test, expect } from "vitest";
-import { findSpeedModes } from "../utils/find_speed_modes";
+import { findSpeedModes } from "../utils/find_speed_modes.js";
 import {
   buildCleanModes,
   fanTags,
   findCleanMode,
   waterTags,
-} from "./clean_modes";
-import { CleanModeTag } from "./constants";
+} from "./clean_modes.js";
+import { CleanModeTag } from "./constants.js";
 
 const summary = (model: string) =>
   buildCleanModes(findSpeedModes(model)).map(

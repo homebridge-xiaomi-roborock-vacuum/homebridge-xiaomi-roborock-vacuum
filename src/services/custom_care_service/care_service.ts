@@ -4,7 +4,7 @@ import {
   createCareFilterClass,
   createCareSideBrushClass,
   createCareMainBrushClass,
-} from "./characteristics";
+} from "./characteristics/index.js";
 
 export function createCareServicesClasses(hap: HAP) {
   const { CareSensors } = createCareSensorsClass(hap);

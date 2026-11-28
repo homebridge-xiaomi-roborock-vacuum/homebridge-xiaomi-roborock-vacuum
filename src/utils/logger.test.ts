@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi, type Mocked } from "vitest";
 import { Logging } from "homebridge";
-import { getLogger } from "./logger";
+import { getLogger } from "./logger.js";
 
 describe("getLogger", () => {
   let homebridgeLogger: Mocked<Logging> = Object.assign(

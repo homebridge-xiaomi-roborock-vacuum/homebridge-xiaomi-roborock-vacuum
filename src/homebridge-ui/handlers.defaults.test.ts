@@ -81,7 +81,7 @@ vi.mock("node-miio", async (importOriginal) => ({
   ...nodeMiio,
 }));
 
-import { createHandlers } from "./handlers";
+import { createHandlers } from "./handlers.js";
 
 describe("handlers with their default dependencies", () => {
   const handlers = createHandlers(vi.fn());

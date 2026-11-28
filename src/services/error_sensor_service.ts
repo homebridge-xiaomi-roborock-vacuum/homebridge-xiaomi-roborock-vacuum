@@ -1,7 +1,7 @@
 import { Service } from "homebridge";
-import { CoreContext } from "./types";
-import { PluginServiceClass } from "./plugin_service_class";
-import { ensureName } from "../utils/ensure_name";
+import { CoreContext } from "./types.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
+import { ensureName } from "../utils/ensure_name.js";
 
 export interface ErrorSensorConfig {
   /** Show a sensor that detects when the robot reports an error (e.g. stuck, brush blocked), for notifications */

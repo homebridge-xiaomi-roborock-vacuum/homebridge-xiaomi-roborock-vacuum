@@ -3,13 +3,13 @@ import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
 import { isCleaningState } from "node-miio";
-import { CleaningSensorService } from "./cleaning_sensor_service";
+import { CleaningSensorService } from "./cleaning_sensor_service.js";
 import {
   createDeviceManagerMock,
   DeviceManagerMock,
-} from "./device_manager.mock";
-import { getLoggerMock } from "../utils/logger.mock";
-import { applyConfigDefaults, type Config } from "./config_service";
+} from "./device_manager.mock.js";
+import { getLoggerMock } from "../utils/logger.mock.js";
+import { applyConfigDefaults, type Config } from "./config_service.js";
 
 describe("CleaningSensorService", () => {
   let service: CleaningSensorService;

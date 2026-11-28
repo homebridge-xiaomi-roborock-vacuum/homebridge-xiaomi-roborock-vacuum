@@ -1,8 +1,8 @@
 import { Service } from "homebridge";
 import { distinctUntilChanged, filter, map } from "rxjs";
-import { CoreContext } from "./types";
-import { PluginServiceClass } from "./plugin_service_class";
-import { ensureName } from "../utils/ensure_name";
+import { CoreContext } from "./types.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
+import { ensureName } from "../utils/ensure_name.js";
 
 export interface CleaningSensorConfig {
   /** An occupancy sensor detected while the robot cleans: e.g. for a notification when it starts (#447) */

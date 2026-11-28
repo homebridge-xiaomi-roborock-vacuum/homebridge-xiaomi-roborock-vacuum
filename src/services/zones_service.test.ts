@@ -10,14 +10,14 @@ import {
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
-import { ZonesService } from "./zones_service";
-import { MainService } from "./main_service";
+import { ZonesService } from "./zones_service.js";
+import { MainService } from "./main_service.js";
 import {
   createDeviceManagerMock,
   DeviceManagerMock,
-} from "./device_manager.mock";
-import { getLoggerMock } from "../utils/logger.mock";
-import { applyConfigDefaults, type Config } from "./config_service";
+} from "./device_manager.mock.js";
+import { getLoggerMock } from "../utils/logger.mock.js";
+import { applyConfigDefaults, type Config } from "./config_service.js";
 
 describe("ZonesService", () => {
   let service: ZonesService;

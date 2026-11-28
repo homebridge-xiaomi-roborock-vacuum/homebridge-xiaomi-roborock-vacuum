@@ -1,6 +1,9 @@
 import type { CleanPreset } from "node-miio";
-import type { ModelDefinition, ModesHomekitVsMiLevel } from "../models/types";
-import { CleanModeTag } from "./constants";
+import type {
+  ModelDefinition,
+  ModesHomekitVsMiLevel,
+} from "../models/types.js";
+import { CleanModeTag } from "./constants.js";
 
 /** A Matter clean mode, and the levels to send to the robot */
 export interface CleanMode {

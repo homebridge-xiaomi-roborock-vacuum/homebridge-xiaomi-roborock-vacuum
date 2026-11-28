@@ -1,8 +1,8 @@
 import { Service } from "homebridge";
-import { CoreContext } from "./types";
-import { PluginServiceClass } from "./plugin_service_class";
-import { ensureName } from "../utils/ensure_name";
-import { supports } from "../utils/supports";
+import { CoreContext } from "./types.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
+import { ensureName } from "../utils/ensure_name.js";
+import { supports } from "../utils/supports.js";
 
 export interface DustCollectionConfig {
   dustCollection: boolean;

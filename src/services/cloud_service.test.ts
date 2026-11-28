@@ -5,7 +5,7 @@ import {
   type CloudDevice,
   type MapWatcher,
 } from "node-miio";
-import { CloudService, type CloudServiceDeps } from "./cloud_service";
+import { CloudService, type CloudServiceDeps } from "./cloud_service.js";
 
 const session = {
   userId: "1",

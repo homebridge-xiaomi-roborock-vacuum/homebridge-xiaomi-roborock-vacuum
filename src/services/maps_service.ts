@@ -1,8 +1,8 @@
 import { Service } from "homebridge";
-import { CoreContext } from "./types";
-import { PluginServiceClass } from "./plugin_service_class";
-import { ensureName } from "../utils/ensure_name";
-import { supports } from "../utils/supports";
+import { CoreContext } from "./types.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
+import { ensureName } from "../utils/ensure_name.js";
+import { supports } from "../utils/supports.js";
 
 /** A map to switch to: a floor (multi-floor maps) or a backup (e.g. S5). Pick them in the plugin's settings. */
 export interface SavedMap {

@@ -65,9 +65,10 @@ jobs:
       - run: npm run build
       - name: Load dist/index.js and register with a stub API
         run: |
-          node -e '
-            const assert = require("node:assert");
-            const plugin = require("./dist/index.js").default;
+          # Homebridge loads plugins with import(), like this ESM script
+          node --input-type=module -e '
+            import assert from "node:assert";
+            const { default: plugin } = await import("./dist/index.js");
             const registered = [];
             plugin({
               registerAccessory: (_plugin, name) => registered.push(`accessory:${name}`),

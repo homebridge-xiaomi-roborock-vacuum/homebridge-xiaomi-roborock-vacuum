@@ -1,9 +1,9 @@
 import { Service } from "homebridge";
 import { filter } from "rxjs";
 import { vacuumActivity, type VacuumActivity } from "node-miio";
-import { CoreContext } from "./types";
-import { PluginServiceClass } from "./plugin_service_class";
-import { ensureName } from "../utils/ensure_name";
+import { CoreContext } from "./types.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
+import { ensureName } from "../utils/ensure_name.js";
 
 /** A scene of the app: a routine of the Roborock app, or a manual scene of the Xiaomi Home app. Pick them in the plugin's settings. */
 export interface SceneConfig {

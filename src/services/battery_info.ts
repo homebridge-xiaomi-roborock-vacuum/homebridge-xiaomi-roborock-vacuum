@@ -1,6 +1,6 @@
 import { Service } from "homebridge";
-import { CoreContext } from "./types";
-import { PluginServiceClass } from "./plugin_service_class";
+import { CoreContext } from "./types.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
 
 export class BatteryInfo extends PluginServiceClass {
   private readonly service: Service;

@@ -1,6 +1,9 @@
 import { describe, test, expect, vi } from "vitest";
 import { RoborockSessionExpiredError, type RoborockHomeData } from "node-miio";
-import { RoborockService, type RoborockServiceDeps } from "./roborock_service";
+import {
+  RoborockService,
+  type RoborockServiceDeps,
+} from "./roborock_service.js";
 
 const session = {
   email: "me@example.com",

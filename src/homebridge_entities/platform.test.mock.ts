@@ -1,6 +1,6 @@
 import { vi, type Mocked } from "vitest";
 import { BehaviorSubject } from "rxjs";
-import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory";
+import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory.js";
 
 export const XiaomiRoborockVacuumPlatformAccessoryInitializerMock = vi
   .fn()
@@ -16,7 +16,7 @@ export const XiaomiRoborockVacuumPlatformAccessoryInitializerMock = vi
     >;
   });
 
-vi.doMock("./platform_accessory", () => ({
+vi.doMock("./platform_accessory.js", () => ({
   XiaomiRoborockVacuumPlatformAccessoryInitializer:
     XiaomiRoborockVacuumPlatformAccessoryInitializerMock,
 }));

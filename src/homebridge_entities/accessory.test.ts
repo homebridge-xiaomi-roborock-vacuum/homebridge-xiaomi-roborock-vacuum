@@ -1,5 +1,3 @@
-"use strict";
-
 import {
   describe,
   test,
@@ -16,10 +14,10 @@ import { Subject } from "rxjs";
 
 vi.useFakeTimers();
 
-import { createHomebridgeMock, miio } from "../test.mocks";
-import { deviceManagerMock } from "./accessory.test.mock";
+import { createHomebridgeMock, miio } from "../test.mocks.js";
+import { deviceManagerMock } from "./accessory.test.mock.js";
 
-import { XiaomiRoborockVacuumAccessory } from "./accessory";
+import { XiaomiRoborockVacuumAccessory } from "./accessory.js";
 
 describe("XiaomiRoborockVacuum", () => {
   let homebridge: Mocked<API>;

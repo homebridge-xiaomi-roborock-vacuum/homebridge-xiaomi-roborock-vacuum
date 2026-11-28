@@ -1,7 +1,7 @@
 import { vi, type Mocked } from "vitest";
 import { Subject } from "rxjs";
-import { DeviceManager } from "./device_manager";
-import { miio, type MiioDeviceMock } from "../test.mocks";
+import { DeviceManager } from "./device_manager.js";
+import { miio, type MiioDeviceMock } from "../test.mocks.js";
 
 /** The vacuum is only partially mocked (see `MiioDeviceMock`) */
 export type DeviceManagerMock = Mocked<DeviceManager> & {

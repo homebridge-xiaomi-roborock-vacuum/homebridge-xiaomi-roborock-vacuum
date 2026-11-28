@@ -1,9 +1,9 @@
 import { Service, CharacteristicValue } from "homebridge";
 import { vacuumActivity } from "node-miio";
 import { distinctUntilChanged, map } from "rxjs";
-import { CoreContext } from "./types";
-import { PluginServiceClass } from "./plugin_service_class";
-import { ensureName } from "../utils/ensure_name";
+import { CoreContext } from "./types.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
+import { ensureName } from "../utils/ensure_name.js";
 
 export interface GoToDockConfig {
   goToDock: boolean;

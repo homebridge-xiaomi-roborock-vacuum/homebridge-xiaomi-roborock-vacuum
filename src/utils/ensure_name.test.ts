@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import * as hap from "@homebridge/hap-nodejs";
-import { ensureName } from "./ensure_name";
+import { ensureName } from "./ensure_name.js";
 
 describe("ensureName", () => {
   const getItemSpy = vi.spyOn(hap.HAPStorage.storage(), "getItem");

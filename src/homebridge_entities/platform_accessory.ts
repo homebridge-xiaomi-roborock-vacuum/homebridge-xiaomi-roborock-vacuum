@@ -6,16 +6,16 @@ import {
   DeviceManager,
   type RoborockService,
   type SceneRunner,
-} from "../services";
-import { findSpeedModes } from "../utils/find_speed_modes";
-import { type Logger, getLogger } from "../utils/logger";
-import { supports } from "../utils/supports";
-import { MatterVacuum } from "../matter/matter_vacuum";
-import { XiaomiRoborockVacuumAccessory } from "./accessory";
+} from "../services/index.js";
+import { findSpeedModes } from "../utils/find_speed_modes.js";
+import { type Logger, getLogger } from "../utils/logger.js";
+import { supports } from "../utils/supports.js";
+import { MatterVacuum } from "../matter/matter_vacuum.js";
+import { XiaomiRoborockVacuumAccessory } from "./accessory.js";
 import type {
   RoomAccessories,
   XiaomiRoborockVacuumPlatformAccessory,
-} from "./platform";
+} from "./platform.js";
 
 /** How long to wait for the rooms to be resolved before registering the services */
 const ROOMS_TIMEOUT_MS = 30_000;

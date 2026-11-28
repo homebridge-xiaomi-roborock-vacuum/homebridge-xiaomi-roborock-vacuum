@@ -4,10 +4,13 @@
  * that the page is up to date (`npm run docs:speeds` writes it).
  */
 import { resolveVacuumModes, vacuumModels, type CleanPreset } from "node-miio";
-import type { ModelDefinition, ModesHomekitVsMiLevel } from "../models/types";
-import { findSpeedModes } from "../utils/find_speed_modes";
-import { buildCleanModes, type CleanMode } from "../matter/clean_modes";
-import { CleanModeTag } from "../matter/constants";
+import type {
+  ModelDefinition,
+  ModesHomekitVsMiLevel,
+} from "../models/types.js";
+import { findSpeedModes } from "../utils/find_speed_modes.js";
+import { buildCleanModes, type CleanMode } from "../matter/clean_modes.js";
+import { CleanModeTag } from "../matter/constants.js";
 
 /**
  * The models whose fan speeds changed with a firmware update, and the first firmware with the new ones (as in

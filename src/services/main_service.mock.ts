@@ -1,5 +1,5 @@
 import { vi, type Mocked } from "vitest";
-import { MainService } from "./main_service";
+import { MainService } from "./main_service.js";
 
 export type MainServiceMock = Mocked<MainService>;
 

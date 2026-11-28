@@ -1,17 +1,21 @@
 import type { MatterAccessory, MatterAPI } from "homebridge";
 import { concatMap, type Observable, startWith, Subscription } from "rxjs";
-import { ACCESSORY_NAME, PLUGIN_NAME } from "../constants";
-import type { ModelDefinition } from "../models/types";
-import type { Config } from "../services/config_service";
+import { ACCESSORY_NAME, PLUGIN_NAME } from "../constants.js";
+import type { ModelDefinition } from "../models/types.js";
+import type { Config } from "../services/config_service.js";
 import type {
   DeviceManager,
   ErrorChangedEvent,
   StateChangedEvent,
-} from "../services/device_manager";
-import type { ResolvedRoom } from "../services/rooms_service";
-import type { Logger } from "../utils/logger";
-import { supports } from "../utils/supports";
-import { buildCleanModes, type CleanMode, findCleanMode } from "./clean_modes";
+} from "../services/device_manager.js";
+import type { ResolvedRoom } from "../services/rooms_service.js";
+import type { Logger } from "../utils/logger.js";
+import { supports } from "../utils/supports.js";
+import {
+  buildCleanModes,
+  type CleanMode,
+  findCleanMode,
+} from "./clean_modes.js";
 import {
   ErrorState,
   OperationalState,
@@ -19,13 +23,13 @@ import {
   RunMode,
   SUPPORTED_OPERATIONAL_STATES,
   SUPPORTED_RUN_MODES,
-} from "./constants";
+} from "./constants.js";
 import {
   toBatChargeLevel,
   toBatChargeState,
   toErrorStateId,
   toOperationalState,
-} from "./rvc_mappings";
+} from "./rvc_mappings.js";
 
 export interface MatterVacuumOptions {
   matter: MatterAPI;

@@ -1,4 +1,7 @@
-import type { ModelDefinition, ModesHomekitVsMiLevel } from "../models/types";
+import type {
+  ModelDefinition,
+  ModesHomekitVsMiLevel,
+} from "../models/types.js";
 import {
   resolveVacuumModes,
   vacuumModels,

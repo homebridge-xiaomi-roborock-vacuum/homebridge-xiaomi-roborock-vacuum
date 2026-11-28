@@ -1,11 +1,11 @@
 import type { Service } from "homebridge";
 import type { MapPoint, MapWatcher } from "node-miio";
 import { filter, Observable, Subject, Subscription, switchMap } from "rxjs";
-import { CoreContext } from "./types";
-import { PluginServiceClass } from "./plugin_service_class";
-import { ensureName } from "../utils/ensure_name";
-import type { CloudService } from "./cloud_service";
-import type { RoomsService } from "./rooms_service";
+import { CoreContext } from "./types.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
+import { ensureName } from "../utils/ensure_name.js";
+import type { CloudService } from "./cloud_service.js";
+import type { RoomsService } from "./rooms_service.js";
 
 export interface CurrentRoomConfig {
   /**

@@ -1,11 +1,11 @@
 import { CharacteristicValue, Service } from "homebridge";
 import { auditTime } from "rxjs";
-import { CoreContext } from "./types";
-import { createCareServicesClasses } from "./custom_care_service";
-import { MainService } from "./main_service";
-import { PluginServiceClass } from "./plugin_service_class";
-import { ensureName } from "../utils/ensure_name";
-import { supports } from "../utils/supports";
+import { CoreContext } from "./types.js";
+import { createCareServicesClasses } from "./custom_care_service/index.js";
+import { MainService } from "./main_service.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
+import { ensureName } from "../utils/ensure_name.js";
+import { supports } from "../utils/supports.js";
 
 export interface CareConfig {
   disableCareServices?: boolean;

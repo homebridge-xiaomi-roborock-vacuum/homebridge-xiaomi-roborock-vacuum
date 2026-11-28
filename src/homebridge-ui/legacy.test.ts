@@ -7,8 +7,8 @@ import {
   isLegacyBlock,
   readLegacyConfig,
   removeLegacyBlocks,
-} from "./legacy";
-import { createHandlers } from "./handlers";
+} from "./legacy.js";
+import { createHandlers } from "./handlers.js";
 
 const bridge = { username: "0E:AA:BB:CC:DD:01", port: 51900 };
 

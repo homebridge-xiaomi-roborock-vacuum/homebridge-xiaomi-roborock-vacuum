@@ -1,17 +1,17 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
-import { findSpeedModesMock } from "./water_box_service.test.mock";
-import { WaterBoxService } from "./water_box_service";
-import { getLoggerMock, LoggerMock } from "../utils/logger.mock";
-import { applyConfigDefaults } from "./config_service";
+import { findSpeedModesMock } from "./water_box_service.test.mock.js";
+import { WaterBoxService } from "./water_box_service.js";
+import { getLoggerMock, LoggerMock } from "../utils/logger.mock.js";
+import { applyConfigDefaults } from "./config_service.js";
 import {
   createDeviceManagerMock,
   DeviceManagerMock,
-} from "./device_manager.mock";
-import { createMainServiceMock, MainServiceMock } from "./main_service.mock";
-import { createProductInfoMock, ProductInfoMock } from "./product_info.mock";
-import type { ModesHomekitVsMiLevel } from "../models/types";
+} from "./device_manager.mock.js";
+import { createMainServiceMock, MainServiceMock } from "./main_service.mock.js";
+import { createProductInfoMock, ProductInfoMock } from "./product_info.mock.js";
+import type { ModesHomekitVsMiLevel } from "../models/types.js";
 import { ReplaySubject } from "rxjs";
 
 /** node-miio's "gen1" water levels, with the HomeKit slider levels of `findSpeedModes` */

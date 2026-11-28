@@ -1,9 +1,9 @@
 import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
-import "./device_manager.test.mock";
+import "./device_manager.test.mock.js";
 import * as miioModule from "node-miio";
-import { getLoggerMock } from "../utils/logger.mock";
-import { createHomebridgeMock, miio } from "../test.mocks";
-import { DeviceManager } from "./device_manager";
+import { getLoggerMock } from "../utils/logger.mock.js";
+import { createHomebridgeMock, miio } from "../test.mocks.js";
+import { DeviceManager } from "./device_manager.js";
 
 /** The `node-miio` module, as `device_manager.test.mock.ts` mocks it */
 type MiioModuleMock = Awaited<ReturnType<typeof miio.createMock>>;

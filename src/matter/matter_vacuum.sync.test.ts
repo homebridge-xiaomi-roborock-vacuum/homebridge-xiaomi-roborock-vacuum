@@ -11,13 +11,13 @@ import type { MatterAPI } from "homebridge";
 import * as nodeMiio from "node-miio";
 import type { MiotSpec } from "node-miio";
 import type { Subscription } from "rxjs";
-import { applyConfigDefaults } from "../services/config_service";
-import { DeviceManager } from "../services/device_manager";
-import { createHomebridgeMock } from "../test.mocks";
-import { findSpeedModes } from "../utils/find_speed_modes";
-import { getLoggerMock } from "../utils/logger.mock";
-import { OperationalState, RunMode } from "./constants";
-import { MatterVacuum } from "./matter_vacuum";
+import { applyConfigDefaults } from "../services/config_service.js";
+import { DeviceManager } from "../services/device_manager.js";
+import { createHomebridgeMock } from "../test.mocks.js";
+import { findSpeedModes } from "../utils/find_speed_modes.js";
+import { getLoggerMock } from "../utils/logger.mock.js";
+import { OperationalState, RunMode } from "./constants.js";
+import { MatterVacuum } from "./matter_vacuum.js";
 
 // The real node-miio, except for the connection: `device()` returns a MIoT vacuum that answers from `robot`
 vi.mock("node-miio", async (importOriginal) => ({

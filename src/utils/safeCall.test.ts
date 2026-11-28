@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from "vitest";
-import { safeCall } from "./safeCall";
+import { safeCall } from "./safeCall.js";
 
 describe("safeCall", () => {
   test("call the method if the value is defined", () => {

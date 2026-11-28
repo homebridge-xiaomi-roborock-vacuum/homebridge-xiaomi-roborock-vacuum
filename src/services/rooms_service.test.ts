@@ -2,15 +2,15 @@ import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
-import { RoomsService } from "./rooms_service";
+import { RoomsService } from "./rooms_service.js";
 import {
   createDeviceManagerMock,
   DeviceManagerMock,
-} from "./device_manager.mock";
-import { getLoggerMock } from "../utils/logger.mock";
-import { applyConfigDefaults, Config } from "./config_service";
-import type { MiioDeviceMock as MiioDevice } from "../test.mocks";
-import { miio } from "../test.mocks";
+} from "./device_manager.mock.js";
+import { getLoggerMock } from "../utils/logger.mock.js";
+import { applyConfigDefaults, Config } from "./config_service.js";
+import type { MiioDeviceMock as MiioDevice } from "../test.mocks.js";
+import { miio } from "../test.mocks.js";
 
 describe("RoomsService", () => {
   let roomsService: RoomsService;

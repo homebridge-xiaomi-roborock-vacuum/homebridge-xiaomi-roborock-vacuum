@@ -16,10 +16,13 @@ import {
   type StateChangedEvent,
   type VacuumDevice,
 } from "node-miio";
-import { Logger } from "../utils/logger";
-import { supports } from "../utils/supports";
-import { unknownStateCode, unknownStateIssueUrl } from "../utils/unknown_state";
-import type { ReportedModes } from "../utils/find_speed_modes";
+import { Logger } from "../utils/logger.js";
+import { supports } from "../utils/supports.js";
+import {
+  unknownStateCode,
+  unknownStateIssueUrl,
+} from "../utils/unknown_state.js";
+import type { ReportedModes } from "../utils/find_speed_modes.js";
 
 export interface DeviceManagerConfig {
   ip?: string;
