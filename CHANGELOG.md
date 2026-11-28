@@ -2,6 +2,8 @@
 
 ## Next
 
+## 1.10.1
+
 - [Chore] node-miio `0.19.1`: robots connected without a token (or before it's known) at different addresses no longer get mixed up, and a few smaller fixes. `1.10.0` already installed it on new installs, but could keep `0.19.0` on the ones that updated before it was out ([afharo/node-miio#86](https://github.com/afharo/node-miio/pull/86)).
 
 ## 1.10.0
