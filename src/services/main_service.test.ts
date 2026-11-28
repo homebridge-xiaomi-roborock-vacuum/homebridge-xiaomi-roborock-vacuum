@@ -206,6 +206,21 @@ describe("MainService", () => {
   });
 
   describe("cleaning state", () => {
+    test("onGet fails (and logs) before the robot is connected", async () => {
+      const service = create({ ids: [], repeat: 1 });
+      const error = new Error("Not connected yet");
+      Object.defineProperty(deviceManagerMock, "isCleaning", {
+        get: () => {
+          throw error;
+        },
+      });
+      await expect(service.getCleaning()).rejects.toBe(error);
+      expect(logOf(service).error).toHaveBeenCalledWith(
+        "getCleaning | Failed getting the cleaning status.",
+        error
+      );
+    });
+
     test.each([true, false])(
       "onGet returns isCleaning (%p)",
       async (isCleaning) => {

@@ -54,18 +54,11 @@ export class PauseSwitch extends PluginServiceClass {
   private async getPauseState() {
     await this.deviceManager.ensureDevice("getPauseState");
 
-    try {
-      const isPaused = this.deviceManager.isPaused;
-      const canBePaused = this.deviceManager.isCleaning && !isPaused;
-      this.log.info(`getPauseState | Pause possible is ${canBePaused}`);
-      return canBePaused;
-    } catch (err) {
-      this.log.error(
-        `getPauseState | Failed getting the cleaning status.`,
-        err
-      );
-      throw err;
-    }
+    // ensureDevice() resolves only once connected: the state can be read without throwing
+    const canBePaused =
+      this.deviceManager.isCleaning && !this.deviceManager.isPaused;
+    this.log.info(`getPauseState | Pause possible is ${canBePaused}`);
+    return canBePaused;
   }
 
   private async setPauseState(state) {
