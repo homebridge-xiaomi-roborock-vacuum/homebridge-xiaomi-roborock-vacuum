@@ -146,7 +146,7 @@ export class MainService extends PluginServiceClass {
 
   public async setCleaning(state) {
     await this.deviceManager.ensureDevice("setCleaning");
-    this.log.info(`ACT setCleaning | Set cleaning to ${state}}`);
+    this.log.info(`ACT setCleaning | Set cleaning to ${state}`);
     try {
       if (state && !this.deviceManager.isCleaning) {
         // Start cleaning

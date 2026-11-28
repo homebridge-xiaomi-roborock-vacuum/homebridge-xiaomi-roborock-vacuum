@@ -262,7 +262,11 @@ describe("MainService", () => {
     });
 
     test("ON starts a full cleaning when no room is selected", async () => {
-      await create({ ids: [], repeat: 1 }).setCleaning(true);
+      const service = create({ ids: [], repeat: 1 });
+      await service.setCleaning(true);
+      expect(logOf(service).info).toHaveBeenCalledWith(
+        "ACT setCleaning | Set cleaning to true"
+      );
       expect(deviceManagerMock.ensureDevice).toHaveBeenCalledWith(
         "setCleaning"
       );
