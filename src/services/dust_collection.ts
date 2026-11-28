@@ -1,4 +1,5 @@
 import { Service } from "homebridge";
+import { vacuumActivity } from "node-miio";
 import { CoreContext } from "./types.js";
 import { PluginServiceClass } from "./plugin_service_class.js";
 import { ensureName } from "../utils/ensure_name.js";
@@ -31,6 +32,12 @@ export class DustCollection extends PluginServiceClass {
     return this.deviceManager.state === "dust-collection";
   }
 
+  /** The dust is collected by the dock: the robot must be on it (charging or fully charged) */
+  private get isOnDock() {
+    const activity = vacuumActivity(this.deviceManager.state);
+    return activity === "charging" || activity === "docked";
+  }
+
   private async getDustCollectionState() {
     await this.deviceManager.ensureDevice("getDustCollectionState");
 
@@ -45,7 +52,6 @@ export class DustCollection extends PluginServiceClass {
   private async setDustCollectionState(state) {
     await this.deviceManager.ensureDevice("setDustCollectionState");
 
-    const isCharging = this.deviceManager.state;
     const { device } = this.deviceManager;
     if (!supports(device, "startDustCollection")) {
       this.log.warn(
@@ -55,7 +61,7 @@ export class DustCollection extends PluginServiceClass {
     }
 
     try {
-      if (state && !this.isDustCollecting && isCharging) {
+      if (state && !this.isDustCollecting && this.isOnDock) {
         await device.startDustCollection();
         this.log.info(
           `setDustCollectionState | Starting Dust Collection, and the device is in state ${this.deviceManager.state}`
@@ -65,7 +71,7 @@ export class DustCollection extends PluginServiceClass {
         this.log.info(
           `setDustCollectionState | Stopping Dust Collection, and the device is in state ${this.deviceManager.state}`
         );
-      } else if (state && !this.isDustCollecting && !isCharging) {
+      } else if (state && !this.isDustCollecting) {
         this.service
           .getCharacteristic(this.hap.Characteristic.On)
           .updateValue(false);

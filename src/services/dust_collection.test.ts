@@ -93,13 +93,29 @@ describe("DustCollection", () => {
     expect(deviceManagerMock.device.stopDustCollection).not.toHaveBeenCalled();
   });
 
-  test("ON without a state turns the switch back off", async () => {
-    setState("");
-    const spy = vi.spyOn(onCharacteristic(), "updateValue");
-    await onCharacteristic().handleSetRequest(true);
-    expect(deviceManagerMock.device.startDustCollection).not.toHaveBeenCalled();
-    expect(spy).toHaveBeenCalledWith(false);
-  });
+  test.each(["charging", "docked", "fully-charged"])(
+    "ON starts the dust collection on the dock (%p)",
+    async (state) => {
+      setState(state);
+      await onCharacteristic().handleSetRequest(true);
+      expect(
+        deviceManagerMock.device.startDustCollection
+      ).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  test.each(["cleaning", "returning", "paused", "idle", ""])(
+    "ON away from the dock turns the switch back off (%p)",
+    async (state) => {
+      setState(state);
+      const spy = vi.spyOn(onCharacteristic(), "updateValue");
+      await onCharacteristic().handleSetRequest(true);
+      expect(
+        deviceManagerMock.device.startDustCollection
+      ).not.toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(false);
+    }
+  );
 
   test("warns and does nothing on models without dust collection", async () => {
     (deviceManagerMock as { device: unknown }).device = {};
