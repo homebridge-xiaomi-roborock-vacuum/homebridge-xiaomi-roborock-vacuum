@@ -12,7 +12,7 @@ import {
 import { createMainServiceMock, MainServiceMock } from "./main_service.mock.js";
 import { createProductInfoMock, ProductInfoMock } from "./product_info.mock.js";
 import type { ModesHomekitVsMiLevel } from "../models/types.js";
-import { ReplaySubject } from "rxjs";
+import { ReplaySubject, Subject } from "rxjs";
 
 /** node-miio's "gen1" water levels, with the HomeKit slider levels of `findSpeedModes` */
 const GEN1_WATER: ModesHomekitVsMiLevel[] = [
@@ -152,7 +152,101 @@ describe("WaterBoxService", () => {
     });
   });
 
-  // TODO: Add more tests
+  describe("setWaterSpeed", () => {
+    const WITH_CUSTOM: ModesHomekitVsMiLevel[] = [
+      ...GEN1_WATER.slice(0, 3),
+      { homekitTopLevel: 100, miLevel: 204, name: "Custom" },
+    ];
+    beforeEach(() => {
+      findSpeedModesMock.mockReturnValue({ waterspeed: WITH_CUSTOM });
+    });
+    afterEach(() => {
+      findSpeedModesMock.mockReturnValue({});
+    });
+
+    test.each([
+      [1, 201, "Light"],
+      [34, 202, "Medium"],
+      [100, 204, "Custom"],
+    ])("%p%% sets the water level %p (%s)", async (level, miLevel, name) => {
+      await waterboxService.setWaterSpeed(level);
+      expect(deviceManagerMock.device.setWaterBoxMode).toHaveBeenCalledWith(
+        miLevel
+      );
+      expect(mainService.cachedState.get("WaterSpeedName")).toBe(name);
+    });
+
+    test("sets a level by its mode name", async () => {
+      await waterboxService.setWaterSpeed("Medium");
+      expect(deviceManagerMock.device.setWaterBoxMode).toHaveBeenCalledWith(
+        202
+      );
+    });
+
+    test("ignores an unknown mode name", async () => {
+      await waterboxService.setWaterSpeed("Flood");
+      expect(deviceManagerMock.device.setWaterBoxMode).not.toHaveBeenCalled();
+      expect(log.info).toHaveBeenCalledWith(
+        'setWaterSpeed | Mode "Flood" does not exist.'
+      );
+    });
+
+    test("the Custom level sets the fan speed to Custom too", async () => {
+      await waterboxService.setWaterSpeed("Custom");
+      expect(mainService.setSpeed).toHaveBeenCalledWith("Custom");
+    });
+
+    test("the Custom level leaves the fan alone when it's already Custom", async () => {
+      mainService.cachedState.set("FanSpeedName", "Custom");
+      await waterboxService.setWaterSpeed("Custom");
+      expect(mainService.setSpeed).not.toHaveBeenCalled();
+    });
+
+    test("leaving the Custom level sets the fan speed to Balanced", async () => {
+      mainService.cachedState.set("FanSpeedName", "Custom");
+      await waterboxService.setWaterSpeed("Light");
+      expect(mainService.setSpeed).toHaveBeenCalledWith("Balanced");
+    });
+
+    test("other levels leave the fan alone", async () => {
+      await waterboxService.setWaterSpeed("Light");
+      expect(mainService.setSpeed).not.toHaveBeenCalled();
+    });
+
+    test("stops on models without setWaterBoxMode", async () => {
+      (deviceManagerMock as { device: unknown }).device = {};
+      await waterboxService.setWaterSpeed("Light");
+      expect(log.info).toHaveBeenCalledWith(
+        "setWaterSpeed | Model does not support the water mode"
+      );
+      expect(mainService.setSpeed).not.toHaveBeenCalled();
+    });
+  });
+
+  test("onGet is 0 on models without getWaterBoxMode", async () => {
+    (deviceManagerMock as { device: unknown }).device = {};
+    await expect(
+      waterboxService.services[0]
+        .getCharacteristic(hap.Characteristic.RotationSpeed)
+        .handleGetRequest()
+    ).resolves.toBe(0);
+  });
+
+  test("the On switch follows the cleaning state", () => {
+    const on = waterboxService.services[0].getCharacteristic(
+      hap.Characteristic.On
+    );
+    (deviceManagerMock.stateChanged$ as Subject<unknown>).next({
+      key: "cleaning",
+      value: true,
+    });
+    expect(on.value).toBe(true);
+    (deviceManagerMock.stateChanged$ as Subject<unknown>).next({
+      key: "cleaning",
+      value: false,
+    });
+    expect(on.value).toBe(false);
+  });
 });
 
 describe("WaterBoxService: water level changed from the app", () => {

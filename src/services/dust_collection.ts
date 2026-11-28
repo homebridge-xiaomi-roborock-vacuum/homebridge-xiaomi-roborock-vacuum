@@ -34,19 +34,12 @@ export class DustCollection extends PluginServiceClass {
   private async getDustCollectionState() {
     await this.deviceManager.ensureDevice("getDustCollectionState");
 
-    try {
-      const isDustCollecting = this.isDustCollecting;
-      this.log.info(
-        `getDustCollectionState | Dust collection is ${isDustCollecting}`
-      );
-      return isDustCollecting;
-    } catch (err) {
-      this.log.error(
-        `getDustCollectionState | Failed getting the cleaning status.`,
-        err
-      );
-      throw err;
-    }
+    // ensureDevice() resolves only once connected: the state can be read without throwing
+    const isDustCollecting = this.isDustCollecting;
+    this.log.info(
+      `getDustCollectionState | Dust collection is ${isDustCollecting}`
+    );
+    return isDustCollecting;
   }
 
   private async setDustCollectionState(state) {

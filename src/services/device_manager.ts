@@ -201,34 +201,20 @@ export class DeviceManager {
   }
 
   public async ensureDevice(callingMethod: string) {
-    try {
-      if (!this.internalDevice$.value) {
-        const errMsg = `${callingMethod} | No vacuum cleaner is discovered yet.`;
-        this.log.error(errMsg);
-        throw new Error(errMsg);
-      }
-
-      if (!this.internalDevice$.value.connected) {
-        throw new Error("The socket was destroyed");
-      }
+    const device = this.internalDevice$.value;
+    if (device?.connected) {
       this.log.debug(
         `DEB ensureDevice | ${this.model} | The socket is still on. Reusing it.`
       );
-    } catch (error) {
-      const err = error as Error;
-      if (
-        /destroyed/i.test(err.message) ||
-        /No vacuum cleaner is discovered yet/.test(err.message)
-      ) {
-        this.log.info(
-          `INF ensureDevice | ${this.model} | The socket was destroyed or not initialised, initialising the device`
-        );
-        await this.connect();
-      } else {
-        this.log.error(err.message, err);
-        throw err;
-      }
+      return;
     }
+    if (!device) {
+      this.log.error(`${callingMethod} | No vacuum cleaner is discovered yet.`);
+    }
+    this.log.info(
+      `INF ensureDevice | ${this.model} | The socket was destroyed or not initialised, initialising the device`
+    );
+    await this.connect();
   }
 
   private async connect() {

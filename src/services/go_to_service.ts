@@ -46,7 +46,7 @@ export class GoToService extends PluginServiceClass {
       if (newState) {
         //trigger go to location if newState is true
         await device.sendToLocation(this.config.goToX, this.config.goToY);
-      } else if (!newState) {
+      } else {
         //trigger go to dock if newState is false
         await this.deviceManager.device.activateCharging();
       }
@@ -59,19 +59,16 @@ export class GoToService extends PluginServiceClass {
   private async getGoToState() {
     await this.deviceManager.ensureDevice("getGoToState");
 
-    try {
-      const goingToLocation =
-        this.deviceManager.state === "going-to-location" ||
-        // "idle" is the name node-miio uses for the state 3 (previously "waiting")
-        this.deviceManager.state === "idle" ||
-        this.deviceManager.state === "waiting";
-      this.log.info(
-        `getGoToState | Going to location or waiting is ${goingToLocation}`
-      );
-      return goingToLocation;
-    } catch (err) {
-      this.log.error(`getGoToState | Failed getting the cleaning status.`, err);
-      throw err;
-    }
+    // ensureDevice() resolves only once connected: the state can be read without throwing
+    const { state } = this.deviceManager;
+    const goingToLocation =
+      state === "going-to-location" ||
+      // "idle" is the name node-miio uses for the state 3 (previously "waiting")
+      state === "idle" ||
+      state === "waiting";
+    this.log.info(
+      `getGoToState | Going to location or waiting is ${goingToLocation}`
+    );
+    return goingToLocation;
   }
 }

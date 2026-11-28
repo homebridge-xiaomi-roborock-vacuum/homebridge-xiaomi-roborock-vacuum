@@ -44,7 +44,7 @@ export class MainService extends PluginServiceClass {
     }
     ensureName(this.hap, this.service, this.config.name);
 
-    if (this.service.setPrimaryService) this.service.setPrimaryService(true);
+    this.service.setPrimaryService(true);
 
     this.service
       .getCharacteristic(this.hap.Characteristic.On)
