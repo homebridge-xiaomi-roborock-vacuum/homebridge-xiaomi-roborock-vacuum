@@ -1,6 +1,6 @@
 import { vi, type Mocked } from "vitest";
 import { Subject } from "rxjs";
-import type { XiaomiRoborockVacuumAccessory } from "./accessory";
+import type { XiaomiRoborockVacuumAccessory } from "./accessory.js";
 
 export const createXiaomiRoborockVacuumAccessoryMock = () => {
   const mock: Mocked<
@@ -32,6 +32,6 @@ export const XiaomiRoborockVacuumAccessoryMock = vi
     return createXiaomiRoborockVacuumAccessoryMock();
   });
 
-vi.doMock("./accessory", () => ({
+vi.doMock("./accessory.js", () => ({
   XiaomiRoborockVacuumAccessory: XiaomiRoborockVacuumAccessoryMock,
 }));

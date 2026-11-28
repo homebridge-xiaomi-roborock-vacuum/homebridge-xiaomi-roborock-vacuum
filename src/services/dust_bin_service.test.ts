@@ -2,13 +2,13 @@ import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
-import { DustBinService } from "./dust_bin_service";
+import { DustBinService } from "./dust_bin_service.js";
 import {
   createDeviceManagerMock,
   DeviceManagerMock,
-} from "./device_manager.mock";
-import { getLoggerMock } from "../utils/logger.mock";
-import { applyConfigDefaults } from "./config_service";
+} from "./device_manager.mock.js";
+import { getLoggerMock } from "../utils/logger.mock.js";
+import { applyConfigDefaults } from "./config_service.js";
 
 describe("DustBinService", () => {
   let service: DustBinService;

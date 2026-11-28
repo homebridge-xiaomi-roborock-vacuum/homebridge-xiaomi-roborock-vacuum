@@ -3,15 +3,15 @@ import { EventEmitter } from "node:events";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
-import { CurrentRoomService } from "./current_room_service";
-import type { CloudService } from "./cloud_service";
-import type { RoomsService } from "./rooms_service";
+import { CurrentRoomService } from "./current_room_service.js";
+import type { CloudService } from "./cloud_service.js";
+import type { RoomsService } from "./rooms_service.js";
 import {
   createDeviceManagerMock,
   DeviceManagerMock,
-} from "./device_manager.mock";
-import { getLoggerMock, LoggerMock } from "../utils/logger.mock";
-import { applyConfigDefaults, Config } from "./config_service";
+} from "./device_manager.mock.js";
+import { getLoggerMock, LoggerMock } from "../utils/logger.mock.js";
+import { applyConfigDefaults, Config } from "./config_service.js";
 
 const { OCCUPANCY_DETECTED: DETECTED, OCCUPANCY_NOT_DETECTED: NOT_DETECTED } =
   HapJs.Characteristic.OccupancyDetected;

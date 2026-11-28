@@ -10,13 +10,13 @@ import {
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
-import { ProductInfo } from "./product_info";
+import { ProductInfo } from "./product_info.js";
 import {
   createDeviceManagerMock,
   DeviceManagerMock,
-} from "./device_manager.mock";
-import { getLoggerMock } from "../utils/logger.mock";
-import { applyConfigDefaults } from "./config_service";
+} from "./device_manager.mock.js";
+import { getLoggerMock } from "../utils/logger.mock.js";
+import { applyConfigDefaults } from "./config_service.js";
 
 describe("ProductInfo", () => {
   let productInfo: ProductInfo;

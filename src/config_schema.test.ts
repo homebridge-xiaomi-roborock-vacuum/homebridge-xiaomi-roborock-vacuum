@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
-import schema from "../config.schema.json";
-import { ACCESSORY_NAME } from "./constants";
+import schema from "../config.schema.json" with { type: "json" };
+import { ACCESSORY_NAME } from "./constants.js";
 
 type JsonSchema = {
   type?: string;

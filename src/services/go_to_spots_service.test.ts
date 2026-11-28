@@ -2,13 +2,13 @@ import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
-import { GoToSpotsService } from "./go_to_spots_service";
+import { GoToSpotsService } from "./go_to_spots_service.js";
 import {
   createDeviceManagerMock,
   DeviceManagerMock,
-} from "./device_manager.mock";
-import { getLoggerMock } from "../utils/logger.mock";
-import { applyConfigDefaults, type Config } from "./config_service";
+} from "./device_manager.mock.js";
+import { getLoggerMock } from "../utils/logger.mock.js";
+import { applyConfigDefaults, type Config } from "./config_service.js";
 
 describe("GoToSpotsService", () => {
   let service: GoToSpotsService;

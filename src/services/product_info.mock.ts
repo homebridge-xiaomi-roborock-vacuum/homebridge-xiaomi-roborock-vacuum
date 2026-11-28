@@ -1,6 +1,6 @@
 import { vi, type Mocked } from "vitest";
 import { BehaviorSubject } from "rxjs";
-import { ProductInfo } from "./product_info";
+import { ProductInfo } from "./product_info.js";
 
 export type ProductInfoMock = Mocked<ProductInfo>;
 

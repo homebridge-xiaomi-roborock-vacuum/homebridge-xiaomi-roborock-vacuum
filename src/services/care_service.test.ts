@@ -11,16 +11,16 @@ import {
 import { HAP, Service } from "homebridge";
 import { Subject } from "rxjs";
 import * as HapJs from "@homebridge/hap-nodejs";
-import { CareService } from "./care_service";
-import { createHomebridgeMock } from "../test.mocks";
-import { getLoggerMock } from "../utils/logger.mock";
-import { applyConfigDefaults } from "./config_service";
+import { CareService } from "./care_service.js";
+import { createHomebridgeMock } from "../test.mocks.js";
+import { getLoggerMock } from "../utils/logger.mock.js";
+import { applyConfigDefaults } from "./config_service.js";
 import {
   createDeviceManagerMock,
   DeviceManagerMock,
-} from "./device_manager.mock";
-import type { MainService } from "./main_service";
-import type { DeviceManager } from "./device_manager";
+} from "./device_manager.mock.js";
+import type { MainService } from "./main_service.js";
+import type { DeviceManager } from "./device_manager.js";
 
 describe("CareService", () => {
   describe("legacyCareSensors", () => {

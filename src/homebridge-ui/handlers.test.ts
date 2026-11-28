@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from "vitest";
-import { createHandlers, type HandlerDeps } from "./handlers";
+import { createHandlers, type HandlerDeps } from "./handlers.js";
 
 const session = { userId: "1", ssecurity: "s", serviceToken: "t" };
 const flush = () => new Promise(setImmediate);

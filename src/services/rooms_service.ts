@@ -1,9 +1,9 @@
 import { Service } from "homebridge";
 import { filter, firstValueFrom } from "rxjs";
-import { CoreContext } from "./types";
-import { PluginServiceClass } from "./plugin_service_class";
-import { ensureName } from "../utils/ensure_name";
-import type { RoomMapping, TimerResponse } from "../utils/miio_responses";
+import { CoreContext } from "./types.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
+import { ensureName } from "../utils/ensure_name.js";
+import type { RoomMapping, TimerResponse } from "../utils/miio_responses.js";
 
 export interface RoomsConfig {
   cleanword: string;

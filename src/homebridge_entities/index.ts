@@ -1,2 +1,2 @@
-export { XiaomiRoborockVacuumAccessory } from "./accessory";
-export { XiaomiRoborockVacuumPlatform } from "./platform";
+export { XiaomiRoborockVacuumAccessory } from "./accessory.js";
+export { XiaomiRoborockVacuumPlatform } from "./platform.js";

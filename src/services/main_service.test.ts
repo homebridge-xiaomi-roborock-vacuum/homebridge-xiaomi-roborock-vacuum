@@ -1,15 +1,15 @@
 import { describe, test, expect, afterEach, vi } from "vitest";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { ReplaySubject, Subject } from "rxjs";
-import { MainService } from "./main_service";
+import { MainService } from "./main_service.js";
 import {
   createDeviceManagerMock,
   DeviceManagerMock,
-} from "./device_manager.mock";
-import { getLoggerMock } from "../utils/logger.mock";
-import { applyConfigDefaults } from "./config_service";
-import type { ProductInfo } from "./product_info";
-import type { RoomsService } from "./rooms_service";
+} from "./device_manager.mock.js";
+import { getLoggerMock } from "../utils/logger.mock.js";
+import { applyConfigDefaults } from "./config_service.js";
+import type { ProductInfo } from "./product_info.js";
+import type { RoomsService } from "./rooms_service.js";
 
 describe("MainService", () => {
   let deviceManagerMock: DeviceManagerMock;

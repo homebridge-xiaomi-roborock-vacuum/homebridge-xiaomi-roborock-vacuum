@@ -1,9 +1,9 @@
 import { API } from "homebridge";
-import { PLUGIN_NAME, ACCESSORY_NAME } from "./constants";
+import { PLUGIN_NAME, ACCESSORY_NAME } from "./constants.js";
 import {
   XiaomiRoborockVacuumAccessory,
   XiaomiRoborockVacuumPlatform,
-} from "./homebridge_entities";
+} from "./homebridge_entities/index.js";
 
 export default (api: API) => {
   // Register the "legacy" standalone accessory

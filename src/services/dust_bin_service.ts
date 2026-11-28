@@ -1,7 +1,7 @@
 import { Service, CharacteristicValue } from "homebridge";
 import { BehaviorSubject, filter } from "rxjs";
-import { CoreContext } from "./types";
-import { PluginServiceClass } from "./plugin_service_class";
+import { CoreContext } from "./types.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
 
 export interface DustBinConfig {
   dustBin: boolean;

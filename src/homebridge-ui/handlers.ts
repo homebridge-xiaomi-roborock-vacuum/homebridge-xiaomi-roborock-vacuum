@@ -18,7 +18,7 @@ import {
   type QrCode,
   type RoborockMap,
 } from "node-miio";
-import { readLegacyConfig, removeLegacyBlocks } from "./legacy";
+import { readLegacyConfig, removeLegacyBlocks } from "./legacy.js";
 
 /** The payload of every request: where the session is (the platform's `cloud` option) */
 export interface CloudRequest {

@@ -1,13 +1,12 @@
 import { describe, test, expect } from "vitest";
 import fs from "node:fs";
-import path from "node:path";
 import { format } from "prettier";
 import { resolveVacuumModes, vacuumModels } from "node-miio";
-import { FIRMWARE_VARIANTS, renderSpeedsDoc } from "./speeds_doc";
+import { FIRMWARE_VARIANTS, renderSpeedsDoc } from "./speeds_doc.js";
 
 describe("docs/speeds-and-modes.md", () => {
   test("is up to date with the code (run `npm run docs:speeds` after changing the speeds or the clean modes)", async () => {
-    const file = path.join(__dirname, "../../docs/speeds-and-modes.md");
+    const file = new URL("../../docs/speeds-and-modes.md", import.meta.url);
     const expected = await format(renderSpeedsDoc(), { parser: "markdown" });
     expect(fs.readFileSync(file, "utf8")).toBe(expected);
   });

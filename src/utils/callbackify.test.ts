@@ -1,5 +1,5 @@
 import { describe, test, expect, vi } from "vitest";
-import { callbackify } from "./callbackify";
+import { callbackify } from "./callbackify.js";
 
 /** Runs `callbackify` and resolves with the arguments of its callback */
 function callbackArgs<T>(fn: () => T | Promise<T>) {

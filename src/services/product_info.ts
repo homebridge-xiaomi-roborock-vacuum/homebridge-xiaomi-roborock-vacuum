@@ -1,7 +1,7 @@
 import { Service } from "homebridge";
-import { CoreContext } from "./types";
+import { CoreContext } from "./types.js";
 import { concatMap, distinctUntilChanged, filter, ReplaySubject } from "rxjs";
-import { PluginServiceClass } from "./plugin_service_class";
+import { PluginServiceClass } from "./plugin_service_class.js";
 
 export class ProductInfo extends PluginServiceClass {
   public firmware?: string;

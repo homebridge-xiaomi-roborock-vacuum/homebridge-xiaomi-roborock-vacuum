@@ -1,9 +1,9 @@
 import { Service } from "homebridge";
 import { distinctUntilKeyChanged, filter } from "rxjs";
-import { CoreContext } from "./types";
-import { RoomsService } from "./rooms_service";
-import { PluginServiceClass } from "./plugin_service_class";
-import { ensureName } from "../utils/ensure_name";
+import { CoreContext } from "./types.js";
+import { RoomsService } from "./rooms_service.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
+import { ensureName } from "../utils/ensure_name.js";
 
 export interface PauseConfig {
   pause: boolean;

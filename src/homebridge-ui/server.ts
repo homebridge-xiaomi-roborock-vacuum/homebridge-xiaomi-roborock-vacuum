@@ -2,13 +2,14 @@
  * The server of the plugin's custom UI (see `config.schema.json`'s `customUiPath`), run by the Homebridge UI.
  * It runs as the same user as Homebridge, so the Xiaomi Cloud session it saves is the one the plugin reads.
  */
-import { createHandlers } from "./handlers";
+import {
+  HomebridgePluginUiServer,
+  RequestError,
+} from "@homebridge/plugin-ui-utils";
 
-async function start() {
-  // ESM-only package: loaded with a dynamic import from this CommonJS module
-  const { HomebridgePluginUiServer, RequestError } =
-    await import("@homebridge/plugin-ui-utils");
+import { createHandlers } from "./handlers.js";
 
+function start() {
   class XiaomiRoborockVacuumUiServer extends HomebridgePluginUiServer {
     constructor() {
       super();
@@ -33,4 +34,4 @@ async function start() {
   return new XiaomiRoborockVacuumUiServer();
 }
 
-void start();
+start();

@@ -1,12 +1,12 @@
 import { Service } from "homebridge";
 import { combineLatest, distinctUntilKeyChanged, filter } from "rxjs";
-import { CoreContext } from "./types";
-import { findSpeedModes } from "../utils/find_speed_modes";
-import { ProductInfo } from "./product_info";
-import { MainService } from "./main_service";
-import { PluginServiceClass } from "./plugin_service_class";
-import { ensureName } from "../utils/ensure_name";
-import { supports } from "../utils/supports";
+import { CoreContext } from "./types.js";
+import { findSpeedModes } from "../utils/find_speed_modes.js";
+import { ProductInfo } from "./product_info.js";
+import { MainService } from "./main_service.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
+import { ensureName } from "../utils/ensure_name.js";
+import { supports } from "../utils/supports.js";
 
 export interface WaterBoxConfig {
   waterBox: boolean;

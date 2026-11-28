@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, vi, type Mocked } from "vitest";
 import { API } from "homebridge";
-import entrypoint from "./index";
+import entrypoint from "./index.js";
 
 describe("entrypoint", () => {
   let api: Mocked<API>;

@@ -7,12 +7,12 @@ import {
   map,
   tap,
 } from "rxjs";
-import { findSpeedModes } from "../utils/find_speed_modes";
-import { CoreContext } from "./types";
-import type { RoomsService } from "./rooms_service";
-import type { ProductInfo } from "./product_info";
-import { PluginServiceClass } from "./plugin_service_class";
-import { ensureName } from "../utils/ensure_name";
+import { findSpeedModes } from "../utils/find_speed_modes.js";
+import { CoreContext } from "./types.js";
+import type { RoomsService } from "./rooms_service.js";
+import type { ProductInfo } from "./product_info.js";
+import { PluginServiceClass } from "./plugin_service_class.js";
+import { ensureName } from "../utils/ensure_name.js";
 
 export interface MainServiceConfig {
   /**

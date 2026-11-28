@@ -10,14 +10,14 @@ import {
   applyConfigDefaults,
   CloudService,
   RoborockService,
-} from "../services";
-import type { CloudConfig } from "../services/cloud_service";
-import type { RoborockConfig } from "../services/roborock_service";
-import { ACCESSORY_NAME, PLUGIN_NAME } from "../constants";
-import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory";
+} from "../services/index.js";
+import type { CloudConfig } from "../services/cloud_service.js";
+import type { RoborockConfig } from "../services/roborock_service.js";
+import { ACCESSORY_NAME, PLUGIN_NAME } from "../constants.js";
+import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory.js";
 import { first } from "rxjs";
 import { networkInterfaces } from "node:os";
-import type { ResolvedRoom } from "../services/rooms_service";
+import type { ResolvedRoom } from "../services/rooms_service.js";
 
 interface XiaomiRoborockVacuumPlatformConfig extends PlatformConfig {
   devices: Partial<Config>[];

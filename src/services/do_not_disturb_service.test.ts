@@ -2,14 +2,14 @@ import { describe, test, expect, beforeEach, afterEach, vi } from "vitest";
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
-import { DoNotDisturbService } from "./do_not_disturb_service";
+import { DoNotDisturbService } from "./do_not_disturb_service.js";
 import {
   createDeviceManagerMock,
   DeviceManagerMock,
-} from "./device_manager.mock";
-import { getLoggerMock, LoggerMock } from "../utils/logger.mock";
-import { applyConfigDefaults, Config } from "./config_service";
-import type { MiioDeviceMock } from "../test.mocks";
+} from "./device_manager.mock.js";
+import { getLoggerMock, LoggerMock } from "../utils/logger.mock.js";
+import { applyConfigDefaults, Config } from "./config_service.js";
+import type { MiioDeviceMock } from "../test.mocks.js";
 
 describe("DoNotDisturbService", () => {
   let deviceManagerMock: DeviceManagerMock;

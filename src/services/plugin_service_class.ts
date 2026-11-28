@@ -1,8 +1,8 @@
-import { CoreContext, PluginService } from "./types";
+import { CoreContext, PluginService } from "./types.js";
 import { HAP } from "homebridge";
-import { Logger } from "../utils/logger";
-import { Config } from "./config_service";
-import { DeviceManager } from "./device_manager";
+import { Logger } from "../utils/logger.js";
+import { Config } from "./config_service.js";
+import { DeviceManager } from "./device_manager.js";
 
 export abstract class PluginServiceClass implements PluginService {
   protected readonly hap: HAP;

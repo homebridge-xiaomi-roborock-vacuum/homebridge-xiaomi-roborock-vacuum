@@ -54,6 +54,8 @@ node dist/bin/miio-vacuum.js --help   # the CLI is a thin wrapper around node-mi
   pre-filled issue link, and Matter shows them as stopped). Translate new statuses in node-miio.
 - `docs/speeds-and-modes.md` is generated from the code (`src/docs/speeds_doc.ts`): run `npm run docs:speeds` after
   changing the fan speeds, water levels or Matter clean modes. A test fails while it's out of date.
+- The plugin is an ES module (`"type": "module"`, Homebridge loads it with `import()`): relative imports end in `.js`,
+  JSON imports need `with { type: "json" }`, and there is no `__dirname` (use `new URL("...", import.meta.url)`).
 - node-miio ships its own types (since 0.5.0). The device is a `VacuumDevice` (union of node-miio's vacuum classes): only their
   shared API is available. Guard the class-specific methods (dust collection, zones, go-to, water box, mop wash/dry…) with
   `supports(device, "method")` (`src/utils/supports.ts`): it narrows the type and logs instead of crashing on other models.

@@ -1,12 +1,12 @@
 import { describe, test, expect } from "vitest";
 import { VACUUM_STATES } from "node-miio";
-import { ErrorState, OperationalState, PowerSource } from "./constants";
+import { ErrorState, OperationalState, PowerSource } from "./constants.js";
 import {
   toBatChargeLevel,
   toBatChargeState,
   toErrorStateId,
   toOperationalState,
-} from "./rvc_mappings";
+} from "./rvc_mappings.js";
 
 describe("toOperationalState", () => {
   test.each([

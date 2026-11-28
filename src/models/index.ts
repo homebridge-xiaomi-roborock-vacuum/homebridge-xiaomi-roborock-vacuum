@@ -1,1 +1,1 @@
-export type { ModelDefinition, ModesHomekitVsMiLevel } from "./types";
+export type { ModelDefinition, ModesHomekitVsMiLevel } from "./types.js";

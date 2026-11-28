@@ -10,13 +10,13 @@ import {
 import { HAP } from "homebridge";
 import * as HapJs from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
-import { ScenesService, type SceneRunner } from "./scenes_service";
+import { ScenesService, type SceneRunner } from "./scenes_service.js";
 import {
   createDeviceManagerMock,
   DeviceManagerMock,
-} from "./device_manager.mock";
-import { getLoggerMock } from "../utils/logger.mock";
-import { applyConfigDefaults, type Config } from "./config_service";
+} from "./device_manager.mock.js";
+import { getLoggerMock } from "../utils/logger.mock.js";
+import { applyConfigDefaults, type Config } from "./config_service.js";
 
 describe("ScenesService", () => {
   let service: ScenesService;

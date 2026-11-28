@@ -12,15 +12,15 @@ import type { API, Logging } from "homebridge";
 import { Service, Categories, Characteristic } from "@homebridge/hap-nodejs";
 import { Subject } from "rxjs";
 
-import { createHomebridgeMock, miio } from "../test.mocks";
+import { createHomebridgeMock, miio } from "../test.mocks.js";
 import {
   createXiaomiRoborockVacuumAccessoryMock,
   XiaomiRoborockVacuumAccessoryMock,
-} from "./platform_accessory.test.mock";
-import { deviceManagerMock } from "./accessory.test.mock";
-import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory";
-import { XiaomiRoborockVacuumPlatformAccessory } from "./platform";
-import type { MiioDeviceMock as MiioDevice } from "../test.mocks";
+} from "./platform_accessory.test.mock.js";
+import { deviceManagerMock } from "./accessory.test.mock.js";
+import { XiaomiRoborockVacuumPlatformAccessoryInitializer } from "./platform_accessory.js";
+import { XiaomiRoborockVacuumPlatformAccessory } from "./platform.js";
+import type { MiioDeviceMock as MiioDevice } from "../test.mocks.js";
 
 function newAccessory(): XiaomiRoborockVacuumPlatformAccessory {
   const name = "test";

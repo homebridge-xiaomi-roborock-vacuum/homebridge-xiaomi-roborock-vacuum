@@ -9,21 +9,21 @@ import {
 } from "vitest";
 import type { MatterAccessory, MatterAPI } from "homebridge";
 import { Subject } from "rxjs";
-import { createDeviceManagerMock } from "../services/device_manager.mock";
-import { applyConfigDefaults } from "../services/config_service";
-import { findSpeedModes } from "../utils/find_speed_modes";
-import { getLoggerMock } from "../utils/logger.mock";
+import { createDeviceManagerMock } from "../services/device_manager.mock.js";
+import { applyConfigDefaults } from "../services/config_service.js";
+import { findSpeedModes } from "../utils/find_speed_modes.js";
+import { getLoggerMock } from "../utils/logger.mock.js";
 import type {
   ErrorChangedEvent,
   StateChangedEvent,
-} from "../services/device_manager";
-import { MatterVacuum } from "./matter_vacuum";
+} from "../services/device_manager.js";
+import { MatterVacuum } from "./matter_vacuum.js";
 import {
   ErrorState,
   OperationalState,
   PowerSource,
   RunMode,
-} from "./constants";
+} from "./constants.js";
 
 class StatusError extends Error {}
 

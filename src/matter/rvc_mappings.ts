@@ -1,6 +1,6 @@
 import { vacuumActivity, type VacuumActivity } from "node-miio";
 
-import { ErrorState, OperationalState, PowerSource } from "./constants";
+import { ErrorState, OperationalState, PowerSource } from "./constants.js";
 
 /** The error reported by node-miio (`errorChanged`) */
 export interface MiioError {

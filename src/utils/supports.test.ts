@@ -1,6 +1,6 @@
 import { describe, test, expect, vi } from "vitest";
 import type { VacuumDevice } from "node-miio";
-import { supports } from "./supports";
+import { supports } from "./supports.js";
 
 describe("supports", () => {
   const device = {

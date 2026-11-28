@@ -1,7 +1,7 @@
 import { HAP, Service } from "homebridge";
-import { Logger } from "../utils/logger";
-import { Config } from "./config_service";
-import { DeviceManager } from "./device_manager";
+import { Logger } from "../utils/logger.js";
+import { Config } from "./config_service.js";
+import { DeviceManager } from "./device_manager.js";
 
 export interface PluginService {
   init(): Promise<void>;
