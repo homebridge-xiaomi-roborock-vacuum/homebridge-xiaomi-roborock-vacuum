@@ -102,7 +102,7 @@ jobs:
         env:
           CI: true
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           # Pull requests from forks get no secrets: the action uploads them tokenless (public repo)
           token: ${{ secrets.CODECOV_TOKEN }}
